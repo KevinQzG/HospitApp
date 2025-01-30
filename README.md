@@ -39,7 +39,7 @@ HospitApp offers **a smart, user-friendly, and real-time solution** that allows 
 ✔ **Smart Hospital Search**  
 - Filter by **medical specialization** to find the right facility based on health needs.  
 - View **ratings and reviews** from previous patients.  
-- Check **EPS coverage** to know which hospitals accept specific insurance plans.
+- Check **EPS and Insurance coverage** to know which hospitals accept specific insurance plans.
 
 ✔ **Navigation System Integration**  
 - **Google Maps & Waze** redirection for fast and safe navigation.  
