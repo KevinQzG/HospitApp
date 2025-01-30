@@ -70,7 +70,7 @@ HospitApp ensures **faster and more informed medical access** by helping users:
 
 | Name              | Role               | Contact |
 |------------------|------------------|---------|
-| **Luis Carlos Castro**     | [Product Owner]        | [Email](luiscarlos3007@hotmail.com) |
+| **Luis Carlos Castro**     | [Product Owner]        | [Email](mailto:luiscarlos3007@hotmail.com) |
 | **Kevin Quiroz**     | [Programmer/UX-UI Designer]        | [GitHub](https://github.com/KevinQzG)  |
 | **Juan Felipe Restrepo**     | [Scrum Master/Tester]        | [GitHub](https://github.com/JuanFelipeRestrepoBuitrago) |
 | **Julián Mejía**     | [Architect/Programmer]| [GitHub](https://github.com/Julimejia) |
