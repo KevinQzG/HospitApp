@@ -1,6 +1,6 @@
 # 📌 HospitApp
 
-HospitApp is a **web-based platform** designed to **optimize access to healthcare services** in Colombia. It provides **fast and accurate** information about hospitals and clinics, integrating advanced features to enhance the user experience and ensure an **efficient arrival** at the right medical facility.
+HospitApp is a **web-based platform** designed to **optimize access to healthcare services** in Antioquia. It provides **fast and accurate** information about hospitals and clinics, integrating advanced features to enhance the user experience and ensure an **efficient arrival** at the right medical facility.
 
 ---
 
@@ -17,7 +17,7 @@ HospitApp is a **web-based platform** designed to **optimize access to healthcar
 
 ## Problem Statement  
 
-In Colombia, accessing healthcare services **efficiently and quickly** is a challenge for many people, especially:
+In Antioquia, accessing healthcare services **efficiently and quickly** is a challenge for many people, especially:
 - Those facing **emergencies**.
 - Individuals unfamiliar with the **healthcare system**.
 - Patients with **specific insurance coverage** restrictions.
@@ -62,7 +62,7 @@ HospitApp ensures **faster and more informed medical access** by helping users:
 - **Navigate efficiently** to medical facilities.  
 - **Reduce waiting times** and access **better healthcare services**.  
 
-🚀 **HospitApp: The fastest, safest, and smartest way to find medical care in Colombia.**  
+🚀 **HospitApp: The fastest, safest, and smartest way to find medical care in Antioquia.**  
 
 ---
 
