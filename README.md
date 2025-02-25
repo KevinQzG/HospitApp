@@ -13,6 +13,7 @@ HospitApp is a **web-based platform** designed to **optimize access to healthcar
 - [Tech Stack](#tech-stack)  
 - [Getting Started](#getting-started)  
   - [Installation](#installation)  
+- [Project Structure](#project-structure)
 ---
 
 ## Problem Statement  
@@ -92,5 +93,15 @@ HospitApp ensures **faster and more informed medical access** by helping users:
 ### Installation  
 
 1. Clone this repository:  
-   ```sh
-   git clone https://github.com/KevinQzG/hospitapp.git
+  ```sh
+  git clone https://github.com/KevinQzG/hospitapp.git
+  ```
+
+## Project Structure
+```bash
+.
+├── hospitapp # Project root or code 
+├── .gitignore
+├── LICENSE
+└── README.md
+```
