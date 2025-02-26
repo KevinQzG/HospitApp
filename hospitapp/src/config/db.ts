@@ -30,7 +30,7 @@ class MongoDB {
       console.log('Connected to MongoDB');
 
       // Get the database instance
-      this.db = this.client.db();
+      this.db = this.client.db(_ENV.DATABASE_NAME);
       return this.db;
     } catch (error) {
       console.error('Failed to connect to MongoDB:', error);
