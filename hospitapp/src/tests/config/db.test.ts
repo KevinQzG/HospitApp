@@ -30,8 +30,8 @@ describe('MongoDB Connection', () => {
   });
 
   it('should find a document', async () => {
-    const db = await MongoDB.connect();
-    const result = await db.collection('EPS').find(_FILTER).toArray();
-    expect(result).toEqual(_EXPECTED_RESULT);
+    const _DB = await MongoDB.connect();
+    const _RESULT = await _DB.collection('EPS').find(_FILTER).toArray();
+    expect(_RESULT).toEqual(_EXPECTED_RESULT);
   });
 });

@@ -1,8 +1,8 @@
 // jest.config.js
-const dotenv = require('dotenv');
+const _DOTENV = require('dotenv');
 
 // Load environment variables from .env.test
-dotenv.config({ path: '.env.test' });
+_DOTENV.config({ path: '.env.test' });
 
 module.exports = {
     preset: 'ts-jest',
