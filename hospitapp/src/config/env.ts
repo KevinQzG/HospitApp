@@ -7,8 +7,8 @@
  */
 interface EnvironmentVariables {
   NEXT_PUBLIC_API_URL: string;
+  NEXT_PUBLIC_APP_NAME: string;
   DATABASE_URL: string;
-  APP_NAME: string;
 }
 
 /**
@@ -21,8 +21,8 @@ interface EnvironmentVariables {
 const validate_env = (): EnvironmentVariables => {
   const env = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     DATABASE_URL: process.env.DATABASE_URL,
-    APP_NAME: process.env.APP_NAME,
   };
 
   // Check for missing required variables
