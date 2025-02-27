@@ -32,12 +32,22 @@ The project structure is as follows:
 │   │   ├── favicon.ico
 │   │   ├── globals.css
 │   │   ├── layout.tsx
-│   └── └── page.tsx  
+│   │   └── page.tsx  
+│   ├── config
+│   │   ├── db.ts
+│   │   └── env.ts
+│   ├── tests
+│   │   ├── config 
+│   │   │   ├── env.test.ts
+│   │   │   └── db.test.ts
 ├── .gitignore
-├── eslint.config.mjs
-├── next.config.js
-├── package.json
 ├── README.md
+├── eslint.config.mjs
+├── jest.config.js
+├── next.config.js
+├── package-lock.json
+├── package.json
+├── postcss.config.js
 ├── tailwind.config.js
 └── tsconfig.json
 ```
