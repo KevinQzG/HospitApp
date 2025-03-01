@@ -162,9 +162,9 @@ describe('IPS Class', () => {
       1234.56 // Distance
     );
 
-    const ipsObject = _IPS.toObject();
+    const _IPS_OBJECT = _IPS.toObject();
 
-    expect(ipsObject).toEqual({
+    expect(_IPS_OBJECT).toEqual({
       _id: _VALID_IPS_DATA._id,
       name: _VALID_IPS_DATA.name,
       department: _VALID_IPS_DATA.department,
