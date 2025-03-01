@@ -12,10 +12,12 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "inversify": "^7.0.1",
     "mongodb": "^6.13.1",
     "next": "15.1.7",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

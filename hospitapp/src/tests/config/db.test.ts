@@ -19,5 +19,6 @@ describe('MongoDB Connection Test', () => {
     // Find a document in the 'EPS' collection and compare the result with the expected result
     const _RESULT = await _DB.collection('EPS').find(_FILTER).toArray();
     expect(_RESULT).toEqual(_EXPECTED_RESULT);
+    console.log('Result:', _RESULT);
   });
 });
