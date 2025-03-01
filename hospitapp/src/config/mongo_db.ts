@@ -1,11 +1,13 @@
 import { MongoClient, Db } from 'mongodb';
 import DBInterface from '@/adapters/db_interface';
 import { _ENV } from './env';
+import { injectable } from "inversify";
 
 /**
  * MongoDB connection configuration.
  * @class MongoDB
  */
+@injectable()
 class MongoDB implements DBInterface<Db> {
   private client: MongoClient | null = null;
   private db: Db | null = null;

@@ -78,7 +78,7 @@ describe('IPS Class', () => {
   it('should throw an error when validating an IPS instance with invalid location coordinates', () => {
     const _INVALID_IPS_DATA = {
       ..._VALID_IPS_DATA,
-      location: { type: 'Point', coordinates: [] as any }, // Cast to any to bypass type checking
+      location: { type: 'Point', coordinates: [] as unknown as [number, number]},
     };
   
     // Create the IPS instance

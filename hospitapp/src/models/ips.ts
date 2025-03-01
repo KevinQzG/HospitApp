@@ -10,7 +10,7 @@ export class IPS {
     private department: string;
     private town: string;
     private address: string;
-    private phone?: string;
+    private phone?: string | number;
     private email?: string;
     private location: {
         type: string;
@@ -29,7 +29,7 @@ export class IPS {
      * @param {object} location - Location of the IPS.
      * @param {string} location.type - Type of location.
      * @param {[number, number]} location.coordinates - Coordinates of the IPS.
-     * @param {string} phone - Phone number of the IPS (optional).
+     * @param {string | number} phone - Phone number of the IPS (optional).
      * @param {string} email - Email of the IPS (optional).
      * @param {number} level - Level of the IPS (optional).
      * @param {number} [distance] - Distance from the IPS to the user (optional).
@@ -39,7 +39,7 @@ export class IPS {
             type: string;
             coordinates: [number, number];
         },
-        phone?: string,
+        phone?: string | number,
         email?: string,
         level?: number,
         distance?: number
@@ -135,9 +135,9 @@ export class IPS {
 
     /**
      * Gets the phone number of the IPS.
-     * @returns {string} The phone number of the IPS.
+     * @returns {string | number} The phone number of the IPS.
      */
-    getPhone(): string {
+    getPhone(): string | number {
         return this.phone || '';
     }
 
@@ -152,8 +152,13 @@ export class IPS {
     /**
      * Gets the location of the IPS.
      * @returns {Object} The location of the IPS.
+     * @property {string} type - The type of location.
+     * @property {[number, number]} coordinates - The coordinates of the IPS.
      */
-    getLocation(): object {
+    getLocation(): {
+        type: string;
+        coordinates: [number, number];
+    } {
         return this.location;
     }
 
