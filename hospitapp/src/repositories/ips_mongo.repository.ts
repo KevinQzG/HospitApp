@@ -37,6 +37,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
         page: number = 1,
         page_size: number = 10
     ): Promise<{ results: IPS[]; total: number }> {
+        // Build the pipeline
         const _PIPELINE = new IpsPipelineBuilder()
             .add_geo_stage(longitude, latitude, max_distance)
             .matches_specialties(specialties)
@@ -46,16 +47,19 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 
         // Execute the pipeline
         const _DB = await this.db_handler.connect();
-        const _AGGREGATION_RESULT = await _DB.collection<IPS>('IPS')
+        const _AGGREGATION_RESULT = await _DB.collection<IPSDocument>('IPS')
             .aggregate<AggregationResult>(_PIPELINE).next();
-
+        
+        // If no results, return an empty array
         if (!_AGGREGATION_RESULT) {
             return { results: [], total: 0 };
         }
 
+        // Extract the results and total count
         const _RESULTS = _AGGREGATION_RESULT.data ?? [];
         const _TOTAL = _AGGREGATION_RESULT.metadata?.[0]?.total ?? 0;
 
+        // Convert the IPS document to a IPS entity and return the results
         return {
             results: _RESULTS.map(IpsMapper.to_domain),
             total: _TOTAL
@@ -63,20 +67,24 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
     }
 
     async find_by_id(id: string): Promise<IPS | null> {
+        // Build the pipeline
         const _PIPELINE = new IpsPipelineBuilder()
             .add_match_id_stage(id)
             .with_eps()
             .with_specialties()
             .build();
 
+        // Execute the pipeline
         const _DB = await this.db_handler.connect();
-        const _AGGREGATION_RESULT = await _DB.collection<IPS>('IPS')
+        const _AGGREGATION_RESULT = await _DB.collection<IPSDocument>('IPS')
             .aggregate<IPSDocument>(_PIPELINE).next();
 
+        // If no results, return null
         if (!_AGGREGATION_RESULT) {
             return null;
         }
 
+        // Convert the IPS document to a IPS entity
         return IpsMapper.to_domain(_AGGREGATION_RESULT);
     }
 }

@@ -179,7 +179,7 @@ export class IpsPipelineBuilder {
 
     /**
      * Returns the lookup stage for specialties.
-     * @returns {PipelineStage} The lookup stage.
+     * @returns {LookupStage} The lookup stage.
      */
     private get specialty_lookup(): LookupStage {
         return {
@@ -190,6 +190,10 @@ export class IpsPipelineBuilder {
         };
     }
 
+    /**
+     * Returns the lookup stage for specialties.
+     * @returns {LookupStage} The lookup stage.
+     */
     private get specialty_join(): LookupStage {
         return {
             from: 'Specialty',
@@ -199,6 +203,10 @@ export class IpsPipelineBuilder {
         };
     }
 
+    /**
+     * Returns the lookup stage for EPS.
+     * @returns {LookupStage} The lookup stage.
+     */
     private get eps_lookup(): LookupStage {
         return {
             from: 'EPS_IPS',
@@ -208,6 +216,10 @@ export class IpsPipelineBuilder {
         };
     }
 
+    /**
+     * Returns the lookup stage for EPS.
+     * @returns {LookupStage} The lookup stage.
+     */
     private get eps_join(): LookupStage {
         return {
             from: 'EPS',
@@ -217,6 +229,10 @@ export class IpsPipelineBuilder {
         };
     }
 
+    /**
+     * Returns the base projection for the pipeline.
+     * @returns {ProjectStage} The projection stage.
+     */
     private get base_projection(): ProjectStage {
         return {
             name: 1,
@@ -231,6 +247,10 @@ export class IpsPipelineBuilder {
         };
     }
 
+    /**
+     * Returns the add fields stage for specialties.
+     * @returns {AddFieldsStage} The add fields stage.
+     */
     private get specialty_add_fields_name_schedules(): AddFieldsStage {
         return {
             specialties: {
