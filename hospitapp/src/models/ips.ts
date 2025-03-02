@@ -235,6 +235,7 @@ export class IPS {
                 type: location.type,
                 coordinates: location.coordinates,
             };
+        this.validate();
     }
 
     /**
@@ -246,6 +247,7 @@ export class IPS {
      */
     setAddress(address: string): void {
         this.address = address;
+        this.validate();
     }
 
     /**
@@ -257,6 +259,7 @@ export class IPS {
      */
     setTown(town: string): void {
         this.town = town;
+        this.validate();
     }
 
     /**
@@ -268,6 +271,7 @@ export class IPS {
      */
     setDepartment(department: string): void {
         this.department = department;
+        this.validate();
     }
 
     /**
@@ -279,6 +283,7 @@ export class IPS {
      */
     setName(name: string): void {
         this.name = name;
+        this.validate();
     }
 
     /**
