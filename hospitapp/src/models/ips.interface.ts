@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { EPSDocument } from "./eps.interface";
+import { SpecialtyDocument } from "./specialty.interface";
 
 export interface IPSDocument {
     _id: ObjectId;
@@ -16,4 +17,5 @@ export interface IPSDocument {
     level?: number;
     distance?: number;
     eps?: EPSDocument[];
+    specialties?: SpecialtyDocument[];
 }

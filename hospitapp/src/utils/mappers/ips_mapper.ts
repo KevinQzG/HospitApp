@@ -1,6 +1,7 @@
 import { IPSDocument } from "@/models/ips.interface";
 import { IPS } from "@/models/ips";
 import { EPSMapper } from './eps_mapper';
+import { SpecialtyMapper } from './specialty_mapper';
 
 /**
  * Class that allows to map IPS entities from domain to document and vice versa.
@@ -25,6 +26,7 @@ export class IpsMapper {
             raw.level,
             raw.distance,
             raw.eps?.map(EPSMapper.to_domain),
+            raw.specialties?.map(SpecialtyMapper.to_domain)
         );
     }
 
@@ -46,6 +48,7 @@ export class IpsMapper {
             level: ips.getLevel(),
             distance: ips.getDistance(),
             eps: ips.getEPS()?.map(EPSMapper.to_document),
+            specialties: ips.getSpecialties()?.map(SpecialtyMapper.to_document)
         };
     }
 }

@@ -1,7 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { IPSDocument } from './ips.interface';
 import { EPS } from './eps';
+import { Specialty } from './specialty';
 import { IpsMapper } from '@/utils/mappers/ips_mapper';
+
 
 /**
  * Class that defines the structure and behavior of the IPS entity.
@@ -22,6 +24,7 @@ export class IPS {
     private level?: number;
     private distance?: number;
     private eps?: EPS[];
+    private specialties?: Specialty[];
 
     /**
      * Creates an instance of IPS.
@@ -38,6 +41,7 @@ export class IPS {
      * @param {number} level - Level of the IPS (optional).
      * @param {number} [distance] - Distance from the IPS to the user (optional).
      * @param {EPS[]} [eps] - EPS entities associated with the IPS (optional).
+     * @param {Specialty[]} [specialties] - Specialty entities associated with the IPS (optional).
      */
     constructor(_id: ObjectId = new ObjectId(), name: string, department: string, town: string, address: string,
         location: {
@@ -48,7 +52,8 @@ export class IPS {
         email?: string,
         level?: number,
         distance?: number,
-        eps?: EPS[]
+        eps?: EPS[],
+        specialties?: Specialty[],
     ) {
         this._id = _id;
         this.name = name;
@@ -61,6 +66,7 @@ export class IPS {
         this.level = level;
         this.distance = distance;
         this.eps = eps;
+        this.specialties = specialties;
     }
 
     /**
@@ -180,6 +186,31 @@ export class IPS {
      */
     getEPS(): EPS[] | undefined {
         return this.eps;
+    }
+
+    /**
+     * Gets the Specialty entities associated with the IPS.
+     * @returns {Specialty[] | undefined} The Specialty entities associated with the IPS.
+     */
+    getSpecialties(): Specialty[] | undefined {
+        return this.specialties;
+    }
+
+    /**
+     * Adds a Specialty entity to the IPS.
+     * 
+     * @param {Specialty} specialty - The Specialty entity to add.
+     * 
+     * @throws {Error} If the Specialty entity is invalid.
+     */
+    addSpecialty(specialty: Specialty): void {
+        if (!specialty) {
+            throw new Error('Invalid Specialty entity');
+        }
+        if (!this.specialties) {
+            this.specialties = [];
+        }
+        this.specialties.push(specialty);
     }
 
     /**

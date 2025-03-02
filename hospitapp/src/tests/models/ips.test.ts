@@ -1,5 +1,6 @@
 import { IPS } from '@/models/ips';
 import { EPS } from '@/models/eps';
+import { Specialty } from '@/models/specialty';
 import { ObjectId } from 'mongodb';
 
 describe('IPS Class', () => {
@@ -211,5 +212,39 @@ describe('IPS Class', () => {
       distance: undefined, // Optional field
       eps: [_EPS.toObject()] // Included EPS
     });
+  });
+
+  it('should include the specialties field in the plain object if provided', () => {
+    const _SPECIALTY = new Specialty(new ObjectId(), 'Specialty Example');
+    const _IPS = new IPS(
+      _VALID_IPS_DATA._id,
+      _VALID_IPS_DATA.name,
+      _VALID_IPS_DATA.department,
+      _VALID_IPS_DATA.town,
+      _VALID_IPS_DATA.address,
+      _VALID_IPS_DATA.location,
+      _VALID_IPS_DATA.phone,
+      _VALID_IPS_DATA.email,
+      _VALID_IPS_DATA.level,
+      undefined, // Distance
+      undefined, // EPS
+      [_SPECIALTY] // Specialty
+    );
+
+    const _IPS_OBJECT = _IPS.toObject();
+
+    expect(_IPS_OBJECT).toEqual({
+      _id: _VALID_IPS_DATA._id,
+      name: _VALID_IPS_DATA.name,
+      department: _VALID_IPS_DATA.department,
+      town: _VALID_IPS_DATA.town,
+      address: _VALID_IPS_DATA.address,
+      phone: _VALID_IPS_DATA.phone,
+      email: _VALID_IPS_DATA.email,
+      location: _VALID_IPS_DATA.location,
+      level: _VALID_IPS_DATA.level,
+      specialties: [_SPECIALTY.toObject()] // Included Specialty
+    });
+
   });
 });

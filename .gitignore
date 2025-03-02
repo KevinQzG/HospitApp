@@ -172,3 +172,7 @@ cython_debug/
 
 # Visual Studio Code
 .vscode/
+
+# Node
+.npm
+node_modules/

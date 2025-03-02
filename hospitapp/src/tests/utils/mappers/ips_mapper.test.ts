@@ -50,6 +50,8 @@ describe('IpsMapper', () => {
     expect(ips.getEmail()).toBeUndefined();
     expect(ips.getLevel()).toBeUndefined();
     expect(ips.getDistance()).toBeUndefined();
+    expect(ips.getEPS()).toBeUndefined();
+    expect(ips.getSpecialties()).toBeUndefined();
   });
 
   it('should correctly map domain to document', () => {
@@ -89,5 +91,7 @@ describe('IpsMapper', () => {
     expect(doc.email).toBeUndefined();
     expect(doc.level).toBeUndefined();
     expect(doc.distance).toBeUndefined();
+    expect(doc.eps).toBeUndefined();
+    expect(doc.specialties).toBeUndefined();
   });
 });
