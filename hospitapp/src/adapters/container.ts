@@ -4,7 +4,7 @@ import { _TYPES } from './types';
 import DBAdapter from '@/adapters/db.adapter';
 import MongoDB from '@/config/mongo_db';
 import IpsRepositoryAdapter from '@/adapters/ips_repository.adapter';
-import { IpsMongoRepository } from '@/repositories/ips_mongo_repository';
+import { IpsMongoRepository } from '@/repositories/ips_mongo.repository';
 
 
 const _CONTAINER = new Container();

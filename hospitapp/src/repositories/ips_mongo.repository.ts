@@ -7,7 +7,7 @@ import { IPS } from "@/models/ips";
 import type DBAdapter from "@/adapters/db.adapter";
 import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
 import { IpsMapper } from "@/utils/mappers/ips_mapper";
-import { AggregationResult } from "./ips_mongo_repository.interfaces";
+import { AggregationResult } from "./ips_mongo.repository.interfaces";
 
 /**
  * @class
