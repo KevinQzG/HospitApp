@@ -38,8 +38,8 @@ export class IpsMongoRepository implements IpsRepositoryInterface {
     ): Promise<{ results: IPS[]; total: number }> {
         const _PIPELINE = new IpsPipelineBuilder()
             .add_geo_stage(longitude, latitude, max_distance)
-            .with_specialties(specialties)
-            .with_eps(eps_names)
+            .matches_specialties(specialties)
+            .matches_eps(eps_names)
             .with_pagination(page, page_size)
             .build();
 

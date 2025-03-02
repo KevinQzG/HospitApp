@@ -1,5 +1,10 @@
 import { PipelineStage } from "./ips.pipeline.interface";
 
+/**
+ * Class that allows to build a pipeline for IPS queries.
+ * 
+ * @class IpsPipelineBuilder
+ */
 export class IpsPipelineBuilder {
     private pipeline: PipelineStage[];
 
@@ -7,6 +12,18 @@ export class IpsPipelineBuilder {
         this.pipeline = [];
     }
 
+    /**
+     * Adds a geo stage to the pipeline.
+     *
+     * @param {number} longitude - Longitude of the user.
+     * @param {number} latitude - Latitude of the user.
+     * @param {number} max_distance - Maximum distance to search.
+     * @returns {IpsPipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name add_geo_stage
+     */
     add_geo_stage(longitude: number, latitude: number, max_distance: number): this {
         this.pipeline.push({
             $geoNear: {
@@ -23,7 +40,17 @@ export class IpsPipelineBuilder {
         return this;
     }
 
-    with_specialties(specialties: string[]): this {
+    /**
+     * Adds a specialty filter to the pipeline.
+     *
+     * @param {string[]} specialties - The specialties to filter.
+     * @returns {IpsPipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name matches_specialties
+     */
+    matches_specialties(specialties: string[]): this {
         if (specialties.length === 0) return this;
 
         this.pipeline.push(
@@ -36,7 +63,17 @@ export class IpsPipelineBuilder {
         return this;
     }
 
-    with_eps(eps_names: string[]): this {
+    /**
+     * Adds an EPS filter to the pipeline.
+     *
+     * @param {string[]} eps_names - The EPS to filter.
+     * @returns {IpsPipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name matches_eps
+     */
+    matches_eps(eps_names: string[]): this {
         if (eps_names.length === 0) return this;
 
         this.pipeline.push(
@@ -49,6 +86,17 @@ export class IpsPipelineBuilder {
         return this;
     }
 
+    /**
+     * Adds a pagination stage to the pipeline.
+     *
+     * @param {number} page - The page number.
+     * @param {number} page_size - The page size.
+     * @returns {IpsPipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name with_pagination
+     */
     with_pagination(page: number, page_size: number): this {
         this.pipeline.push({
             $facet: {
