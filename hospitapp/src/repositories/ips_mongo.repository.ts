@@ -26,7 +26,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
      */
     constructor(
         @inject(_TYPES.DBAdapter) private db_handler: DBAdapter<Db>
-    ) {}
+    ) { }
 
     async find_all_by_distance_specialty_eps(
         longitude: number,
