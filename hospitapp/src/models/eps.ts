@@ -30,7 +30,7 @@ export class EPS {
     }
 
     /**
-     * Validates the IPS entity.
+     * Validates the EPS entity.
      * @throws {Error} If any required field is missing or invalid.
      */
     validate(): void {
@@ -40,33 +40,33 @@ export class EPS {
     }
 
     /**
-     * Converts the IPS entity to a plain object.
-     * @returns {EPSDocument} A plain object representation of the IPS.
+     * Converts the EPS entity to a plain object.
+     * @returns {EPSDocument} A plain object representation of the EPS.
      */
     toObject(): EPSDocument {
         return EPSMapper.to_document(this);
     }
 
     /**
-     * Gets the unique identifier of the IPS.
-     * @returns {ObjectId} The unique identifier of the IPS.
+     * Gets the unique identifier of the EPS.
+     * @returns {ObjectId} The unique identifier of the EPS.
      */
     getId(): ObjectId {
         return this._id;
     }
 
     /**
-     * Gets the name of the IPS.
-     * @returns {string} The name of the IPS.
+     * Gets the name of the EPS.
+     * @returns {string} The name of the EPS.
      */
     getName(): string {
         return this.name;
     }
 
     /**
-     * Sets the name of the IPS.
+     * Sets the name of the EPS.
      * 
-     * @param {string} name - The name of the IPS.
+     * @param {string} name - The name of the EPS.
      * 
      * @throws {Error} If the name is invalid.
      */
@@ -137,8 +137,8 @@ export class EPS {
     }
 
     /**
-     * Converts the IPS entity to a string.
-     * @returns {string} A string representation of the IPS.
+     * Converts the EPS entity to a string.
+     * @returns {string} A string representation of the EPS.
      */
     toString(): string {
         return JSON.stringify(this.toObject());

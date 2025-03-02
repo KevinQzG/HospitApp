@@ -23,16 +23,16 @@ export class EPSMapper {
 
     /**
      * Maps an EPS entity to an EPS document.
-     * @param {EPS} EPS - The EPS entity.
+     * @param {EPS} eps - The EPS entity.
      * @returns {EPSDocument} The EPS document.
      */
-    static to_document(EPS: EPS): EPSDocument {
+    static to_document(eps: EPS): EPSDocument {
         return {
-            _id: EPS.getId(),
-            name: EPS.getName(),
-            "01_8000_phone": EPS.getPhone(),
-            fax: EPS.getFax(),
-            emails: EPS.getEmails()            
+            _id: eps.getId(),
+            name: eps.getName(),
+            "01_8000_phone": eps.getPhone(),
+            fax: eps.getFax(),
+            emails: eps.getEmails()            
         };
     }
 }
