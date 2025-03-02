@@ -4,7 +4,9 @@ import IpsRepositoryInterface from "@/adapters/ips_repository_interface";
 import { _TYPES } from "@/adapters/types";
 import { IPS } from "@/models/ips";
 import type DBInterface from "@/adapters/db_interface";
-import { PipelineStage, AggregationResult } from "./ips_mongo_repository.interfaces";
+import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
+import { IpsMapper } from "@/utils/mappers/ips_mapper";
+import { AggregationResult } from "./ips_mongo_repository.interfaces";
 
 /**
  * @class
@@ -13,8 +15,6 @@ import { PipelineStage, AggregationResult } from "./ips_mongo_repository.interfa
  */
 @injectable()
 export class IpsMongoRepository implements IpsRepositoryInterface {
-    private db_handler: DBInterface<Db>;
-
     /**
      * @constructor
      * @param {DBInterface} db_handler - The database handler.
@@ -24,10 +24,8 @@ export class IpsMongoRepository implements IpsRepositoryInterface {
      * @throws {Error} If the database connection fails.
      */
     constructor(
-        @inject(_TYPES.DBInterface) db_handler: DBInterface<Db>
-    ) {
-        this.db_handler = db_handler;
-    }
+        @inject(_TYPES.DBInterface) private db_handler: DBInterface<Db>
+    ) {}
 
     async find_all_by_distance_specialty_eps(
         longitude: number,
@@ -38,108 +36,12 @@ export class IpsMongoRepository implements IpsRepositoryInterface {
         page: number = 1,
         page_size: number = 10
     ): Promise<{ results: IPS[]; total: number }> {
-        const _PIPELINE: PipelineStage[] = [{
-            '$geoNear': {
-                'near': {
-                    'type': 'Point',
-                    'coordinates': [longitude, latitude]
-                },
-                'distanceField': 'distance',
-                'maxDistance': max_distance,
-                'spherical': true
-            }
-        }];
-
-        // Add match stage to filter by specialties
-        if (specialties.length > 0) {
-            _PIPELINE.push({
-                '$lookup': {
-                    'from': 'IPS_Specialty',
-                    'localField': '_id',
-                    'foreignField': 'ips_id',
-                    'as': 'ips_specialties'
-                }
-            });
-            _PIPELINE.push({
-                '$lookup': {
-                    'from': 'Specialty',
-                    'localField': 'ips_specialties.specialty_id',
-                    'foreignField': '_id',
-                    'as': 'specialties'
-                }
-            });
-            _PIPELINE.push({
-                '$match': {
-                    'specialties.name': {
-                        '$in': specialties
-                    }
-                }
-            });
-            _PIPELINE.push({
-                '$project': {
-                    'name': 1,
-                    'department': 1,
-                    'town': 1,
-                    'address': 1,
-                    'phone': 1,
-                    'email': 1,
-                    'location': 1,
-                    'level': 1,
-                    'distance': 1
-                }
-            });
-        }
-
-        // Add match stage to filter by EPSs
-        if (eps_names.length > 0) {
-            _PIPELINE.push({
-                '$lookup': {
-                    'from': 'EPS_IPS',
-                    'localField': '_id',
-                    'foreignField': 'ips_id',
-                    'as': 'eps_ips'
-                }
-            });
-            _PIPELINE.push({
-                '$lookup': {
-                    'from': 'EPS',
-                    'localField': 'eps_ips.eps_id',
-                    'foreignField': '_id',
-                    'as': 'eps'
-                }
-            });
-            _PIPELINE.push({
-                '$match': {
-                    'eps.name': {
-                        '$in': eps_names
-                    }
-                }
-            });
-            _PIPELINE.push({
-                '$project': {
-                    'name': 1,
-                    'department': 1,
-                    'town': 1,
-                    'address': 1,
-                    'phone': 1,
-                    'email': 1,
-                    'location': 1,
-                    'level': 1,
-                    'distance': 1
-                }
-            });
-        }
-
-        // Pagination
-        _PIPELINE.push({
-            $facet: {
-                metadata: [{ $count: "total" }],
-                data: [
-                    { $skip: (page - 1) * page_size },
-                    { $limit: page_size }
-                ]
-            }
-        });
+        const _PIPELINE = new IpsPipelineBuilder()
+            .add_geo_stage(longitude, latitude, max_distance)
+            .with_specialties(specialties)
+            .with_eps(eps_names)
+            .with_pagination(page, page_size)
+            .build();
 
         // Execute the pipeline
         const _DB = await this.db_handler.connect();
@@ -154,18 +56,7 @@ export class IpsMongoRepository implements IpsRepositoryInterface {
         const _TOTAL = _AGGREGATION_RESULT.metadata?.[0]?.total ?? 0;
 
         return {
-            results: _RESULTS.map((ips) => new IPS(
-                ips._id,
-                ips.name,
-                ips.department,
-                ips.town,
-                ips.address,
-                ips.location,
-                ips.phone,
-                ips.email,
-                ips.level,
-                ips.distance
-            )),
+            results: _RESULTS.map(IpsMapper.to_domain),
             total: _TOTAL
         };
     }

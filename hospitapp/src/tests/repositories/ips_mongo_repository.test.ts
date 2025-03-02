@@ -164,3 +164,25 @@ describe('IpsMongoRepository Integration Test', () => {
     expect(_TOTAL).toBe(24);
   });
 });
+
+// describe('IpsMongoRepository V2 Test', () => {
+//   let db_handler: DBInterface;
+//   let repository: IpsRepositoryInterface;
+
+//   beforeAll(async () => {
+//     // Initialize dependencies from container
+//     db_handler = _CONTAINER.get<DBInterface>(_TYPES.DBInterface);
+//     repository = _CONTAINER.get<IpsRepositoryInterface>(_TYPES.IpsRepositoryInterface);
+    
+//     // Establish database connection
+//     await db_handler.connect();
+//   });
+
+//   afterAll(async () => {
+//     await db_handler.close();
+//   });
+
+//   it('should return correct data', async () => {
+//     test_specialties = ["ENFERMERÍA", "CARDIOLOGÍA", "CIRUGÍA DE MANO"];
+//     test_eps_names = [];
+//     const _PAGE_SIZE = 10;

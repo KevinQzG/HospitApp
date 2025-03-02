@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { IPSDocument } from './ips.interface';
 
 /**
  * Class that defines the structure and behavior of the IPS entity.
@@ -76,9 +77,9 @@ export class IPS {
 
     /**
      * Converts the IPS entity to a plain object.
-     * @returns {Object} A plain object representation of the IPS.
+     * @returns {IPSDocument} A plain object representation of the IPS.
      */
-    toObject(): object {
+    toObject(): IPSDocument {
         return {
             _id: this._id,
             name: this.name,
@@ -135,18 +136,18 @@ export class IPS {
 
     /**
      * Gets the phone number of the IPS.
-     * @returns {string | number} The phone number of the IPS.
+     * @returns {string | number | undefined} The phone number of the IPS.
      */
-    getPhone(): string | number {
-        return this.phone || '';
+    getPhone(): string | number | undefined{
+        return this.phone;
     }
 
     /**
      * Gets the email of the IPS.
-     * @returns {string} The email of the IPS.
+     * @returns {string | undefined} The email of the IPS.
      */
-    getEmail(): string {
-        return this.email || '';
+    getEmail(): string | undefined {
+        return this.email;
     }
 
     /**
@@ -164,18 +165,18 @@ export class IPS {
 
     /**
      * Gets the level of the IPS.
-     * @returns {number} The level of the IPS.
+     * @returns {number | undefined} The level of the IPS.
      */
-    getLevel(): number {
-        return this.level || -1;
+    getLevel(): number | undefined {
+        return this.level;
     }
 
     /**
      * Gets the distance from the IPS to the user.
-     * @returns {number} The distance from the IPS to the user.
+     * @returns {number | undefined} The distance from the IPS to the user.
      */
-    getDistance(): number {
-        return this.distance || -1;
+    getDistance(): number | undefined {
+        return this.distance;
     }
 
     /**
