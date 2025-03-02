@@ -40,7 +40,7 @@ export interface ProjectStage {
     level?: number;
     distance?: number;
     eps_ips?: number;
-    ips_specialties?: number;
+    specialty_details?: number;
 }
 
 export interface AddFieldsStage {

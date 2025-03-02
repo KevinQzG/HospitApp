@@ -66,6 +66,7 @@ export class IpsMongoRepository implements IpsRepositoryInterface {
         const _PIPELINE = new IpsPipelineBuilder()
             .add_match_id_stage(id)
             .with_eps()
+            .with_specialties()
             .build();
 
         const _DB = await this.db_handler.connect();

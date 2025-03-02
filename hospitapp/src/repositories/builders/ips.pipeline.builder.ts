@@ -92,7 +92,7 @@ export class IpsPipelineBuilder {
             { $lookup: this.specialty_lookup },
             { $lookup: this.specialty_join },
             { $addFields: this.specialty_add_fields_name_schedules },
-            { $project: { ips_specialties: 0 } }
+            { $project: { specialty_details: 0 } }
         );
 
         return this;
@@ -186,14 +186,14 @@ export class IpsPipelineBuilder {
             from: 'IPS_Specialty',
             localField: '_id',
             foreignField: 'ips_id',
-            as: 'ips_specialties'
+            as: 'specialties'
         };
     }
 
     private get specialty_join(): LookupStage {
         return {
             from: 'Specialty',
-            localField: 'ips_specialties.specialty_id',
+            localField: 'specialties.specialty_id',
             foreignField: '_id',
             as: 'specialty_details'
         };

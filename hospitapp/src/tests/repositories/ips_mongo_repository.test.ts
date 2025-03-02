@@ -208,7 +208,101 @@ describe('IpsMongoRepository Integration Test', () => {
             fax: "2160054",
             emails: "CENTROREGULADORANT@FUNDAMEP.COM"
           }
+        ],
+        specialties: [
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae721a"),
+            "name": "DIAGNÓSTICO VASCULAR",
+            "schedule_monday": "07:00A17:00",
+            "schedule_tuesday": "07:00A17:00",
+            "schedule_wednesday": "07:00A17:00",
+            "schedule_thursday": "07:00A17:00",
+            "schedule_friday": "07:00A17:00",
+            "schedule_saturday": "07:00A13:00",
+            "schedule_sunday": "07:00A13:00"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae721c"),
+            "name": "TERAPIA RESPIRATORIA",
+            "schedule_monday": "07:00A19:00",
+            "schedule_tuesday": "07:00A19:00",
+            "schedule_wednesday": "07:00A19:00",
+            "schedule_thursday": "07:00A19:00",
+            "schedule_friday": "07:00A19:00",
+            "schedule_saturday": "07:00A19:00"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae721f"),
+            "name": "TOMA DE MUESTRAS DE LABORATORIO CLÍNICO",
+            "schedule_monday": "06:00A14:00",
+            "schedule_tuesday": "06:00A14:00",
+            "schedule_wednesday": "06:00A14:00",
+            "schedule_thursday": "06:00A14:00",
+            "schedule_friday": "06:00A14:00"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae7222"),
+            "name": "ENDOCRINOLOGÍA"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae7223"),
+            "name": "CARDIOLOGÍA"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae7224"),
+            "name": "ENFERMERÍA",
+            "schedule_monday": "06:00A19:00",
+            "schedule_tuesday": "06:00A19:00",
+            "schedule_wednesday": "06:00A19:00",
+            "schedule_thursday": "06:00A19:00",
+            "schedule_friday": "06:00A19:00",
+            "schedule_saturday": "06:00A19:00"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae7225"),
+            "name": "MEDICINA GENERAL"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae7226"),
+            "name": "GINECOBSTETRICIA",
+            "schedule_monday": "07:00A18:00",
+            "schedule_tuesday": "07:00A18:00",
+            "schedule_wednesday": "07:00A18:00",
+            "schedule_thursday": "07:00A18:00",
+            "schedule_friday": "07:00A18:00"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae7227"),
+            "name": "MEDICINA INTERNA"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae7228"),
+            "name": "NUTRICIÓN Y DIETÉTICA",
+            "schedule_monday": "07:00A19:00",
+            "schedule_tuesday": "07:00A19:00",
+            "schedule_wednesday": "07:00A19:00",
+            "schedule_thursday": "07:00A19:00",
+            "schedule_friday": "07:00A19:00",
+            "schedule_saturday": "07:00A19:00"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae7229"),
+            "name": "PSICOLOGÍA",
+            "schedule_monday": "07:00A19:00",
+            "schedule_tuesday": "07:00A19:00",
+            "schedule_wednesday": "07:00A19:00",
+            "schedule_thursday": "07:00A19:00",
+            "schedule_friday": "07:00A19:00",
+            "schedule_saturday": "07:00A19:00"
+          },
+          {
+            "_id": new ObjectId("67b3e928b1ae5d9e47ae722b"),
+            "name": "NEUROLOGÍA",
+            "schedule_tuesday": "08:00A17:00",
+            "schedule_wednesday": "08:00A17:00"
+          }
         ]
+
       };
 
       expect(ips?.toObject()).toMatchObject(_EXPECTED_DATA);

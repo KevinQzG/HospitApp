@@ -40,7 +40,7 @@ describe('IpsPipelineBuilder', () => {
                 from: 'IPS_Specialty',
                 localField: '_id',
                 foreignField: 'ips_id',
-                as: 'ips_specialties'
+                as: 'specialties'
             }
         });
         expect(pipeline[3]).toMatchObject({ $match: { 'specialty_details.name': { $in: _SPECIALTIES } } });
