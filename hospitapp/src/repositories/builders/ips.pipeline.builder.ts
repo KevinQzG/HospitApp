@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { PipelineStage } from "./ips.pipeline.interface";
+import { PipelineStage, LookupStage, AddFieldsStage, ProjectStage } from "./ips.pipeline.interface";
 
 /**
  * Class that allows to build a pipeline for IPS queries.
@@ -74,7 +74,27 @@ export class IpsPipelineBuilder {
             { $lookup: this.eps_join },
             { $project: { eps_ips: 0 } }
         );
-        
+
+        return this;
+    }
+
+    /**
+     * Adds a specialty join to the pipeline.
+     *
+     * @returns {IpsPipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name with_specialties
+     */
+    with_specialties(): this {
+        this.pipeline.push(
+            { $lookup: this.specialty_lookup },
+            { $lookup: this.specialty_join },
+            { $addFields: this.specialty_add_fields_name_schedules },
+            { $project: { ips_specialties: 0 } }
+        );
+
         return this;
     }
 
@@ -94,10 +114,10 @@ export class IpsPipelineBuilder {
         this.pipeline.push(
             { $lookup: this.specialty_lookup },
             { $lookup: this.specialty_join },
-            { $match: { 'specialties.name': { $in: specialties } } },
-            this.base_projection
+            { $match: { 'specialty_details.name': { $in: specialties } } },
+            { $project: this.base_projection }
         );
-        
+
         return this;
     }
 
@@ -118,9 +138,9 @@ export class IpsPipelineBuilder {
             { $lookup: this.eps_lookup },
             { $lookup: this.eps_join },
             { $match: { 'eps.name': { $in: eps_names } } },
-            this.base_projection
+            { $project: this.base_projection }
         );
-        
+
         return this;
     }
 
@@ -145,16 +165,23 @@ export class IpsPipelineBuilder {
                 ]
             }
         });
-        
+
         return this;
     }
 
+    /**
+     * Returns the pipeline stages.
+     * @returns {PipelineStage[]} The pipeline stages.
+     */
     build(): PipelineStage[] {
         return [...this.pipeline];
     }
 
-    // Shared pipeline stages
-    private get specialty_lookup() {
+    /**
+     * Returns the lookup stage for specialties.
+     * @returns {PipelineStage} The lookup stage.
+     */
+    private get specialty_lookup(): LookupStage {
         return {
             from: 'IPS_Specialty',
             localField: '_id',
@@ -163,16 +190,16 @@ export class IpsPipelineBuilder {
         };
     }
 
-    private get specialty_join() {
+    private get specialty_join(): LookupStage {
         return {
             from: 'Specialty',
             localField: 'ips_specialties.specialty_id',
             foreignField: '_id',
-            as: 'specialties'
+            as: 'specialty_details'
         };
     }
 
-    private get eps_lookup() {
+    private get eps_lookup(): LookupStage {
         return {
             from: 'EPS_IPS',
             localField: '_id',
@@ -181,7 +208,7 @@ export class IpsPipelineBuilder {
         };
     }
 
-    private get eps_join() {
+    private get eps_join(): LookupStage {
         return {
             from: 'EPS',
             localField: 'eps_ips.eps_id',
@@ -190,18 +217,87 @@ export class IpsPipelineBuilder {
         };
     }
 
-    private get base_projection() {
+    private get base_projection(): ProjectStage {
         return {
-            $project: {
-                name: 1,
-                department: 1,
-                town: 1,
-                address: 1,
-                phone: 1,
-                email: 1,
-                location: 1,
-                level: 1,
-                distance: 1
+            name: 1,
+            department: 1,
+            town: 1,
+            address: 1,
+            phone: 1,
+            email: 1,
+            location: 1,
+            level: 1,
+            distance: 1
+        };
+    }
+
+    private get specialty_add_fields_name_schedules(): AddFieldsStage {
+        return {
+            specialties: {
+                $map: {
+                    input: "$specialties",
+                    as: "s",
+                    in: {
+                        _id: {
+                            $let: {
+                                vars: {
+                                    matched: {
+                                        $arrayElemAt: [
+                                            {
+                                                $filter: {
+                                                    input: "$specialty_details",
+                                                    as: "sp",
+                                                    cond: {
+                                                        $eq: [
+                                                            "$$sp._id",
+                                                            "$$s.specialty_id"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    }
+                                },
+                                in: "$$matched._id"
+                            }
+                        },
+                        name: {
+                            $let: {
+                                vars: {
+                                    matched: {
+                                        $arrayElemAt: [
+                                            {
+                                                $filter: {
+                                                    input: "$specialty_details",
+                                                    as: "sp",
+                                                    cond: {
+                                                        $eq: [
+                                                            "$$sp._id",
+                                                            "$$s.specialty_id"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    }
+                                },
+                                in: "$$matched.name"
+                            }
+                        },
+                        schedule_monday: "$$s.schedule_monday",
+                        schedule_tuesday: "$$s.schedule_tuesday",
+                        schedule_wednesday:
+                            "$$s.schedule_wednesday",
+                        schedule_thursday:
+                            "$$s.schedule_thursday",
+                        schedule_friday: "$$s.schedule_friday",
+                        schedule_saturday:
+                            "$$s.schedule_saturday",
+                        schedule_sunday: "$$s.schedule_sunday"
+                    }
+                }
             }
         };
     }

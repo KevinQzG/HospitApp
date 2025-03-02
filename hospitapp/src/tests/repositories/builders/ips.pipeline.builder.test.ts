@@ -43,7 +43,7 @@ describe('IpsPipelineBuilder', () => {
                 as: 'ips_specialties'
             }
         });
-        expect(pipeline[3]).toMatchObject({ $match: { 'specialties.name': { $in: _SPECIALTIES } } });
+        expect(pipeline[3]).toMatchObject({ $match: { 'specialty_details.name': { $in: _SPECIALTIES } } });
     });
 
     it('should skip specialty filters for empty array', () => {

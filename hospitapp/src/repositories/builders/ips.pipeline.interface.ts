@@ -3,11 +3,12 @@ import { ObjectId } from 'mongodb';
 export type PipelineStage =
     | { $geoNear: GeoNearStage }
     | { $lookup: LookupStage }
-    | { $match: MatchStage}
+    | { $match: MatchStage }
     | { $project: ProjectStage }
-    | { $facet: FacetStage };
+    | { $facet: FacetStage }
+    | { $addFields: AddFieldsStage };
 
-interface GeoNearStage {
+export interface GeoNearStage {
     near: {
         type: 'Point';
         coordinates: [number, number];
@@ -17,18 +18,18 @@ interface GeoNearStage {
     spherical: boolean;
 }
 
-interface LookupStage {
+export interface LookupStage {
     from: string;
     localField: string;
     foreignField: string;
     as: string;
 }
 
-interface MatchStage {
+export interface MatchStage {
     [key: string]: { $in?: string[] } | ObjectId | unknown;
 }
 
-interface ProjectStage {
+export interface ProjectStage {
     name?: number;
     department?: number;
     town?: number;
@@ -39,9 +40,45 @@ interface ProjectStage {
     level?: number;
     distance?: number;
     eps_ips?: number;
+    ips_specialties?: number;
 }
 
-interface FacetStage {
+export interface AddFieldsStage {
+    [key: string]: unknown | {
+        $map: {
+            input: string,
+            as: string,
+            in: {
+                [key: string]: {
+                    $let: {
+                        vars: {
+                            matched: {
+                                $arrayElemAt: [
+                                    {
+                                        $filter: {
+                                            input: string,
+                                            as: string,
+                                            cond: {
+                                                $eq: [
+                                                    string,
+                                                    string
+                                                ] | unknown
+                                            }
+                                        }
+                                    },
+                                    0
+                                ]
+                            }
+                        },
+                        in: string | unknown
+                    }
+                } | string,
+            }
+        }
+    };
+}
+
+export interface FacetStage {
     metadata: [{ $count: string }];
     data: [{ $skip: number }, { $limit: number }];
 }
