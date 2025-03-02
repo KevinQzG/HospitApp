@@ -4,46 +4,7 @@ import IpsRepositoryInterface from "@/adapters/ips_repository_interface";
 import { _TYPES } from "@/adapters/types";
 import { IPS } from "@/models/ips";
 import type DBInterface from "@/adapters/db_interface";
-
-type PipelineStage =
-    | { $geoNear: GeoNearStage }
-    | { $lookup: LookupStage }
-    | { $match: MatchStage }
-    | { $project: ProjectStage };
-
-interface GeoNearStage {
-    near: {
-        type: 'Point';
-        coordinates: [number, number];
-    };
-    distanceField: string;
-    maxDistance: number;
-    spherical: boolean;
-}
-
-interface LookupStage {
-    from: string;
-    localField: string;
-    foreignField: string;
-    as: string;
-}
-
-interface MatchStage {
-    [key: string]: { $in?: string[] } | unknown;
-}
-
-interface ProjectStage {
-    name?: 1;
-    department?: 1;
-    town?: 1;
-    address?: 1;
-    phone?: 1;
-    email?: 1;
-    location?: 1;
-    level?: 1;
-    distance?: 1;
-}
-
+import { PipelineStage, AggregationResult } from "./ips_mongo_repository.interfaces";
 
 /**
  * @class
@@ -73,8 +34,10 @@ export class IpsMongoRepository implements IpsRepositoryInterface {
         latitude: number,
         max_distance: number,
         specialties: string[],
-        eps_names: string[]
-    ): Promise<IPS[]> {
+        eps_names: string[],
+        page: number = 1,
+        page_size: number = 10
+    ): Promise<{ results: IPS[]; total: number }> {
         const _PIPELINE: PipelineStage[] = [{
             '$geoNear': {
                 'near': {
@@ -167,12 +130,31 @@ export class IpsMongoRepository implements IpsRepositoryInterface {
             });
         }
 
+        // Pagination
+        _PIPELINE.push({
+            $facet: {
+                metadata: [{ $count: "total" }],
+                data: [
+                    { $skip: (page - 1) * page_size },
+                    { $limit: page_size }
+                ]
+            }
+        });
+
         // Execute the pipeline
         const _DB = await this.db_handler.connect();
-        const _IPS = await _DB.collection<IPS>('IPS').aggregate(_PIPELINE).toArray();
+        const _AGGREGATION_RESULT = await _DB.collection<IPS>('IPS')
+            .aggregate<AggregationResult>(_PIPELINE).next();
 
-        return _IPS.map((ips) => new
-            IPS(
+        if (!_AGGREGATION_RESULT) {
+            return { results: [], total: 0 };
+        }
+
+        const _RESULTS = _AGGREGATION_RESULT.data ?? [];
+        const _TOTAL = _AGGREGATION_RESULT.metadata?.[0]?.total ?? 0;
+
+        return {
+            results: _RESULTS.map((ips) => new IPS(
                 ips._id,
                 ips.name,
                 ips.department,
@@ -183,7 +165,8 @@ export class IpsMongoRepository implements IpsRepositoryInterface {
                 ips.email,
                 ips.level,
                 ips.distance
-            )
-        );
+            )),
+            total: _TOTAL
+        };
     }
 }

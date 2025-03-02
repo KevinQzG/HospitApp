@@ -14,7 +14,9 @@ export default interface IpsRepositoryInterface {
      * @param {number} max_distance - Maximum distance from the user's location in meters.
      * @param {string[]} specialties - Specialties that the IPSs must have.
      * @param {string[]} eps_names - EPSs that the IPSs must have.
+     * @param {number} page - The page number.
+     * @param {number} page_size - The number of results per page.
      * @returns {Promise<IPS[]>} The IPSs that meet the specified criteria.
      */
-    find_all_by_distance_specialty_eps(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[]): Promise<IPS[]>;
+    find_all_by_distance_specialty_eps(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IPS[]; total: number }>;
 }
