@@ -5,10 +5,13 @@ import { EPSDocument } from '@/models/eps.interface';
 describe('EPS Class', () => {
   const _TEST_EPS_NAME = 'Test EPS';
   const _TEST_EPS_ID = new ObjectId();
+  const _TEST_EPS_PHONE = '1234567';
+  const _TEST_EPS_FAX = '7654321';
+  const _TEST_EPS_EMAILS = 'example@gmail'
   let eps: EPS;
 
   beforeEach(() => {
-    eps = new EPS(_TEST_EPS_ID, _TEST_EPS_NAME);
+    eps = new EPS(_TEST_EPS_ID, _TEST_EPS_NAME, _TEST_EPS_PHONE, _TEST_EPS_FAX, _TEST_EPS_EMAILS);
   });
 
   describe('Constructor', () => {
@@ -18,7 +21,7 @@ describe('EPS Class', () => {
     });
 
     it('should generate new ObjectId when not provided', () => {
-      const _NEW_EPS = new EPS(undefined, _TEST_EPS_NAME);
+      const _NEW_EPS = new EPS(undefined, _TEST_EPS_NAME, _TEST_EPS_PHONE, _TEST_EPS_FAX, _TEST_EPS_EMAILS);
       expect(_NEW_EPS.getId()).toBeInstanceOf(ObjectId);
     });
   });
@@ -29,7 +32,7 @@ describe('EPS Class', () => {
     });
 
     it('should throw error when name is missing', () => {
-      const _INVALID_EPS = new EPS(undefined, '');
+      const _INVALID_EPS = new EPS(undefined, '', _TEST_EPS_PHONE, _TEST_EPS_FAX, _TEST_EPS_EMAILS);
       expect(() => _INVALID_EPS.validate()).toThrow('Missing required fields');
     });
   });
@@ -42,7 +45,10 @@ describe('EPS Class', () => {
       
       expect(doc).toEqual({
         _id: _TEST_EPS_ID,
-        name: _TEST_EPS_NAME
+        name: _TEST_EPS_NAME,
+        '01_8000_phone': _TEST_EPS_PHONE,
+        fax: _TEST_EPS_FAX,
+        emails: _TEST_EPS_EMAILS
       });
     });
 
@@ -89,7 +95,10 @@ describe('EPS Class', () => {
       
       expect(_PARSED).toEqual({
         _id: _TEST_EPS_ID.toHexString(),
-        name: _TEST_EPS_NAME
+        name: _TEST_EPS_NAME,
+        '01_8000_phone': _TEST_EPS_PHONE,
+        fax: _TEST_EPS_FAX,
+        emails: _TEST_EPS_EMAILS
       });
     });
 

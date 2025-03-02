@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { PipelineStage } from "./ips.pipeline.interface";
 
 /**
@@ -37,6 +38,43 @@ export class IpsPipelineBuilder {
             }
         });
 
+        return this;
+    }
+
+    /**
+     * Adds a match stage to the pipeline.
+     *
+     * @param {string} id - The id to match.
+     * @returns {IpsPipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name add_match_id_stage
+     */
+    add_match_id_stage(id: string): this {
+        this.pipeline.push({
+            $match: { _id: new ObjectId(id) }
+        });
+
+        return this;
+    }
+
+    /**
+     * Adds an EPS join to the pipeline.
+     *
+     * @returns {IpsPipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name with_eps
+     */
+    with_eps(): this {
+        this.pipeline.push(
+            { $lookup: this.eps_lookup },
+            { $lookup: this.eps_join },
+            { $project: { eps_ips: 0 } }
+        );
+        
         return this;
     }
 

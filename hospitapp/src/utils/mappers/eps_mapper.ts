@@ -14,7 +14,10 @@ export class EPSMapper {
     static to_domain(raw: EPSDocument): EPS {
         return new EPS(
             raw._id,
-            raw.name
+            raw.name,
+            raw["01_8000_phone"],
+            raw.fax,
+            raw.emails
         );
     }
 
@@ -26,7 +29,10 @@ export class EPSMapper {
     static to_document(EPS: EPS): EPSDocument {
         return {
             _id: EPS.getId(),
-            name: EPS.getName()
+            name: EPS.getName(),
+            "01_8000_phone": EPS.getPhone(),
+            fax: EPS.getFax(),
+            emails: EPS.getEmails()            
         };
     }
 }

@@ -181,7 +181,7 @@ describe('IPS Class', () => {
   });
 
   it('should include the EPS field in the plain object if provided', () => {
-    const _EPS = new EPS(new ObjectId(), 'EPS Example');
+    const _EPS = new EPS(new ObjectId(), 'EPS Example', "546546", "546546546", "email@example.com");
     const _IPS = new IPS(
       _VALID_IPS_DATA._id,
       _VALID_IPS_DATA.name,

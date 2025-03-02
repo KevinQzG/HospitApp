@@ -1,11 +1,13 @@
+import { ObjectId } from 'mongodb';
+
 export type PipelineStage =
     | { $geoNear: GeoNearStage }
     | { $lookup: LookupStage }
-    | { $match: MatchStage }
+    | { $match: MatchStage}
     | { $project: ProjectStage }
     | { $facet: FacetStage };
 
-export interface GeoNearStage {
+interface GeoNearStage {
     near: {
         type: 'Point';
         coordinates: [number, number];
@@ -15,18 +17,18 @@ export interface GeoNearStage {
     spherical: boolean;
 }
 
-export interface LookupStage {
+interface LookupStage {
     from: string;
     localField: string;
     foreignField: string;
     as: string;
 }
 
-export interface MatchStage {
-    [key: string]: { $in?: string[] } | unknown;
+interface MatchStage {
+    [key: string]: { $in?: string[] } | ObjectId | unknown;
 }
 
-export interface ProjectStage {
+interface ProjectStage {
     name?: number;
     department?: number;
     town?: number;
@@ -36,9 +38,10 @@ export interface ProjectStage {
     location?: number;
     level?: number;
     distance?: number;
+    eps_ips?: number;
 }
 
-export interface FacetStage {
+interface FacetStage {
     metadata: [{ $count: string }];
     data: [{ $skip: number }, { $limit: number }];
 }

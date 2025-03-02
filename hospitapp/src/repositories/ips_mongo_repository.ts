@@ -2,6 +2,7 @@ import { injectable, inject } from "inversify";
 import { Db } from "mongodb";
 import IpsRepositoryInterface from "@/adapters/ips_repository_interface";
 import { _TYPES } from "@/adapters/types";
+import { IPSDocument } from "@/models/ips.interface";
 import { IPS } from "@/models/ips";
 import type DBInterface from "@/adapters/db_interface";
 import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
@@ -59,5 +60,22 @@ export class IpsMongoRepository implements IpsRepositoryInterface {
             results: _RESULTS.map(IpsMapper.to_domain),
             total: _TOTAL
         };
+    }
+
+    async find_by_id(id: string): Promise<IPS | null> {
+        const _PIPELINE = new IpsPipelineBuilder()
+            .add_match_id_stage(id)
+            .with_eps()
+            .build();
+
+        const _DB = await this.db_handler.connect();
+        const _AGGREGATION_RESULT = await _DB.collection<IPS>('IPS')
+            .aggregate<IPSDocument>(_PIPELINE).next();
+
+        if (!_AGGREGATION_RESULT) {
+            return null;
+        }
+
+        return IpsMapper.to_domain(_AGGREGATION_RESULT);
     }
 }
