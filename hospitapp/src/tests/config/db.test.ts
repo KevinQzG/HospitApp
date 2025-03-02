@@ -12,8 +12,8 @@ describe('MongoDB Singleton Test', () => {
 
   beforeAll(() => {
     // Get instances through the container
-    mongo_client_1 = _container.get<MongoDB>(_TYPES.DBInterface);
-    mongo_client_2 = _container.get<MongoDB>(_TYPES.DBInterface);
+    mongo_client_1 = _container.get<MongoDB>(_TYPES.DBAdapter);
+    mongo_client_2 = _container.get<MongoDB>(_TYPES.DBAdapter);
   });
 
   afterAll(async () => {

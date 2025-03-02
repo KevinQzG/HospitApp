@@ -1,5 +1,5 @@
 import { MongoClient, Db } from 'mongodb';
-import DBInterface from '@/adapters/db_interface';
+import DBAdapter from '@/adapters/db.adapter';
 import { _ENV } from './env';
 import { injectable } from "inversify";
 
@@ -8,7 +8,7 @@ import { injectable } from "inversify";
  * @class MongoDB
  */
 @injectable()
-class MongoDB implements DBInterface<Db> {
+class MongoDB implements DBAdapter<Db> {
   private client: MongoClient | null = null;
   private db: Db | null = null;
 

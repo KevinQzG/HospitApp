@@ -2,10 +2,10 @@ import { IPS } from '@/models/ips';
 
 /**
  * @interface
- * @name IpsRepositoryInterface
+ * @name IpsRepositoryAdapter
  * @description This interface should be implemented by the IPS repository.
  */
-export default interface IpsRepositoryInterface {
+export default interface IpsRepositoryAdapter {
     /**
      * Gets all IPSs that are within a certain distance from the user and at least one of the specified specialties and EPSs.
      * @async
@@ -16,7 +16,7 @@ export default interface IpsRepositoryInterface {
      * @param {string[]} eps_names - EPSs that the IPSs must have.
      * @param {number} page - The page number.
      * @param {number} page_size - The number of results per page.
-     * @returns {Promise<IPS[]>} The IPSs that meet the specified criteria.
+     * @returns {Promise<{ results: IPS[]; total: number }>} The IPSs that meet the specified criteria.
      */
     find_all_by_distance_specialty_eps(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IPS[]; total: number }>;
 

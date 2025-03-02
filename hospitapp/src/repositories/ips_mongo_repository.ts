@@ -1,10 +1,10 @@
 import { injectable, inject } from "inversify";
 import { Db } from "mongodb";
-import IpsRepositoryInterface from "@/adapters/ips_repository_interface";
+import IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
 import { _TYPES } from "@/adapters/types";
 import { IPSDocument } from "@/models/ips.interface";
 import { IPS } from "@/models/ips";
-import type DBInterface from "@/adapters/db_interface";
+import type DBAdapter from "@/adapters/db.adapter";
 import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
 import { IpsMapper } from "@/utils/mappers/ips_mapper";
 import { AggregationResult } from "./ips_mongo_repository.interfaces";
@@ -15,17 +15,17 @@ import { AggregationResult } from "./ips_mongo_repository.interfaces";
  * @description This class allows me to interact with the IPS collection in the database.
  */
 @injectable()
-export class IpsMongoRepository implements IpsRepositoryInterface {
+export class IpsMongoRepository implements IpsRepositoryAdapter {
     /**
      * @constructor
-     * @param {DBInterface} db_handler - The database handler.
+     * @param {DBAdapter} db_handler - The database handler.
      * @returns {void}
      * @description Creates an instance of the IpsMongoRepository class.
      * @throws {Error} If the database handler is null.
      * @throws {Error} If the database connection fails.
      */
     constructor(
-        @inject(_TYPES.DBInterface) private db_handler: DBInterface<Db>
+        @inject(_TYPES.DBAdapter) private db_handler: DBAdapter<Db>
     ) {}
 
     async find_all_by_distance_specialty_eps(

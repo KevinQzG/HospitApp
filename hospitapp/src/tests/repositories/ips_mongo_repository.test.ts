@@ -1,18 +1,18 @@
 import { ObjectId } from 'mongodb';
-import DBInterface from '@/adapters/db_interface';
-import IpsRepositoryInterface from '@/adapters/ips_repository_interface';
+import DBAdapter from '@/adapters/db.adapter';
+import IpsRepositoryAdapter from '@/adapters/ips_repository.adapter';
 import _CONTAINER from '@/adapters/container';
 import { _TYPES } from '@/adapters/types';
 import { IPS } from '@/models/ips';
 
 describe('IpsMongoRepository Integration Test', () => {
-  let db_handler: DBInterface;
-  let repository: IpsRepositoryInterface;
+  let db_handler: DBAdapter;
+  let repository: IpsRepositoryAdapter;
 
   beforeAll(async () => {
     // Initialize dependencies from container
-    db_handler = _CONTAINER.get<DBInterface>(_TYPES.DBInterface);
-    repository = _CONTAINER.get<IpsRepositoryInterface>(_TYPES.IpsRepositoryInterface);
+    db_handler = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
+    repository = _CONTAINER.get<IpsRepositoryAdapter>(_TYPES.IpsRepositoryAdapter);
 
     // Establish database connection
     await db_handler.connect();
