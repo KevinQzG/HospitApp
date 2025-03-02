@@ -1,5 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { IPSDocument } from './ips.interface';
+import { EPS } from './eps';
+import { IpsMapper } from '@/utils/mappers/ips_mapper';
 
 /**
  * Class that defines the structure and behavior of the IPS entity.
@@ -19,10 +21,11 @@ export class IPS {
     };
     private level?: number;
     private distance?: number;
+    private eps?: EPS[];
 
     /**
      * Creates an instance of IPS.
-     * @param {ObjectId} _id - Unique identifier of the IPS.
+     * @param {ObjectId} _id - Unique identifier of the IPS. (optional)
      * @param {string} name - Name of the IPS.
      * @param {string} department - Department where the IPS is located.
      * @param {string} town - Town where the IPS is located.
@@ -34,6 +37,7 @@ export class IPS {
      * @param {string} email - Email of the IPS (optional).
      * @param {number} level - Level of the IPS (optional).
      * @param {number} [distance] - Distance from the IPS to the user (optional).
+     * @param {EPS[]} [eps] - EPS entities associated with the IPS (optional).
      */
     constructor(_id: ObjectId = new ObjectId(), name: string, department: string, town: string, address: string,
         location: {
@@ -43,7 +47,8 @@ export class IPS {
         phone?: string | number,
         email?: string,
         level?: number,
-        distance?: number
+        distance?: number,
+        eps?: EPS[]
     ) {
         this._id = _id;
         this.name = name;
@@ -55,6 +60,7 @@ export class IPS {
         this.location = location;
         this.level = level;
         this.distance = distance;
+        this.eps = eps;
     }
 
     /**
@@ -80,18 +86,7 @@ export class IPS {
      * @returns {IPSDocument} A plain object representation of the IPS.
      */
     toObject(): IPSDocument {
-        return {
-            _id: this._id,
-            name: this.name,
-            department: this.department,
-            town: this.town,
-            address: this.address,
-            phone: this.phone,
-            email: this.email,
-            location: this.location,
-            level: this.level,
-            distance: this.distance,
-        };
+        return IpsMapper.to_document(this);
     }
 
     /**
@@ -177,6 +172,31 @@ export class IPS {
      */
     getDistance(): number | undefined {
         return this.distance;
+    }
+
+    /**
+     * Gets the EPS entities associated with the IPS.
+     * @returns {EPS[] | undefined} The EPS entities associated with the IPS.
+     */
+    getEPS(): EPS[] | undefined {
+        return this.eps;
+    }
+
+    /**
+     * Adds an EPS entity to the IPS.
+     * 
+     * @param {EPS} eps - The EPS entity to add.
+     *  
+     * @throws {Error} If the EPS entity is invalid.
+     */
+    addEPS(eps: EPS): void {
+        if (!eps) {
+            throw new Error('Invalid EPS entity');
+        }
+        if (!this.eps) {
+            this.eps = [];
+        }
+        this.eps.push(eps);
     }
 
     /**

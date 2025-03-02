@@ -1,4 +1,5 @@
 import { IPS } from '@/models/ips';
+import { EPS } from '@/models/eps';
 import { ObjectId } from 'mongodb';
 
 describe('IPS Class', () => {
@@ -145,6 +146,7 @@ describe('IPS Class', () => {
       location: _VALID_IPS_DATA.location,
       level: _VALID_IPS_DATA.level,
       distance: undefined, // Optional field
+      // eps: undefined // Optional field
     });
   });
 
@@ -175,6 +177,39 @@ describe('IPS Class', () => {
       location: _VALID_IPS_DATA.location,
       level: _VALID_IPS_DATA.level,
       distance: 1234.56, // Included distance
+    });
+  });
+
+  it('should include the EPS field in the plain object if provided', () => {
+    const _EPS = new EPS(new ObjectId(), 'EPS Example');
+    const _IPS = new IPS(
+      _VALID_IPS_DATA._id,
+      _VALID_IPS_DATA.name,
+      _VALID_IPS_DATA.department,
+      _VALID_IPS_DATA.town,
+      _VALID_IPS_DATA.address,
+      _VALID_IPS_DATA.location,
+      _VALID_IPS_DATA.phone,
+      _VALID_IPS_DATA.email,
+      _VALID_IPS_DATA.level,
+      undefined, // Distance
+      [_EPS] // EPS
+    );
+
+    const _IPS_OBJECT = _IPS.toObject();
+
+    expect(_IPS_OBJECT).toEqual({
+      _id: _VALID_IPS_DATA._id,
+      name: _VALID_IPS_DATA.name,
+      department: _VALID_IPS_DATA.department,
+      town: _VALID_IPS_DATA.town,
+      address: _VALID_IPS_DATA.address,
+      phone: _VALID_IPS_DATA.phone,
+      email: _VALID_IPS_DATA.email,
+      location: _VALID_IPS_DATA.location,
+      level: _VALID_IPS_DATA.level,
+      distance: undefined, // Optional field
+      eps: [_EPS.toObject()] // Included EPS
     });
   });
 });

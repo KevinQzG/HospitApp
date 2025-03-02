@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { EPSDocument } from "./eps.interface";
 
 export interface IPSDocument {
     _id: ObjectId;
@@ -14,4 +15,5 @@ export interface IPSDocument {
     };
     level?: number;
     distance?: number;
+    eps?: EPSDocument[];
 }

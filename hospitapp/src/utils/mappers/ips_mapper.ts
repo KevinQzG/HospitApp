@@ -1,6 +1,6 @@
-// src/repositories/mappers/ips_mapper.ts
 import { IPSDocument } from "@/models/ips.interface";
 import { IPS } from "@/models/ips";
+import { EPSMapper } from './eps_mapper';
 
 /**
  * Class that allows to map IPS entities from domain to document and vice versa.
@@ -23,7 +23,8 @@ export class IpsMapper {
             raw.phone,
             raw.email,
             raw.level,
-            raw.distance
+            raw.distance,
+            raw.eps?.map(EPSMapper.to_domain),
         );
     }
 
@@ -43,7 +44,8 @@ export class IpsMapper {
             email: ips.getEmail(),
             location: ips.getLocation(),
             level: ips.getLevel(),
-            distance: ips.getDistance()
+            distance: ips.getDistance(),
+            eps: ips.getEPS()?.map(EPSMapper.to_document),
         };
     }
 }

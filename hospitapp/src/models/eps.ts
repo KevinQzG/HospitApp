@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { EPSDocument } from './eps.interface';
+import { EPSMapper } from '@/utils/mappers/eps_mapper';
 
 /**
  * Class that defines the structure and behavior of the EPS entity.
@@ -34,10 +35,7 @@ export class EPS {
      * @returns {EPSDocument} A plain object representation of the IPS.
      */
     toObject(): EPSDocument {
-        return {
-            _id: this._id,
-            name: this.name,
-        };
+        return EPSMapper.to_document(this);
     }
 
     /**
