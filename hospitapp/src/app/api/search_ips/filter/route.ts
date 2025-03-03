@@ -3,6 +3,7 @@ import DBAdapter from '@/adapters/db.adapter';
 import _CONTAINER from "@/adapters/container";
 import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
 import { _TYPES } from "@/adapters/types";
+import { is_type_array } from "@/utils/helpers/validation";
 
 /**
  * Interface representing the structure of the search request body
@@ -22,6 +23,33 @@ interface SearchRequest {
     page?: number;
     page_size?: number;
 }
+
+/**
+ * Function to validate the body of the request
+ * @param {SearchRequest} body - The request body to validate
+ * @returns {{ success: boolean; error: string }} True if the body is valid, false otherwise with an error message
+ */
+const validate_request_body = (body: SearchRequest): { success: boolean; error: string } => {
+    if (!body.coordinates) {
+        return { success: false, error: "Invalid request: coordinates is required." };
+    } else if (!is_type_array(body.coordinates, "number", 2)) {
+        return { success: false, error: "Invalid request: coordinates must be an array of two numbers [longitude, latitude]." };
+    } else if (!body.maxDistance) {
+        return { success: false, error: "Invalid request: maximum distance in meters is required." };
+    } else if (typeof body.maxDistance !== "number") {
+        return { success: false, error: "Invalid request: maximum distance must be a number representing meters." };
+    } else if (body.specialties && !is_type_array(body.specialties, "string")) {
+        return { success: false, error: "Invalid request: specialties must be an array of strings." };
+    } else if (body.eps_names && !is_type_array(body.eps_names, "string")) {
+        return { success: false, error: "Invalid request: EPS names must be an array of strings." };
+    } else if (body.page && typeof body.page !== "number") {
+        return { success: false, error: "Invalid request: page must be a number." };
+    } else if (body.page_size && typeof body.page_size !== "number") {
+        return { success: false, error: "Invalid request: page size must be a number." };
+    }
+
+    return { success: true, error: "" };
+};
 
 /**
  * POST endpoint for searching IPS (Instituciones Prestadoras de Servicios de Salud)
@@ -59,12 +87,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         // Parse and validate request body
         const body: SearchRequest = await req.json();
 
-        // Check for required fields
-        if (!body.coordinates || !body.maxDistance) {
-            return NextResponse.json(
-                { error: "Petición inválida: se requieren coordenadas y distancia máxima" },
-                { status: 400 }
-            );
+        // Body validation
+        const { success, error } = validate_request_body(body);
+        if (!success) {
+            return NextResponse.json({ success: false, error }, { status: 400 });
         }
 
         await _DB_HANDLER.connect();
@@ -92,9 +118,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             },
         });
     } catch (error) {
-        if (await _DB_HANDLER.connect()) {
-            await _DB_HANDLER.close();
-        }
+        await _DB_HANDLER.close();
         
         console.error("API Error:", error);
         return NextResponse.json(

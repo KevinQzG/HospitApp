@@ -57,10 +57,6 @@ class MongoDB implements DBAdapter<Db> {
       console.log('MongoDB connection closed');
     }
   }
-
-  get_client(): MongoClient | null {
-    return this.client;
-  }
 }
 
 export default MongoDB;
