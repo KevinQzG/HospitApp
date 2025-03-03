@@ -4,12 +4,16 @@ import { _TYPES } from '@/adapters/types';
 import { SearchIpsMongoService } from '@/services/search_ips_mongo.service';
 import type SearchIpsServiceAdapter from '@/adapters/search_ips.service.adapter';
 import type IpsRepositoryAdapter from '@/adapters/ips_repository.adapter';
+import type SpecialtyRepositoryAdapter from '@/adapters/specialty_repository.adapter';
+import type EPSRepositoryAdapter from '@/adapters/eps_repository.adapter';
 import { IPSDocument } from '@/models/ips.interface';
 
 describe('SearchIpsMongoService Integration Test', () => {
     const _CONTAINER = new Container();
     let service: SearchIpsMongoService;
-    let mockRepository: jest.Mocked<IpsRepositoryAdapter>;
+    let mock_ips_repository: jest.Mocked<IpsRepositoryAdapter>;
+    let mock_specialty_repository: jest.Mocked<SpecialtyRepositoryAdapter>;
+    let mock_eps_repository: jest.Mocked<EPSRepositoryAdapter>;
 
     const _TEST_COORDINATES = [-75.63813564857911, 6.133477697463028];
     const _MOCK_IPS_DOC: IPSDocument = {
@@ -30,7 +34,7 @@ describe('SearchIpsMongoService Integration Test', () => {
 
     beforeAll(() => {
         // Create mock repository
-        mockRepository = {
+        mock_ips_repository = {
             find_all_by_distance_specialty_eps: jest.fn().mockResolvedValue({
                 results: [{
                     toObject: () => _MOCK_IPS_DOC
@@ -40,9 +44,33 @@ describe('SearchIpsMongoService Integration Test', () => {
             find_by_id: jest.fn().mockResolvedValue(_MOCK_IPS_DOC)
         };
 
+        mock_specialty_repository = {
+            find_all: jest.fn().mockResolvedValue([{
+                toObject: () => ({
+                    _id: new ObjectId("67b3e98bb1ae5d9e47ae7a08"),
+                    name: 'CARDIOLOGÍA',
+                    description: 'Especialidad en corazón'
+                })
+            }])
+        };
+
+        mock_eps_repository = {
+            find_all: jest.fn().mockResolvedValue([{
+                toObject: () => ({
+                    _id: new ObjectId("67b3e98bb1ae5d9e47ae7a09"),
+                    name: 'SALUD TOTAL',
+                    code: 'ST-01'
+                })
+            }])
+        };
+
         // Rebind repository for testing
         _CONTAINER.bind<IpsRepositoryAdapter>(_TYPES.IpsRepositoryAdapter)
-            .toConstantValue(mockRepository);
+            .toConstantValue(mock_ips_repository);
+        _CONTAINER.bind<SpecialtyRepositoryAdapter>(_TYPES.SpecialtyRepositoryAdapter)
+            .toConstantValue(mock_specialty_repository);
+        _CONTAINER.bind<EPSRepositoryAdapter>(_TYPES.EpsRepositoryAdapter)
+            .toConstantValue(mock_eps_repository);
         _CONTAINER.bind<SearchIpsServiceAdapter>(_TYPES.SearchIpsServiceAdapter).to(SearchIpsMongoService)
 
         service = _CONTAINER.get<SearchIpsMongoService>(_TYPES.SearchIpsServiceAdapter);
@@ -65,7 +93,7 @@ describe('SearchIpsMongoService Integration Test', () => {
             );
 
             // Verify repository call
-            expect(mockRepository.find_all_by_distance_specialty_eps).toHaveBeenCalledWith(
+            expect(mock_ips_repository.find_all_by_distance_specialty_eps).toHaveBeenCalledWith(
                 _TEST_COORDINATES[0],
                 _TEST_COORDINATES[1],
                 5000,
@@ -115,7 +143,7 @@ describe('SearchIpsMongoService Integration Test', () => {
                 5
             );
 
-            expect(mockRepository.find_all_by_distance_specialty_eps).toHaveBeenCalledWith(
+            expect(mock_ips_repository.find_all_by_distance_specialty_eps).toHaveBeenCalledWith(
                 expect.anything(),
                 expect.anything(),
                 expect.anything(),
@@ -128,7 +156,7 @@ describe('SearchIpsMongoService Integration Test', () => {
         });
 
         it('should handle repository errors', async () => {
-            mockRepository.find_all_by_distance_specialty_eps.mockRejectedValueOnce(new Error('DB error'));
+            mock_ips_repository.find_all_by_distance_specialty_eps.mockRejectedValueOnce(new Error('DB error'));
 
             await expect(service.filter(
                 _TEST_COORDINATES[0],
@@ -139,6 +167,56 @@ describe('SearchIpsMongoService Integration Test', () => {
                 1,
                 10
             )).rejects.toThrow('DB error');
+        });
+    });
+
+    describe('get_specialties', () => {
+        it('should retrieve and transform all specialties', async () => {
+            const _SPECIALTIES = await service.get_specialties();
+
+            expect(mock_specialty_repository.find_all).toHaveBeenCalled();
+            expect(_SPECIALTIES).toEqual([{
+                _id: expect.any(ObjectId),
+                name: 'CARDIOLOGÍA',
+                description: 'Especialidad en corazón'
+            }]);
+        });
+
+        it('should handle empty specialty list', async () => {
+            mock_specialty_repository.find_all.mockResolvedValueOnce([]);
+            const _SPECIALTIES = await service.get_specialties();
+
+            expect(_SPECIALTIES).toEqual([]);
+        });
+
+        it('should handle repository errors', async () => {
+            mock_specialty_repository.find_all.mockRejectedValueOnce(new Error('Specialty DB error'));
+            await expect(service.get_specialties()).rejects.toThrow('Specialty DB error');
+        });
+    });
+
+    describe('get_eps', () => {
+        it('should retrieve and transform all EPS entries', async () => {
+            const _EPS_LIST = await service.get_eps();
+
+            expect(mock_eps_repository.find_all).toHaveBeenCalled();
+            expect(_EPS_LIST).toEqual([{
+                _id: expect.any(ObjectId),
+                name: 'SALUD TOTAL',
+                code: 'ST-01'
+            }]);
+        });
+
+        it('should handle empty EPS list', async () => {
+            mock_eps_repository.find_all.mockResolvedValueOnce([]);
+            const _EPS_LIST = await service.get_eps();
+
+            expect(_EPS_LIST).toEqual([]);
+        });
+
+        it('should handle repository errors', async () => {
+            mock_eps_repository.find_all.mockRejectedValueOnce(new Error('EPS DB error'));
+            await expect(service.get_eps()).rejects.toThrow('EPS DB error');
         });
     });
 });
