@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fonts */
+body {
+  @apply bg-gray-100 text-gray-800;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer components {
+  /* Ícons */
+  .social-icon {
+    @apply text-white text-lg p-2 rounded-full transition transform hover:scale-110;
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .social-icon:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+}
