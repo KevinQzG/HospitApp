@@ -17,7 +17,7 @@ import { is_type_array } from "@/utils/helpers/validation";
  */
 interface SearchRequest {
     coordinates: [number, number];
-    maxDistance: number;
+    max_distance: number;
     specialties?: string[];
     eps_names?: string[];
     page?: number;
@@ -34,9 +34,9 @@ const validate_request_body = (body: SearchRequest): { success: boolean; error: 
         return { success: false, error: "Invalid request: coordinates is required." };
     } else if (!is_type_array(body.coordinates, "number", 2)) {
         return { success: false, error: "Invalid request: coordinates must be an array of two numbers [longitude, latitude]." };
-    } else if (!body.maxDistance) {
+    } else if (!body.max_distance) {
         return { success: false, error: "Invalid request: maximum distance in meters is required." };
-    } else if (typeof body.maxDistance !== "number") {
+    } else if (typeof body.max_distance !== "number") {
         return { success: false, error: "Invalid request: maximum distance must be a number representing meters." };
     } else if (body.specialties && !is_type_array(body.specialties, "string")) {
         return { success: false, error: "Invalid request: specialties must be an array of strings." };
@@ -93,12 +93,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             return NextResponse.json({ success: false, error }, { status: 400 });
         }
 
-        await _DB_HANDLER.connect();
-
         const { results, total } = await _SEARCH_SERVICE.filter(
             body.coordinates[0], // longitude
             body.coordinates[1], // latitude
-            body.maxDistance,
+            body.max_distance,
             body.specialties || [],
             body.eps_names || [],
             body.page || 1,
