@@ -1,8 +1,13 @@
 import { injectable, inject } from "inversify";
 import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
-import type IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
 import { _TYPES } from "@/adapters/types";
+import type IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
 import { IPSDocument } from "@/models/ips.interface";
+import type SpecialtyRepositoryAdapter from "@/adapters/specialty_repository.adapter";
+import { SpecialtyDocument } from "@/models/specialty.interface";
+import type EPSRepositoryAdapter from "@/adapters/eps_repository.adapter";
+import { EPSDocument } from "@/models/eps.interface";
+
 
 /**
  * @class
@@ -13,22 +18,37 @@ import { IPSDocument } from "@/models/ips.interface";
 export class SearchIpsMongoService implements SearchIpsServiceAdapter {
     /**
      * @constructor
-     * @param {IpsRepositoryAdapter} repository - The repository handler for IPSs.
+     * @param {IpsRepositoryAdapter} ips_repository - The repository handler for IPSs.
+     * @param {SpecialtyRepositoryAdapter} specialty_repository - The repository handler for specialties.
+     * @param {EPSRepositoryAdapter} eps_repository - The repository handler for EPSs.
      * @returns {void}
      * @description Creates an instance of the FilterAndSortIpsService class.
      * @throws {Error} If the database handler is null.
      * @throws {Error} If the database connection fails.
      */
     constructor(
-        @inject(_TYPES.IpsRepositoryAdapter) private repository: IpsRepositoryAdapter
+        @inject(_TYPES.IpsRepositoryAdapter) private ips_repository: IpsRepositoryAdapter,
+        @inject(_TYPES.SpecialtyRepositoryAdapter) private specialty_repository: SpecialtyRepositoryAdapter,
+        @inject(_TYPES.EpsRepositoryAdapter) private eps_repository: EPSRepositoryAdapter
+        
     ) { }
 
     async filter(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IPSDocument[]; total: number; }> {
-        const _RESULTS = await this.repository.find_all_by_distance_specialty_eps(longitude, latitude, max_distance, specialties, eps_names, page, page_size);
+        const _RESULTS = await this.ips_repository.find_all_by_distance_specialty_eps(longitude, latitude, max_distance, specialties, eps_names, page, page_size);
 
         return {
             results: _RESULTS.results.map(ips => {return ips.toObject();}),
             total: _RESULTS.total
         };
+    }
+
+    async get_specialties(): Promise<SpecialtyDocument[]> {
+        const _SPECIALTIES = await this.specialty_repository.find_all();
+        return _SPECIALTIES.map(specialty => {return specialty.toObject();});
+    }
+
+    async get_eps(): Promise<EPSDocument[]> {
+        const _EPS = await this.eps_repository.find_all();
+        return _EPS.map(eps => {return eps.toObject();});
     }
 }

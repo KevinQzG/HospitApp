@@ -1,4 +1,6 @@
 import { IPSDocument } from '@/models/ips.interface';
+import { SpecialtyDocument } from '@/models/specialty.interface';
+import { EPSDocument } from '@/models/eps.interface';
 
 /**
  * @interface
@@ -20,4 +22,19 @@ export default interface SearchIpsServiceAdapter {
      * @returns {Promise<{ results: IPS[]; total: number }>} The results is an array of IPSs that meet the specified criteria without surpassing the page size, and the total is the total number of IPSs that meet the specified criteria.
      */
     filter(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IPSDocument[]; total: number }>;
+
+
+    /**
+     * Gets all the specialties from the database.
+     * @async
+     * @returns {Promise<Specialty[]>} The specialties from the database.
+     */
+    get_specialties(): Promise<SpecialtyDocument[]>;
+
+    /**
+     * Gets all the EPSs from the database.
+     * @async
+     * @returns {Promise<EPS[]>} The EPSs from the database.
+     */
+    get_eps(): Promise<EPSDocument[]>;
 }
