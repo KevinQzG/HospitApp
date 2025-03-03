@@ -12,7 +12,7 @@ export default function Home() {
     // copiar esta parte 
     const _TEST = async () => {
       try {
-        const _RES = await fetch("/api/test/example", { method: "GET" });
+        await fetch("/api/test/example", { method: "GET" });
 
 
       } catch (error) {
