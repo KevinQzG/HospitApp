@@ -1,4 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+
 import {
   faFacebookF,
   faXTwitter,
@@ -6,45 +9,54 @@ import {
   faTiktok,
 } from "@fortawesome/free-brands-svg-icons";
 
+import { Mail, MapPin, Phone, Globe, Users, BookOpenText, ClipboardList, HeartHandshake, House, KeyIcon, KeyRoundIcon, Contact, LogIn } from "lucide-react";
+
+config.autoAddCss = false;
+
 export default function Footer() {
   return (
-    <footer className="bg-blue-600 text-white py-10">
-      <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+    <footer className="bg-blue-600 text-white">
+      <div className="py-12 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+        
         {/* Branding */}
-        <div className="flex flex-col items-center md:items-start">
+        <div className="flex flex-col items-center md:items-start space-y-4">
           <h2 className="text-2xl font-semibold">HospitAPP</h2>
-          <p className="text-sm mt-2 max-w-xs leading-relaxed">
+          <p className="text-sm max-w-xs leading-relaxed">
             La forma más rápida, segura e inteligente de encontrar atención médica en Colombia.
           </p>
-          <div className="flex space-x-4 mt-4">
-            <a href="#" className="text-white hover:text-gray-300">
-              <FontAwesomeIcon icon={faFacebookF} size="lg" />
+          <div className="flex space-x-3 mt-3">
+            <a href="#" aria-label="Facebook" className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 transition-all hover:scale-110">
+              <FontAwesomeIcon icon={faFacebookF} className="text-white text-lg" />
             </a>
-            <a href="#" className="text-white hover:text-gray-300">
-              <FontAwesomeIcon icon={faXTwitter} size="lg" />
+            <a href="#" aria-label="Twitter" className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 transition-all hover:scale-110">
+              <FontAwesomeIcon icon={faXTwitter} className="text-white text-lg" />
             </a>
-            <a href="#" className="text-white hover:text-gray-300">
-              <FontAwesomeIcon icon={faInstagram} size="lg" />
+            <a href="#" aria-label="Instagram" className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 transition-all hover:scale-110">
+              <FontAwesomeIcon icon={faInstagram} className="text-white text-lg" />
             </a>
-            <a href="#" className="text-white hover:text-gray-300">
-              <FontAwesomeIcon icon={faTiktok} size="lg" />
+            <a href="#" aria-label="TikTok" className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 transition-all hover:scale-110">
+              <FontAwesomeIcon icon={faTiktok} className="text-white text-lg" />
             </a>
           </div>
         </div>
 
-        {/* Navegate */}
+        {/* Navigation */}
         <div>
-          <h3 className="text-lg font-semibold">Explorar</h3>
+          <h3 className="text-lg font-semibold flex items-center justify-center md:justify-start">
+            <Globe className="w-5 h-5 mr-2" /> Explorar
+          </h3>
           <ul className="text-sm space-y-2 mt-3">
-            <li><a href="/" className="hover:underline">Inicio</a></li>
-            <li><a href="/specialties" className="hover:underline">Especialidades</a></li>
-            <li><a href="/login" className="hover:underline">Iniciar sesión</a></li>
+            <li><a href="/" className="hover:underline flex items-center"><House className="w-4 h-4 mr-2" /> Inicio</a></li>
+            <li><a href="/specialties" className="hover:underline flex items-center"><ClipboardList className="w-4 h-4 mr-2" /> Especialidades</a></li>
+            <li><a href="/login" className="hover:underline flex items-center"><LogIn className="w-4 h-4 mr-2" /> Iniciar sesión</a></li>
           </ul>
         </div>
 
         {/* About */}
         <div>
-          <h3 className="text-lg font-semibold">Sobre Nosotros</h3>
+          <h3 className="text-lg font-semibold flex items-center justify-center md:justify-start">
+            <Users className="w-5 h-5 mr-2" /> Sobre Nosotros
+          </h3>
           <ul className="text-sm space-y-2 mt-3">
             <li><a href="/about" className="hover:underline">Quiénes somos</a></li>
             <li><a href="/vision" className="hover:underline">Nuestra visión</a></li>
@@ -56,15 +68,19 @@ export default function Footer() {
 
         {/* Contact */}
         <div>
-          <h3 className="text-lg font-semibold">Contacto</h3>
-          <p className="text-sm mt-3">+57 3177011615</p>
-          <p className="text-sm">admin@hospitapp.com</p>
-          <p className="text-sm">Medellín, Antioquia, Colombia</p>
+          <h3 className="text-lg font-semibold flex items-center justify-center md:justify-start">
+            <Contact className="w-5 h-5 mr-2" /> Contacto
+          </h3>
+          <ul className="text-sm space-y-2 mt-3">
+            <li className="flex items-center justify-center md:justify-start"><Phone className="w-4 h-4 mr-2" /> +57 3177011615</li>
+            <li className="flex items-center justify-center md:justify-start"><Mail className="w-4 h-4 mr-2" /> admin@hospitapp.com</li>
+            <li className="flex items-center justify-center md:justify-start"><MapPin className="w-4 h-4 mr-2" /> Medellín, Antioquia, Colombia</li>
+          </ul>
         </div>
       </div>
 
       {/* Copyright */}
-      <div className="mt-8 border-t border-white/30 pt-4 text-center text-sm opacity-80">
+      <div className="bg-blue-500 text-center text-sm opacity-80 py-4 mt-10">
         © 2025 HospitAPP, All Rights Reserved
       </div>
     </footer>

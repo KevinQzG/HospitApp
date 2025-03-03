@@ -1,51 +1,57 @@
-import SpecialtyCard from "@/components/SpecialtyCard";
+import Image from "next/image";
+import SpecialtiesSection from "@/components/SpecialtiesSection";
 
 export default function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="text-center py-16 bg-gray-100">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-4xl font-extrabold text-blue-700">
-            Encuentra Atención Médica <br />
-            <span className="text-gray-900">Rápida y Segura</span>
-          </h2>
-          <p className="mt-4 text-gray-600">
-            Con HospitApp, localiza centros médicos y especialistas cerca de ti
-            de manera rápida y sencilla.
-          </p>
-          <div className="mt-6 flex justify-center">
-            <input
-              type="text"
-              placeholder="Encuentra centros médicos cercanos"
-              className="w-80 px-4 py-3 border border-gray-300 rounded-l-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <section className="relative bg-[#ECF6FF] overflow-hidden pb-24">
+        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 py-16 relative">
+          
+          {/* Text Content */}
+          <div className="md:w-1/2 text-center md:text-left z-20">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
+              Encuentra <br />
+              Atención Médica <br />
+              <span className="text-blue-600">Rápida y Segura</span>
+            </h1>
+            <p className="mt-4 text-gray-600 text-lg">
+              Con HospitAPP, localiza centros médicos y especialistas cerca de ti de manera rápida y sencilla.
+            </p>
+
+            {/* Search Input */}
+            <div className="mt-6 flex items-center bg-white shadow-md rounded-lg overflow-hidden">
+              <span className="px-4 text-gray-500">📍</span>
+              <input
+                type="text"
+                placeholder="Encuentra centros médicos cercanos"
+                className="flex-grow py-3 px-2 outline-none"
+              />
+              <button className="bg-blue-600 text-white px-6 py-3 hover:bg-blue-700 transition">
+                🔍
+              </button>
+            </div>
+          </div>
+
+          {/* Image */}
+          <div className="md:w-1/2 flex justify-center md:justify-end relative">
+            <Image 
+              src="/medicos.png" 
+              alt="Equipo médico" 
+              width={500} 
+              height={550} 
+              className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto absolute bottom-[-100px] sm:bottom-[-150px] md:bottom-[-200px] right-0 object-cover"
+              priority
             />
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-r-lg hover:bg-blue-700 transition">
-              🔍
-            </button>
           </div>
+
         </div>
       </section>
 
-      {/* Especialidades */}
-      <section className="py-16 text-center bg-white">
-        <div className="max-w-5xl mx-auto px-6">
-          <h3 className="text-3xl font-bold text-gray-800">Algunas especialidades</h3>
-          <p className="text-gray-500">Encuentra atención especializada en diferentes áreas de la salud.</p>
+      <div className="w-full h-20 bg-gradient-to-b from-[#ECF6FF] to-[#F9FCFF]"></div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-8">
-            <SpecialtyCard name="Odontología" />
-            <SpecialtyCard name="Diagnóstico General" active />
-            <SpecialtyCard name="Neurología" />
-            <SpecialtyCard name="Cardiología" />
-            <SpecialtyCard name="Nutrición" />
-            <SpecialtyCard name="Ortopedia" />
-            <SpecialtyCard name="Endocrinología" />
-            <SpecialtyCard name="Psicología" />
-            <SpecialtyCard name="+ Especialidades" />
-          </div>
-        </div>
-      </section>
+      {/* Specialties Section */}
+      <SpecialtiesSection />
     </div>
   );
 }
