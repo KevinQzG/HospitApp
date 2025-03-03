@@ -4,19 +4,19 @@ import SpecialtiesSection from "@/components/SpecialtiesSection";
 export default function HomePage() {
   return (
     <div>
-      {/* Hero Section */}
-      <section className="relative bg-[#ECF6FF] overflow-hidden pb-24">
-        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 py-16 relative">
+      {/* Hero Section BG #ECF6FF */}
+      <section className="relative bg-[#ECF6FF] overflow-hidden pb-[30px]">
+        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 py-14 relative">
           
           {/* Text Content */}
-          <div className="md:w-1/2 text-center md:text-left z-20">
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
+          <div className="md:w-1/2 text-center md:text-left">
+            <h1 className="text-5xl font-bold text-gray-900 leading-tight">
               Encuentra <br />
               Atención Médica <br />
               <span className="text-blue-600">Rápida y Segura</span>
             </h1>
             <p className="mt-4 text-gray-600 text-lg">
-              Con HospitAPP, localiza centros médicos y especialistas cerca de ti de manera rápida y sencilla.
+              Con HospitApp, localiza centros médicos y especialistas cerca de ti de manera rápida y sencilla.
             </p>
 
             {/* Search Input */}
@@ -33,25 +33,24 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Image */}
-          <div className="md:w-1/2 flex justify-center md:justify-end relative">
+          {/* Image*/}
+          <div className="md:w-1/2 flex justify-end relative hidden md:block">
             <Image 
               src="/medicos.png" 
               alt="Equipo médico" 
               width={500} 
-              height={550} 
-              className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto absolute bottom-[-100px] sm:bottom-[-150px] md:bottom-[-200px] right-0 object-cover"
+              height={500} 
+              className="max-w-none h-auto absolute bottom-[-250px] right-0"
               priority
             />
           </div>
-
         </div>
       </section>
 
-      <div className="w-full h-20 bg-gradient-to-b from-[#ECF6FF] to-[#F9FCFF]"></div>
-
-      {/* Specialties Section */}
-      <SpecialtiesSection />
+      {/* Specialties Section BG #F9FCFF */}
+      <section className="bg-[#F9FCFF]">
+        <SpecialtiesSection />
+      </section>
     </div>
   );
 }
