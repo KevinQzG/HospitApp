@@ -1,14 +1,8 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { SpecialtyResponse } from '@/models/specialty.interface';
-import { EpsResponse } from '@/models/eps.interface';
 import { SearchResponse } from '@/app/api/search_ips/filter/route';
-
-export interface SearchFormClientProps {
-  specialties: SpecialtyResponse[];
-  eps: EpsResponse[];
-}
+import { SearchFormClientProps } from '@/services/search_ips/data_caching.service';
 
 interface FormData {
   coordinates: [number, number];

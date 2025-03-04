@@ -5,7 +5,7 @@ import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
 import { _TYPES } from "@/adapters/types";
 import { is_type_array } from "@/utils/helpers/validation";
 import { IpsResponse } from "@/models/ips.interface";
-import { revalidateTag } from 'next/cache'; // Remove
+// import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
 /**
  * Interface representing the structure of the search request body
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<SearchRespons
         );
 
         await _DB_HANDLER.close();
-        revalidateTag('search-config'); // Remove
+        // revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)
         return NextResponse.json({
             success: true,
             data: results,

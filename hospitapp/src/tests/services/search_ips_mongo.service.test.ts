@@ -1,6 +1,6 @@
 import { Container } from 'inversify';
 import { _TYPES } from '@/adapters/types';
-import { SearchIpsMongoService } from '@/services/search_ips_mongo.service';
+import { SearchIpsMongoService } from '@/services/search_ips/search_ips_mongo.service';
 import type SearchIpsServiceAdapter from '@/adapters/search_ips.service.adapter';
 import type IpsRepositoryAdapter from '@/adapters/ips_repository.adapter';
 import type SpecialtyRepositoryAdapter from '@/adapters/specialty_repository.adapter';
