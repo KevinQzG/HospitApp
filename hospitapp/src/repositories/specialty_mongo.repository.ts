@@ -37,6 +37,6 @@ export class SpecialtyMongoRepository implements SpecialtyRepositoryAdapter {
         }
 
         // Map the results to EPS entities
-        return _RESULTS.map(SpecialtyMapper.to_domain);
+        return _RESULTS.map(SpecialtyMapper.from_document_to_domain);
     }
 }

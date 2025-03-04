@@ -58,7 +58,7 @@ describe('Specialty Model', () => {
 
   describe('Serialization', () => {
     it('should convert to document correctly', () => {
-      const _DOC = specialty.toObject();
+      const _DOC = specialty.to_object();
       
       expect(_DOC).toEqual({
         _id: _TEST_ID,
@@ -90,7 +90,7 @@ describe('Specialty Model', () => {
       const _MINIMAL_SPECIALTY = new Specialty(undefined, 'Minimal Specialty');
       
       expect(_MINIMAL_SPECIALTY.getScheduleThursday()).toBeUndefined();
-      expect(_MINIMAL_SPECIALTY.toObject().schedule_friday).toBeUndefined();
+      expect(_MINIMAL_SPECIALTY.to_object().schedule_friday).toBeUndefined();
     });
   });
 });

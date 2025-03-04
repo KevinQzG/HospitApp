@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { SpecialtyDocument } from './specialty.interface';
+import { SpecialtyDocument, SpecialtyResponse } from './specialty.interface';
 import { SpecialtyMapper } from '@/utils/mappers/specialty_mapper';
 
 /**
@@ -55,8 +55,16 @@ export class Specialty {
      * Converts the Specialty entity to a plain object.
      * @returns {SpecialtyDocument} A plain object representation of the Specialty.
      */
-    toObject(): SpecialtyDocument {
-        return SpecialtyMapper.to_document(this);
+    to_object(): SpecialtyDocument {
+        return SpecialtyMapper.from_domain_to_document(this);
+    }
+
+    /**
+     * Converts the Specialty entity to a plain object.
+     * @returns {SpecialtyResponse} A plain object representation of the Specialty.
+     */
+    to_response(): SpecialtyResponse {
+        return SpecialtyMapper.from_domain_to_response(this);
     }
 
     /**
@@ -202,6 +210,6 @@ export class Specialty {
      * @returns {string} A string representation of the IPS.
      */
     toString(): string {
-        return JSON.stringify(this.toObject());
+        return JSON.stringify(this.to_object());
     }
 }

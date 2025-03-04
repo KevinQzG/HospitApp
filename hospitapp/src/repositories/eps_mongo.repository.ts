@@ -37,6 +37,6 @@ export class EpsMongoRepository implements EpsRepositoryAdapter {
         }
 
         // Map the results to EPS entities
-        return _RESULTS.map(EPSMapper.to_domain);
+        return _RESULTS.map(EPSMapper.from_document_to_domain);
     }
 }

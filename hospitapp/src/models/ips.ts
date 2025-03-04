@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { IPSDocument } from './ips.interface';
+import { IPSDocument, IPSResponse } from './ips.interface';
 import { EPS } from './eps';
 import { Specialty } from './specialty';
 import { IpsMapper } from '@/utils/mappers/ips_mapper';
@@ -91,9 +91,17 @@ export class IPS {
      * Converts the IPS entity to a plain object.
      * @returns {IPSDocument} A plain object representation of the IPS.
      */
-    toObject(): IPSDocument {
-        return IpsMapper.to_document(this);
+    to_object(): IPSDocument {
+        return IpsMapper.from_domain_to_document(this);
     }
+
+    /**
+     * Converts the IPS entity to a plain response object.
+     * @returns {IPSResponse} A plain response object representation of the IPS.
+     */
+    to_response(): IPSResponse {
+        return IpsMapper.from_domain_to_response(this);
+    }    
 
     /**
      * Gets the unique identifier of the IPS.
@@ -342,6 +350,6 @@ export class IPS {
      * @returns {string} A string representation of the IPS.
      */
     toString(): string {
-        return JSON.stringify(this.toObject());
+        return JSON.stringify(this.to_object());
     }
 }

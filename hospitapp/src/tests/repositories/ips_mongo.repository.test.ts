@@ -78,7 +78,7 @@ describe('IpsMongoRepository Integration Test', () => {
         distance: 2415.089412549286
       };
 
-      expect(_IPS.toObject()).toMatchObject({
+      expect(_IPS.to_object()).toMatchObject({
         ..._EXPECTED_DATA,
         distance: expect.closeTo(_EXPECTED_DATA.distance, 4)
       });
@@ -154,7 +154,7 @@ describe('IpsMongoRepository Integration Test', () => {
         distance: 2566.342006462017
       };
 
-      expect(_IPS.toObject()).toMatchObject({
+      expect(_IPS.to_object()).toMatchObject({
         ..._EXPECTED_DATA,
         distance: expect.closeTo(_EXPECTED_DATA.distance, 4)
       });
@@ -305,7 +305,7 @@ describe('IpsMongoRepository Integration Test', () => {
 
       };
 
-      expect(ips?.toObject()).toMatchObject(_EXPECTED_DATA);
+      expect(ips?.to_object()).toMatchObject(_EXPECTED_DATA);
     });
 
   });

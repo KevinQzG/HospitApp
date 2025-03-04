@@ -34,7 +34,7 @@ describe('IpsMapper', () => {
   let ips, doc;
 
   it('should correctly map document to domain with full data', () => {
-    ips = IpsMapper.to_domain(_SAMPLE_DOC);
+    ips = IpsMapper.from_document_to_domain(_SAMPLE_DOC);
     
     expect(ips.getId()).toEqual(_SAMPLE_DOC._id);
     expect(ips.getName()).toBe(_SAMPLE_DOC.name);
@@ -44,7 +44,7 @@ describe('IpsMapper', () => {
   });
 
   it('should handle missing optional fields in document', () => {
-    ips = IpsMapper.to_domain(_PARTIAL_DOC);
+    ips = IpsMapper.from_document_to_domain(_PARTIAL_DOC);
     
     expect(ips.getPhone()).toBeUndefined();
     expect(ips.getEmail()).toBeUndefined();
@@ -68,7 +68,7 @@ describe('IpsMapper', () => {
       _SAMPLE_DOC.distance
     );
 
-    doc = IpsMapper.to_document(ips);
+    doc = IpsMapper.from_domain_to_document(ips);
     
     expect(doc).toMatchObject(_SAMPLE_DOC);
     expect(doc.phone).toBe(_SAMPLE_DOC.phone);
@@ -85,7 +85,7 @@ describe('IpsMapper', () => {
       _PARTIAL_DOC.location
     );
 
-    doc = IpsMapper.to_document(ips);
+    doc = IpsMapper.from_domain_to_document(ips);
     
     expect(doc.phone).toBeUndefined();
     expect(doc.email).toBeUndefined();

@@ -2,6 +2,7 @@ import { IPS } from '@/models/ips';
 import { EPS } from '@/models/eps';
 import { Specialty } from '@/models/specialty';
 import { ObjectId } from 'mongodb';
+import { IPSResponse } from '@/models/ips.interface';
 
 describe('IPS Class', () => {
   const _VALID_IPS_DATA = {
@@ -21,16 +22,16 @@ describe('IPS Class', () => {
 
   it('should create an IPS instance with valid data', () => {
     const _IPS = new IPS(
-        _VALID_IPS_DATA._id,
-        _VALID_IPS_DATA.name,
-        _VALID_IPS_DATA.department,
-        _VALID_IPS_DATA.town,
-        _VALID_IPS_DATA.address,
-        _VALID_IPS_DATA.location,
-        _VALID_IPS_DATA.phone,
-        _VALID_IPS_DATA.email,
-        _VALID_IPS_DATA.level
-        );
+      _VALID_IPS_DATA._id,
+      _VALID_IPS_DATA.name,
+      _VALID_IPS_DATA.department,
+      _VALID_IPS_DATA.town,
+      _VALID_IPS_DATA.address,
+      _VALID_IPS_DATA.location,
+      _VALID_IPS_DATA.phone,
+      _VALID_IPS_DATA.email,
+      _VALID_IPS_DATA.level
+    );
 
     expect(_IPS).toBeInstanceOf(IPS);
     expect(_IPS.getId()).toEqual(_VALID_IPS_DATA._id);
@@ -46,16 +47,16 @@ describe('IPS Class', () => {
 
   it('should validate an IPS instance with valid data', () => {
     const _IPS = new IPS(
-        _VALID_IPS_DATA._id,
-        _VALID_IPS_DATA.name,
-        _VALID_IPS_DATA.department,
-        _VALID_IPS_DATA.town,
-        _VALID_IPS_DATA.address,
-        _VALID_IPS_DATA.location,
-        _VALID_IPS_DATA.phone,
-        _VALID_IPS_DATA.email,
-        _VALID_IPS_DATA.level
-        );
+      _VALID_IPS_DATA._id,
+      _VALID_IPS_DATA.name,
+      _VALID_IPS_DATA.department,
+      _VALID_IPS_DATA.town,
+      _VALID_IPS_DATA.address,
+      _VALID_IPS_DATA.location,
+      _VALID_IPS_DATA.phone,
+      _VALID_IPS_DATA.email,
+      _VALID_IPS_DATA.level
+    );
 
     expect(() => _IPS.validate()).not.toThrow();
   });
@@ -63,16 +64,16 @@ describe('IPS Class', () => {
   it('should throw an error when validating an IPS instance with missing required fields', () => {
     const _INVALID_IPS_DATA = { ..._VALID_IPS_DATA, name: '' }; // Missing name
     const _IPS = new IPS(
-        _INVALID_IPS_DATA._id,
-        _INVALID_IPS_DATA.name,
-        _INVALID_IPS_DATA.department,
-        _INVALID_IPS_DATA.town,
-        _INVALID_IPS_DATA.address,
-        _INVALID_IPS_DATA.location,
-        _INVALID_IPS_DATA.phone,
-        _INVALID_IPS_DATA.email,
-        _INVALID_IPS_DATA.level
-        );
+      _INVALID_IPS_DATA._id,
+      _INVALID_IPS_DATA.name,
+      _INVALID_IPS_DATA.department,
+      _INVALID_IPS_DATA.town,
+      _INVALID_IPS_DATA.address,
+      _INVALID_IPS_DATA.location,
+      _INVALID_IPS_DATA.phone,
+      _INVALID_IPS_DATA.email,
+      _INVALID_IPS_DATA.level
+    );
 
     expect(() => _IPS.validate()).toThrow('Missing required fields');
   });
@@ -80,9 +81,9 @@ describe('IPS Class', () => {
   it('should throw an error when validating an IPS instance with invalid location coordinates', () => {
     const _INVALID_IPS_DATA = {
       ..._VALID_IPS_DATA,
-      location: { type: 'Point', coordinates: [] as unknown as [number, number]},
+      location: { type: 'Point', coordinates: [] as unknown as [number, number] },
     };
-  
+
     // Create the IPS instance
     const _IPS = new IPS(
       _INVALID_IPS_DATA._id,
@@ -95,7 +96,7 @@ describe('IPS Class', () => {
       _INVALID_IPS_DATA.email,
       _INVALID_IPS_DATA.level
     );
-  
+
     // Validate the IPS instance and expect an error
     expect(() => _IPS.validate()).toThrow('Invalid location coordinates');
   });
@@ -107,16 +108,16 @@ describe('IPS Class', () => {
       location: { type: 'Test', coordinates: [-75.546, 6.66] as [number, number] }, // Invalid type
     };
     const _IPS = new IPS(
-        _INVALID_IPS_DATA._id,
-        _INVALID_IPS_DATA.name,
-        _INVALID_IPS_DATA.department,
-        _INVALID_IPS_DATA.town,
-        _INVALID_IPS_DATA.address,
-        _INVALID_IPS_DATA.location,
-        _INVALID_IPS_DATA.phone,
-        _INVALID_IPS_DATA.email,
-        _INVALID_IPS_DATA.level
-        );
+      _INVALID_IPS_DATA._id,
+      _INVALID_IPS_DATA.name,
+      _INVALID_IPS_DATA.department,
+      _INVALID_IPS_DATA.town,
+      _INVALID_IPS_DATA.address,
+      _INVALID_IPS_DATA.location,
+      _INVALID_IPS_DATA.phone,
+      _INVALID_IPS_DATA.email,
+      _INVALID_IPS_DATA.level
+    );
 
     expect(() => _IPS.validate()).toThrow('Invalid location type');
   });
@@ -134,7 +135,7 @@ describe('IPS Class', () => {
       _VALID_IPS_DATA.level
     );
 
-    const _IPS_OBJECT = _IPS.toObject();
+    const _IPS_OBJECT = _IPS.to_object();
 
     expect(_IPS_OBJECT).toEqual({
       _id: _VALID_IPS_DATA._id,
@@ -165,7 +166,7 @@ describe('IPS Class', () => {
       1234.56 // Distance
     );
 
-    const _IPS_OBJECT = _IPS.toObject();
+    const _IPS_OBJECT = _IPS.to_object();
 
     expect(_IPS_OBJECT).toEqual({
       _id: _VALID_IPS_DATA._id,
@@ -197,7 +198,7 @@ describe('IPS Class', () => {
       [_EPS] // EPS
     );
 
-    const _IPS_OBJECT = _IPS.toObject();
+    const _IPS_OBJECT = _IPS.to_object();
 
     expect(_IPS_OBJECT).toEqual({
       _id: _VALID_IPS_DATA._id,
@@ -210,7 +211,7 @@ describe('IPS Class', () => {
       location: _VALID_IPS_DATA.location,
       level: _VALID_IPS_DATA.level,
       distance: undefined, // Optional field
-      eps: [_EPS.toObject()] // Included EPS
+      eps: [_EPS.to_object()] // Included EPS
     });
   });
 
@@ -231,7 +232,7 @@ describe('IPS Class', () => {
       [_SPECIALTY] // Specialty
     );
 
-    const _IPS_OBJECT = _IPS.toObject();
+    const _IPS_OBJECT = _IPS.to_object();
 
     expect(_IPS_OBJECT).toEqual({
       _id: _VALID_IPS_DATA._id,
@@ -243,8 +244,47 @@ describe('IPS Class', () => {
       email: _VALID_IPS_DATA.email,
       location: _VALID_IPS_DATA.location,
       level: _VALID_IPS_DATA.level,
-      specialties: [_SPECIALTY.toObject()] // Included Specialty
+      specialties: [_SPECIALTY.to_object()] // Included Specialty
     });
 
+  });
+
+  describe('to_response()', () => {
+    let doc: IPSResponse;
+    const _IPS = new IPS(
+      _VALID_IPS_DATA._id,
+      _VALID_IPS_DATA.name,
+      _VALID_IPS_DATA.department,
+      _VALID_IPS_DATA.town,
+      _VALID_IPS_DATA.address,
+      _VALID_IPS_DATA.location,
+      _VALID_IPS_DATA.phone,
+      _VALID_IPS_DATA.email,
+      _VALID_IPS_DATA.level
+    );
+
+    it('should return proper EPSDocument structure', () => {
+      doc = _IPS.to_response();
+
+      expect(doc).toEqual({
+        _id: _VALID_IPS_DATA._id.toHexString(),
+        name: _VALID_IPS_DATA.name,
+        department: _VALID_IPS_DATA.department,
+        town: _VALID_IPS_DATA.town,
+        address: _VALID_IPS_DATA.address,
+        phone: _VALID_IPS_DATA.phone,
+        email: _VALID_IPS_DATA.email,
+        location: _VALID_IPS_DATA.location,
+        level: _VALID_IPS_DATA.level,
+        distance: undefined, // Optional field
+        // eps: undefined // Optional field
+      });
+    });
+
+    it('should maintain data integrity', () => {
+      doc = _IPS.to_response();
+      expect(doc._id).toBe(_VALID_IPS_DATA._id.toHexString());
+      expect(doc.name).toBe(_VALID_IPS_DATA.name);
+    });
   });
 });

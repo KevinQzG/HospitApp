@@ -46,7 +46,7 @@ describe('EpsMongoRepository Integration Test', () => {
                 emails: "AUTORIZACIONESENLINEA@SALUDCOOP.COOP  , DECHEVERRYO@SALUDCOOP.COOP"
             };
 
-            expect(_SAMPLE_EPS.toObject()).toMatchObject(_EXPECTED_DATA);
+            expect(_SAMPLE_EPS.to_object()).toMatchObject(_EXPECTED_DATA);
         });
     });
 });

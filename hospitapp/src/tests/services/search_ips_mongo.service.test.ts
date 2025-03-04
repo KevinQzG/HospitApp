@@ -1,12 +1,11 @@
 import { Container } from 'inversify';
-import { ObjectId } from 'mongodb';
 import { _TYPES } from '@/adapters/types';
 import { SearchIpsMongoService } from '@/services/search_ips_mongo.service';
 import type SearchIpsServiceAdapter from '@/adapters/search_ips.service.adapter';
 import type IpsRepositoryAdapter from '@/adapters/ips_repository.adapter';
 import type SpecialtyRepositoryAdapter from '@/adapters/specialty_repository.adapter';
 import type EPSRepositoryAdapter from '@/adapters/eps_repository.adapter';
-import { IPSDocument } from '@/models/ips.interface';
+import { IPSResponse } from '@/models/ips.interface';
 
 describe('SearchIpsMongoService Integration Test', () => {
     const _CONTAINER = new Container();
@@ -16,8 +15,9 @@ describe('SearchIpsMongoService Integration Test', () => {
     let mock_eps_repository: jest.Mocked<EPSRepositoryAdapter>;
 
     const _TEST_COORDINATES = [-75.63813564857911, 6.133477697463028];
-    const _MOCK_IPS_DOC: IPSDocument = {
-        _id: new ObjectId("67b3e98bb1ae5d9e47ae7a07"),
+
+    const _MOCK_IPS_RES: IPSResponse = {
+        _id: "67b3e98bb1ae5d9e47ae7a07",
         name: 'ESE HOSPITAL VENANCIO DIAZ DIAZ',
         department: 'ANTIOQUIA',
         town: 'SABANETA',
@@ -37,29 +37,29 @@ describe('SearchIpsMongoService Integration Test', () => {
         mock_ips_repository = {
             find_all_by_distance_specialty_eps: jest.fn().mockResolvedValue({
                 results: [{
-                    toObject: () => _MOCK_IPS_DOC
+                    to_response: () => _MOCK_IPS_RES
                 }],
                 total: 1
             }),
-            find_by_id: jest.fn().mockResolvedValue(_MOCK_IPS_DOC)
+            find_by_id: jest.fn().mockResolvedValue({
+                to_response: () => _MOCK_IPS_RES
+            })
         };
 
         mock_specialty_repository = {
             find_all: jest.fn().mockResolvedValue([{
-                toObject: () => ({
-                    _id: new ObjectId("67b3e98bb1ae5d9e47ae7a08"),
-                    name: 'CARDIOLOGÍA',
-                    description: 'Especialidad en corazón'
+                to_response: () => ({
+                    _id: "67b3e98bb1ae5d9e47ae7a08",
+                    name: 'ENFERMERÍA',
                 })
             }])
         };
 
         mock_eps_repository = {
             find_all: jest.fn().mockResolvedValue([{
-                toObject: () => ({
-                    _id: new ObjectId("67b3e98bb1ae5d9e47ae7a09"),
+                to_response: () => ({
+                    _id: "67b3e98bb1ae5d9e47ae7a09",
                     name: 'SALUD TOTAL',
-                    code: 'ST-01'
                 })
             }])
         };
@@ -104,7 +104,7 @@ describe('SearchIpsMongoService Integration Test', () => {
             );
 
             // Verify output transformation
-            expect(results).toEqual([_MOCK_IPS_DOC]);
+            expect(results).toEqual([_MOCK_IPS_RES]);
             expect(total).toBe(1);
         });
 
@@ -121,7 +121,7 @@ describe('SearchIpsMongoService Integration Test', () => {
 
             results.forEach(doc => {
                 expect(doc).toMatchObject({
-                    _id: expect.any(ObjectId),
+                    _id: expect.any(String),
                     name: expect.any(String),
                     department: expect.any(String),
                     location: {
@@ -176,9 +176,8 @@ describe('SearchIpsMongoService Integration Test', () => {
 
             expect(mock_specialty_repository.find_all).toHaveBeenCalled();
             expect(_SPECIALTIES).toEqual([{
-                _id: expect.any(ObjectId),
-                name: 'CARDIOLOGÍA',
-                description: 'Especialidad en corazón'
+                _id: "67b3e98bb1ae5d9e47ae7a08",
+                name: 'ENFERMERÍA',
             }]);
         });
 
@@ -201,9 +200,8 @@ describe('SearchIpsMongoService Integration Test', () => {
 
             expect(mock_eps_repository.find_all).toHaveBeenCalled();
             expect(_EPS_LIST).toEqual([{
-                _id: expect.any(ObjectId),
+                _id: "67b3e98bb1ae5d9e47ae7a09",
                 name: 'SALUD TOTAL',
-                code: 'ST-01'
             }]);
         });
 

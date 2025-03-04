@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { EPSDocument } from './eps.interface';
+import { EPSDocument, EPSResponse } from './eps.interface';
 import { EPSMapper } from '@/utils/mappers/eps_mapper';
 
 /**
@@ -43,9 +43,17 @@ export class EPS {
      * Converts the EPS entity to a plain object.
      * @returns {EPSDocument} A plain object representation of the EPS.
      */
-    toObject(): EPSDocument {
-        return EPSMapper.to_document(this);
+    to_object(): EPSDocument {
+        return EPSMapper.from_domain_to_document(this);
     }
+
+    /**
+     * Converts the EPS entity to a plain response object.
+     * @returns {EPSResponse} A plain response object representation of the EPS.
+     */
+    to_response(): EPSResponse {
+        return EPSMapper.from_domain_to_response(this);
+    }    
 
     /**
      * Gets the unique identifier of the EPS.
@@ -141,6 +149,6 @@ export class EPS {
      * @returns {string} A string representation of the EPS.
      */
     toString(): string {
-        return JSON.stringify(this.toObject());
+        return JSON.stringify(this.to_object());
     }
 }

@@ -61,7 +61,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 
         // Convert the IPS document to a IPS entity and return the results
         return {
-            results: _RESULTS.map(IpsMapper.to_domain),
+            results: _RESULTS.map(IpsMapper.from_document_to_domain),
             total: _TOTAL
         };
     }
@@ -85,6 +85,6 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
         }
 
         // Convert the IPS document to a IPS entity
-        return IpsMapper.to_domain(_AGGREGATION_RESULT);
+        return IpsMapper.from_document_to_domain(_AGGREGATION_RESULT);
     }
 }

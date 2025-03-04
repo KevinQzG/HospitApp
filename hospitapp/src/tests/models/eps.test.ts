@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { EPS } from '@/models/eps';
-import { EPSDocument } from '@/models/eps.interface';
+import { EPSDocument, EPSResponse } from '@/models/eps.interface';
 
 describe('EPS Class', () => {
   const _TEST_EPS_NAME = 'Test EPS';
@@ -41,7 +41,7 @@ describe('EPS Class', () => {
     let doc: EPSDocument;
     
     it('should return proper EPSDocument structure', () => {
-      doc = eps.toObject();
+      doc = eps.to_object();
       
       expect(doc).toEqual({
         _id: _TEST_EPS_ID,
@@ -53,7 +53,7 @@ describe('EPS Class', () => {
     });
 
     it('should maintain data integrity', () => {
-      doc = eps.toObject();
+      doc = eps.to_object();
       expect(doc._id.equals(_TEST_EPS_ID)).toBe(true);
       expect(doc.name).toBe(_TEST_EPS_NAME);
     });
@@ -104,7 +104,29 @@ describe('EPS Class', () => {
 
     it('should maintain data consistency', () => {
       str = eps.toString();
-      expect(str).toBe(JSON.stringify(eps.toObject()));
+      expect(str).toBe(JSON.stringify(eps.to_object()));
+    });
+  });
+
+  describe('to_response()', () => {
+    let doc: EPSResponse;
+    
+    it('should return proper EPSDocument structure', () => {
+      doc = eps.to_response();
+      
+      expect(doc).toEqual({
+        _id: _TEST_EPS_ID.toHexString(),
+        name: _TEST_EPS_NAME,
+        '01_8000_phone': _TEST_EPS_PHONE,
+        fax: _TEST_EPS_FAX,
+        emails: _TEST_EPS_EMAILS
+      });
+    });
+
+    it('should maintain data integrity', () => {
+      doc = eps.to_response();
+      expect(doc._id).toBe(_TEST_EPS_ID.toHexString());
+      expect(doc.name).toBe(_TEST_EPS_NAME);
     });
   });
 });
