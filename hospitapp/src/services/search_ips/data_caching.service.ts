@@ -24,8 +24,8 @@ export const get_search_ips_cached_props = cache(
 
             // Fetch the data
             const _RESULTS = {
-                specialties: await _SEARCH_IPS_SERVICE.get_specialties(),
-                eps: await _SEARCH_IPS_SERVICE.get_eps()
+                specialties: await _SEARCH_IPS_SERVICE.get_all_specialties(),
+                eps: await _SEARCH_IPS_SERVICE.get_all_eps()
             }
 
             // Close the database connection and return the results

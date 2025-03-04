@@ -115,7 +115,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<SearchRespons
             return NextResponse.json({ success: false, error }, { status: 400 });
         }
 
-        const { results, total } = await _SEARCH_SERVICE.filter(
+        const { results, total } = await _SEARCH_SERVICE.filter_ips(
             body.coordinates[0], // longitude
             body.coordinates[1], // latitude
             body.max_distance,
