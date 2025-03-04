@@ -4,6 +4,8 @@ import _CONTAINER from "@/adapters/container";
 import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
 import { _TYPES } from "@/adapters/types";
 import { is_type_array } from "@/utils/helpers/validation";
+import { IPSResponse } from "@/models/ips.interface";
+import { revalidateTag } from 'next/cache'; // Remove
 
 /**
  * Interface representing the structure of the search request body
@@ -22,6 +24,26 @@ interface SearchRequest {
     eps_names?: string[];
     page?: number;
     page_size?: number;
+}
+
+/**
+ * Interface representing the structure of the search response
+ * @interface SearchResponse
+ * @property {boolean} success - True if the request was successful, false otherwise
+ * @property {string} [error] - Error message if success is false
+ * @property {IPSDocument[]} [data] - Array of IPS documents
+ * @property {{ total: number; total_pages: number; page: number; page_size: number; }} [pagination] - Pagination information
+ */
+export interface SearchResponse {
+    success: boolean;
+    error?: string;
+    data?: IPSResponse[];
+    pagination?: {
+        total: number;
+        total_pages: number;
+        page: number;
+        page_size: number;
+    };
 }
 
 /**
@@ -78,7 +100,7 @@ const validate_request_body = (body: SearchRequest): { success: boolean; error: 
  *   "error": "Internal server error"
  * }
  */
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<NextResponse<SearchResponse>> {
     const _DB_HANDLER: DBAdapter = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
     const _SEARCH_SERVICE: SearchIpsServiceAdapter = _CONTAINER.get<SearchIpsServiceAdapter>(
         _TYPES.SearchIpsServiceAdapter
@@ -104,7 +126,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         );
 
         await _DB_HANDLER.close();
-
+        revalidateTag('search-config'); // Remove
         return NextResponse.json({
             success: true,
             data: results,
@@ -113,7 +135,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 total_pages: Math.ceil(total / (body.page_size || 10)),
                 page: body.page || 1,
                 page_size: body.page_size || 10,
-            },
+            }
         });
     } catch (error) {
         await _DB_HANDLER.close();
