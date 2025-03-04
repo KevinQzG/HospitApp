@@ -24,8 +24,8 @@ export default async function search_ips_page() {
     return (
         <div>
             <form id="searchForm" method="POST" action="/api/search_ips/filter">
-                <input type="hidden" name="coordinates[0]" value="-75.63813564857911" />
-                <input type="hidden" name="coordinates[1]" value="6.133477697463028" />
+                {/* <input type="hidden" name="coordinates[0]" value="-75.63813564857911" />
+                <input type="hidden" name="coordinates[1]" value="6.133477697463028" /> */}
                 
                 <div>
                     <label htmlFor="max_distance">Maximum Distance:</label>
@@ -90,12 +90,30 @@ export default async function search_ips_page() {
                 __html: `
                     document.getElementById('searchForm').addEventListener('submit', async (e) => {
                         e.preventDefault();
+
+                        let longitude;
+                        let latitude;
+
+                        // Wrap geolocation in a promise
+                        const getPosition = () => new Promise((resolve, reject) => {
+                            if (!navigator.geolocation) {
+                                reject('Geolocation is not supported by this browser.');
+                            }
+
+                            navigator.geolocation.getCurrentPosition(
+                                position => resolve(position),
+                                error => reject(error),
+                                { enableHighAccuracy: true, timeout: 10000 }
+                            );
+                        });
+
+                        // Wait for position before proceeding
+                        const position = await getPosition();
+                        longitude = position.coords.longitude;
+                        latitude = position.coords.latitude;
                         
                         const formData = {
-                            coordinates: [
-                                parseFloat(document.querySelector('[name="coordinates[0]"]').value),
-                                parseFloat(document.querySelector('[name="coordinates[1]"]').value)
-                            ],
+                            coordinates: [longitude, latitude],
                             max_distance: parseInt(document.getElementById('max_distance').value),
                             specialties: Array.from(document.getElementById('specialties').selectedOptions)
                                             .map(option => option.value),
