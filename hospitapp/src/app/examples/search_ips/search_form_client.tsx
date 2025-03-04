@@ -1,5 +1,5 @@
 'use client';
-
+import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { SearchResponse } from '@/app/api/search_ips/filter/route';
 import { SearchFormClientProps } from '@/services/search_ips/data_caching.service';
@@ -24,17 +24,17 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
     setError(null);
     setResults(null);
 
-    
+
     try {
-       // Safely access form elements
-       const form = e.currentTarget;
-       const formElements = form.elements as unknown as {
-         max_distance: HTMLSelectElement;
-         specialties: HTMLSelectElement;
-         eps: HTMLSelectElement;
-         page: HTMLInputElement;
-         page_size: HTMLInputElement;
-       };
+      // Safely access form elements
+      const form = e.currentTarget;
+      const formElements = form.elements as unknown as {
+        max_distance: HTMLSelectElement;
+        specialties: HTMLSelectElement;
+        eps: HTMLSelectElement;
+        page: HTMLInputElement;
+        page_size: HTMLInputElement;
+      };
 
       // Get geolocation
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
@@ -136,9 +136,81 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
       )}
 
       {results && (
-        <div className="p-3 bg-gray-50 text-black rounded-md">
-          <h3 className="text-lg text-black font-semibold mb-2">Results</h3>
-          <pre>{JSON.stringify(results, null, 2)}</pre>
+        <div className="p-3 bg-gray-50 rounded-md space-y-4">
+          <h3 className="text-lg font-semibold mb-2">Search Results</h3>
+
+          {/* Pagination Info */}
+          {results.pagination && (
+            <div className="mb-4 text-sm text-gray-600">
+              Showing page {results.pagination.page} of {results.pagination.total_pages} -
+              {results.pagination.total} total results
+            </div>
+          )}
+
+          {/* Results List */}
+          <div className="space-y-2">
+            {results.data?.map((item) => (
+              <div
+                key={item._id}
+                className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+              >
+                <Link
+                  href={`/examples/ips/${item._id}`}
+                  className="text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  {item.name}
+                </Link>
+
+                <div className="mt-2 text-sm text-gray-600">
+                  <p>{item.address}, {item.town}, {item.department}</p>
+                  {item.distance && (
+                    <p>{Math.round(item.distance)} meters away</p>
+                  )}
+                </div>
+
+                {/* EPS List */}
+                {item.eps && item.eps.length > 0 && (
+                  <div className="mt-2">
+                    <span className="text-sm font-medium">Accepted EPS:</span>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {item.eps.map((eps) => (
+                        <span
+                          key={eps._id}
+                          className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
+                        >
+                          {eps.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Specialties List */}
+                {item.specialties && item.specialties.length > 0 && (
+                  <div className="mt-2">
+                    <span className="text-sm font-medium">Specialties:</span>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {item.specialties.map((spec) => (
+                        <span
+                          key={spec._id}
+                          className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs"
+                        >
+                          {spec.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Pagination Summary */}
+          {results.pagination && (
+            <div className="mt-4 text-sm text-gray-600">
+              Showing {results.pagination.page_size} items per page
+            </div>
+          )}
         </div>
       )}
 
