@@ -1,4 +1,5 @@
 // app/examples/search_ips/page.tsx
+import { unstable_cache } from 'next/cache'
 import DBAdapter from '@/adapters/db.adapter';
 import _CONTAINER from "@/adapters/container";
 import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
@@ -6,27 +7,36 @@ import { _TYPES } from "@/adapters/types";
 import { SpecialtyDocument } from '@/models/specialty.interface';
 import { EPSDocument } from '@/models/eps.interface';
 
-interface SpecialtiesPageProps {
+interface PageProps {
     specialties: SpecialtyDocument[];
     eps: EPSDocument[];
 }
 
-export default async function search_ips_page() {
-    const _DB_HANDLER = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
-    const _SEARCH_IPS_SERVICE = _CONTAINER.get<SearchIpsServiceAdapter>(_TYPES.SearchIpsServiceAdapter);
+const get_page_props: () => Promise<PageProps> = unstable_cache(
+    async () => {
+        const _DB_HANDLER = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
+        const _SEARCH_IPS_SERVICE = _CONTAINER.get<SearchIpsServiceAdapter>(_TYPES.SearchIpsServiceAdapter);
+    
+        const _RESULT: PageProps = {
+            specialties: await _SEARCH_IPS_SERVICE.get_specialties(),
+            eps: await _SEARCH_IPS_SERVICE.get_eps()
+        };
+        _DB_HANDLER.close();
+        return _RESULT;
+    },
+    ['specialties_eps_props'],
+    { revalidate: 180, tags: ['specialties_eps_props'] }
+)
 
-    const _RESULT : SpecialtiesPageProps = {
-        specialties: await _SEARCH_IPS_SERVICE.get_specialties(),
-        eps: await _SEARCH_IPS_SERVICE.get_eps()
-    };
-    _DB_HANDLER.close();
+export default async function search_ips_page() {
+    const _RESULT = await get_page_props();
 
     return (
         <div>
             <form id="searchForm" method="POST" action="/api/search_ips/filter">
                 {/* <input type="hidden" name="coordinates[0]" value="-75.63813564857911" />
                 <input type="hidden" name="coordinates[1]" value="6.133477697463028" /> */}
-                
+
                 <div>
                     <label htmlFor="max_distance">Maximum Distance:</label>
                     <select name="max_distance" id="max_distance" required>
@@ -61,25 +71,25 @@ export default async function search_ips_page() {
 
                 <div>
                     <label htmlFor="page">Page:</label>
-                    <input 
-                        type="number" 
-                        name="page" 
-                        id="page" 
-                        defaultValue="1" 
-                        min="1" 
-                        required 
+                    <input
+                        type="number"
+                        name="page"
+                        id="page"
+                        defaultValue="1"
+                        min="1"
+                        required
                     />
                 </div>
 
                 <div>
                     <label htmlFor="page_size">Page Size:</label>
-                    <input 
-                        type="number" 
-                        name="page_size" 
-                        id="page_size" 
-                        defaultValue="10" 
-                        min="1" 
-                        required 
+                    <input
+                        type="number"
+                        name="page_size"
+                        id="page_size"
+                        defaultValue="10"
+                        min="1"
+                        required
                     />
                 </div>
 
