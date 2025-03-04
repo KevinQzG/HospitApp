@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { SearchResponse } from '@/app/api/search_ips/filter/route';
 import { SearchFormClientProps } from '@/services/search_ips/data_caching.service';
+import { SearchableSelect } from './searchable_select';
 
 interface FormData {
   coordinates: [number, number];
@@ -27,14 +28,7 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
 
     try {
       // Safely access form elements
-      const form = e.currentTarget;
-      const formElements = form.elements as unknown as {
-        max_distance: HTMLSelectElement;
-        specialties: HTMLSelectElement;
-        eps: HTMLSelectElement;
-        page: HTMLInputElement;
-        page_size: HTMLInputElement;
-      };
+      const formData = new FormData(e.currentTarget);
 
       // Get geolocation
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
@@ -49,18 +43,19 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
           { enableHighAccuracy: true, timeout: 10000 }
         );
       });
+      const specialties = JSON.parse(formData.get('specialties') as string || '[]');
+      const eps = JSON.parse(formData.get('eps') as string || '[]');
 
       // Build form data
       const requestData: FormData = {
         coordinates: [position.coords.longitude, position.coords.latitude],
-        max_distance: parseInt(formElements.max_distance.value),
-        specialties: Array.from(formElements.specialties.selectedOptions)
-          .map(option => option.value),
-        eps: Array.from(formElements.eps.selectedOptions)
-          .map(option => option.value),
-        page: parseInt(formElements.page.value) || 1,
-        page_size: parseInt(formElements.page_size.value) || 10
+        max_distance: parseInt(formData.get('max_distance')?.toString() || '5000'),
+        specialties,
+        eps,
+        page: parseInt(formData.get('page')?.toString() || '1'),
+        page_size: parseInt(formData.get('page_size')?.toString() || '10')
       };
+      console.log('Request data:', requestData);
 
       // API call
       const response = await fetch('/api/search_ips/filter', {
@@ -98,25 +93,21 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
       </div>
 
       <div>
-        <label htmlFor="specialties">Specialties:</label>
-        <select name="specialties" id="specialties" multiple>
-          {specialties.map((spec) => (
-            <option key={spec._id} value={spec.name}>
-              {spec.name}
-            </option>
-          ))}
-        </select>
+        <label className="block mb-1">Specialties:</label>
+        <SearchableSelect
+          options={specialties}
+          placeholder="Search specialties..."
+          name="specialties"
+        />
       </div>
 
       <div>
-        <label htmlFor="eps">EPS:</label>
-        <select name="eps" id="eps" multiple>
-          {eps.map((eps_item) => (
-            <option key={eps_item._id} value={eps_item.name}>
-              {eps_item.name}
-            </option>
-          ))}
-        </select>
+        <label className="block mb-1">EPS:</label>
+        <SearchableSelect
+          options={eps}
+          placeholder="Search EPS..."
+          name="eps"
+        />
       </div>
 
       <div>
