@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb";
-import { EPSDocument, EPSResponse } from "./eps.interface";
+import { EpsDocument, EpsResponse } from "./eps.interface";
 import { SpecialtyDocument, SpecialtyResponse } from "./specialty.interface";
 
-export interface IPSDocument {
+export interface IpsDocument {
     _id: ObjectId;
     name: string;
     department: string;
@@ -16,11 +16,11 @@ export interface IPSDocument {
     };
     level?: number;
     distance?: number;
-    eps?: EPSDocument[];
+    eps?: EpsDocument[];
     specialties?: SpecialtyDocument[];
 }
 
-export interface IPSResponse {
+export interface IpsResponse {
     _id: string;
     name: string;
     department: string;
@@ -34,6 +34,6 @@ export interface IPSResponse {
     };
     level?: number;
     distance?: number;
-    eps?: EPSResponse[];
+    eps?: EpsResponse[];
     specialties?: SpecialtyResponse[];
 }

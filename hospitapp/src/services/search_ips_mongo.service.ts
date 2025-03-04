@@ -2,11 +2,11 @@ import { injectable, inject } from "inversify";
 import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
 import { _TYPES } from "@/adapters/types";
 import type IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
-import { IPSResponse } from "@/models/ips.interface";
+import { IpsResponse } from "@/models/ips.interface";
 import type SpecialtyRepositoryAdapter from "@/adapters/specialty_repository.adapter";
 import { SpecialtyResponse } from "@/models/specialty.interface";
 import type EPSRepositoryAdapter from "@/adapters/eps_repository.adapter";
-import { EPSResponse } from "@/models/eps.interface";
+import { EpsResponse } from "@/models/eps.interface";
 
 
 /**
@@ -33,7 +33,7 @@ export class SearchIpsMongoService implements SearchIpsServiceAdapter {
         
     ) { }
 
-    async filter(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IPSResponse[]; total: number; }> {
+    async filter(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IpsResponse[]; total: number; }> {
         const _RESULTS = await this.ips_repository.find_all_by_distance_specialty_eps(longitude, latitude, max_distance, specialties, eps_names, page, page_size);
 
         return {
@@ -47,7 +47,7 @@ export class SearchIpsMongoService implements SearchIpsServiceAdapter {
         return _SPECIALTIES.map(specialty => {return specialty.to_response();});
     }
 
-    async get_eps(): Promise<EPSResponse[]> {
+    async get_eps(): Promise<EpsResponse[]> {
         const _EPS = await this.eps_repository.find_all();
         return _EPS.map(eps => {return eps.to_response();});
     }

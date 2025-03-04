@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
-import { IPSDocument } from '@/models/ips.interface';
-import { IPS } from '@/models/ips';
+import { IpsDocument } from '@/models/ips.interface';
+import { Ips } from '@/models/ips';
 import { IpsMapper } from '@/utils/mappers/ips_mapper';
 
 describe('IpsMapper', () => {
-  const _SAMPLE_DOC: IPSDocument = {
+  const _SAMPLE_DOC: IpsDocument = {
     _id: new ObjectId(),
     name: 'Test IPS',
     department: 'Test Department',
@@ -20,7 +20,7 @@ describe('IpsMapper', () => {
     distance: 1500
   };
 
-  const _PARTIAL_DOC: IPSDocument = {
+  const _PARTIAL_DOC: IpsDocument = {
     _id: new ObjectId(),
     name: 'Partial IPS',
     department: 'Partial Department',
@@ -36,26 +36,26 @@ describe('IpsMapper', () => {
   it('should correctly map document to domain with full data', () => {
     ips = IpsMapper.from_document_to_domain(_SAMPLE_DOC);
     
-    expect(ips.getId()).toEqual(_SAMPLE_DOC._id);
-    expect(ips.getName()).toBe(_SAMPLE_DOC.name);
-    expect(ips.getPhone()).toBe(_SAMPLE_DOC.phone);
-    expect(ips.getLocation().coordinates).toEqual(_SAMPLE_DOC.location.coordinates);
-    expect(ips.getDistance()).toBe(_SAMPLE_DOC.distance);
+    expect(ips.get_id()).toEqual(_SAMPLE_DOC._id);
+    expect(ips.get_name()).toBe(_SAMPLE_DOC.name);
+    expect(ips.get_phone()).toBe(_SAMPLE_DOC.phone);
+    expect(ips.get_location().coordinates).toEqual(_SAMPLE_DOC.location.coordinates);
+    expect(ips.get_distance()).toBe(_SAMPLE_DOC.distance);
   });
 
   it('should handle missing optional fields in document', () => {
     ips = IpsMapper.from_document_to_domain(_PARTIAL_DOC);
     
-    expect(ips.getPhone()).toBeUndefined();
-    expect(ips.getEmail()).toBeUndefined();
-    expect(ips.getLevel()).toBeUndefined();
-    expect(ips.getDistance()).toBeUndefined();
-    expect(ips.getEPS()).toBeUndefined();
-    expect(ips.getSpecialties()).toBeUndefined();
+    expect(ips.get_phone()).toBeUndefined();
+    expect(ips.get_email()).toBeUndefined();
+    expect(ips.get_level()).toBeUndefined();
+    expect(ips.get_distance()).toBeUndefined();
+    expect(ips.get_eps()).toBeUndefined();
+    expect(ips.get_specialties()).toBeUndefined();
   });
 
   it('should correctly map domain to document', () => {
-    ips = new IPS(
+    ips = new Ips(
       _SAMPLE_DOC._id,
       _SAMPLE_DOC.name,
       _SAMPLE_DOC.department,
@@ -76,7 +76,7 @@ describe('IpsMapper', () => {
   });
 
   it('should exclude undefined values in domain to document mapping', () => {
-    ips = new IPS(
+    ips = new Ips(
       _PARTIAL_DOC._id,
       _PARTIAL_DOC.name,
       _PARTIAL_DOC.department,

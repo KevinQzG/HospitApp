@@ -4,7 +4,7 @@ import _CONTAINER from "@/adapters/container";
 import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
 import { _TYPES } from "@/adapters/types";
 import { is_type_array } from "@/utils/helpers/validation";
-import { IPSResponse } from "@/models/ips.interface";
+import { IpsResponse } from "@/models/ips.interface";
 import { revalidateTag } from 'next/cache'; // Remove
 
 /**
@@ -37,7 +37,7 @@ interface SearchRequest {
 export interface SearchResponse {
     success: boolean;
     error?: string;
-    data?: IPSResponse[];
+    data?: IpsResponse[];
     pagination?: {
         total: number;
         total_pages: number;

@@ -5,7 +5,7 @@ import type SearchIpsServiceAdapter from '@/adapters/search_ips.service.adapter'
 import type IpsRepositoryAdapter from '@/adapters/ips_repository.adapter';
 import type SpecialtyRepositoryAdapter from '@/adapters/specialty_repository.adapter';
 import type EPSRepositoryAdapter from '@/adapters/eps_repository.adapter';
-import { IPSResponse } from '@/models/ips.interface';
+import { IpsResponse } from '@/models/ips.interface';
 
 describe('SearchIpsMongoService Integration Test', () => {
     const _CONTAINER = new Container();
@@ -16,7 +16,7 @@ describe('SearchIpsMongoService Integration Test', () => {
 
     const _TEST_COORDINATES = [-75.63813564857911, 6.133477697463028];
 
-    const _MOCK_IPS_RES: IPSResponse = {
+    const _MOCK_IPS_RES: IpsResponse = {
         _id: "67b3e98bb1ae5d9e47ae7a07",
         name: 'ESE HOSPITAL VENANCIO DIAZ DIAZ',
         department: 'ANTIOQUIA',

@@ -2,12 +2,12 @@
 
 import { FormEvent, useState } from 'react';
 import { SpecialtyResponse } from '@/models/specialty.interface';
-import { EPSResponse } from '@/models/eps.interface';
+import { EpsResponse } from '@/models/eps.interface';
 import { SearchResponse } from '@/app/api/search_ips/filter/route';
 
 export interface SearchFormClientProps {
   specialties: SpecialtyResponse[];
-  eps: EPSResponse[];
+  eps: EpsResponse[];
 }
 
 interface FormData {

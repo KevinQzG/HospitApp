@@ -1,6 +1,6 @@
-import { IPSResponse } from '@/models/ips.interface';
+import { IpsResponse } from '@/models/ips.interface';
 import { SpecialtyResponse } from '@/models/specialty.interface';
-import { EPSResponse } from '@/models/eps.interface';
+import { EpsResponse } from '@/models/eps.interface';
 
 /**
  * @interface
@@ -21,7 +21,7 @@ export default interface SearchIpsServiceAdapter {
      * @param {number} page_size - The number of results per page.
      * @returns {Promise<{ results: IPS[]; total: number }>} The results is an array of IPSs that meet the specified criteria without surpassing the page size, and the total is the total number of IPSs that meet the specified criteria.
      */
-    filter(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IPSResponse[]; total: number }>;
+    filter(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IpsResponse[]; total: number }>;
 
 
     /**
@@ -36,5 +36,5 @@ export default interface SearchIpsServiceAdapter {
      * @async
      * @returns {Promise<EPS[]>} The EPSs from the database.
      */
-    get_eps(): Promise<EPSResponse[]>;
+    get_eps(): Promise<EpsResponse[]>;
 }

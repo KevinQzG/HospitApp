@@ -1,12 +1,12 @@
 import { ObjectId } from 'mongodb';
-import { EPSDocument, EPSResponse } from './eps.interface';
+import { EpsDocument, EpsResponse } from './eps.interface';
 import { EPSMapper } from '@/utils/mappers/eps_mapper';
 
 /**
  * Class that defines the structure and behavior of the EPS entity.
  * @class EPS
  */
-export class EPS {
+export class Eps {
     private _id: ObjectId;
     private name: string;
     private phone: string;
@@ -41,17 +41,17 @@ export class EPS {
 
     /**
      * Converts the EPS entity to a plain object.
-     * @returns {EPSDocument} A plain object representation of the EPS.
+     * @returns {EpsDocument} A plain object representation of the EPS.
      */
-    to_object(): EPSDocument {
+    to_object(): EpsDocument {
         return EPSMapper.from_domain_to_document(this);
     }
 
     /**
      * Converts the EPS entity to a plain response object.
-     * @returns {EPSResponse} A plain response object representation of the EPS.
+     * @returns {EpsResponse} A plain response object representation of the EPS.
      */
-    to_response(): EPSResponse {
+    to_response(): EpsResponse {
         return EPSMapper.from_domain_to_response(this);
     }    
 
@@ -59,7 +59,7 @@ export class EPS {
      * Gets the unique identifier of the EPS.
      * @returns {ObjectId} The unique identifier of the EPS.
      */
-    getId(): ObjectId {
+    get_id(): ObjectId {
         return this._id;
     }
 
@@ -67,7 +67,7 @@ export class EPS {
      * Gets the name of the EPS.
      * @returns {string} The name of the EPS.
      */
-    getName(): string {
+    get_name(): string {
         return this.name;
     }
 
@@ -78,7 +78,7 @@ export class EPS {
      * 
      * @throws {Error} If the name is invalid.
      */
-    setName(name: string): void {
+    set_name(name: string): void {
         this.name = name;
         this.validate();
     }
@@ -88,7 +88,7 @@ export class EPS {
      * Gets the phone number of the EPS.
      * @returns {string} The phone number of the EPS.
      */
-    getPhone(): string {
+    get_phone(): string {
         return this.phone;
     }
 
@@ -99,7 +99,7 @@ export class EPS {
      * 
      * @throws {Error} If the phone number is invalid.
      */
-    setPhone(phone: string): void {
+    set_phone(phone: string): void {
         this.phone = phone;
         this.validate();
     }
@@ -108,7 +108,7 @@ export class EPS {
      * Gets the fax number of the EPS.
      * @returns {string} The fax number of the EPS.
      */
-    getFax(): string {
+    get_fax(): string {
         return this.fax;
     }
 
@@ -119,7 +119,7 @@ export class EPS {
      * 
      * @throws {Error} If the fax number is invalid.
      */
-    setFax(fax: string): void {
+    set_fax(fax: string): void {
         this.fax = fax;
         this.validate();
     }
@@ -128,18 +128,18 @@ export class EPS {
      * Gets the email of the EPS.
      * @returns {string} The email of the EPS.
      */
-    getEmails(): string {
+    get_emails(): string {
         return this.emails;
     }
 
     /**
      * Sets the email of the EPS.
      * 
-     * @param {string} email - The email of the EPS.
+     * @param {string} emails - The email of the EPS.
      * 
      * @throws {Error} If the email is invalid.
      */
-    setEmails(emails: string): void {
+    set_emails(emails: string): void {
         this.emails = emails;
         this.validate();
     }
@@ -148,7 +148,7 @@ export class EPS {
      * Converts the EPS entity to a string.
      * @returns {string} A string representation of the EPS.
      */
-    toString(): string {
+    to_string(): string {
         return JSON.stringify(this.to_object());
     }
 }

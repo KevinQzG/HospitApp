@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 
-export interface EPSDocument {
+export interface EpsDocument {
     _id: ObjectId;
     name: string;
     "01_8000_phone": string;
@@ -8,7 +8,7 @@ export interface EPSDocument {
     emails: string;
 }
 
-export interface EPSResponse {
+export interface EpsResponse {
     _id: string;
     name: string;
     "01_8000_phone": string;

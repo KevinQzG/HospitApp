@@ -3,13 +3,13 @@ import DBAdapter from '@/adapters/db.adapter';
 import EpsRepositoryAdapter from '@/adapters/eps_repository.adapter';
 import _CONTAINER from '@/adapters/container';
 import { _TYPES } from '@/adapters/types';
-import { EPS } from '@/models/eps';
+import { Eps } from '@/models/eps';
 
 describe('EpsMongoRepository Integration Test', () => {
     let db_handler: DBAdapter;
     let repository: EpsRepositoryAdapter;
 
-    let results: EPS[];
+    let results: Eps[];
 
     beforeAll(async () => {
         db_handler = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
@@ -30,7 +30,7 @@ describe('EpsMongoRepository Integration Test', () => {
 
             // Verify all items are EPS instances
             results.forEach(eps => {
-                expect(eps).toBeInstanceOf(EPS);
+                expect(eps).toBeInstanceOf(Eps);
             });
         });
 

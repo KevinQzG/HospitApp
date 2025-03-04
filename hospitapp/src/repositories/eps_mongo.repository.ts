@@ -2,8 +2,8 @@ import { injectable, inject } from "inversify";
 import { Db } from "mongodb";
 import EpsRepositoryAdapter from "@/adapters/eps_repository.adapter";
 import { _TYPES } from "@/adapters/types";
-import { EPSDocument } from "@/models/eps.interface";
-import { EPS } from "@/models/eps";
+import { EpsDocument } from "@/models/eps.interface";
+import { Eps } from "@/models/eps";
 import type DBAdapter from "@/adapters/db.adapter";
 import { EPSMapper } from "@/utils/mappers/eps_mapper";
 // import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
@@ -27,10 +27,10 @@ export class EpsMongoRepository implements EpsRepositoryAdapter {
         @inject(_TYPES.DBAdapter) private db_handler: DBAdapter<Db>
     ) { }
 
-    async find_all(): Promise<EPS[]> {
+    async find_all(): Promise<Eps[]> {
         // Get all the EPS Documents
         const _DB = await this.db_handler.connect();
-        const _RESULTS = await _DB.collection<EPSDocument>('EPS').find().toArray();
+        const _RESULTS = await _DB.collection<EpsDocument>('EPS').find().toArray();
         
         if (!_RESULTS) {
             return [];

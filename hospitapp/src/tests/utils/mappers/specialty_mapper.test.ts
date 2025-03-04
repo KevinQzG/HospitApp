@@ -27,18 +27,18 @@ describe('SpecialtyMapper', () => {
   it('should map complete document to domain', () => {
     specialty = SpecialtyMapper.from_document_to_domain(_FULL_DOC);
     
-    expect(specialty.getId()).toEqual(_FULL_DOC._id);
-    expect(specialty.getName()).toBe(_FULL_DOC.name);
-    expect(specialty.getScheduleMonday()).toBe(_FULL_DOC.schedule_monday);
-    expect(specialty.getScheduleSunday()).toBeUndefined();
+    expect(specialty.get_id()).toEqual(_FULL_DOC._id);
+    expect(specialty.get_name()).toBe(_FULL_DOC.name);
+    expect(specialty.get_schedule_monday()).toBe(_FULL_DOC.schedule_monday);
+    expect(specialty.get_schedule_sunday()).toBeUndefined();
   });
 
   it('should map minimal document to domain', () => {
     specialty = SpecialtyMapper.from_document_to_domain(_MINIMAL_DOC);
     
-    expect(specialty.getId()).toEqual(_MINIMAL_DOC._id);
-    expect(specialty.getName()).toBe(_MINIMAL_DOC.name);
-    expect(specialty.getScheduleMonday()).toBeUndefined();
+    expect(specialty.get_id()).toEqual(_MINIMAL_DOC._id);
+    expect(specialty.get_name()).toBe(_MINIMAL_DOC.name);
+    expect(specialty.get_schedule_monday()).toBeUndefined();
   });
 
   it('should map complete domain to document', () => {

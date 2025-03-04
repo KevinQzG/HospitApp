@@ -1,4 +1,4 @@
-import { EPS } from '@/models/eps';
+import { Eps } from '@/models/eps';
 
 /**
  * @interface
@@ -9,7 +9,7 @@ export default interface EpsRepositoryAdapter {
     /**
      * Gets all EPSs from the database, it returns an empty array there is not EPSs
      * @async
-     * @returns {Promise<EPS[]>} 
+     * @returns {Promise<Eps[]>} 
      */
-    find_all(): Promise<EPS[]>;
+    find_all(): Promise<Eps[]>;
 }
