@@ -19,7 +19,7 @@ export const get_ips_props = async (params: { id: string }): Promise<IpsResponse
         return _IPS;
     } catch (error) {
         if (error instanceof Error) {
-            throw new Error(`Error fetching page props: ${error.message}`);
+            throw error
         } else {
             throw new Error('Error fetching page props');
         }
