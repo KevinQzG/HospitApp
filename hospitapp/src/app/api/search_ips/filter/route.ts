@@ -107,34 +107,34 @@ export async function POST(req: NextRequest): Promise<NextResponse<SearchRespons
     );
     try {
         // Parse and validate request body
-        const body: SearchRequest = await req.json();
+        const _BODY: SearchRequest = await req.json();
 
         // Body validation
-        const { success, error } = validate_request_body(body);
-        if (!success) {
-            return NextResponse.json({ success: false, error }, { status: 400 });
+        const { success: _SUCCESS, error: _ERROR } = validate_request_body(_BODY);
+        if (!_SUCCESS) {
+            return NextResponse.json({ success: false, error: _ERROR }, { status: 400 });
         }
 
-        const { results, total } = await _SEARCH_SERVICE.filter_ips(
-            body.coordinates[0], // longitude
-            body.coordinates[1], // latitude
-            body.max_distance,
-            body.specialties || [],
-            body.eps_names || [],
-            body.page || 1,
-            body.page_size || 10
+        const { results: _RESULTS, total: _TOTAL } = await _SEARCH_SERVICE.filter_ips(
+            _BODY.coordinates[0], // longitude
+            _BODY.coordinates[1], // latitude
+            _BODY.max_distance,
+            _BODY.specialties || [],
+            _BODY.eps_names || [],
+            _BODY.page || 1,
+            _BODY.page_size || 10
         );
 
         await _DB_HANDLER.close();
         // revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)
         return NextResponse.json({
             success: true,
-            data: results,
+            data: _RESULTS,
             pagination: {
-                total,
-                total_pages: Math.ceil(total / (body.page_size || 10)),
-                page: body.page || 1,
-                page_size: body.page_size || 10,
+                total: _TOTAL,
+                total_pages: Math.ceil(_TOTAL / (_BODY.page_size || 10)),
+                page: _BODY.page || 1,
+                page_size: _BODY.page_size || 10,
             }
         });
     } catch (error) {

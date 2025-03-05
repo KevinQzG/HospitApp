@@ -82,7 +82,7 @@ describe('SearchIpsMongoService Integration Test', () => {
 
     describe('filter', () => {
         it('should correctly delegate to repository and return documents', async () => {
-            const { results, total } = await service.filter_ips(
+            const { results: _RESULTS, total: _TOTAL } = await service.filter_ips(
                 _TEST_COORDINATES[0],
                 _TEST_COORDINATES[1],
                 5000,
@@ -104,12 +104,12 @@ describe('SearchIpsMongoService Integration Test', () => {
             );
 
             // Verify output transformation
-            expect(results).toEqual([_MOCK_IPS_RES]);
-            expect(total).toBe(1);
+            expect(_RESULTS).toEqual([_MOCK_IPS_RES]);
+            expect(_TOTAL).toBe(1);
         });
 
         it('should convert all results to IPSDocument format', async () => {
-            const { results } = await service.filter_ips(
+            const { results: _RESULTS } = await service.filter_ips(
                 _TEST_COORDINATES[0],
                 _TEST_COORDINATES[1],
                 5000,
@@ -119,7 +119,7 @@ describe('SearchIpsMongoService Integration Test', () => {
                 10
             );
 
-            results.forEach(doc => {
+            _RESULTS.forEach(doc => {
                 expect(doc).toMatchObject({
                     _id: expect.any(String),
                     name: expect.any(String),
@@ -133,7 +133,7 @@ describe('SearchIpsMongoService Integration Test', () => {
         });
 
         it('should handle pagination parameters correctly', async () => {
-            const { total } = await service.filter_ips(
+            const { total: _TOTAL } = await service.filter_ips(
                 _TEST_COORDINATES[0],
                 _TEST_COORDINATES[1],
                 5000,
@@ -152,7 +152,7 @@ describe('SearchIpsMongoService Integration Test', () => {
                 2,
                 5
             );
-            expect(total).toBe(1);
+            expect(_TOTAL).toBe(1);
         });
 
         it('should handle repository errors', async () => {
@@ -220,29 +220,29 @@ describe('SearchIpsMongoService Integration Test', () => {
     
     describe('get_ips_by_id', () => {
         it('should retrieve IPS by ID and return transformed response', async () => {
-            const id = '67b3e98bb1ae5d9e47ae7a07';
-            const result = await service.get_ips_by_id(id);
+            const _ID = '67b3e98bb1ae5d9e47ae7a07';
+            const _RESULT = await service.get_ips_by_id(_ID);
 
-            expect(mock_ips_repository.find_by_id).toHaveBeenCalledWith(id);
-            expect(result).toEqual(_MOCK_IPS_RES);
+            expect(mock_ips_repository.find_by_id).toHaveBeenCalledWith(_ID);
+            expect(_RESULT).toEqual(_MOCK_IPS_RES);
         });
 
         it('should return null if IPS is not found', async () => {
-            const id = 'non_existent_id';
+            const _ID = 'non_existent_id';
             mock_ips_repository.find_by_id.mockResolvedValueOnce(null);
 
-            const result = await service.get_ips_by_id(id);
+            const _RESULT = await service.get_ips_by_id(_ID);
 
-            expect(mock_ips_repository.find_by_id).toHaveBeenCalledWith(id);
-            expect(result).toBeNull();
+            expect(mock_ips_repository.find_by_id).toHaveBeenCalledWith(_ID);
+            expect(_RESULT).toBeNull();
         });
 
         it('should handle repository errors', async () => {
-            const id = 'error_id';
-            const error = new Error('DB error');
-            mock_ips_repository.find_by_id.mockRejectedValueOnce(error);
+            const _ID = 'error_id';
+            const _ERROR = new Error('DB error');
+            mock_ips_repository.find_by_id.mockRejectedValueOnce(_ERROR);
 
-            await expect(service.get_ips_by_id(id)).rejects.toThrow(error);
+            await expect(service.get_ips_by_id(_ID)).rejects.toThrow(_ERROR);
         });
     });
 });

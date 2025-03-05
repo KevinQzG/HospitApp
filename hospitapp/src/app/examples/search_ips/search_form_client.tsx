@@ -15,23 +15,23 @@ interface FormData {
 }
 
 export default function SearchFormClient({ specialties, eps }: SearchFormClientProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [results, setResults] = useState<SearchResponse | null>(null);
+  const [_IS_SUBMITTING, set_is_submitting] = useState(false);
+  const [_ERROR, set_error] = useState<string | null>(null);
+  const [_RESULTS, set_results] = useState<SearchResponse | null>(null);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const _HANDLE_SUBMIT = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-    setResults(null);
+    set_is_submitting(true);
+    set_error(null);
+    set_results(null);
 
 
     try {
       // Safely access form elements
-      const formData = new FormData(e.currentTarget);
+      const _FORM_DATA = new FormData(e.currentTarget);
 
       // Get geolocation
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+      const _POSITION = await new Promise<GeolocationPosition>((resolve, reject) => {
         if (!navigator.geolocation) {
           reject(new Error('Geolocation not supported'));
           return;
@@ -43,45 +43,45 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
           { enableHighAccuracy: true, timeout: 10000 }
         );
       });
-      const specialties = JSON.parse(formData.get('specialties') as string || '[]');
-      const eps = JSON.parse(formData.get('eps') as string || '[]');
+      const _SPECIALTIES = JSON.parse(_FORM_DATA.get('specialties') as string || '[]');
+      const _EPS = JSON.parse(_FORM_DATA.get('eps') as string || '[]');
 
       // Build form data
-      const requestData: FormData = {
-        coordinates: [position.coords.longitude, position.coords.latitude],
-        max_distance: parseInt(formData.get('max_distance')?.toString() || '5000'),
-        specialties,
-        eps,
-        page: parseInt(formData.get('page')?.toString() || '1'),
-        page_size: parseInt(formData.get('page_size')?.toString() || '10')
+      const _REQUEST_DATA: FormData = {
+        coordinates: [_POSITION.coords.longitude, _POSITION.coords.latitude],
+        max_distance: parseInt(_FORM_DATA.get('max_distance')?.toString() || '5000'),
+        specialties: _SPECIALTIES,
+        eps: _EPS,
+        page: parseInt(_FORM_DATA.get('page')?.toString() || '1'),
+        page_size: parseInt(_FORM_DATA.get('page_size')?.toString() || '10')
       };
-      console.log('Request data:', requestData);
+      console.log('Request data:', _REQUEST_DATA);
 
       // API call
-      const response = await fetch('/api/search_ips/filter', {
+      const _RESPONSE = await fetch('/api/search_ips/filter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestData)
+        body: JSON.stringify(_REQUEST_DATA)
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'API request failed');
+      if (!_RESPONSE.ok) {
+        const _ERROR_DATA = await _RESPONSE.json();
+        throw new Error(_ERROR_DATA.error || 'API request failed');
       }
 
-      const result = await response.json();
-      setResults(result);
-      console.log('Search results:', result);
+      const _RESULT = await _RESPONSE.json();
+      set_results(_RESULT);
+      console.log('Search results:', _RESULT);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      set_error(err instanceof Error ? err.message : 'Unknown error occurred');
       console.error('Submission error:', err);
     } finally {
-      setIsSubmitting(false);
+      set_is_submitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={_HANDLE_SUBMIT} className="space-y-4">
       <div>
         <label htmlFor="max_distance">Maximum Distance:</label>
         <select name="max_distance" id="max_distance" required>
@@ -120,27 +120,27 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
         <input type="number" name="page_size" id="page_size" defaultValue="10" min="1" required />
       </div>
 
-      {error && (
+      {_ERROR && (
         <div className="p-3 bg-red-100 text-red-700 rounded-md">
-          Error: {error}
+          Error: {_ERROR}
         </div>
       )}
 
-      {results && (
+      {_RESULTS && (
         <div className="p-3 bg-gray-50 rounded-md space-y-4">
           <h3 className="text-lg font-semibold mb-2">Search Results</h3>
 
           {/* Pagination Info */}
-          {results.pagination && (
+          {_RESULTS.pagination && (
             <div className="mb-4 text-sm text-gray-600">
-              Showing page {results.pagination.page} of {results.pagination.total_pages} -
-              {results.pagination.total} total results
+              Showing page {_RESULTS.pagination.page} of {_RESULTS.pagination.total_pages} -
+              {_RESULTS.pagination.total} total results
             </div>
           )}
 
           {/* Results List */}
           <div className="space-y-2">
-            {results.data?.map((item) => (
+            {_RESULTS.data?.map((item) => (
               <div
                 key={item._id}
                 className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
@@ -197,9 +197,9 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
           </div>
 
           {/* Pagination Summary */}
-          {results.pagination && (
+          {_RESULTS.pagination && (
             <div className="mt-4 text-sm text-gray-600">
-              Showing {results.pagination.page_size} items per page
+              Showing {_RESULTS.pagination.page_size} items per page
             </div>
           )}
         </div>
@@ -207,10 +207,10 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
 
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={_IS_SUBMITTING}
         className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400"
       >
-        {isSubmitting ? 'Searching...' : 'Search'}
+        {_IS_SUBMITTING ? 'Searching...' : 'Search'}
       </button>
     </form>
   );

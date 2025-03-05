@@ -30,9 +30,9 @@ const validate_env = (): EnvironmentVariables => {
   };
 
   // Check for missing required variables
-  for (const [key, value] of Object.entries(_ENV)) {
-    if (!value) {
-      throw new Error(`Missing environment variable: ${key}`);
+  for (const [_KEY, _VALUE] of Object.entries(_ENV)) {
+    if (!_VALUE) {
+      throw new Error(`Missing environment variable: ${_KEY}`);
     }
   }
 

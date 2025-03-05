@@ -1,17 +1,10 @@
 // app/examples/ips/[id]/page.tsx
-import { IpsResponse } from '@/models/ips.interface';
-import DBAdapter from '@/adapters/db.adapter';
-import _CONTAINER from "@/adapters/container";
-import { _TYPES } from "@/adapters/types";
+import { get_ips_props } from '@/services/search_ips/data_fetching.service';
 import Link from 'next/link';
 
 export default async function IpsDetailPage({ params }: { params: { id: string } }) {
-  const _DB_HANDLER = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
-  const _IPS_REPOSITORY = _CONTAINER.get<IpsRepositoryAdapter>(_TYPES.IpsRepositoryAdapter);
-  
   try {
-    const ips = await _IPS_REPOSITORY.find_by_id(params.id);
-    await _DB_HANDLER.close();
+    const ips = await get_ips_props(params);
 
     if (!ips) {
       return (
@@ -115,7 +108,6 @@ export default async function IpsDetailPage({ params }: { params: { id: string }
       </div>
     );
   } catch {
-    await _DB_HANDLER.close();
     return (
       <div className="p-4 text-center text-red-600">
         <h1 className="text-2xl font-bold">Error loading IPS details</h1>

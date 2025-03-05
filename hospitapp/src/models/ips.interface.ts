@@ -36,4 +36,6 @@ export interface IpsResponse {
     distance?: number;
     eps?: EpsResponse[];
     specialties?: SpecialtyResponse[];
+    maps?: string;
+    waze?: string;
 }
