@@ -3,7 +3,7 @@ import DBAdapter from '@/adapters/db.adapter';
 import IpsRepositoryAdapter from '@/adapters/ips_repository.adapter';
 import _CONTAINER from '@/adapters/container';
 import { _TYPES } from '@/adapters/types';
-import { IPS } from '@/models/ips';
+import { Ips } from '@/models/ips';
 
 describe('IpsMongoRepository Integration Test', () => {
   let db_handler: DBAdapter;
@@ -43,11 +43,11 @@ describe('IpsMongoRepository Integration Test', () => {
       expect(_RESULTS).toHaveLength(1);
 
       const _IPS = _RESULTS[0];
-      expect(_IPS.getId()).toEqual(_EXPECTED_IPS_ID);
-      expect(_IPS.getName()).toBe('ESE HOSPITAL VENANCIO DIAZ DIAZ');
-      expect(_IPS.getDepartment()).toBe('ANTIOQUIA');
-      expect(_IPS.getTown()).toBe('SABANETA');
-      expect(_IPS.getDistance()).toBeCloseTo(2415.089412549286, 4);
+      expect(_IPS.get_id()).toEqual(_EXPECTED_IPS_ID);
+      expect(_IPS.get_name()).toBe('ESE HOSPITAL VENANCIO DIAZ DIAZ');
+      expect(_IPS.get_department()).toBe('ANTIOQUIA');
+      expect(_IPS.get_town()).toBe('SABANETA');
+      expect(_IPS.get_distance()).toBeCloseTo(2415.089412549286, 4);
     });
 
     it('should validate complete IPS document structure', async () => {
@@ -78,7 +78,7 @@ describe('IpsMongoRepository Integration Test', () => {
         distance: 2415.089412549286
       };
 
-      expect(_IPS.toObject()).toMatchObject({
+      expect(_IPS.to_object()).toMatchObject({
         ..._EXPECTED_DATA,
         distance: expect.closeTo(_EXPECTED_DATA.distance, 4)
       });
@@ -98,12 +98,12 @@ describe('IpsMongoRepository Integration Test', () => {
       const [_IPS] = _RESULTS;
 
       // Validate coordinates precision
-      expect(_IPS.getLocation().coordinates[0]).toBeCloseTo(-75.6221158, 7);
-      expect(_IPS.getLocation().coordinates[1]).toBeCloseTo(6.1482081, 7);
+      expect(_IPS.get_location().coordinates[0]).toBeCloseTo(-75.6221158, 7);
+      expect(_IPS.get_location().coordinates[1]).toBeCloseTo(6.1482081, 7);
 
       // Validate distance calculation
-      expect(_IPS.getDistance()).toBeGreaterThan(2400);
-      expect(_IPS.getDistance()).toBeLessThan(2500);
+      expect(_IPS.get_distance()).toBeGreaterThan(2400);
+      expect(_IPS.get_distance()).toBeLessThan(2500);
     });
 
     // New test for pagination
@@ -154,7 +154,7 @@ describe('IpsMongoRepository Integration Test', () => {
         distance: 2566.342006462017
       };
 
-      expect(_IPS.toObject()).toMatchObject({
+      expect(_IPS.to_object()).toMatchObject({
         ..._EXPECTED_DATA,
         distance: expect.closeTo(_EXPECTED_DATA.distance, 4)
       });
@@ -167,15 +167,15 @@ describe('IpsMongoRepository Integration Test', () => {
 
   describe('find_by_id', () => {
     const _EXPECTED_IPS_ID = "67b3e98bb1ae5d9e47ae72a8";
-    let ips: IPS | null;
+    let ips: Ips | null;
 
     it('should retrieve exactly one matching IPS with correct data', async () => {
       ips = await repository.find_by_id(_EXPECTED_IPS_ID);
 
-      expect(ips?.getId()).toEqual(new ObjectId(_EXPECTED_IPS_ID));
-      expect(ips?.getName()).toBe('INSTITUTO DEL CORAZON SEDE CENTRO');
-      expect(ips?.getDepartment()).toBe('ANTIOQUIA');
-      expect(ips?.getTown()).toBe('MEDELLÍN');
+      expect(ips?.get_id()).toEqual(new ObjectId(_EXPECTED_IPS_ID));
+      expect(ips?.get_name()).toBe('INSTITUTO DEL CORAZON SEDE CENTRO');
+      expect(ips?.get_department()).toBe('ANTIOQUIA');
+      expect(ips?.get_town()).toBe('MEDELLÍN');
     });
 
     it('should validate complete IPS document structure', async () => {
@@ -305,7 +305,7 @@ describe('IpsMongoRepository Integration Test', () => {
 
       };
 
-      expect(ips?.toObject()).toMatchObject(_EXPECTED_DATA);
+      expect(ips?.to_object()).toMatchObject(_EXPECTED_DATA);
     });
 
   });

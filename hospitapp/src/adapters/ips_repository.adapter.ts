@@ -1,4 +1,4 @@
-import { IPS } from '@/models/ips';
+import { Ips } from '@/models/ips';
 
 /**
  * @interface
@@ -16,15 +16,15 @@ export default interface IpsRepositoryAdapter {
      * @param {string[]} eps_names - EPSs that the IPSs must have.
      * @param {number} page - The page number.
      * @param {number} page_size - The number of results per page.
-     * @returns {Promise<{ results: IPS[]; total: number }>} The IPSs that meet the specified criteria.
+     * @returns {Promise<{ results: Ips[]; total: number }>} The IPSs that meet the specified criteria.
      */
-    find_all_by_distance_specialty_eps(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IPS[]; total: number }>;
+    find_all_by_distance_specialty_eps(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: Ips[]; total: number }>;
 
     /**
      * Gets the IPS with the specified id.
      * @async
      * @param {string} id - The id of the IPS.
-     * @returns {Promise<IPS | null>} The IPS with the specified id, or null if no IPS was found.
+     * @returns {Promise<Ips | null>} The IPS with the specified id, or null if no IPS was found.
      */
-    find_by_id(id: string): Promise<IPS | null>;
+    find_by_id(id: string): Promise<Ips | null>;
 }

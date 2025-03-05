@@ -2,8 +2,8 @@ import { injectable, inject } from "inversify";
 import { Db } from "mongodb";
 import IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
 import { _TYPES } from "@/adapters/types";
-import { IPSDocument } from "@/models/ips.interface";
-import { IPS } from "@/models/ips";
+import { IpsDocument } from "@/models/ips.interface";
+import { Ips } from "@/models/ips";
 import type DBAdapter from "@/adapters/db.adapter";
 import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
 import { IpsMapper } from "@/utils/mappers/ips_mapper";
@@ -36,7 +36,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
         eps_names: string[],
         page: number = 1,
         page_size: number = 10
-    ): Promise<{ results: IPS[]; total: number }> {
+    ): Promise<{ results: Ips[]; total: number }> {
         // Build the pipeline
         const _PIPELINE = new IpsPipelineBuilder()
             .add_geo_stage(longitude, latitude, max_distance)
@@ -47,7 +47,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 
         // Execute the pipeline
         const _DB = await this.db_handler.connect();
-        const _AGGREGATION_RESULT = await _DB.collection<IPSDocument>('IPS')
+        const _AGGREGATION_RESULT = await _DB.collection<IpsDocument>('IPS')
             .aggregate<AggregationResult>(_PIPELINE).next();
         
         // If no results, return an empty array
@@ -61,12 +61,12 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 
         // Convert the IPS document to a IPS entity and return the results
         return {
-            results: _RESULTS.map(IpsMapper.to_domain),
+            results: _RESULTS.map(IpsMapper.from_document_to_domain),
             total: _TOTAL
         };
     }
 
-    async find_by_id(id: string): Promise<IPS | null> {
+    async find_by_id(id: string): Promise<Ips | null> {
         // Build the pipeline
         const _PIPELINE = new IpsPipelineBuilder()
             .add_match_id_stage(id)
@@ -76,8 +76,8 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 
         // Execute the pipeline
         const _DB = await this.db_handler.connect();
-        const _AGGREGATION_RESULT = await _DB.collection<IPSDocument>('IPS')
-            .aggregate<IPSDocument>(_PIPELINE).next();
+        const _AGGREGATION_RESULT = await _DB.collection<IpsDocument>('IPS')
+            .aggregate<IpsDocument>(_PIPELINE).next();
 
         // If no results, return null
         if (!_AGGREGATION_RESULT) {
@@ -85,6 +85,6 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
         }
 
         // Convert the IPS document to a IPS entity
-        return IpsMapper.to_domain(_AGGREGATION_RESULT);
+        return IpsMapper.from_document_to_domain(_AGGREGATION_RESULT);
     }
 }

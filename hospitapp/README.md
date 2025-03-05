@@ -1,4 +1,15 @@
+# HospitApp
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Content Table
+
+- [Getting Started](#getting-started)
+- [API Documentation](API.md)
+- [Project Structure](#project-structure)
+- [Learn More](#learn-more)
+- [Deploy on Vercel](#deploy-on-vercel)
+
 
 ## Getting Started
 
