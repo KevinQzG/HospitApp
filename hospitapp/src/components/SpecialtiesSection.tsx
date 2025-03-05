@@ -12,14 +12,14 @@ export default function SpecialtiesSection() {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8">
           <SpecialtyCard name="Odontología" icon={Pill} />
-          <SpecialtyCard name="Diagnóstico General" icon={Syringe} active />
+          <SpecialtyCard name="Diagnóstico General" icon={Syringe} />
           <SpecialtyCard name="Neurología" icon={Brain} />
           <SpecialtyCard name="Cardiología" icon={HeartPulse} />
           <SpecialtyCard name="Nutrición" icon={Pill} />
           <SpecialtyCard name="Ortopedia" icon={Bone} />
           <SpecialtyCard name="Endocrinología" icon={Stethoscope} />
           <SpecialtyCard name="Psicología" icon={User} />
-          <SpecialtyCard name="+ Especialidades" icon={Hospital} />
+          <SpecialtyCard name="Urgencias" icon={Hospital} />
         </div>
       </div>
     </section>

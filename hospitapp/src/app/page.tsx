@@ -36,7 +36,7 @@ export default function HomePage() {
           {/* Image*/}
           <div className="md:w-1/2 flex justify-end relative hidden md:block">
             <Image 
-              src="/medicos.png" 
+              src="/stock/medicos.png" 
               alt="Equipo médico" 
               width={500} 
               height={500} 

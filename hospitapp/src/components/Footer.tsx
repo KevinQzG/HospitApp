@@ -15,7 +15,7 @@ config.autoAddCss = false;
 
 export default function Footer() {
   return (
-    <footer className="bg-blue-600 text-white">
+    <footer className="bg-blue-600 text-white pb-20 sm:pb-0"> {/* Margen inferior para móvil */}
       <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center sm:text-left">
         
         {/* Branding */}
@@ -59,9 +59,6 @@ export default function Footer() {
           </h3>
           <ul className="text-sm space-y-2 mt-3">
             <li><a href="/about" className="hover:underline flex items-center justify-center sm:justify-start">Quiénes somos</a></li>
-            <li><a href="/vision" className="hover:underline flex items-center justify-center sm:justify-start">Nuestra visión</a></li>
-            <li><a href="/team" className="hover:underline flex items-center justify-center sm:justify-start">Nuestro equipo</a></li>
-            <li><a href="/terms" className="hover:underline flex items-center justify-center sm:justify-start">Términos y condiciones</a></li>
             <li><a href="/faqs" className="hover:underline flex items-center justify-center sm:justify-start">FAQs</a></li>
           </ul>
         </div>
@@ -72,7 +69,6 @@ export default function Footer() {
             <Contact className="w-5 h-5 mr-2" /> Contacto
           </h3>
           <ul className="text-sm space-y-2 mt-3">
-            <li className="flex items-center justify-center sm:justify-start"><Phone className="w-4 h-4 mr-2" /> +57 3177011615</li>
             <li className="flex items-center justify-center sm:justify-start"><Mail className="w-4 h-4 mr-2" /> admin@hospitapp.com</li>
             <li className="flex items-center justify-center sm:justify-start"><MapPin className="w-4 h-4 mr-2" /> Medellín, Antioquia, Colombia</li>
           </ul>
@@ -80,8 +76,17 @@ export default function Footer() {
       </div>
 
       {/* Copyright */}
-      <div className="bg-blue-500 text-center text-sm opacity-80 py-4 mt-10">
-        © 2025 HospitAPP, All Rights Reserved
+      <div className="bg-blue-700 py-4 mt-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm opacity-90">
+          <p className="mb-2">
+            © 2025 HospitAPP. Todos los derechos reservados.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <a href="/privacy-policy" className="hover:underline">Política de Privacidad</a>
+            <a href="/terms-of-service" className="hover:underline">Términos de Servicio</a>
+            <a href="/cookies-policy" className="hover:underline">Política de Cookies</a>
+          </div>
+        </div>
       </div>
     </footer>
   );
