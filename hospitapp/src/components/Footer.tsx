@@ -20,8 +20,8 @@ export default function Footer() {
         
         {/* Branding */}
         <div className="flex flex-col items-center sm:items-start space-y-4">
-          <h2 className="text-2xl font-semibold">HospitAPP</h2>
-          <p className="text-sm max-w-xs leading-relaxed">
+        <h2 className="text-2xl font-semibold notranslate" translate="no">HospitAPP</h2>
+        <p className="text-sm max-w-xs leading-relaxed">
             La forma más rápida, segura e inteligente de encontrar atención médica en Colombia.
           </p>
           <div className="flex space-x-3 mt-3">
