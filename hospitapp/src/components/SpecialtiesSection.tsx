@@ -1,4 +1,4 @@
-import { Stethoscope, HeartPulse, Pill, Brain, Bone, User, Hospital, ClipboardList, Syringe } from "lucide-react";
+import { Stethoscope, HeartPulse, Pill, Brain, Bone, User, Hospital, ClipboardList, Syringe, Candy } from "lucide-react";
 import SpecialtyCard from "@/components/SpecialtyCard";
 
 export default function SpecialtiesSection() {
@@ -11,7 +11,7 @@ export default function SpecialtiesSection() {
         </p>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8">
-          <SpecialtyCard name="Odontología" icon={Pill} />
+          <SpecialtyCard name="Odontología" icon={Candy} />
           <SpecialtyCard name="Diagnóstico General" icon={Syringe} />
           <SpecialtyCard name="Neurología" icon={Brain} />
           <SpecialtyCard name="Cardiología" icon={HeartPulse} />

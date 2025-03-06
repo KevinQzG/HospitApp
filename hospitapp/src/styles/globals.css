@@ -9,6 +9,13 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
 }
 
+@font-face {
+  font-family: "SF Pro";
+  src: url("/fonts/sf-pro.woff2") format("woff2");
+  font-display: swap;
+}
+
+
 @layer components {
   /* Ícons */
   .social-icon {
@@ -23,6 +30,11 @@ body {
   /* Translations */
   .notranslate {
     unicode-bidi: plaintext !important;
+  }
+  @media (min-width: 1120px) {
+    .custom-desktop\:block {
+      display: block !important;
+    }
   }
   
 }
