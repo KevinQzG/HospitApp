@@ -10,6 +10,7 @@ interface EnvironmentVariables {
   NEXT_PUBLIC_APP_NAME: string;
   DATABASE_URL: string;
   DATABASE_NAME: string;
+  CACHE_TTL: number;
 }
 
 /**
@@ -25,12 +26,13 @@ const validate_env = (): EnvironmentVariables => {
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_NAME: process.env.DATABASE_NAME,
+    CACHE_TTL: parseInt(process.env.CACHE_TTL || '86400', 10)
   };
 
   // Check for missing required variables
-  for (const [key, value] of Object.entries(_ENV)) {
-    if (!value) {
-      throw new Error(`Missing environment variable: ${key}`);
+  for (const [_KEY, _VALUE] of Object.entries(_ENV)) {
+    if (!_VALUE) {
+      throw new Error(`Missing environment variable: ${_KEY}`);
     }
   }
 

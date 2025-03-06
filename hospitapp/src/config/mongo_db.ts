@@ -26,9 +26,12 @@ class MongoDB implements DBAdapter<Db> {
     try {
       // Create a new MongoDB client
       this.client = new MongoClient(_ENV.DATABASE_URL, {
-        maxPoolSize: 5, // Optimal for serverless
-        minPoolSize: 1,
-        serverSelectionTimeoutMS: 3000
+        maxPoolSize: 10,
+        minPoolSize: 2,
+        serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 10000,
+        socketTimeoutMS: 45000,
+        heartbeatFrequencyMS: 10000,
       });
 
       // Connect to the database
@@ -56,10 +59,6 @@ class MongoDB implements DBAdapter<Db> {
       this.client = null;
       console.log('MongoDB connection closed');
     }
-  }
-
-  get_client(): MongoClient | null {
-    return this.client;
   }
 }
 

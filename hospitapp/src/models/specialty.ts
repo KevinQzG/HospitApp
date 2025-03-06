@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { SpecialtyDocument } from './specialty.interface';
+import { SpecialtyDocument, SpecialtyResponse } from './specialty.interface';
 import { SpecialtyMapper } from '@/utils/mappers/specialty_mapper';
 
 /**
@@ -55,15 +55,23 @@ export class Specialty {
      * Converts the Specialty entity to a plain object.
      * @returns {SpecialtyDocument} A plain object representation of the Specialty.
      */
-    toObject(): SpecialtyDocument {
-        return SpecialtyMapper.to_document(this);
+    to_object(): SpecialtyDocument {
+        return SpecialtyMapper.from_domain_to_document(this);
+    }
+
+    /**
+     * Converts the Specialty entity to a plain object.
+     * @returns {SpecialtyResponse} A plain object representation of the Specialty.
+     */
+    to_response(): SpecialtyResponse {
+        return SpecialtyMapper.from_domain_to_response(this);
     }
 
     /**
      * Gets the unique identifier of the Specialty.
      * @returns {ObjectId} The unique identifier of the Specialty.
      */
-    getId(): ObjectId {
+    get_id(): ObjectId {
         return this._id;
     }
 
@@ -71,7 +79,7 @@ export class Specialty {
      * Gets the name of the Specialty.
      * @returns {string} The name of the Specialty.
      */
-    getName(): string {
+    get_name(): string {
         return this.name;
     }
 
@@ -82,7 +90,7 @@ export class Specialty {
      * 
      * @throws {Error} If the name is invalid.
      */
-    setName(name: string): void {
+    set_name(name: string): void {
         this.name = name;
         this.validate();
     }
@@ -91,7 +99,7 @@ export class Specialty {
      * Gets the Monday schedule of the Specialty.
      * @returns {string | undefined} The Monday schedule of the Specialty.
      */
-    getScheduleMonday(): string | undefined {
+    get_schedule_monday(): string | undefined {
         return this.schedule_monday;
     }
 
@@ -100,7 +108,7 @@ export class Specialty {
      * 
      * @param {string} schedule_monday - The Monday schedule of the Specialty.
      */
-    setScheduleMonday(schedule_monday: string): void {
+    set_schedule_monday(schedule_monday: string): void {
         this.schedule_monday = schedule_monday;
     }
 
@@ -108,7 +116,7 @@ export class Specialty {
      * Gets the Tuesday schedule of the Specialty.
      * @returns {string | undefined} The Tuesday schedule of the Specialty.
      */
-    getScheduleTuesday(): string | undefined {
+    get_schedule_tuesday(): string | undefined {
         return this.schedule_tuesday;
     }
 
@@ -117,7 +125,7 @@ export class Specialty {
      * 
      * @param {string} schedule_tuesday - The Tuesday schedule of the Specialty.
      */
-    setScheduleTuesday(schedule_tuesday: string): void {
+    set_schedule_tuesday(schedule_tuesday: string): void {
         this.schedule_tuesday = schedule_tuesday;
     }
 
@@ -125,7 +133,7 @@ export class Specialty {
      * Gets the Wednesday schedule of the Specialty.
      * @returns {string | undefined} The Wednesday schedule of the Specialty.
      */
-    getScheduleWednesday(): string | undefined {
+    get_schedule_wednesday(): string | undefined {
         return this.schedule_wednesday;
     }
 
@@ -134,7 +142,7 @@ export class Specialty {
      * 
      * @param {string} schedule_wednesday - The Wednesday schedule of the Specialty.
      */
-    setScheduleWednesday(schedule_wednesday: string): void {
+    set_schedule_wednesday(schedule_wednesday: string): void {
         this.schedule_wednesday = schedule_wednesday;
     }
 
@@ -142,7 +150,7 @@ export class Specialty {
      * Gets the Thursday schedule of the Specialty.
      * @returns {string | undefined} The Thursday schedule of the Specialty.
      */
-    getScheduleThursday(): string | undefined {
+    get_schedule_thursday(): string | undefined {
         return this.schedule_thursday;
     }
 
@@ -151,7 +159,7 @@ export class Specialty {
      * 
      * @param {string} schedule_thursday - The Thursday schedule of the Specialty.
      */
-    setScheduleThursday(schedule_thursday: string): void {
+    set_schedule_thurday(schedule_thursday: string): void {
         this.schedule_thursday = schedule_thursday;
     }
 
@@ -159,7 +167,7 @@ export class Specialty {
      * Gets the Friday schedule of the Specialty.
      * @returns {string | undefined} The Friday schedule of the Specialty.
      */
-    getScheduleFriday(): string | undefined {
+    get_schedule_friday(): string | undefined {
         return this.schedule_friday;
     }
 
@@ -168,7 +176,7 @@ export class Specialty {
      * 
      * @param {string} schedule_friday - The Friday schedule of the Specialty.
      */
-    setScheduleFriday(schedule_friday: string): void {
+    set_schedule_friday(schedule_friday: string): void {
         this.schedule_friday = schedule_friday;
     }
 
@@ -176,7 +184,7 @@ export class Specialty {
      * Gets the Saturday schedule of the Specialty.
      * @returns {string | undefined} The Saturday schedule of the Specialty.
      */
-    getScheduleSaturday(): string | undefined {
+    get_schedule_saturday(): string | undefined {
         return this.schedule_saturday;
     }
 
@@ -185,7 +193,7 @@ export class Specialty {
      * 
      * @param {string} schedule_saturday - The Saturday schedule of the Specialty.
      */
-    setScheduleSaturday(schedule_saturday: string): void {
+    set_schedule_saturday(schedule_saturday: string): void {
         this.schedule_saturday = schedule_saturday;
     }
 
@@ -193,15 +201,24 @@ export class Specialty {
      * Gets the Sunday schedule of the Specialty.
      * @returns {string | undefined} The Sunday schedule of the Specialty.
      */
-    getScheduleSunday(): string | undefined {
+    get_schedule_sunday(): string | undefined {
         return this.schedule_sunday;
+    }
+
+    /**
+     * Sets the Sunday schedule of the Specialty.
+     * 
+     * @param {string} schedule_sunday - The Sunday schedule of the Specialty.
+     */
+    set_schedule_sunday(schedule_sunday: string): void {
+        this.schedule_sunday = schedule_sunday;
     }
 
     /**
      * Converts the Specialty entity to a string.
      * @returns {string} A string representation of the IPS.
      */
-    toString(): string {
-        return JSON.stringify(this.toObject());
+    to_string(): string {
+        return JSON.stringify(this.to_object());
     }
 }

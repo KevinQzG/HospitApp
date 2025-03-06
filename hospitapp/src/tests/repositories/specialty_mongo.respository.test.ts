@@ -43,7 +43,7 @@ describe('SpecialtyMongoRepository Integration Test', () => {
                 name: "ENFERMERÍA",
             };
 
-            expect(_SAMPLE_EPS.toObject()).toMatchObject(_EXPECTED_DATA);
+            expect(_SAMPLE_EPS.to_object()).toMatchObject(_EXPECTED_DATA);
         });
     });
 });

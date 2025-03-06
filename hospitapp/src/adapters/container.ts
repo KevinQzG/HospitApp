@@ -10,7 +10,7 @@ import MongoDB from '@/config/mongo_db';
 import { IpsMongoRepository } from '@/repositories/ips_mongo.repository';
 import { EpsMongoRepository } from '@/repositories/eps_mongo.repository';
 import { SpecialtyMongoRepository } from '@/repositories/specialty_mongo.repository';
-import { SearchIpsMongoService } from '@/services/search_ips_mongo.service';
+import { SearchIpsMongoService } from '@/services/search_ips/search_ips_mongo.service';
 
 
 

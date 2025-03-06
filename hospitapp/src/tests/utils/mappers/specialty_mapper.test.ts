@@ -25,20 +25,20 @@ describe('SpecialtyMapper', () => {
   let doc: SpecialtyDocument;
 
   it('should map complete document to domain', () => {
-    specialty = SpecialtyMapper.to_domain(_FULL_DOC);
+    specialty = SpecialtyMapper.from_document_to_domain(_FULL_DOC);
     
-    expect(specialty.getId()).toEqual(_FULL_DOC._id);
-    expect(specialty.getName()).toBe(_FULL_DOC.name);
-    expect(specialty.getScheduleMonday()).toBe(_FULL_DOC.schedule_monday);
-    expect(specialty.getScheduleSunday()).toBeUndefined();
+    expect(specialty.get_id()).toEqual(_FULL_DOC._id);
+    expect(specialty.get_name()).toBe(_FULL_DOC.name);
+    expect(specialty.get_schedule_monday()).toBe(_FULL_DOC.schedule_monday);
+    expect(specialty.get_schedule_sunday()).toBeUndefined();
   });
 
   it('should map minimal document to domain', () => {
-    specialty = SpecialtyMapper.to_domain(_MINIMAL_DOC);
+    specialty = SpecialtyMapper.from_document_to_domain(_MINIMAL_DOC);
     
-    expect(specialty.getId()).toEqual(_MINIMAL_DOC._id);
-    expect(specialty.getName()).toBe(_MINIMAL_DOC.name);
-    expect(specialty.getScheduleMonday()).toBeUndefined();
+    expect(specialty.get_id()).toEqual(_MINIMAL_DOC._id);
+    expect(specialty.get_name()).toBe(_MINIMAL_DOC.name);
+    expect(specialty.get_schedule_monday()).toBeUndefined();
   });
 
   it('should map complete domain to document', () => {
@@ -53,7 +53,7 @@ describe('SpecialtyMapper', () => {
       _FULL_DOC.schedule_saturday
     );
 
-    doc = SpecialtyMapper.to_document(specialty);
+    doc = SpecialtyMapper.from_domain_to_document(specialty);
     
     expect(doc).toEqual({
       ..._FULL_DOC,
@@ -63,15 +63,15 @@ describe('SpecialtyMapper', () => {
 
   it('should handle undefined schedule fields in domain to document', () => {
     specialty = new Specialty(_MINIMAL_DOC._id, _MINIMAL_DOC.name);
-    doc = SpecialtyMapper.to_document(specialty);
+    doc = SpecialtyMapper.from_domain_to_document(specialty);
     
     expect(doc).toEqual(_MINIMAL_DOC);
   });
 
   it('should maintain data integrity in bidirectional mapping', () => {
     const _ORIGINAL_DOC = _FULL_DOC;
-    const _DOMAIN = SpecialtyMapper.to_domain(_ORIGINAL_DOC);
-    const _NEW_DOC = SpecialtyMapper.to_document(_DOMAIN);
+    const _DOMAIN = SpecialtyMapper.from_document_to_domain(_ORIGINAL_DOC);
+    const _NEW_DOC = SpecialtyMapper.from_domain_to_document(_DOMAIN);
     
     expect(_NEW_DOC).toEqual(_ORIGINAL_DOC);
   });

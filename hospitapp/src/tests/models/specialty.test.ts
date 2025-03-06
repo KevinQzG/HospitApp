@@ -18,14 +18,14 @@ describe('Specialty Model', () => {
 
   describe('Constructor', () => {
     it('should initialize with provided values', () => {
-      expect(specialty.getId()).toEqual(_TEST_ID);
-      expect(specialty.getName()).toBe(_TEST_NAME);
-      expect(specialty.getScheduleMonday()).toBe(_TEST_SCHEDULE);
+      expect(specialty.get_id()).toEqual(_TEST_ID);
+      expect(specialty.get_name()).toBe(_TEST_NAME);
+      expect(specialty.get_schedule_monday()).toBe(_TEST_SCHEDULE);
     });
 
     it('should generate new ObjectId when not provided', () => {
       const _NEW_SPECIALTY = new Specialty(undefined, 'New Specialty');
-      expect(_NEW_SPECIALTY.getId()).toBeInstanceOf(ObjectId);
+      expect(_NEW_SPECIALTY.get_id()).toBeInstanceOf(ObjectId);
     });
   });
 
@@ -42,23 +42,23 @@ describe('Specialty Model', () => {
 
   describe('Setters and Getters', () => {
     it('should update and retrieve all schedule days', () => {
-      specialty.setScheduleTuesday('10:00-18:00');
-      specialty.setScheduleWednesday('08:00-16:00');
+      specialty.set_schedule_tuesday('10:00-18:00');
+      specialty.set_schedule_wednesday('08:00-16:00');
       
-      expect(specialty.getScheduleTuesday()).toBe('10:00-18:00');
-      expect(specialty.getScheduleWednesday()).toBe('08:00-16:00');
+      expect(specialty.get_schedule_tuesday()).toBe('10:00-18:00');
+      expect(specialty.get_schedule_wednesday()).toBe('08:00-16:00');
     });
 
     it('should validate when updating name', () => {
-      expect(() => specialty.setName('Updated Name')).not.toThrow();
+      expect(() => specialty.set_name('Updated Name')).not.toThrow();
       
-      expect(() => specialty.setName('')).toThrow('Missing required fields');
+      expect(() => specialty.set_name('')).toThrow('Missing required fields');
     });
   });
 
   describe('Serialization', () => {
     it('should convert to document correctly', () => {
-      const _DOC = specialty.toObject();
+      const _DOC = specialty.to_object();
       
       expect(_DOC).toEqual({
         _id: _TEST_ID,
@@ -74,7 +74,7 @@ describe('Specialty Model', () => {
     });
 
     it('should serialize to JSON string', () => {
-      const _STR = specialty.toString();
+      const _STR = specialty.to_string();
       const _PARSED = JSON.parse(_STR);
       
       expect(_PARSED).toEqual({
@@ -89,8 +89,8 @@ describe('Specialty Model', () => {
     it('should handle undefined schedule days', () => {
       const _MINIMAL_SPECIALTY = new Specialty(undefined, 'Minimal Specialty');
       
-      expect(_MINIMAL_SPECIALTY.getScheduleThursday()).toBeUndefined();
-      expect(_MINIMAL_SPECIALTY.toObject().schedule_friday).toBeUndefined();
+      expect(_MINIMAL_SPECIALTY.get_schedule_thursday()).toBeUndefined();
+      expect(_MINIMAL_SPECIALTY.to_object().schedule_friday).toBeUndefined();
     });
   });
 });

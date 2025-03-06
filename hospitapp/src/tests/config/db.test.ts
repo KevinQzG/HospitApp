@@ -25,17 +25,17 @@ describe('MongoDB Singleton Test', () => {
   });
 
   it('should maintain single connection instance', async () => {
-    const db1 = await mongo_client_1.connect();
-    const db2 = await mongo_client_2.connect();
+    const _DB1 = await mongo_client_1.connect();
+    const _DB2 = await mongo_client_2.connect();
     
-    expect(db1).toBe(db2); // Both should reference the same DB instance
+    expect(_DB1).toBe(_DB2); // Both should reference the same DB instance
   });
 
   it('should handle multiple connect calls efficiently', async () => {
-    const initial_connection = await mongo_client_1.connect();
-    const second_connection = await mongo_client_1.connect();
+    const _INITIAL_CONNECTION = await mongo_client_1.connect();
+    const _SECOND_CONNECTION = await mongo_client_1.connect();
     
-    expect(second_connection).toBe(initial_connection); // Same instance
+    expect(_SECOND_CONNECTION).toBe(_INITIAL_CONNECTION); // Same instance
   });
 
   it('should find a document', async () => {
