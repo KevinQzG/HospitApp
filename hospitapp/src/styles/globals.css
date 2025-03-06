@@ -1,11 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
 @import "tailwindcss";
 
 /* Fonts */
 body {
-  @apply bg-gray-100 text-gray-800;
+  background-color: #f7fafc; /* bg-gray-100 */
+  color: #2d3748; /* text-gray-800 */
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
 }
 

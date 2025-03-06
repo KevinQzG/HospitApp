@@ -80,7 +80,7 @@ export default function Header() {
     <>
       {/* TOP NAVBAR (Only for Desktop & Tablet) */}
       {!is_mobile && (
-        <header className="bg-[#ECF6FF]  py-4 px-6 relative z-50">
+        <header className="bg-[#ECF6FF] py-4 px-6 relative z-50">
           <div className="container mx-auto flex justify-between items-center relative">
             {/* Logo */}
             <Link href="/" className="text-2xl font-bold z-50">

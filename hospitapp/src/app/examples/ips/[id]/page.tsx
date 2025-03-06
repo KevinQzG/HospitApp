@@ -1,18 +1,24 @@
-// app/examples/ips/[id]/page.tsx
 import { LookIpsResponse } from '@/app/api/search_ips/ips/route';
 import Link from 'next/link';
 import { _ENV } from '@/config/env';
 
-export default async function IpsDetailPage({ params }: { params: { id: string } }) {
+// Define props with params as a Promise
+type IpsDetailPageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
+  const resolvedParams = await params; // Resolve the Promise
+  const { id: _ID } = resolvedParams;
+
   try {
-    const { id: _ID } = await params;
     const _RESPONSE = await fetch(`${_ENV.NEXT_PUBLIC_API_URL}/search_ips/ips`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ _id: _ID })
-    })
+      body: JSON.stringify({ _id: _ID }),
+    });
 
     if (!_RESPONSE.ok) {
       const _ERROR_DATA: LookIpsResponse = await _RESPONSE.json();
@@ -50,18 +56,36 @@ export default async function IpsDetailPage({ params }: { params: { id: string }
         </div>
 
         <h1 className="text-3xl font-bold mb-4">{_IPS.name}</h1>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Basic Information */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-xl text-black font-semibold mb-4">General Information</h2>
             <div className="space-y-2">
-              <p className="text-black"><span className="text-black font-medium">Department:</span> {_IPS.department}</p>
-              <p className="text-black"><span className="text-black font-medium">Town:</span> {_IPS.town}</p>
-              <p className="text-black"><span className="text-black font-medium">Address:</span> {_IPS.address}</p>
-              {_IPS.phone && <p className="text-black"><span className="font-medium">Phone:</span> {_IPS.phone}</p>}
-              {_IPS.email && <p className="text-black"><span className="font-medium">Email:</span> {_IPS.email}</p>}
-              {_IPS.level && <p className="text-black"><span className="font-medium">Level:</span> {_IPS.level}</p>}
+              <p className="text-black">
+                <span className="text-black font-medium">Department:</span> {_IPS.department}
+              </p>
+              <p className="text-black">
+                <span className="text-black font-medium">Town:</span> {_IPS.town}
+              </p>
+              <p className="text-black">
+                <span className="text-black font-medium">Address:</span> {_IPS.address}
+              </p>
+              {_IPS.phone && (
+                <p className="text-black">
+                  <span className="font-medium">Phone:</span> {_IPS.phone}
+                </p>
+              )}
+              {_IPS.email && (
+                <p className="text-black">
+                  <span className="font-medium">Email:</span> {_IPS.email}
+                </p>
+              )}
+              {_IPS.level && (
+                <p className="text-black">
+                  <span className="font-medium">Level:</span> {_IPS.level}
+                </p>
+              )}
             </div>
           </div>
 
@@ -70,22 +94,24 @@ export default async function IpsDetailPage({ params }: { params: { id: string }
             <h2 className="text-xl font-semibold mb-4 text-black">Location</h2>
             <div className="space-y-2">
               <p className="text-black">
-                <span className="font-medium">Coordinates:</span><br />
-                Longitude: {_IPS.location.coordinates[0]}<br />
+                <span className="font-medium">Coordinates:</span>
+                <br />
+                Longitude: {_IPS.location.coordinates[0]}
+                <br />
                 Latitude: {_IPS.location.coordinates[1]}
               </p>
               <div className="mt-4 space-y-2">
-                <a 
-                  href={_IPS.maps} 
-                  target="_blank" 
+                <a
+                  href={_IPS.maps}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline block"
                 >
                   View on Google Maps →
                 </a>
-                <a 
-                  href={_IPS.waze} 
-                  target="_blank" 
+                <a
+                  href={_IPS.waze}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline block"
                 >
@@ -100,8 +126,8 @@ export default async function IpsDetailPage({ params }: { params: { id: string }
             <div className="bg-white p-6 rounded-lg shadow-sm md:col-span-2">
               <h2 className="text-xl font-semibold mb-4 text-black">Accepted EPS</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {_IPS.eps.map(eps => (
-                  <span 
+                {_IPS.eps.map((eps) => (
+                  <span
                     key={eps._id}
                     className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
                   >
@@ -117,7 +143,7 @@ export default async function IpsDetailPage({ params }: { params: { id: string }
             <div className="bg-white p-6 rounded-lg shadow-sm md:col-span-2">
               <h2 className="text-xl font-semibold mb-4 text-black">Specialties</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {_IPS.specialties.map(spec => (
+                {_IPS.specialties.map((spec) => (
                   <span
                     key={spec._id}
                     className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
