@@ -177,3 +177,16 @@ cython_debug/
 .npm
 node_modules/
 docs/Pruebas de Aceptación de Prototipo.xlsx
+
+# macOS
+**/.Spotlight-V100
+**/.Trashes
+**/.fseventsd
+.DS_Store
+
+# Sinchro
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+.TemporaryItems
+.apdisk
