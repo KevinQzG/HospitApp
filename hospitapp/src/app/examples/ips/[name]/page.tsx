@@ -4,20 +4,22 @@ import { _ENV } from '@/config/env';
 
 // Define props with params as a Promise
 type IpsDetailPageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ name: string }>;
 };
 
 export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
   const resolvedParams = await params; // Resolve the Promise
-  const { id: _ID } = resolvedParams;
+  let { name } = resolvedParams;
+  console.log('IPS name:', name);
 
+  name = decodeURIComponent(name);
   try {
     const _RESPONSE = await fetch(`${_ENV.NEXT_PUBLIC_API_URL}/search_ips/ips`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ _id: _ID }),
+      body: JSON.stringify({ name: name }),
     });
 
     if (!_RESPONSE.ok) {
