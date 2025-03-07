@@ -15,26 +15,26 @@ import ReactCountryFlag from "react-country-flag";
 import { allCountries } from "country-telephone-data";
 
 export default function RegisterPage() {
-  const [password_visible, set_password_visible] = useState(false);
-  const [selected_country, set_selected_country] = useState("+57"); // Default: Colombia
-  const [is_dropdown_open, set_is_dropdown_open] = useState(false);
-  const router = useRouter(); // Hook para manejar redirección
+  const [_PASSWORD_VISIBLE, _SET_PASSWORD_VISIBLE] = useState(false);
+  const [_SELECTED_COUNTRY, _SET_SELECTED_COUNTRY] = useState("+57"); // Default: Colombia
+  const [_IS_DROPDOWN_OPEN, _SET_IS_DROPDOWN_OPEN] = useState(false);
+  const _ROUTER = useRouter(); // Hook para manejar redirección
 
-  const country_codes = allCountries.map((country) => ({
+  const _COUNTRY_CODES = allCountries.map((country) => ({
     code: country.dialCode,
     country_code: country.iso2,
     name: country.name,
   }));
 
-  const selected_country_data = country_codes.find(
-    (country) => country.code === selected_country
+  const _SELECTED_COUNTRY_DATA = _COUNTRY_CODES.find(
+    (country) => country.code === _SELECTED_COUNTRY
   );
 
-  const handle_register = (e: React.FormEvent) => {
+  const _HANDLE_REGISTER = (e: React.FormEvent) => {
     e.preventDefault();
 
     setTimeout(() => {
-      router.push("/confirmation");
+      _ROUTER.push("/confirmation");
     }, 1500);
   };
 
@@ -76,7 +76,7 @@ export default function RegisterPage() {
             </Link>
           </p>
 
-          <form className="mt-8 space-y-6" onSubmit={handle_register}>
+          <form className="mt-8 space-y-6" onSubmit={_HANDLE_REGISTER}>
             <div className="relative">
               <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
               <input
@@ -91,29 +91,29 @@ export default function RegisterPage() {
               <div className="flex items-center border border-gray-300 rounded-lg px-3 shadow-sm hover:shadow-md transition-shadow relative">
                 <button
                   type="button"
-                  onClick={() => set_is_dropdown_open(!is_dropdown_open)}
+                  onClick={() => _SET_IS_DROPDOWN_OPEN(!_IS_DROPDOWN_OPEN)}
                   className="flex items-center gap-2 p-2 focus:outline-none"
                 >
-                  {selected_country_data && (
+                  {_SELECTED_COUNTRY_DATA && (
                     <ReactCountryFlag
-                      countryCode={selected_country_data.country_code}
+                      countryCode={_SELECTED_COUNTRY_DATA.country_code}
                       svg
                       style={{ width: "1.5em", height: "1.5em" }}
                     />
                   )}
-                  <span className="text-gray-700">{selected_country}</span>
+                  <span className="text-gray-700">{_SELECTED_COUNTRY}</span>
                 </button>
 
-                {is_dropdown_open && (
+                {_IS_DROPDOWN_OPEN && (
                   <div className="absolute top-12 left-0 bg-white border border-gray-300 rounded-lg shadow-lg z-10 w-64 max-h-64 overflow-y-auto">
                     <ul>
-                      {country_codes.map((country, index) => (
+                      {_COUNTRY_CODES.map((country, index) => (
                         <li
                           key={index}
                           className="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer"
                           onClick={() => {
-                            set_selected_country(country.code);
-                            set_is_dropdown_open(false);
+                            _SET_SELECTED_COUNTRY(country.code);
+                            _SET_IS_DROPDOWN_OPEN(false);
                           }}
                         >
                           <ReactCountryFlag
@@ -174,7 +174,7 @@ export default function RegisterPage() {
             <div className="relative">
               <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
               <input
-                type={password_visible ? "text" : "password"}
+                type={_PASSWORD_VISIBLE ? "text" : "password"}
                 placeholder="Contraseña"
                 className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 required
@@ -182,9 +182,9 @@ export default function RegisterPage() {
               <button
                 type="button"
                 className="absolute right-3 top-3 text-gray-400 hover:text-gray-700 transition"
-                onClick={() => set_password_visible(!password_visible)}
+                onClick={() => _SET_PASSWORD_VISIBLE(!_PASSWORD_VISIBLE)}
               >
-                {password_visible ? <EyeOff size={20} /> : <Eye size={20} />}
+                {_PASSWORD_VISIBLE ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
 

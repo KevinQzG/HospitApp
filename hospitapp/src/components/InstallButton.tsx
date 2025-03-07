@@ -3,30 +3,30 @@
 import { useEffect, useState } from "react";
 
 export default function InstallButton() {
-  const [install_prompt, set_install_prompt] = useState<Event | null>(null);
+  const [_INSTALL_PROMPT, _SET_INSTALL_PROMPT] = useState<Event | null>(null);
 
   useEffect(() => {
-    const before_install_prompt = (event: Event) => {
+    const _BEFORE_INSTALL_PROMPT = (event: Event) => {
       event.preventDefault();
-      set_install_prompt(event);
+      _SET_INSTALL_PROMPT(event);
     };
 
-    window.addEventListener("beforeinstallprompt", before_install_prompt);
+    window.addEventListener("beforeinstallprompt", _BEFORE_INSTALL_PROMPT);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", before_install_prompt);
+      window.removeEventListener("beforeinstallprompt", _BEFORE_INSTALL_PROMPT);
     };
   }, []);
 
-  const handle_install = () => {
-    if (install_prompt) {
-      (install_prompt as any).prompt();
+  const _HANDLE_INSTALL = () => {
+    if (_INSTALL_PROMPT) {
+      (_INSTALL_PROMPT as any).prompt();
     }
   };
 
-  return install_prompt ? (
+  return _INSTALL_PROMPT ? (
     <button
-      onClick={handle_install}
+      onClick={_HANDLE_INSTALL}
       className="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition"
     >
       📲 Instalar HospitApp

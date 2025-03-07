@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle, faFacebook, faApple } from '@fortawesome/free-brands-svg-icons';
 
 export default function LoginPage() {
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [_PASSWORD_VISIBLE, _SET_PASSWORD_VISIBLE] = useState(false);
 
   return (
     <section className="flex min-h-screen">
@@ -66,7 +66,7 @@ export default function LoginPage() {
               </label>
               <input
                 id="password"
-                type={passwordVisible ? "text" : "password"}
+                type={_PASSWORD_VISIBLE ? "text" : "password"}
                 placeholder="Ingresa tu contraseña"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 required
@@ -74,9 +74,9 @@ export default function LoginPage() {
               <button
                 type="button"
                 className="absolute right-4 top-10 text-gray-500 hover:text-gray-700 transition"
-                onClick={() => setPasswordVisible(!passwordVisible)}
+                onClick={() => _SET_PASSWORD_VISIBLE(!_PASSWORD_VISIBLE)}
               >
-                {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                {_PASSWORD_VISIBLE ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
 

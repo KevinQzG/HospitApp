@@ -1,6 +1,29 @@
 import Image from "next/image";
 
 export default function AboutPage() {
+  const _TEAM_MEMBERS = [
+    {
+      name: "Luis Carlos Castro",
+      role: "Product Owner",
+      image: "/team/founder1.png",
+    },
+    {
+      name: "Kevin Quiroz",
+      role: "Programador / UX-UI Designer",
+      image: "/team/founder2.jpg",
+    },
+    {
+      name: "Juan Felipe Restrepo",
+      role: "Scrum Master / Tester",
+      image: "/team/founder3.jpg",
+    },
+    {
+      name: "Julián Mejía",
+      role: "Arquitecto / Programador",
+      image: "/team/founder4.png",
+    },
+  ];
+
   return (
     <section className="min-h-screen bg-gradient-to-b from-[#F9FCFF] to-[#E6F0FF] py-20 px-6 md:px-12">
       {/* Encabezado */}
@@ -70,28 +93,7 @@ export default function AboutPage() {
           Contamos con un equipo multidisciplinario enfocado en crear una plataforma confiable y eficiente.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mt-12">
-          {[
-            {
-              name: "Luis Carlos Castro",
-              role: "Product Owner",
-              image: "/team/founder1.png",
-            },
-            {
-              name: "Kevin Quiroz",
-              role: "Programador / UX-UI Designer",
-              image: "/team/founder2.jpg",
-            },
-            {
-              name: "Juan Felipe Restrepo",
-              role: "Scrum Master / Tester",
-              image: "/team/founder3.jpg",
-            },
-            {
-              name: "Julián Mejía",
-              role: "Arquitecto / Programador",
-              image: "/team/founder4.png",
-            },
-          ].map((member, index) => (
+          {_TEAM_MEMBERS.map((member, index) => (
             <div
               key={index}
               className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center"

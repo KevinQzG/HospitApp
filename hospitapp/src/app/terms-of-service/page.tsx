@@ -1,4 +1,9 @@
 export default function TermsOfServicePage() {
+  const _CONTACT_INFO = {
+    email: "admin@hospitapp.com",
+    location: "Medellín, Antioquia, Colombia",
+  };
+
   return (
     <section className="min-h-screen bg-gradient-to-b from-[#F9FCFF] to-[#E6F0FF] py-20 px-6 md:px-12">
       <div className="max-w-5xl mx-auto text-center">
@@ -159,14 +164,14 @@ export default function TermsOfServicePage() {
             <p className="text-lg font-semibold text-gray-900">
               📧{" "}
               <a
-                href="mailto:admin@hospitapp.com"
+                href={`mailto:${_CONTACT_INFO.email}`}
                 className="text-blue-600 hover:underline"
               >
-                admin@hospitapp.com
+                {_CONTACT_INFO.email}
               </a>
             </p>
             <p className="text-lg font-semibold text-gray-900">
-              📍 Medellín, Antioquia, Colombia
+              📍 {_CONTACT_INFO.location}
             </p>
           </div>
         </div>
