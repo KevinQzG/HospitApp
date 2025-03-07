@@ -25,7 +25,9 @@ export class IpsPipelineBuilder {
      * @method
      * @name add_geo_stage
      */
-    add_geo_stage(longitude: number, latitude: number, max_distance: number): this {
+    add_geo_stage(longitude: number | null, latitude: number | null, max_distance: number | null): this {
+        if (longitude === null || latitude === null || max_distance === null) return this;
+        
         this.pipeline.push({
             $geoNear: {
                 near: {

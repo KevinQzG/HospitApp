@@ -18,7 +18,7 @@ export default interface IpsRepositoryAdapter {
      * @param {number} page_size - The number of results per page.
      * @returns {Promise<{ results: Ips[]; total: number }>} The IPSs that meet the specified criteria.
      */
-    find_all_by_distance_specialty_eps(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: Ips[]; total: number }>;
+    find_all_by_distance_specialty_eps(longitude: number | null, latitude: number | null, max_distance: number | null, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: Ips[]; total: number }>;
 
     /**
      * Gets the IPS with the specified id.

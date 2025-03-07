@@ -29,6 +29,22 @@ describe('IpsMongoRepository Integration Test', () => {
     const _MAX_DISTANCE_METERS = 5000; // 5km
     const _EXPECTED_IPS_ID = new ObjectId("67b3e98bb1ae5d9e47ae7a07");
 
+    it('should retrieve the all the IPS that matches without the coordinates', async () => {
+      const { results: _RESULTS, total: _TOTAL } = await repository.find_all_by_distance_specialty_eps(
+        null,
+        null,
+        null,
+        test_specialties,
+        test_eps_names,
+        1,
+        10
+      );
+
+      expect(_RESULTS).toHaveLength(10);
+      expect(_TOTAL).toBeGreaterThan(0);
+      expect(_TOTAL).toBe(110);
+    });
+
     it('should retrieve exactly one matching IPS with correct data', async () => {
       const { results: _RESULTS } = await repository.find_all_by_distance_specialty_eps(
         _TEST_COORDINATES[0],

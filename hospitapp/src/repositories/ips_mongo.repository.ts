@@ -29,9 +29,9 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
     ) { }
 
     async find_all_by_distance_specialty_eps(
-        longitude: number,
-        latitude: number,
-        max_distance: number,
+        longitude: number | null,
+        latitude: number | null,
+        max_distance: number | null,
         specialties: string[],
         eps_names: string[],
         page: number = 1,
