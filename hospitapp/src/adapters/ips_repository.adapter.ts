@@ -18,13 +18,13 @@ export default interface IpsRepositoryAdapter {
      * @param {number} page_size - The number of results per page.
      * @returns {Promise<{ results: Ips[]; total: number }>} The IPSs that meet the specified criteria.
      */
-    find_all_by_distance_specialty_eps(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: Ips[]; total: number }>;
+    find_all_by_distance_specialty_eps(longitude: number | null, latitude: number | null, max_distance: number | null, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: Ips[]; total: number }>;
 
     /**
-     * Gets the IPS with the specified id.
+     * Gets the IPS with the specified name.
      * @async
-     * @param {string} id - The id of the IPS.
-     * @returns {Promise<Ips | null>} The IPS with the specified id, or null if no IPS was found.
+     * @param {string} name - The name of the IPS.
+     * @returns {Promise<Ips | null>} The IPS with the specified name, or null if no IPS was found.
      */
-    find_by_id(id: string): Promise<Ips | null>;
+    find_by_name(name: string): Promise<Ips | null>;
 }

@@ -41,7 +41,7 @@ describe('SearchIpsMongoService Integration Test', () => {
                 }],
                 total: 1
             }),
-            find_by_id: jest.fn().mockResolvedValue({
+            find_by_name: jest.fn().mockResolvedValue({
                 to_response: () => _MOCK_IPS_RES
             })
         };
@@ -218,31 +218,31 @@ describe('SearchIpsMongoService Integration Test', () => {
         });
     });
     
-    describe('get_ips_by_id', () => {
+    describe('get_ips_by_name', () => {
         it('should retrieve IPS by ID and return transformed response', async () => {
-            const _ID = '67b3e98bb1ae5d9e47ae7a07';
-            const _RESULT = await service.get_ips_by_id(_ID);
+            const _NAME = 'ESE HOSPITAL VENANCIO DIAZ DIAZ';
+            const _RESULT = await service.get_ips_by_name(_NAME);
 
-            expect(mock_ips_repository.find_by_id).toHaveBeenCalledWith(_ID);
+            expect(mock_ips_repository.find_by_name).toHaveBeenCalledWith(_NAME);
             expect(_RESULT).toEqual(_MOCK_IPS_RES);
         });
 
         it('should return null if IPS is not found', async () => {
-            const _ID = 'non_existent_id';
-            mock_ips_repository.find_by_id.mockResolvedValueOnce(null);
+            const _NAME = 'non_existent_name';
+            mock_ips_repository.find_by_name.mockResolvedValueOnce(null);
 
-            const _RESULT = await service.get_ips_by_id(_ID);
+            const _RESULT = await service.get_ips_by_name(_NAME);
 
-            expect(mock_ips_repository.find_by_id).toHaveBeenCalledWith(_ID);
+            expect(mock_ips_repository.find_by_name).toHaveBeenCalledWith(_NAME);
             expect(_RESULT).toBeNull();
         });
 
         it('should handle repository errors', async () => {
-            const _ID = 'error_id';
+            const _NAME = 'error_name';
             const _ERROR = new Error('DB error');
-            mock_ips_repository.find_by_id.mockRejectedValueOnce(_ERROR);
+            mock_ips_repository.find_by_name.mockRejectedValueOnce(_ERROR);
 
-            await expect(service.get_ips_by_id(_ID)).rejects.toThrow(_ERROR);
+            await expect(service.get_ips_by_name(_NAME)).rejects.toThrow(_ERROR);
         });
     });
 });

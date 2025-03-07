@@ -33,7 +33,7 @@ export class SearchIpsMongoService implements SearchIpsServiceAdapter {
         
     ) { }
 
-    async filter_ips(longitude: number, latitude: number, max_distance: number, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IpsResponse[]; total: number; }> {
+    async filter_ips(longitude: number | null, latitude: number | null, max_distance: number | null, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IpsResponse[]; total: number; }> {
         const _RESULTS = await this.ips_repository.find_all_by_distance_specialty_eps(longitude, latitude, max_distance, specialties, eps_names, page, page_size);
 
         return {
@@ -52,8 +52,8 @@ export class SearchIpsMongoService implements SearchIpsServiceAdapter {
         return _EPS.map(eps => {return eps.to_response();});
     }
 
-    async get_ips_by_id(id: string): Promise<IpsResponse | null> {
-        const _IPS = await this.ips_repository.find_by_id(id);
+    async get_ips_by_name(name: string): Promise<IpsResponse | null> {
+        const _IPS = await this.ips_repository.find_by_name(name);
         if (!_IPS) {
             return null;
         }

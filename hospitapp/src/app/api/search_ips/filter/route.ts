@@ -10,16 +10,16 @@ import { IpsResponse } from "@/models/ips.interface";
 /**
  * Interface representing the structure of the search request body
  * @interface SearchRequest
- * @property {[number, number]} coordinates - Geographic coordinates [longitude, latitude]
- * @property {number} maxDistance - Maximum search distance in meters
+ * @property {[number, number]} coordinates - Optional Geographic coordinates [longitude, latitude]
+ * @property {number} maxDistance - Optional Maximum search distance in meters
  * @property {string[]} [specialties] - Optional array of medical specialties to filter by
  * @property {string[]} [eps_names] - Optional array of EPS names to filter by
  * @property {number} [page] - Optional page number for pagination (default: 1)
  * @property {number} [page_size] - Optional number of items per page (default: 10)
  */
 interface SearchRequest {
-    coordinates: [number, number];
-    max_distance: number;
+    coordinates?: [number, number];
+    max_distance?: number;
     specialties?: string[];
     eps_names?: string[];
     page?: number;
@@ -52,13 +52,9 @@ export interface SearchResponse {
  * @returns {{ success: boolean; error: string }} True if the body is valid, false otherwise with an error message
  */
 const validate_request_body = (body: SearchRequest): { success: boolean; error: string } => {
-    if (!body.coordinates) {
-        return { success: false, error: "Invalid request: coordinates is required." };
-    } else if (!is_type_array(body.coordinates, "number", 2)) {
+    if (body.coordinates && !is_type_array(body.coordinates, "number", 2)) {
         return { success: false, error: "Invalid request: coordinates must be an array of two numbers [longitude, latitude]." };
-    } else if (!body.max_distance) {
-        return { success: false, error: "Invalid request: maximum distance in meters is required." };
-    } else if (typeof body.max_distance !== "number") {
+    } else if (body.max_distance && typeof body.max_distance !== "number") {
         return { success: false, error: "Invalid request: maximum distance must be a number representing meters." };
     } else if (body.specialties && !is_type_array(body.specialties, "string")) {
         return { success: false, error: "Invalid request: specialties must be an array of strings." };
@@ -114,11 +110,17 @@ export async function POST(req: NextRequest): Promise<NextResponse<SearchRespons
         if (!_SUCCESS) {
             return NextResponse.json({ success: false, error: _ERROR }, { status: 400 });
         }
+        let latitude: number | null = null;
+        let longitude: number | null = null;
+        if (_BODY.coordinates) {
+            longitude = _BODY.coordinates[0];
+            latitude = _BODY.coordinates[1];
+        }
 
         const { results: _RESULTS, total: _TOTAL } = await _SEARCH_SERVICE.filter_ips(
-            _BODY.coordinates[0], // longitude
-            _BODY.coordinates[1], // latitude
-            _BODY.max_distance,
+            longitude,
+            latitude,
+            _BODY.max_distance || null,
             _BODY.specialties || [],
             _BODY.eps_names || [],
             _BODY.page || 1,
