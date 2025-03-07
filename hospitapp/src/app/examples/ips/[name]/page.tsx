@@ -8,8 +8,8 @@ type IpsDetailPageProps = {
 };
 
 export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
-  const resolvedParams = await params; // Resolve the Promise
-  let { name } = resolvedParams;
+  const _RESOLVED_PARAMS = await params; // Resolve the Promise
+  let { name } = _RESOLVED_PARAMS;
 
   name = decodeURIComponent(name);
   try {
