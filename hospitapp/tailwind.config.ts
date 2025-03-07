@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
+import defaultTheme from "tailwindcss/defaultTheme";
 
-export default {
+const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -8,11 +9,29 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        apple: [
+          "-apple-system", 
+          "BlinkMacSystemFont", 
+          "SF Pro", 
+          "SF Pro Display", 
+          "SF Pro Text", 
+          "Helvetica Neue", 
+          "Arial", 
+          "sans-serif"
+        ],
+      },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        ...defaultTheme.colors,
+        primary: "#2563eb",
+        secondary: "#1e40af",
+        background: "#f9fafb",
+        text: "#1f2937",
+        white: "#ffffff",
       },
     },
   },
   plugins: [],
-} satisfies Config;
+};
+
+export default config;

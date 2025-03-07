@@ -4,9 +4,10 @@ import { FormEvent, useState } from 'react';
 import { SearchResponse } from '@/app/api/search_ips/filter/route';
 import { SearchFormClientProps } from '@/services/search_ips/data_caching.service';
 import { SearchableSelect } from './searchable_select';
+import { time } from 'console';
 
 interface FormData {
-  coordinates: [number, number];
+  coordinates: [number, number] | null;
   max_distance: number;
   specialties: string[];
   eps: string[];
@@ -30,25 +31,37 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
       // Safely access form elements
       const _FORM_DATA = new FormData(e.currentTarget);
 
-      // Get geolocation
-      const _POSITION = await new Promise<GeolocationPosition>((resolve, reject) => {
-        if (!navigator.geolocation) {
-          reject(new Error('Geolocation not supported'));
-          return;
-        }
+      // Default to empty coordinates if location is not available
+      let _COORDINATES: [number, number] | null = null;
+      let time_api = 0;
+      let time_geolocation = 0;
+      const _GEOLOCATION_START = performance.now();
 
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          err => reject(new Error(`Geolocation error: ${err.message}`)),
-          { enableHighAccuracy: true, timeout: 10000 }
-        );
-      });
+      time_geolocation = performance.now();
+      try {
+        const _POSITION = await new Promise<GeolocationPosition>((resolve, reject) => {
+          
+          if (!navigator.geolocation) {
+            reject(new Error('Geolocation not supported'));
+            return;
+          }
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: false,
+            timeout: 5000,
+          });
+        });
+        _COORDINATES = [_POSITION.coords.longitude, _POSITION.coords.latitude];
+      } catch (error) {
+        console.warn('Geolocation permission denied or error occurred.');
+      }
+      time_geolocation = performance.now() - time_geolocation;
+
       const _SPECIALTIES = JSON.parse(_FORM_DATA.get('specialties') as string || '[]');
       const _EPS = JSON.parse(_FORM_DATA.get('eps') as string || '[]');
 
       // Build form data
       const _REQUEST_DATA: FormData = {
-        coordinates: [_POSITION.coords.longitude, _POSITION.coords.latitude],
+        coordinates: _COORDINATES,
         max_distance: parseInt(_FORM_DATA.get('max_distance')?.toString() || '5000'),
         specialties: _SPECIALTIES,
         eps: _EPS,
@@ -58,6 +71,7 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
       console.log('Request data:', _REQUEST_DATA);
 
       // API call
+      time_api = performance.now();
       const _RESPONSE = await fetch('/api/search_ips/filter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,6 +84,12 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
       }
 
       const _RESULT = await _RESPONSE.json();
+      time_api = performance.now() - time_api;
+      console.log(`Timing results:
+        - Geolocation: ${time_geolocation.toFixed(2)}ms
+        - API Call: ${time_api.toFixed(2)}ms
+        - Total: ${(performance.now() - _GEOLOCATION_START).toFixed(2)}ms
+      `);
       set_results(_RESULT);
       console.log('Search results:', _RESULT);
     } catch (err) {
@@ -146,7 +166,7 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
                 className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
                 <Link
-                  href={`/examples/ips/${item._id}`}
+                  href={`/examples/ips/${encodeURIComponent(item.name)}`}
                   className="text-blue-600 hover:text-blue-800 font-medium"
                 >
                   {item.name}

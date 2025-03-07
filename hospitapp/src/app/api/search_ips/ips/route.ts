@@ -6,10 +6,10 @@ import { get_ips_props } from '@/services/search_ips/data_fetching.service';
 /**
  * Interface representing the structure of the search request body
  * @interface LookIpsRequest
- * @property {string} _id - The ID of the IPS document
+ * @property {string} name - The name of the IPS document
  */
 interface LookIpsRequest {
-    _id: string
+    name: string
 }
 
 /**
@@ -31,10 +31,10 @@ export interface LookIpsResponse {
  * @returns {{ success: boolean; error: string }} True if the body is valid, false otherwise with an error message
  */
 const validate_request_body = (body: LookIpsRequest): { success: boolean; error: string } => {
-    if (!body._id) {
-        return { success: false, error: "Missing required field: _id" };
-    } else if (typeof body._id !== "string") {
-        return { success: false, error: "Invalid type for field: _id, expected string" };
+    if (!body.name) {
+        return { success: false, error: "Missing required field: name" };
+    } else if (typeof body.name !== "string") {
+        return { success: false, error: "Invalid type for field: name, expected string" };
     }
 
     return { success: true, error: "" };
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<LookIpsRespon
             return NextResponse.json({ success: false, error: _ERROR }, { status: 400 });
         }
 
-        const _IPS = await get_ips_props({ id: _BODY._id });
+        const _IPS = await get_ips_props({ name: _BODY.name });
 
         if (!_IPS) {
             return NextResponse.json({ success: false, error: "IPS not found" }, { status: 404 });

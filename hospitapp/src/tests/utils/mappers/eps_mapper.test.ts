@@ -5,7 +5,7 @@ import { EPSMapper } from '@/utils/mappers/eps_mapper';
 
 describe('EPSMapper', () => {
   const _SAMPLE_DOC: EpsDocument = {
-    _id: new ObjectId(),
+    _id: new ObjectId('67b7885ec6dcb343450c057f'),
     name: 'Test EPS',
     '01_8000_phone': '1234567',
     fax: '7654321',

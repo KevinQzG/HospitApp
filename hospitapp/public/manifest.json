@@ -1,0 +1,21 @@
+{
+  "name": "HospitApp",
+  "short_name": "HospitApp",
+  "description": "Encuentra hospitales y clínicas cercanos con HospitApp.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ECF6FF",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

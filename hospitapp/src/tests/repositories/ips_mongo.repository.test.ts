@@ -29,6 +29,22 @@ describe('IpsMongoRepository Integration Test', () => {
     const _MAX_DISTANCE_METERS = 5000; // 5km
     const _EXPECTED_IPS_ID = new ObjectId("67b3e98bb1ae5d9e47ae7a07");
 
+    it('should retrieve the all the IPS that matches without the coordinates', async () => {
+      const { results: _RESULTS, total: _TOTAL } = await repository.find_all_by_distance_specialty_eps(
+        null,
+        null,
+        null,
+        test_specialties,
+        test_eps_names,
+        1,
+        10
+      );
+
+      expect(_RESULTS).toHaveLength(10);
+      expect(_TOTAL).toBeGreaterThan(0);
+      expect(_TOTAL).toBe(110);
+    });
+
     it('should retrieve exactly one matching IPS with correct data', async () => {
       const { results: _RESULTS } = await repository.find_all_by_distance_specialty_eps(
         _TEST_COORDINATES[0],
@@ -165,25 +181,24 @@ describe('IpsMongoRepository Integration Test', () => {
     });
   });
 
-  describe('find_by_id', () => {
-    const _EXPECTED_IPS_ID = "67b3e98bb1ae5d9e47ae72a8";
+  describe('find_by_name', () => {
+    const _EXPECTED_IPS_NAME = "INSTITUTO DEL CORAZON SEDE CENTRO";
     let ips: Ips | null;
 
     it('should retrieve exactly one matching IPS with correct data', async () => {
-      ips = await repository.find_by_id(_EXPECTED_IPS_ID);
+      ips = await repository.find_by_name(_EXPECTED_IPS_NAME);
 
-      expect(ips?.get_id()).toEqual(new ObjectId(_EXPECTED_IPS_ID));
-      expect(ips?.get_name()).toBe('INSTITUTO DEL CORAZON SEDE CENTRO');
+      expect(ips?.get_name()).toBe(_EXPECTED_IPS_NAME);
       expect(ips?.get_department()).toBe('ANTIOQUIA');
       expect(ips?.get_town()).toBe('MEDELLÍN');
     });
 
     it('should validate complete IPS document structure', async () => {
-      ips = await repository.find_by_id(_EXPECTED_IPS_ID);
+      ips = await repository.find_by_name(_EXPECTED_IPS_NAME);
 
       const _EXPECTED_DATA = {
-        _id: new ObjectId(_EXPECTED_IPS_ID),
-        name: 'INSTITUTO DEL CORAZON SEDE CENTRO',
+        _id: new ObjectId('67b3e98bb1ae5d9e47ae72a8'),
+        name: _EXPECTED_IPS_NAME,
         department: 'ANTIOQUIA',
         town: 'MEDELLÍN',
         address: 'CALLE 54 # 49-69',
