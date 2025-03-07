@@ -110,22 +110,12 @@ export async function POST(req: NextRequest): Promise<NextResponse<SearchRespons
         if (!_SUCCESS) {
             return NextResponse.json({ success: false, error: _ERROR }, { status: 400 });
         }
-        console.log("Request body:", _BODY);
         let latitude: number | null = null;
         let longitude: number | null = null;
         if (_BODY.coordinates) {
             longitude = _BODY.coordinates[0];
             latitude = _BODY.coordinates[1];
         }
-        console.log("Function body:", [
-            longitude,
-            latitude,
-            _BODY.max_distance || null,
-            _BODY.specialties || [],
-            _BODY.eps_names || [],
-            _BODY.page || 1,
-            _BODY.page_size || 10
-        ]);
 
         const { results: _RESULTS, total: _TOTAL } = await _SEARCH_SERVICE.filter_ips(
             longitude,

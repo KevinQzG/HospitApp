@@ -187,7 +187,6 @@ describe('IpsMongoRepository Integration Test', () => {
 
     it('should retrieve exactly one matching IPS with correct data', async () => {
       ips = await repository.find_by_name(_EXPECTED_IPS_NAME);
-      console.log(ips);
 
       expect(ips?.get_name()).toBe(_EXPECTED_IPS_NAME);
       expect(ips?.get_department()).toBe('ANTIOQUIA');

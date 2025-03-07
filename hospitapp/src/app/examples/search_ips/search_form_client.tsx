@@ -6,7 +6,7 @@ import { SearchFormClientProps } from '@/services/search_ips/data_caching.servic
 import { SearchableSelect } from './searchable_select';
 
 interface FormData {
-  coordinates: [number, number];
+  coordinates: [number, number] | null;
   max_distance: number;
   specialties: string[];
   eps: string[];
@@ -30,25 +30,31 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
       // Safely access form elements
       const _FORM_DATA = new FormData(e.currentTarget);
 
-      // Get geolocation
-      const _POSITION = await new Promise<GeolocationPosition>((resolve, reject) => {
-        if (!navigator.geolocation) {
-          reject(new Error('Geolocation not supported'));
-          return;
-        }
+      // Default to empty coordinates if location is not available
+      let _COORDINATES: [number, number] | null = null;
 
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          err => reject(new Error(`Geolocation error: ${err.message}`)),
-          { enableHighAccuracy: true, timeout: 10000 }
-        );
-      });
+      try {
+        const _POSITION = await new Promise<GeolocationPosition>((resolve, reject) => {
+          if (!navigator.geolocation) {
+            reject(new Error('Geolocation not supported'));
+            return;
+          }
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+          });
+        });
+        _COORDINATES = [_POSITION.coords.longitude, _POSITION.coords.latitude];
+      } catch (error) {
+        console.warn('Geolocation permission denied or error occurred.');
+      }
+
       const _SPECIALTIES = JSON.parse(_FORM_DATA.get('specialties') as string || '[]');
       const _EPS = JSON.parse(_FORM_DATA.get('eps') as string || '[]');
 
       // Build form data
       const _REQUEST_DATA: FormData = {
-        coordinates: [_POSITION.coords.longitude, _POSITION.coords.latitude],
+        coordinates: _COORDINATES,
         max_distance: parseInt(_FORM_DATA.get('max_distance')?.toString() || '5000'),
         specialties: _SPECIALTIES,
         eps: _EPS,
