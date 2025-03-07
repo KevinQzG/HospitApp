@@ -181,25 +181,25 @@ describe('IpsMongoRepository Integration Test', () => {
     });
   });
 
-  describe('find_by_id', () => {
-    const _EXPECTED_IPS_ID = "67b3e98bb1ae5d9e47ae72a8";
+  describe('find_by_name', () => {
+    const _EXPECTED_IPS_NAME = "INSTITUTO DEL CORAZON SEDE CENTRO";
     let ips: Ips | null;
 
     it('should retrieve exactly one matching IPS with correct data', async () => {
-      ips = await repository.find_by_id(_EXPECTED_IPS_ID);
+      ips = await repository.find_by_name(_EXPECTED_IPS_NAME);
+      console.log(ips);
 
-      expect(ips?.get_id()).toEqual(new ObjectId(_EXPECTED_IPS_ID));
-      expect(ips?.get_name()).toBe('INSTITUTO DEL CORAZON SEDE CENTRO');
+      expect(ips?.get_name()).toBe(_EXPECTED_IPS_NAME);
       expect(ips?.get_department()).toBe('ANTIOQUIA');
       expect(ips?.get_town()).toBe('MEDELLÍN');
     });
 
     it('should validate complete IPS document structure', async () => {
-      ips = await repository.find_by_id(_EXPECTED_IPS_ID);
+      ips = await repository.find_by_name(_EXPECTED_IPS_NAME);
 
       const _EXPECTED_DATA = {
-        _id: new ObjectId(_EXPECTED_IPS_ID),
-        name: 'INSTITUTO DEL CORAZON SEDE CENTRO',
+        _id: new ObjectId('67b3e98bb1ae5d9e47ae72a8'),
+        name: _EXPECTED_IPS_NAME,
         department: 'ANTIOQUIA',
         town: 'MEDELLÍN',
         address: 'CALLE 54 # 49-69',

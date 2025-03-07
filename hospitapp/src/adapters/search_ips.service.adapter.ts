@@ -39,11 +39,11 @@ export default interface SearchIpsServiceAdapter {
     get_all_eps(): Promise<EpsResponse[]>;
 
     /**
-     * Gets an IPS by its ID.
+     * Gets an IPS by its name.
      * 
      * @async
-     * @param {string} id - The ID of the IPS.
-     * @returns {Promise<IpsResponse | null>} The IPS with the specified ID, or null if it does not exist.
+     * @param {string} name - The name of the IPS.
+     * @returns {Promise<IpsResponse | null>} The IPS with the specified name, or null if it does not exist.
      */
-    get_ips_by_id(id: string): Promise<IpsResponse | null>;
+    get_ips_by_name(name: string): Promise<IpsResponse | null>;
 }

@@ -52,8 +52,8 @@ export class SearchIpsMongoService implements SearchIpsServiceAdapter {
         return _EPS.map(eps => {return eps.to_response();});
     }
 
-    async get_ips_by_id(id: string): Promise<IpsResponse | null> {
-        const _IPS = await this.ips_repository.find_by_id(id);
+    async get_ips_by_name(name: string): Promise<IpsResponse | null> {
+        const _IPS = await this.ips_repository.find_by_name(name);
         if (!_IPS) {
             return null;
         }

@@ -66,10 +66,10 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
         };
     }
 
-    async find_by_id(id: string): Promise<Ips | null> {
+    async find_by_name(name: string): Promise<Ips | null> {
         // Build the pipeline
         const _PIPELINE = new IpsPipelineBuilder()
-            .add_match_id_stage(id)
+            .add_match_name_stage(name)
             .with_eps()
             .with_specialties()
             .build();

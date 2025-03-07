@@ -27,7 +27,7 @@ export class IpsPipelineBuilder {
      */
     add_geo_stage(longitude: number | null, latitude: number | null, max_distance: number | null): this {
         if (longitude === null || latitude === null || max_distance === null) return this;
-        
+
         this.pipeline.push({
             $geoNear: {
                 near: {
@@ -46,16 +46,16 @@ export class IpsPipelineBuilder {
     /**
      * Adds a match stage to the pipeline.
      *
-     * @param {string} id - The id to match.
+     * @param {string} name - The name to match.
      * @returns {IpsPipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
-     * @name add_match_id_stage
+     * @name add_match_name_stage
      */
-    add_match_id_stage(id: string): this {
+    add_match_name_stage(name: string): this {
         this.pipeline.push({
-            $match: { _id: new ObjectId(id) }
+            $match: { name: name }
         });
 
         return this;
