@@ -152,7 +152,7 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
                 className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
                 <Link
-                  href={`/examples/ips/${item.name}`}
+                  href={`/examples/ips/${encodeURIComponent(item.name)}`}
                   className="text-blue-600 hover:text-blue-800 font-medium"
                 >
                   {item.name}

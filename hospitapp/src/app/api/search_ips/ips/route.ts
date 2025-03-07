@@ -65,7 +65,6 @@ export async function POST(req: NextRequest): Promise<NextResponse<LookIpsRespon
     try {
         // Parse and validate request body
         const _BODY: LookIpsRequest = await req.json();
-        console.log("Request body:", _BODY);
 
         // Body validation
         const { success: _SUCCESS, error: _ERROR } = validate_request_body(_BODY);

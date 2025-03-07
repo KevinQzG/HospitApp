@@ -10,7 +10,6 @@ type IpsDetailPageProps = {
 export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
   const resolvedParams = await params; // Resolve the Promise
   let { name } = resolvedParams;
-  console.log('IPS name:', name);
 
   name = decodeURIComponent(name);
   try {
