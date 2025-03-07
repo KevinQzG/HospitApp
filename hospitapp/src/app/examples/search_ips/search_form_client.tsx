@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react';
 import { SearchResponse } from '@/app/api/search_ips/filter/route';
 import { SearchFormClientProps } from '@/services/search_ips/data_caching.service';
 import { SearchableSelect } from './searchable_select';
+import { time } from 'console';
 
 interface FormData {
   coordinates: [number, number] | null;
@@ -32,22 +33,28 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
 
       // Default to empty coordinates if location is not available
       let _COORDINATES: [number, number] | null = null;
+      let time_api = 0;
+      let time_geolocation = 0;
+      const _GEOLOCATION_START = performance.now();
 
+      time_geolocation = performance.now();
       try {
         const _POSITION = await new Promise<GeolocationPosition>((resolve, reject) => {
+          
           if (!navigator.geolocation) {
             reject(new Error('Geolocation not supported'));
             return;
           }
           navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 10000,
+            enableHighAccuracy: false,
+            timeout: 5000,
           });
         });
         _COORDINATES = [_POSITION.coords.longitude, _POSITION.coords.latitude];
       } catch (error) {
         console.warn('Geolocation permission denied or error occurred.');
       }
+      time_geolocation = performance.now() - time_geolocation;
 
       const _SPECIALTIES = JSON.parse(_FORM_DATA.get('specialties') as string || '[]');
       const _EPS = JSON.parse(_FORM_DATA.get('eps') as string || '[]');
@@ -64,6 +71,7 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
       console.log('Request data:', _REQUEST_DATA);
 
       // API call
+      time_api = performance.now();
       const _RESPONSE = await fetch('/api/search_ips/filter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,6 +84,12 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
       }
 
       const _RESULT = await _RESPONSE.json();
+      time_api = performance.now() - time_api;
+      console.log(`Timing results:
+        - Geolocation: ${time_geolocation.toFixed(2)}ms
+        - API Call: ${time_api.toFixed(2)}ms
+        - Total: ${(performance.now() - _GEOLOCATION_START).toFixed(2)}ms
+      `);
       set_results(_RESULT);
       console.log('Search results:', _RESULT);
     } catch (err) {
