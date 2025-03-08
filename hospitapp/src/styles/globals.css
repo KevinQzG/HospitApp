@@ -7,7 +7,23 @@ body {
   color: #2d3748; /* text-gray-800 */
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
 }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-in-out;
+}
 /* -------------------------------------------------------------------------
  * SF Pro Display
  * ------------------------------------------------------------------------- */

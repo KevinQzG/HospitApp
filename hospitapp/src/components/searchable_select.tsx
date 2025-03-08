@@ -6,20 +6,19 @@ interface SearchableSelectProps {
   options: Array<{ _id: string; name: string }>;
   placeholder: string;
   name: string;
+  maxSelections?: number; 
 }
 
-export function SearchableSelect({ options, placeholder, name }: SearchableSelectProps) {
+export function SearchableSelect({ options, placeholder, name, maxSelections }: SearchableSelectProps) {
   const [_SEARCH_TERM, set_search_term] = useState('');
   const [_IS_OPEN, set_is_open] = useState(false);
-  const [_SELECTED_OPTIONS, set_selected_options] = useState<string[]>([]); // Now stores names
+  const [_SELECTED_OPTIONS, set_selected_options] = useState<string[]>([]);
   const _WRAPPER_REF = useRef<HTMLDivElement>(null);
 
-  // Filter options based on search term
   const _FILTERED_OPTIONS = options.filter(option =>
     option.name.toLowerCase().includes(_SEARCH_TERM.toLowerCase())
   );
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (_WRAPPER_REF.current && !_WRAPPER_REF.current.contains(event.target as Node)) {
@@ -34,67 +33,72 @@ export function SearchableSelect({ options, placeholder, name }: SearchableSelec
   const _TOGGLE_OPTION = (name: string) => {
     set_selected_options(prev =>
       prev.includes(name)
-        ? prev.filter(v => v !== name)
-        : [...prev, name]
+        ? prev.filter(v => v !== name) 
+        : maxSelections && prev.length >= maxSelections
+          ? prev 
+          : [...prev, name] 
     );
   };
 
   return (
     <div className="relative" ref={_WRAPPER_REF}>
-      <div className="flex flex-wrap gap-1 p-1 border rounded-md">
-        {/* Selected items */}
+      <div className="flex flex-wrap gap-2 p-2 border border-gray-200 rounded-lg bg-white shadow-sm">
         {_SELECTED_OPTIONS.map(name => (
-          <span 
+          <span
             key={name}
-            className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+            className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center"
           >
             {name}
             <button
               type="button"
               onClick={() => _TOGGLE_OPTION(name)}
-              className="ml-1 text-blue-600 hover:text-blue-800"
+              className="ml-2 text-blue-600 hover:text-blue-800"
+              aria-label={`Remove ${name}`}
             >
               ×
             </button>
           </span>
         ))}
         
-        {/* Search input */}
         <input
           type="text"
           placeholder={placeholder}
-          className="flex-1 min-w-[150px] p-1 border-none focus:ring-0"
+          className="flex-1 min-w-[150px] p-2 border-none focus:ring-0 outline-none placeholder-gray-400"
           value={_SEARCH_TERM}
           onChange={(e) => set_search_term(e.target.value)}
           onFocus={() => set_is_open(true)}
+          aria-haspopup="listbox"
         />
       </div>
 
-      {/* Dropdown list */}
       {_IS_OPEN && (
-        <div className="absolute z-10 w-full mt-1 max-h-60 overflow-auto border rounded-md bg-white shadow-lg">
+        <div
+          className="absolute z-10 w-full mt-2 max-h-60 overflow-auto border border-gray-200 rounded-lg bg-white shadow-lg"
+          role="listbox"
+        >
           {_FILTERED_OPTIONS.length === 0 ? (
-            <div className="p-2 text-gray-500">No matches found</div>
+            <div className="p-3 text-gray-500">No se encontraron coincidencias</div>
           ) : (
             _FILTERED_OPTIONS.map(option => (
               <label
                 key={option._id}
-                className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
+                className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
+                role="option"
               >
                 <input
                   type="checkbox"
                   checked={_SELECTED_OPTIONS.includes(option.name)}
                   onChange={() => _TOGGLE_OPTION(option.name)}
-                  className="mr-2"
+                  className="mr-3 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  aria-label={`Seleccionar ${option.name}`}
                 />
-                <span>{option.name}</span>
+                <span className="text-gray-700">{option.name}</span>
               </label>
             ))
           )}
         </div>
       )}
 
-      {/* Hidden input for form submission */}
       <input
         type="hidden"
         name={name}

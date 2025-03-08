@@ -1,56 +1,52 @@
-import Image from "next/image";
+'use server';
+
+import { SearchFormClientProps, get_search_ips_cached_props } from '@/services/search_ips/data_caching.service';
+import SearchFormClient from '@/components/search_form_client';
 import SpecialtiesSection from "@/components/SpecialtiesSection";
 
-export default function HomePage() {
-  return (
-    <div>
-      {/* Hero Section BG #ECF6FF */}
-      <section className="relative bg-[#ECF6FF] overflow-hidden pb-[30px]">
-        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 py-14 relative">
-          {/* Text Content */}
-          <div className="w-full md:w-1/2 text-center md:text-left">
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
-              Encuentra <br />
-              Atención Médica <br />
-              <span className="text-blue-600">Rápida y Segura</span>
-            </h1>
-            <p className="mt-4 text-gray-600 text-lg">
-              Con HospitApp, localiza centros médicos y especialistas cerca de
-              ti de manera rápida y sencilla.
-            </p>
+export default async function HomePage() {
+    let config: SearchFormClientProps;
 
-            {/* Search Input */}
-            <div className="mt-6 flex items-center bg-white shadow-md rounded-lg overflow-hidden w-full max-w-md mx-auto md:mx-0">
-              <span className="px-4 text-gray-500">📍</span>
-              <input
-                type="text"
-                placeholder="Encuentra centros médicos cercanos"
-                className="flex-grow py-3 px-2 outline-none"
-              />
-              <button className="bg-blue-600 text-white px-6 py-3 hover:bg-blue-700 transition">
-                🔍
-              </button>
+    try {
+        config = await get_search_ips_cached_props();
+    } catch (error) {
+        console.error('Page initialization failed:', error);
+        return (
+            <div>
+                <h2>Configuration Error</h2>
+                <p>Failed to load required configuration data. Please try again later.</p>
             </div>
-          </div>
+        );
+    }
 
-          {/* Image */}
-          <div className="w-full md:w-1/2 flex justify-end relative hidden custom-desktop:block">
-            <Image
-              src="/stock/medicos.png"
-              alt="Equipo médico"
-              width={500}
-              height={500}
-              className="max-w-none h-auto absolute bottom-[-250px] right-0"
-              priority
-            />
-          </div>
+    return (
+        <div>
+            {/* Hero Section */}
+            <section className="relative bg-[#ECF6FF] overflow-hidden pb-[30px]">
+                <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 py-14">
+                    {/* Text Content */}
+                    <div className="w-full md:w-1/2 text-center md:text-left">
+                        <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
+                            Encuentra <br />
+                            Atención Médica <br />
+                            <span className="text-blue-600">Rápida y Segura</span>
+                        </h1>
+                        <p className="mt-4 text-gray-600 text-lg">
+                            Con HospitApp, localiza centros médicos y especialistas cerca de ti de manera rápida y sencilla.
+                        </p>
+                    </div>
+
+                    {/* Search Form */}
+                    <div className="w-full md:w-1/2 mt-8 md:mt-0">
+                        <SearchFormClient specialties={config.specialties} eps={config.eps} />
+                    </div>
+                </div>
+            </section>
+
+            {/* Specialties Section */}
+            <section className="bg-[#F9FCFF]">
+                <SpecialtiesSection />
+            </section>
         </div>
-      </section>
-
-      {/* Specialties Section BG #F9FCFF */}
-      <section className="bg-[#F9FCFF]">
-        <SpecialtiesSection />
-      </section>
-    </div>
-  );
+    );
 }
