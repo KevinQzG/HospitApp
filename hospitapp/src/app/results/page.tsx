@@ -2,7 +2,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Hospital, Loader2 } from 'lucide-react'; // Iconos de Lucide
+import {Loader2 } from 'lucide-react'; 
 
 interface SearchResponse {
   data: Array<{
