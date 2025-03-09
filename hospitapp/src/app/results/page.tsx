@@ -1,10 +1,11 @@
+// src/app/results/page.tsx
 "use client";
+
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, Hospital } from "lucide-react";
+import { Loader2, Hospital, ChevronLeft, ChevronRight } from "lucide-react";
 import mapboxgl from "mapbox-gl";
-import { SearchResponse } from "../api/search_ips/filter/route";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string;
 
@@ -44,7 +45,7 @@ function ResultsPageContent() {
   useEffect(() => {
     const _FETCH_FILTERED_RESULTS = async () => {
       try {
-        const _MAX_DISTANCE = _SEARCH_PARAMS.get("max_distance") || "10000";
+        const _MAX_DISTANCE = _SEARCH_PARAMS.get("max_distance") || "20000";
         const _SPECIALTIES =
           _SEARCH_PARAMS.get("specialties")?.split(",").filter(Boolean) || [];
         const _EPS = _SEARCH_PARAMS.get("eps")?.split(",").filter(Boolean) || [];
@@ -98,6 +99,7 @@ function ResultsPageContent() {
   }, [_SEARCH_PARAMS]);
 
   const _HANDLE_PAGE_CHANGE = (_NEW_PAGE: number) => {
+    if (_NEW_PAGE < 1 || _NEW_PAGE > _TOTAL_PAGES) return;
     _SET_CURRENT_PAGE(_NEW_PAGE);
     const _CURRENT_PARAMS = new URLSearchParams(_SEARCH_PARAMS.toString());
     _CURRENT_PARAMS.set("page", _NEW_PAGE.toString());
@@ -106,6 +108,20 @@ function ResultsPageContent() {
     const _END = _START + _PAGE_SIZE;
     _SET_PAGINATED_RESULTS(_ALL_RESULTS.slice(_START, _END));
   };
+
+  const _MAX_VISIBLE_PAGES = 5;
+  const _PAGE_RANGE = Math.floor(_MAX_VISIBLE_PAGES / 2);
+  let _START_PAGE = Math.max(1, _CURRENT_PAGE - _PAGE_RANGE);
+  let _END_PAGE = Math.min(_TOTAL_PAGES, _START_PAGE + _MAX_VISIBLE_PAGES - 1);
+
+  if (_END_PAGE - _START_PAGE + 1 < _MAX_VISIBLE_PAGES) {
+    _START_PAGE = Math.max(1, _END_PAGE - _MAX_VISIBLE_PAGES + 1);
+  }
+
+  const _PAGE_NUMBERS = [];
+  for (let i = _START_PAGE; i <= _END_PAGE; i++) {
+    _PAGE_NUMBERS.push(i);
+  }
 
   if (_LOADING) {
     return (
@@ -148,16 +164,16 @@ function ResultsPageContent() {
         <div className="space-x-4">
           <button
             onClick={() => _SET_LIST_VIEW(true)}
-            className={`px-4 py-2 rounded ${
-              _LIST_VIEW ? "bg-blue-500 text-white" : "bg-gray-200"
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              _LIST_VIEW ? "bg-blue-500 text-white shadow-sm" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Lista
           </button>
           <button
             onClick={() => _SET_LIST_VIEW(false)}
-            className={`px-4 py-2 rounded ${
-              !_LIST_VIEW ? "bg-blue-500 text-white" : "bg-gray-200"
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              !_LIST_VIEW ? "bg-blue-500 text-white shadow-sm" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Mapa
@@ -174,7 +190,7 @@ function ResultsPageContent() {
                 href={`/ips-details/${encodeURIComponent(_ITEM.name)}`}
                 className="block p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100"
               >
-                <div className="relative flex items-center justify-center h-20 bg-blue-50 mb-4">
+                <div className="relative flex items-center justify-center h-20 bg-blue-50 mb-4 rounded-t-lg">
                   <Hospital className="w-12 h-12 text-blue-500" />
                 </div>
                 <div className="p-2">
@@ -191,40 +207,93 @@ function ResultsPageContent() {
                       ? `${Math.round(_ITEM.distance)} metros`
                       : "No disponible"}
                   </p>
-                  <button className="mt-4 w-full bg-blue-500 text-white text-sm py-2 rounded hover:bg-blue-600">
+                  <button className="mt-4 w-full bg-blue-500 text-white text-sm py-2 rounded-lg hover:bg-blue-600 transition-colors">
                     Más información
                   </button>
                 </div>
               </Link>
             ))}
           </div>
-          <div className="mt-8 flex justify-center items-center space-x-4">
-            <button
-              onClick={() => _HANDLE_PAGE_CHANGE(_CURRENT_PAGE - 1)}
-              disabled={_CURRENT_PAGE === 1}
-              className={`px-4 py-2 rounded ${
-                _CURRENT_PAGE === 1
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-blue-500 text-white hover:bg-blue-600"
-              }`}
-            >
-              Anterior
-            </button>
-            <span className="text-gray-700">
-              Página {_CURRENT_PAGE} de {_TOTAL_PAGES}
-            </span>
-            <button
-              onClick={() => _HANDLE_PAGE_CHANGE(_CURRENT_PAGE + 1)}
-              disabled={_CURRENT_PAGE === _TOTAL_PAGES}
-              className={`px-4 py-2 rounded ${
-                _CURRENT_PAGE === _TOTAL_PAGES
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-blue-500 text-white hover:bg-blue-600"
-              }`}
-            >
-              Siguiente
-            </button>
-          </div>
+
+          {/* Nueva sección de paginación con diseño Apple UI/UX */}
+          {_TOTAL_PAGES > 1 && (
+            <div className="mt-10 flex flex-col items-center space-y-4">
+              <p className="text-sm text-gray-600 font-medium">
+                Mostrando{" "}
+                {(_CURRENT_PAGE - 1) * _PAGE_SIZE + 1} –{" "}
+                {Math.min(_CURRENT_PAGE * _PAGE_SIZE, _TOTAL_RESULTS)}{" "}
+                de {_TOTAL_RESULTS} resultados
+              </p>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => _HANDLE_PAGE_CHANGE(_CURRENT_PAGE - 1)}
+                  disabled={_CURRENT_PAGE === 1}
+                  className={`p-2 rounded-full transition-all duration-200 ${
+                    _CURRENT_PAGE === 1
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                {/* Números de página */}
+                {_START_PAGE > 1 && (
+                  <>
+                    <button
+                      onClick={() => _HANDLE_PAGE_CHANGE(1)}
+                      className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 transition-all duration-200"
+                    >
+                      1
+                    </button>
+                    {_START_PAGE > 2 && (
+                      <span className="text-gray-600 px-2">...</span>
+                    )}
+                  </>
+                )}
+
+                {_PAGE_NUMBERS.map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => _HANDLE_PAGE_CHANGE(page)}
+                    className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 ${
+                      _CURRENT_PAGE === page
+                        ? "bg-blue-500 text-white shadow-sm"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                {_END_PAGE < _TOTAL_PAGES && (
+                  <>
+                    {_END_PAGE < _TOTAL_PAGES - 1 && (
+                      <span className="text-gray-600 px-2">...</span>
+                    )}
+                    <button
+                      onClick={() => _HANDLE_PAGE_CHANGE(_TOTAL_PAGES)}
+                      className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 transition-all duration-200"
+                    >
+                      {_TOTAL_PAGES}
+                    </button>
+                  </>
+                )}
+
+                <button
+                  onClick={() => _HANDLE_PAGE_CHANGE(_CURRENT_PAGE + 1)}
+                  disabled={_CURRENT_PAGE === _TOTAL_PAGES}
+                  className={`p-2 rounded-full transition-all duration-200 ${
+                    _CURRENT_PAGE === _TOTAL_PAGES
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="relative w-full h-[calc(100vh-150px)] md:h-[600px]">
@@ -234,7 +303,6 @@ function ResultsPageContent() {
     </div>
   );
 }
-
 const MapComponent = ({
   results,
   coordinates,
