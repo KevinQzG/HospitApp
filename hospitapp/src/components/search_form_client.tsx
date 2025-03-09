@@ -34,7 +34,7 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
         console.warn('No se pudo obtener la ubicación del usuario:', error);
       }
 
-      const max_distance = '10000'; // Default value of 10 km
+      const max_distance = '20000'; // Default value of 20 km
       const specialties = JSON.parse(_FORM_DATA.get('specialties') as string || '[]');
       const eps = JSON.parse(_FORM_DATA.get('eps') as string || '[]');
       const page = '1';
