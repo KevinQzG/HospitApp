@@ -27,7 +27,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
             <h1 className="text-3xl font-semibold text-gray-900">Something Went Wrong</h1>
             <p className="mt-2 text-sm text-gray-500">{_ERROR_DATA.error}</p>
             <Link href="/results" className="mt-4 inline-block text-blue-500 hover:text-blue-700 transition">
-              Back to Search
+            Regresar a resultados de búsqueda
             </Link>
           </div>
         </div>
@@ -43,7 +43,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
           <div className="text-center">
             <h1 className="text-3xl font-semibold text-gray-900">IPS Not Found</h1>
             <Link href="/results" className="mt-4 inline-block text-blue-500 hover:text-blue-700 transition">
-              Back to Search
+            Regresar a resultados de búsqueda
             </Link>
           </div>
         </div>
@@ -55,7 +55,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
         <header className="bg-white shadow-sm">
           <div className="max-w-5xl mx-auto px-6 py-4">
             <Link href="/results" className="text-blue-500 hover:text-blue-700 text-sm font-medium transition">
-              ← Back to Search
+            Regresar a resultados de búsqueda
             </Link>
           </div>
         </header>
@@ -76,7 +76,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
 
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="bg-white rounded-3xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">General Information</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Información General</h2>
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-center">
                   <MapPin size={20} className="mr-3 text-blue-500" />
@@ -100,7 +100,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
                 )}
                 {_IPS.level && (
                   <li>
-                    <span className="font-medium text-gray-900">Level: </span>
+                    <span className="font-medium text-gray-900">Nivel: </span>
                     {_IPS.level}
                   </li>
                 )}
@@ -108,9 +108,9 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
             </section>
 
             <section className="bg-white rounded-3xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Location</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Ubicación</h2>
               <p className="text-gray-700">
-                <span className="font-medium">Coordinates:</span>
+                <span className="font-medium">Coordenadas:</span>
                 <br />
                 Longitude: {_IPS.location.coordinates[0]}
                 <br />
@@ -123,7 +123,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
                   rel="noopener noreferrer"
                   className="block text-blue-500 hover:text-blue-700 transition"
                 >
-                  View on Google Maps →
+                  Ver en Google Maps →
                 </a>
                 <a
                   href={_IPS.waze}
@@ -131,7 +131,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
                   rel="noopener noreferrer"
                   className="block text-blue-500 hover:text-blue-700 transition"
                 >
-                  View on Waze →
+                  Ver en Waze →
                 </a>
               </div>
             </section>
@@ -154,7 +154,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
 
             {_IPS.specialties && _IPS.specialties.length > 0 && (
               <section className="bg-white rounded-3xl shadow-sm p-6 md:col-span-2">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Specialties</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Especialidades</h2>
                 <div className="flex flex-wrap gap-2">
                   {_IPS.specialties.map((spec) => (
                     <span
@@ -178,7 +178,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
           <h1 className="text-3xl font-semibold text-gray-900">Error Loading IPS</h1>
           <p className="mt-2 text-sm text-gray-500">{(error as Error).message}</p>
           <Link href="/results" className="mt-4 inline-block text-blue-500 hover:text-blue-700 transition">
-            Back to Search
+            Regresar a resultados de búsqueda
           </Link>
         </div>
       </div>

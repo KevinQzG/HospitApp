@@ -1,6 +1,7 @@
 @import "tailwindcss/preflight";
 @import "tailwindcss/utilities";
 @import "tailwindcss";
+@import 'mapbox-gl/dist/mapbox-gl.css';
 
 body {
   background-color: #f7fafc; /* bg-gray-100 */
