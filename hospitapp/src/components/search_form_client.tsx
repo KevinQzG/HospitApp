@@ -17,13 +17,31 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
     try {
       const _FORM_DATA = new FormData(e.currentTarget);
 
-      const max_distance = _FORM_DATA.get('max_distance')?.toString() || '5000';
+      let coordinates: [number, number] = [-75.5849, 6.1816]; // Medellín Default Center
+      try {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          if (!navigator.geolocation) {
+            reject(new Error('Geolocalización no soportada'));
+            return;
+          }
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: false,
+            timeout: 5000,
+          });
+        });
+        coordinates = [position.coords.longitude, position.coords.latitude];
+      } catch (error) {
+        console.warn('No se pudo obtener la ubicación del usuario:', error);
+      }
+
+      const max_distance = '10000'; // Default value of 10 km
       const specialties = JSON.parse(_FORM_DATA.get('specialties') as string || '[]');
       const eps = JSON.parse(_FORM_DATA.get('eps') as string || '[]');
-      const page = _FORM_DATA.get('page')?.toString() || '1';
-      const page_size = _FORM_DATA.get('page_size')?.toString() || '10';
+      const page = '1';
+      const page_size = '21';
 
       const queryParams = new URLSearchParams({
+        coordinates: coordinates.join(','), 
         max_distance,
         specialties: specialties.join(','),
         eps: eps.join(','),
@@ -41,76 +59,44 @@ export default function SearchFormClient({ specialties, eps }: SearchFormClientP
   };
 
   return (
-    <form onSubmit={_HANDLE_SUBMIT} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
-      <div>
-        <label htmlFor="max_distance" className="block text-sm font-medium text-gray-700">Distancia Máxima:</label>
-        <select
-          name="max_distance"
-          id="max_distance"
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-          required
-        >
-          <option value="5000">5 km</option>
-          <option value="10000">10 km</option>
-          <option value="15000">15 km</option>
-          <option value="20000">20 km</option>
-        </select>
-      </div>
+    <form 
+      onSubmit={_HANDLE_SUBMIT} 
+      className={`bg-white p-8 rounded-xl shadow-lg border border-gray-200 max-w-lg mx-auto space-y-6 ${
+        _IS_SUBMITTING ? 'cursor-wait' : ''
+      }`}
+    >
+      <h2 className="text-2xl font-semibold text-gray-900 text-center">Buscar Atención Médica</h2>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Especialidades:</label>
+        <label className="block text-lg font-medium text-gray-800 mb-1">Especialidades</label>
         <SearchableSelect
           options={specialties}
-          placeholder="Buscar especialidades..."
+          placeholder="Selecciona especialidades..."
           name="specialties"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">EPS:</label>
+        <label className="block text-lg font-medium text-gray-800 mb-1">EPS</label>
         <SearchableSelect
           options={eps}
-          placeholder="Buscar EPS..."
+          placeholder="Selecciona EPS..."
           name="eps"
         />
       </div>
 
-      <div>
-        <label htmlFor="page" className="block text-sm font-medium text-gray-700">Página:</label>
-        <input
-          type="number"
-          name="page"
-          id="page"
-          defaultValue="1"
-          min="1"
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-          required
-        />
-      </div>
-
-      <div>
-        <label htmlFor="page_size" className="block text-sm font-medium text-gray-700">Tamaño de Página:</label>
-        <input
-          type="number"
-          name="page_size"
-          id="page_size"
-          defaultValue="10"
-          min="1"
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-          required
-        />
-      </div>
-
       {_ERROR && (
-        <div className="p-3 bg-red-100 text-red-700 rounded-md">
-          Error: {_ERROR}
+        <div className="p-3 bg-red-100 text-red-700 rounded-md text-center">
+          <strong>Error:</strong> {_ERROR}
         </div>
       )}
 
       <button
         type="submit"
         disabled={_IS_SUBMITTING}
-        className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+        className={`w-full bg-blue-600 text-white text-lg font-semibold p-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 ${
+          _IS_SUBMITTING ? 'cursor-wait' : 'cursor-pointer'
+        }`}
       >
         {_IS_SUBMITTING ? 'Buscando...' : 'Buscar'}
       </button>

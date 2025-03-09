@@ -25,6 +25,18 @@ body {
 .animate-fade-in {
   animation: fade-in 1s ease-in-out;
 }
+
+
+
+.mapboxgl-popup-content {
+  font-family: 'Arial', sans-serif;
+  padding: 0 !important; 
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: #ffffff !important; 
+}
+
 /* -------------------------------------------------------------------------
  * SF Pro Display
  * ------------------------------------------------------------------------- */
