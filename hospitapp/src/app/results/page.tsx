@@ -49,7 +49,7 @@ function ResultsPageContent() {
   useEffect(() => {
     const fetchFilteredResults = async () => {
       try {
-        const maxDistance = searchParams.get("max_distance") || "20000";
+        const maxDistance = searchParams.get("max_distance") ?? "20000";
         const specialties = searchParams.get("specialties")?.split(",").filter(Boolean) || [];
         const eps = searchParams.get("eps")?.split(",").filter(Boolean) || [];
         const coordinatesStr = searchParams.get("coordinates");
@@ -82,7 +82,7 @@ function ResultsPageContent() {
         setTotalResults(filteredResults.length);
         setTotalPages(Math.ceil(filteredResults.length / pageSize));
 
-        const pageFromParams = parseInt(searchParams.get("page") || "1");
+        const pageFromParams = parseInt(searchParams.get("page") ?? "1");
         setCurrentPage(pageFromParams);
         const start = (pageFromParams - 1) * pageSize;
         const end = start + pageSize;
@@ -311,7 +311,7 @@ const MapComponent = ({ results, coordinates }: { results: IpsResponse[]; coordi
         popupContent.innerHTML = `
           <div class="bg-white p-4 rounded-lg shadow-lg max-w-xs border border-gray-200">
             <h3 class="text-base font-semibold text-blue-600 cursor-pointer hover:underline mb-1">${item.name}</h3>
-            <p class="text-sm text-gray-600">${item.address}, ${item.town || ""}, ${item.department || ""}</p>
+            <p class="text-sm text-gray-600">${item.address}, ${item.town ?? ""}, ${item.department ?? ""}</p>
             <p class="text-xs text-gray-500 mt-1">Distancia: ${
               item.distance !== undefined ? `${Math.round(item.distance)} m` : "N/A"
             }</p>

@@ -10,23 +10,29 @@ interface Props {
   active?: boolean;
 }
 
-export default function SpecialtyCard({ name, icon: Icon, active = false }: Props) {
+export default function SpecialtyCard({
+  name,
+  icon: Icon,
+  active = false,
+}: Props) {
   const router = useRouter();
 
   const handleClick = async () => {
     let coordinates: [number, number] = [-75.5849, 6.1816]; // Default: Medellín
 
     try {
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        if (!navigator.geolocation) {
-          reject(new Error("Geolocalización no soportada"));
-          return;
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          if (!navigator.geolocation) {
+            reject(new Error("Geolocalización no soportada"));
+            return;
+          }
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: false,
+            timeout: 5000,
+          });
         }
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: false,
-          timeout: 5000,
-        });
-      });
+      );
       coordinates = [position.coords.longitude, position.coords.latitude];
     } catch (error) {
       console.warn("Usando coordenadas por defecto debido a:", error);
@@ -45,9 +51,10 @@ export default function SpecialtyCard({ name, icon: Icon, active = false }: Prop
   const _CARD_CLASSES = `
     group p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg 
     flex flex-col items-center justify-center transition-all duration-300 cursor-pointer
-    ${active
-      ? "bg-blue-500 text-white shadow-xl"
-      : "bg-white hover:bg-blue-500 hover:text-white hover:shadow-xl"
+    ${
+      active
+        ? "bg-blue-500 text-white shadow-xl"
+        : "bg-white hover:bg-blue-500 hover:text-white hover:shadow-xl"
     }
   `;
 
@@ -59,7 +66,9 @@ export default function SpecialtyCard({ name, icon: Icon, active = false }: Prop
   return (
     <div className={_CARD_CLASSES} onClick={handleClick}>
       <Icon className={_ICON_CLASSES} />
-      <h4 className="text-sm sm:text-base font-medium mt-2 sm:mt-3 text-center">{name}</h4>
+      <h4 className="text-sm sm:text-base font-medium mt-2 sm:mt-3 text-center">
+        {name}
+      </h4>
     </div>
   );
 }

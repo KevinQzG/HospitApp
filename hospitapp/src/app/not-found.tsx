@@ -11,7 +11,8 @@ export default function NotFound() {
       <h1 className="text-6xl font-bold">404</h1>
       <h2 className="text-2xl font-semibold mt-2">Página no encontrada</h2>
       <p className="text-gray-600 mt-2 text-center max-w-md">
-        Lo sentimos, no pudimos encontrar la página que buscas. Es posible que haya sido eliminada o que la dirección sea incorrecta.
+        Lo sentimos, no pudimos encontrar la página que buscas. Es posible que
+        haya sido eliminada o que la dirección sea incorrecta.
       </p>
 
       {/* Go Back Button */}

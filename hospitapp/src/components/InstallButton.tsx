@@ -26,7 +26,10 @@ export default function InstallButton() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
     };
   }, [pathname]);
 
@@ -55,12 +58,14 @@ export default function InstallButton() {
   return (
     <div className="fixed bottom-6 right-6 animate-fade-in-up">
       <div className="bg-white shadow-xl rounded-2xl p-4 flex items-center space-x-4 w-96 border border-gray-200">
-        <div className="flex-shrink-0 text-blue-600 text-4xl">
-          📲
-        </div>
+        <div className="flex-shrink-0 text-blue-600 text-4xl">📲</div>
         <div className="flex-1">
-          <h2 className="text-lg font-semibold text-gray-900">Instala HospitAPP</h2>
-          <p className="text-sm text-gray-500">Accede rápidamente a hospitales y clínicas cerca de ti.</p>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Instala HospitAPP
+          </h2>
+          <p className="text-sm text-gray-500">
+            Accede rápidamente a hospitales y clínicas cerca de ti.
+          </p>
         </div>
         <button
           onClick={handleInstall}
