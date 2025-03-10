@@ -1,4 +1,5 @@
 export const _TYPES = {
+    UserRepositoryAdapter: Symbol.for('UserRepositoryAdapter'),
     DBAdapter: Symbol.for('DBAdapter'),
     IpsRepositoryAdapter: Symbol.for('IpsRepositoryAdapter'),
     EpsRepositoryAdapter: Symbol.for('EpsRepositoryAdapter'),
