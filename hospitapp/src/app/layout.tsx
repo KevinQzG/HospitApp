@@ -53,10 +53,8 @@ export default function RootLayout({
           href="/icons/icon-512x512.png"
         />
 
-        {/* Manifest para PWA */}
         <link rel="manifest" href="/manifest.json" />
 
-        {/* Meta etiquetas para Android y PWA */}
         <meta name="theme-color" content="#00381F" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
