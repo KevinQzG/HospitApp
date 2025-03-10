@@ -26,7 +26,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
           <div className="text-center">
             <h1 className="text-3xl font-semibold text-gray-900">Something Went Wrong</h1>
             <p className="mt-2 text-sm text-gray-500">{_ERROR_DATA.error}</p>
-            <Link href="/results" className="mt-4 inline-block text-blue-500 hover:text-blue-700 transition">
+            <Link href="/results" className="mt-4 inline-block text-blue-700 hover:text-blue-700 transition">
             Regresar a resultados de búsqueda
             </Link>
           </div>
@@ -42,7 +42,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
         <div className="flex min-h-screen items-center justify-center bg-gray-50">
           <div className="text-center">
             <h1 className="text-3xl font-semibold text-gray-900">IPS Not Found</h1>
-            <Link href="/results" className="mt-4 inline-block text-blue-500 hover:text-blue-700 transition">
+            <Link href="/results" className="mt-4 inline-block text-blue-700 hover:text-blue-700 transition">
             Regresar a resultados de búsqueda
             </Link>
           </div>
@@ -54,7 +54,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
       <div className="min-h-screen bg-gray-50">
         <header className="bg-white shadow-sm">
           <div className="max-w-5xl mx-auto px-6 py-4">
-            <Link href="/results" className="text-blue-500 hover:text-blue-700 text-sm font-medium transition">
+            <Link href="/results" className="text-blue-700 hover:text-blue-700 text-sm font-medium transition">
             Regresar a resultados de búsqueda
             </Link>
           </div>
@@ -63,12 +63,12 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
         <main className="max-w-5xl mx-auto px-6 py-8">
           <div className="bg-white rounded-3xl shadow-lg p-8 flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
             <div className="bg-gray-100 p-6 rounded-2xl">
-              <Landmark size={64} className="text-blue-500" />
+              <Landmark size={64} className="text-blue-700" />
             </div>
             <div className="flex-1">
               <h1 className="text-4xl font-semibold text-gray-900 tracking-tight">{_IPS.name}</h1>
               <div className="flex items-center mt-2 space-x-2">
-                <span className="text-lg text-yellow-500 font-medium">⭐ 4.7</span>
+                <span className="text-lg text-yellow-700 font-medium">⭐ 4.7</span>
                 <span className="text-sm text-gray-500">(578 Reviews)</span>
               </div>
             </div>
@@ -79,22 +79,22 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Información General</h2>
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-center">
-                  <MapPin size={20} className="mr-3 text-blue-500" />
+                  <MapPin size={20} className="mr-3 text-blue-700" />
                   {_IPS.department}, {_IPS.town}
                 </li>
                 <li className="flex items-center">
-                  <MapPin size={20} className="mr-3 text-blue-500" />
+                  <MapPin size={20} className="mr-3 text-blue-700" />
                   {_IPS.address}
                 </li>
                 {_IPS.phone && (
                   <li className="flex items-center">
-                    <Phone size={20} className="mr-3 text-blue-500" />
+                    <Phone size={20} className="mr-3 text-blue-700" />
                     {_IPS.phone}
                   </li>
                 )}
                 {_IPS.email && (
                   <li className="flex items-center">
-                    <Mail size={20} className="mr-3 text-blue-500" />
+                    <Mail size={20} className="mr-3 text-blue-700" />
                     {_IPS.email}
                   </li>
                 )}
@@ -121,7 +121,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
                   href={_IPS.maps}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block text-blue-500 hover:text-blue-700 transition"
+                  className="block text-blue-700 hover:text-blue-700 transition"
                 >
                   Ver en Google Maps →
                 </a>
@@ -129,7 +129,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
                   href={_IPS.waze}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block text-blue-500 hover:text-blue-700 transition"
+                  className="block text-blue-700 hover:text-blue-700 transition"
                 >
                   Ver en Waze →
                 </a>
@@ -159,7 +159,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
                   {_IPS.specialties.map((spec) => (
                     <span
                       key={spec._id}
-                      className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm font-medium"
+                      className="px-3 py-1  bg-green-100 text-green-800 rounded-full text-sm font-medium"
                     >
                       {spec.name}
                     </span>
@@ -177,7 +177,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
         <div className="text-center">
           <h1 className="text-3xl font-semibold text-gray-900">Error Loading IPS</h1>
           <p className="mt-2 text-sm text-gray-500">{(error as Error).message}</p>
-          <Link href="/results" className="mt-4 inline-block text-blue-500 hover:text-blue-700 transition">
+          <Link href="/results" className="mt-4 inline-block text-blue-700 hover:text-blue-700 transition">
             Regresar a resultados de búsqueda
           </Link>
         </div>

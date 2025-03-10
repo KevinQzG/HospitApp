@@ -26,7 +26,6 @@ export default function AboutPage() {
 
   return (
     <section className="min-h-screen bg-gradient-to-b from-[#F9FCFF] to-[#E6F0FF] py-20 px-6 md:px-12">
-      {/* Encabezado */}
       <div className="max-w-5xl mx-auto text-center">
         <h1 className="text-5xl font-bold text-gray-900 mb-6">Quiénes Somos</h1>
         <p className="text-gray-700 text-xl max-w-3xl mx-auto">
@@ -107,9 +106,9 @@ export default function AboutPage() {
                   className="object-cover w-full h-full"
                 />
               </div>
-              <h4 className="text-xl font-bold text-gray-900 mt-6">
+              <h3 className="text-xl font-bold text-gray-900 mt-6">
                 {member.name}
-              </h4>
+              </h3>
               <p className="text-gray-600 text-lg mt-2">{member.role}</p>
             </div>
           ))}

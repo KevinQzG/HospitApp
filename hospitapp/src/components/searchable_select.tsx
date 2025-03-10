@@ -19,6 +19,8 @@ export function SearchableSelect({
   const [_IS_OPEN, setIsOpen] = useState(false);
   const [_SELECTED_OPTIONS, setSelectedOptions] = useState<string[]>([]);
   const _WRAPPER_REF = useRef<HTMLDivElement>(null);
+  const _INPUT_REF = useRef<HTMLInputElement>(null);
+  const [_CLICK_COUNT, setClickCount] = useState(0);
 
   const _FILTERED_OPTIONS = options.filter((option) =>
     option.name.toLowerCase().includes(_SEARCH_TERM.toLowerCase())
@@ -31,6 +33,7 @@ export function SearchableSelect({
         !_WRAPPER_REF.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
+        setClickCount(0); 
       }
     }
 
@@ -47,6 +50,22 @@ export function SearchableSelect({
         : [...prev, name]
     );
   };
+
+  const handleInputClick = () => {
+    setClickCount((prev) => prev + 1);
+  
+    if (_CLICK_COUNT === 0) {
+      setIsOpen(true); 
+    } else if (_CLICK_COUNT === 1) {
+      _INPUT_REF.current?.removeAttribute("readOnly");
+  
+      setTimeout(() => {
+        _INPUT_REF.current?.focus();
+      }, 50);
+    }
+  };
+  
+
 
   return (
     <div className="relative" ref={_WRAPPER_REF}>
@@ -74,14 +93,16 @@ export function SearchableSelect({
           className="flex-1 min-w-[150px] p-2 border-none focus:ring-0 outline-none placeholder-gray-400 bg-transparent"
           value={_SEARCH_TERM}
           onChange={(e) => setSearchTerm(e.target.value)}
-          onFocus={() => setIsOpen(true)}
+          onClick={handleInputClick}
+          readOnly
+          ref={_INPUT_REF}
           aria-haspopup="listbox"
         />
       </div>
 
       {_IS_OPEN && (
         <div
-          className="absolute z-10 w-full mt-2 border border-gray-200 rounded-lg bg-white shadow-lg max-h-34 overflow-y-auto"
+          className="absolute z-10 w-full mt-2 border border-gray-200 rounded-lg bg-white shadow-lg max-h-34 overflow-y-auto overflow-x-hidden"
           role="listbox"
         >
           {_FILTERED_OPTIONS.length === 0 ? (

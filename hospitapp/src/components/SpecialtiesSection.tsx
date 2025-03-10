@@ -30,12 +30,15 @@ export default function SpecialtiesSection() {
   return (
     <section className="py-12 sm:py-16 text-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <h3 className="text-2xl sm:text-3xl font-bold text-gray-800">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
           Especialidades más buscadas
-        </h3>
+        </h2>
         <p className="text-sm sm:text-base text-gray-500 mt-2">
           No encuentras la especialidad que buscas?{" "}
-          <a href="specialties" className="text-blue-500 hover:underline">
+          <a
+            href="specialties"
+            className="text-blue-700 underline hover:text-blue-700"
+          >
             Ver todas las especialidades
           </a>
         </p>

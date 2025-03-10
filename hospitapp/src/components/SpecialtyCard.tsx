@@ -66,9 +66,9 @@ export default function SpecialtyCard({
   return (
     <div className={_CARD_CLASSES} onClick={handleClick}>
       <Icon className={_ICON_CLASSES} />
-      <h4 className="text-sm sm:text-base font-medium mt-2 sm:mt-3 text-center">
+      <h3 className="text-sm sm:text-base font-medium mt-2 sm:mt-3 text-center">
         {name}
-      </h4>
+      </h3>
     </div>
   );
 }

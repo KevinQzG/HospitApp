@@ -27,7 +27,13 @@ interface IpsResponse {
 
 export default function ResultsPage() {
   return (
-    <Suspense fallback={<div className="h-screen flex items-center justify-center">Cargando...</div>}>
+    <Suspense
+      fallback={
+        <div className="h-screen flex items-center justify-center">
+          Cargando...
+        </div>
+      }
+    >
       <ResultsPageContent />
     </Suspense>
   );
@@ -50,7 +56,8 @@ function ResultsPageContent() {
     const fetchFilteredResults = async () => {
       try {
         const maxDistance = searchParams.get("max_distance") ?? "20000";
-        const specialties = searchParams.get("specialties")?.split(",").filter(Boolean) || [];
+        const specialties =
+          searchParams.get("specialties")?.split(",").filter(Boolean) || [];
         const eps = searchParams.get("eps")?.split(",").filter(Boolean) || [];
         const coordinatesStr = searchParams.get("coordinates");
         let coordinates: [number, number] = [-75.5849, 6.1816];
@@ -115,7 +122,10 @@ function ResultsPageContent() {
   if (endPage - startPage + 1 < maxVisiblePages) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1);
   }
-  const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
 
   if (loading) {
     return (
@@ -144,12 +154,16 @@ function ResultsPageContent() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Resultados de Búsqueda</h1>
+        <h1 className="text-3xl font-bold text-gray-800">
+          Resultados de Búsqueda
+        </h1>
         <div className="mt-4 sm:mt-0 flex space-x-4">
           <button
             onClick={() => setListView(true)}
             className={`px-4 py-2 rounded-lg font-medium transition-all ${
-              listView ? "bg-blue-500 text-white shadow-sm" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              listView
+                ? "bg-blue-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Lista
@@ -157,7 +171,9 @@ function ResultsPageContent() {
           <button
             onClick={() => setListView(false)}
             className={`px-4 py-2 rounded-lg font-medium transition-all ${
-              !listView ? "bg-blue-500 text-white shadow-sm" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              !listView
+                ? "bg-blue-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Mapa
@@ -176,17 +192,22 @@ function ResultsPageContent() {
               >
                 <div className="flex items-center space-x-4">
                   <div className="p-4 bg-blue-100 rounded-lg">
-                    <Hospital className="w-10 h-10 text-blue-500" />
+                    <Hospital className="w-10 h-10 text-blue-700" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
+                    <h2 className="text-lg font-semibold text-gray-800">
+                      {item.name}
+                    </h2>
                     <p className="text-gray-600 text-sm">
                       {item.address}
                       {item.town && `, ${item.town}`}
                       {item.department && `, ${item.department}`}
                     </p>
                     <p className="text-gray-500 text-xs mt-1">
-                      Distancia: {item.distance !== undefined ? `${Math.round(item.distance)} m` : "N/A"}
+                      Distancia:{" "}
+                      {item.distance !== undefined
+                        ? `${Math.round(item.distance)} m`
+                        : "N/A"}
                     </p>
                   </div>
                 </div>
@@ -198,14 +219,19 @@ function ResultsPageContent() {
             <div className="mt-10 flex flex-col items-center space-y-4">
               <p className="text-sm text-gray-600 font-medium">
                 Mostrando {(currentPage - 1) * pageSize + 1} –{" "}
-                {Math.min(currentPage * pageSize, totalResults)} de {totalResults} resultados
+                {Math.min(currentPage * pageSize, totalResults)} de{" "}
+                {totalResults} resultados
               </p>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
+                  aria-label="Página anterior"
+                  title="Página anterior"
                   className={`p-2 rounded-full transition-all duration-200 ${
-                    currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100"
+                    currentPage === 1
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -219,7 +245,9 @@ function ResultsPageContent() {
                     >
                       1
                     </button>
-                    {startPage > 2 && <span className="text-gray-600 px-2">...</span>}
+                    {startPage > 2 && (
+                      <span className="text-gray-600 px-2">...</span>
+                    )}
                   </>
                 )}
 
@@ -229,7 +257,7 @@ function ResultsPageContent() {
                     onClick={() => handlePageChange(page)}
                     className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 ${
                       currentPage === page
-                        ? "bg-blue-500 text-white shadow-sm"
+                        ? "bg-blue-700 text-white shadow-sm"
                         : "text-gray-600 hover:bg-gray-100"
                     }`}
                   >
@@ -239,7 +267,9 @@ function ResultsPageContent() {
 
                 {endPage < totalPages && (
                   <>
-                    {endPage < totalPages - 1 && <span className="text-gray-600 px-2">...</span>}
+                    {endPage < totalPages - 1 && (
+                      <span className="text-gray-600 px-2">...</span>
+                    )}
                     <button
                       onClick={() => handlePageChange(totalPages)}
                       className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 transition-all duration-200"
@@ -252,6 +282,8 @@ function ResultsPageContent() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
+                  aria-label="Página siguiente"
+                  title="Página siguiente"
                   className={`p-2 rounded-full transition-all duration-200 ${
                     currentPage === totalPages
                       ? "text-gray-400 cursor-not-allowed"
@@ -271,7 +303,13 @@ function ResultsPageContent() {
   );
 }
 
-const MapComponent = ({ results, coordinates }: { results: IpsResponse[]; coordinates: [number, number] }) => {
+const MapComponent = ({
+  results,
+  coordinates,
+}: {
+  results: IpsResponse[];
+  coordinates: [number, number];
+}) => {
   const router = useRouter();
 
   useEffect(() => {
@@ -310,10 +348,16 @@ const MapComponent = ({ results, coordinates }: { results: IpsResponse[]; coordi
         popupContent.className = "popup-content";
         popupContent.innerHTML = `
           <div class="bg-white p-4 rounded-lg shadow-lg max-w-xs border border-gray-200">
-            <h3 class="text-base font-semibold text-blue-600 cursor-pointer hover:underline mb-1">${item.name}</h3>
-            <p class="text-sm text-gray-600">${item.address}, ${item.town ?? ""}, ${item.department ?? ""}</p>
+            <h3 class="text-base font-semibold text-blue-600 cursor-pointer hover:underline mb-1">${
+              item.name
+            }</h3>
+            <p class="text-sm text-gray-600">${item.address}, ${
+          item.town ?? ""
+        }, ${item.department ?? ""}</p>
             <p class="text-xs text-gray-500 mt-1">Distancia: ${
-              item.distance !== undefined ? `${Math.round(item.distance)} m` : "N/A"
+              item.distance !== undefined
+                ? `${Math.round(item.distance)} m`
+                : "N/A"
             }</p>
           </div>
         `;
@@ -323,7 +367,9 @@ const MapComponent = ({ results, coordinates }: { results: IpsResponse[]; coordi
 
         new mapboxgl.Marker({ element: markerElement })
           .setLngLat([lng, lat])
-          .setPopup(new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupContent))
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupContent)
+          )
           .addTo(map);
       }
     });
