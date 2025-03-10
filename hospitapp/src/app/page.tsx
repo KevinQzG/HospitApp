@@ -1,5 +1,5 @@
-"use server";
-
+// app/page.tsx
+import { Suspense } from "react";
 import {
   SearchFormClientProps,
   get_search_ips_cached_props,
@@ -45,7 +45,9 @@ export default async function HomePage() {
             </div>
 
             <div className="w-full mt-8">
-              <LandingSearchForm specialties={config.specialties} eps={config.eps} />
+              <Suspense fallback={<div>Cargando formulario de búsqueda...</div>}>
+                <LandingSearchForm specialties={config.specialties} eps={config.eps} />
+              </Suspense>
             </div>
           </div>
         </div>

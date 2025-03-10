@@ -6,8 +6,8 @@ import Link from "next/link";
 import { Hospital, ChevronLeft, ChevronRight, Home } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import SearchFormClient, { SearchFormSubmitHandler } from "./SearchFormClient";
-
 import { SearchFormClientProps } from "@/services/search_ips/data_caching.service";
+import { Suspense } from "react";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string;
 
@@ -28,7 +28,7 @@ interface IpsResponse {
   waze?: string;
 }
 
-export default function ResultsPage({ specialties, eps }: SearchFormClientProps) {
+function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [_ALL_RESULTS, setAllResults] = useState<IpsResponse[]>([]);
@@ -127,7 +127,7 @@ export default function ResultsPage({ specialties, eps }: SearchFormClientProps)
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-gray-50">
         <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-700 text-lg mt-4">Buscando resultados...</p>
+        <p className="text-gray-700 text-lg mt-4">Cargando resultados...</p>
       </div>
     );
   }
@@ -384,3 +384,18 @@ const MapComponent = ({
     />
   );
 };
+
+export default function ResultsPage({ specialties, eps }: SearchFormClientProps) {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-screen flex flex-col items-center justify-center bg-gray-50">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-700 text-lg mt-4">Cargando datos iniciales...</p>
+        </div>
+      }
+    >
+      <ResultsDisplay specialties={specialties} eps={eps} />
+    </Suspense>
+  );
+}
