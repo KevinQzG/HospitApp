@@ -7,6 +7,7 @@ interface SearchableSelectProps {
   placeholder: string;
   name: string;
   maxSelections?: number;
+  initialValues?: string[];
 }
 
 export function SearchableSelect({
@@ -14,16 +15,22 @@ export function SearchableSelect({
   placeholder,
   name,
   maxSelections,
+  initialValues = [],
 }: SearchableSelectProps) {
   const [_SEARCH_TERM, setSearchTerm] = useState("");
   const [_IS_OPEN, setIsOpen] = useState(false);
-  const [_SELECTED_OPTIONS, setSelectedOptions] = useState<string[]>([]);
+  const [_SELECTED_OPTIONS, setSelectedOptions] = useState<string[]>(initialValues);
   const _WRAPPER_REF = useRef<HTMLDivElement>(null);
   const _INPUT_REF = useRef<HTMLInputElement>(null);
   const [_CLICK_COUNT, setClickCount] = useState(0);
 
+  // Synchronize _SELECTED_OPTIONS with initialValues when it changes
+  useEffect(() => {
+    setSelectedOptions(initialValues);
+  }, [initialValues]);
+
   const _FILTERED_OPTIONS = options.filter((option) =>
-    option.name.toLowerCase().includes(_SEARCH_TERM.toLowerCase())
+    option.name && option.name.toLowerCase().includes(_SEARCH_TERM.toLowerCase())
   );
 
   useEffect(() => {
@@ -33,7 +40,7 @@ export function SearchableSelect({
         !_WRAPPER_REF.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-        setClickCount(0); 
+        setClickCount(0);
       }
     }
 
@@ -53,19 +60,17 @@ export function SearchableSelect({
 
   const handleInputClick = () => {
     setClickCount((prev) => prev + 1);
-  
+
     if (_CLICK_COUNT === 0) {
-      setIsOpen(true); 
+      setIsOpen(true);
     } else if (_CLICK_COUNT === 1) {
       _INPUT_REF.current?.removeAttribute("readOnly");
-  
+
       setTimeout(() => {
         _INPUT_REF.current?.focus();
       }, 50);
     }
   };
-  
-
 
   return (
     <div className="relative" ref={_WRAPPER_REF}>
