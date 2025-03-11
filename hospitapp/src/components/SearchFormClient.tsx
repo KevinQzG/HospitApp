@@ -1,9 +1,11 @@
+// SearchFormClient.tsx
 "use client";
 
 import { FormEvent, useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { SearchFormClientProps } from "@/services/search_ips/data_caching.service";
 import { SearchableSelect } from "./searchable_select";
+import { DistanceSelect } from "./DistanceSelect";
 
 export type SearchFormSubmitHandler = (isSubmitting: boolean) => void;
 
@@ -14,6 +16,7 @@ export default function SearchFormClient({
 }: SearchFormClientProps & { onSubmit?: SearchFormSubmitHandler }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [_IS_SUBMITTING, set_is_submitting] = useState(false);
   const [_ERROR, set_error] = useState<string | null>(null);
 
@@ -23,6 +26,7 @@ export default function SearchFormClient({
   const [initialEps, setInitialEps] = useState<string[]>(
     searchParams.get("eps")?.split(",").filter(Boolean) || []
   );
+  const [selectedDistance, setSelectedDistance] = useState<string>("");
 
   useEffect(() => {
     const newSpecialties = searchParams.get("specialties")?.split(",").filter(Boolean) || [];
@@ -59,7 +63,10 @@ export default function SearchFormClient({
         console.warn("No se pudo obtener la ubicación del usuario:", error);
       }
 
-      const max_distance = "20000";
+      const max_distance = pathname === "/results" && selectedDistance
+        ? selectedDistance
+        : "20000";
+
       const specialties = JSON.parse((_FORM_DATA.get("specialties") as string) || "[]");
       const eps = JSON.parse((_FORM_DATA.get("eps") as string) || "[]");
       const page = "1";
@@ -87,7 +94,7 @@ export default function SearchFormClient({
 
   return (
     <div className="relative max-w-3xl w-full mx-auto px-6">
-      <form onSubmit={_HANDLE_SUBMIT} className="p-8 rounded-2xl border-gray-100 space-y-6">
+      <form onSubmit={_HANDLE_SUBMIT} className="p-8 rounded-2xl border border-gray-100 space-y-6 bg-white shadow-sm">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700 mb-2">EPS</label>
@@ -110,6 +117,19 @@ export default function SearchFormClient({
           </div>
         </div>
 
+        {pathname === "/results" && (
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Distancia máxima (km)
+            </label>
+            <DistanceSelect
+              name="distance"
+              value={selectedDistance}
+              onChange={(value) => setSelectedDistance(value)}
+            />
+          </div>
+        )}
+
         {_ERROR && (
           <div className="p-3 bg-red-50 text-red-600 rounded-lg text-center border border-red-100">
             <strong>Error:</strong> {_ERROR}
@@ -119,7 +139,7 @@ export default function SearchFormClient({
         <button
           type="submit"
           disabled={_IS_SUBMITTING}
-          className={`w-full bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg hover:bg-blue-700 transition-all duration-100 ease-in-out ${
+          className={`w-full bg-blue-600 text-white text-lg font-semibold py-3 rounded-2xl hover:bg-blue-700 transition-all duration-100 ease-in-out ${
             _IS_SUBMITTING ? "cursor-wait opacity-75" : "cursor-pointer"
           }`}
         >
