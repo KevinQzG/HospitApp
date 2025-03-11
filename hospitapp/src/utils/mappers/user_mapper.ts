@@ -18,11 +18,11 @@ export class UserMapper {
     static from_document_to_domain(raw: UserDocument): User {
         return new User(
             raw._id,
-            raw.username,
             raw.email,
             raw.password,
             raw.role,
-            raw.address
+            raw.phone,
+            raw.eps
         );
     }
     
@@ -36,11 +36,11 @@ export class UserMapper {
     static from_domain_to_document(user: User): UserDocument {
         return {
             _id: user.get_id(),
-            username: user.get_username(),
+            phone: user.get_phone(),
             email: user.get_email(),
             password: user.get_password(),
             role: user.get_role(),
-            address: user.get_address()
+            eps: user.get_eps()
         };
     }
 
@@ -52,11 +52,11 @@ export class UserMapper {
     static from_response_to_domain(raw: UserResponse): User {
         return new User(
             new ObjectId(raw._id),
-            raw.username,
+            raw.phone,
             raw.email,
             raw.password,
             raw.role,
-            raw.address
+            raw.eps
         );
     }
 
@@ -68,11 +68,11 @@ export class UserMapper {
     static from_domain_to_response(user: User): UserResponse {
         return {
             _id: user.get_id().toHexString(),
-            username: user.get_username(),
+            phone: user.get_phone(),
             email: user.get_email(),
             password: user.get_password(),
             role: user.get_role(),
-            address: user.get_address()
+            eps: user.get_eps()
         };
     }
 }

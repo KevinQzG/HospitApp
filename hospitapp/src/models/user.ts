@@ -9,26 +9,27 @@ import { UserMapper } from "@/utils/mappers/user_mapper";
 
 export class User {
     private _id: ObjectId;
-    private username: string;
     private email: string;
     private password: string;
-    private adress?: string;
+    private phone: string;
+    private eps: string;
     private role: string;
 
      /**
      * Creates an instance of EPS.
      * @param {ObjectId} _id - Unique identifier of the USER.
-     * @param {string} username - username of the USER.
+     * @param {string} email - Email of the USER.
+     * @param {string} password - Password of the USER.
      * @param {string} phone - 01 8000 Phone number of the EPS.
-     * @param {string} fax - Fax number of the EPS.
-     * @param {string} emails - Email of the EPS.
+     * @param {string} rol - Fax number of the EPS.
+     * @param {string} eps - user eps.
      */
-    constructor(_id: ObjectId = new ObjectId(), username: string, email: string, password: string,role: string, adress?: string) {
+    constructor(_id: ObjectId = new ObjectId(), email: string, password: string,role: string, phone: string, eps: string) {
         this._id = _id;
-        this.username = username;
         this.email = email;
         this.password = password;
-        this.adress = adress;
+        this.phone = phone;
+        this.eps = eps;
         this.role = role;
     }
 
@@ -37,7 +38,7 @@ export class User {
      * @throws {Error} If any required field is missing or invalid.
      */
     validate(): void {
-        if (!this.username || !this.email || !this.password || !this.role) {
+        if (!this.eps || !this.email || !this.password || !this.phone) {
             throw new Error('Missing required fields');
         }
     }
@@ -67,25 +68,23 @@ export class User {
     }
     
     /**
-     * Gets the username of the USER.
+     * Gets the eps of the USER.
      * @returns {string} The username of the USER.
      */
-    get_username(): string {
-        return this.username;
+    get_eps(): string {
+        return this.eps;
     }
     
     /**
-     * Sets the username of the USER.
+     * Sets the eps of the USER.
      * 
-     * @param {string} username - The username of the USER.
+     * @param {string} eps - The eps of the USER.
      * 
-     * @throws {Error} If the username is invalid.
+     * @throws {Error} If the eps is invalid.
      */
-    set_username(username: string): void {
-        this.username = username;
-        this.validate();
+    set_eps(eps: string): void {
+        this.eps = eps;
     }
-    
     /**
      * Gets the email of the USER.
      * @returns {string} The email of the USER.
@@ -111,8 +110,8 @@ export class User {
      * Gets the adress of the USER.
      * @returns {string} The adress of the USER.
      */
-    get_address(): string | undefined{ 
-        return this.adress;
+    get_phone(): string { 
+        return this.phone;
     }
 
     /**
@@ -122,8 +121,8 @@ export class User {
      * 
      * @throws {Error} If the adress is invalid.
      */
-    set_adress(adress: string): void {
-        this.adress = adress;
+    set_adress(phone: string): void {
+        this.phone = phone;
         this.validate();
     }
     

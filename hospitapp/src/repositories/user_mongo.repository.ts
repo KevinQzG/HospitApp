@@ -27,45 +27,43 @@ export class UserMongoRepository implements UserRepositoryAdapter {
     constructor(
         @inject(_TYPES.DBAdapter) private db_handler: DBAdapter<Db>
     ) { }
-    create_user(email: string, password: string, name: string, address: string): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    findUserByEmail(email: string): Promise<User | null> {
-        throw new Error("Method not implemented.");
-    }
 
-    async findByEmail(email: string): Promise<User | null> {
+    async findUserByEmail(email: string): Promise<User | null> {
         try {
             const db = await this.db_handler.connect();
     
-            // Buscar usuarios cuyo email contenga el valor proporcionado
-            const userDoc = await db.collection<UserDocument>("USERS").findOne({
-                email: { $regex: email, $options: "i" } // Búsqueda insensible a mayúsculas
+            const _USER_DOC = await db.collection<UserDocument>("USERS").findOne({
+                email: { $regex: email, $options: "i" }
             });
-    
-            return userDoc ? UserMapper.from_document_to_domain(userDoc) : null;
+            console.log(_USER_DOC);
+            
+
+            return _USER_DOC? UserMapper.from_document_to_domain(_USER_DOC) : null;
         } catch (error) {
             console.error("Error finding user by email:", error);
             throw new Error("Database error");
         }
     }
     
-    async createUser(username: string, email: string, password: string, role: string): Promise<void> {
+    async createUser(eps: string, email: string, password: string, role: string, phone: string): Promise<boolean> {
         try {
             const db = await this.db_handler.connect();
     
             const userDoc: UserDocument = {
                 _id: new ObjectId(),
-                username,
+                eps,
                 email,
                 password, 
+                phone,
                 role: "USER",
             };
     
             await db.collection<UserDocument>("USERS").insertOne(userDoc);
+    
+            return true;
         } catch (error) {
             console.error("Error creating user:", error);
-            throw new Error("Database error");
+            return false;
         }
     }
     

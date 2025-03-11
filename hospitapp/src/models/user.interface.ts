@@ -3,18 +3,19 @@ import { ObjectId } from "mongodb";
 
 export interface UserDocument {
     _id: ObjectId;
-    username: string;
     password: string;
+    phone: string;
     email: string;
     role: string;
-    address?: string;
+    eps: string;
 }
 
 export interface UserResponse {
     _id: string;
-    username: string;
+    phone: string;
     password: string;
     email: string;
     role: string;
-    address?: string;
+    eps: string;
+    
 }
