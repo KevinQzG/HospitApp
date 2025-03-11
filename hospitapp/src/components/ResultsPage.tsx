@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Hospital, ChevronLeft, ChevronRight, Home } from "lucide-react";
+import {
+  Hospital,
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  Search,
+} from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import SearchFormClient, { SearchFormSubmitHandler } from "./SearchFormClient";
 import { SearchFormClientProps } from "@/services/search_ips/data_caching.service";
@@ -38,6 +44,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const [_ERROR, setError] = useState<string | null>(null);
   const [_LIST_VIEW, setListView] = useState(true);
   const [_CURRENT_PAGE, setCurrentPage] = useState(1);
+  const [_SEARCH_QUERY, setSearchQuery] = useState("");
   const _PAGE_SIZE = 21;
   const [_TOTAL_RESULTS, setTotalResults] = useState(0);
   const [_TOTAL_PAGES, setTotalPages] = useState(0);
@@ -48,7 +55,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         const maxDistance = searchParams.get("max_distance") ?? "20000";
         const specialtiesParam =
           searchParams.get("specialties")?.split(",").filter(Boolean) || [];
-        const epsParam = searchParams.get("eps")?.split(",").filter(Boolean) || [];
+        const epsParam =
+          searchParams.get("eps")?.split(",").filter(Boolean) || [];
         const coordinatesStr = searchParams.get("coordinates");
         let coordinates: [number, number] = [-75.5849, 6.1816];
         if (coordinatesStr) {
@@ -56,7 +64,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           if (!isNaN(lng) && !isNaN(lat)) coordinates = [lng, lat];
         }
 
-        const isUnfilteredSearch = specialtiesParam.length === 0 && epsParam.length === 0;
+        const isUnfilteredSearch =
+          specialtiesParam.length === 0 && epsParam.length === 0;
 
         const response = await fetch("/api/search_ips/filter", {
           method: "POST",
@@ -96,15 +105,34 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
     fetchFilteredResults();
   }, [searchParams]);
 
+  useEffect(() => {
+    const filtered = _ALL_RESULTS.filter((item) =>
+      `${item.name} ${item.address} ${item.town || ""} ${item.department || ""}`
+        .toLowerCase()
+        .includes(_SEARCH_QUERY.toLowerCase())
+    );
+    setTotalResults(filtered.length);
+    setTotalPages(Math.ceil(filtered.length / _PAGE_SIZE));
+    setCurrentPage(1);
+    const start = 0;
+    const end = _PAGE_SIZE;
+    setPaginatedResults(filtered.slice(start, end));
+  }, [_SEARCH_QUERY, _ALL_RESULTS]);
+
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > _TOTAL_PAGES) return;
     setCurrentPage(newPage);
     const currentParams = new URLSearchParams(searchParams.toString());
     currentParams.set("page", newPage.toString());
     router.push(`/results?${currentParams.toString()}`);
+    const filtered = _ALL_RESULTS.filter((item) =>
+      `${item.name} ${item.address} ${item.town || ""} ${item.department || ""}`
+        .toLowerCase()
+        .includes(_SEARCH_QUERY.toLowerCase())
+    );
     const start = (newPage - 1) * _PAGE_SIZE;
     const end = start + _PAGE_SIZE;
-    setPaginatedResults(_ALL_RESULTS.slice(start, end));
+    setPaginatedResults(filtered.slice(start, end));
   };
 
   const _MAX_VISIBLE_PAGES = 5;
@@ -149,7 +177,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <Link href="/" className="inline-flex items-center mb-6 text-blue-600 hover:text-blue-800">
+      <Link
+        href="/"
+        className="inline-flex items-center mb-6 text-blue-600 hover:text-blue-800"
+      >
         <Home className="w-6 h-6 mr-2" />
         <span className="text-lg font-medium">Volver al Inicio</span>
       </Link>
@@ -166,7 +197,17 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         <h1 className="text-3xl font-bold text-gray-800">
           Resultados de Búsqueda
         </h1>
-        <div className="mt-4 sm:mt-0 flex space-x-4">
+        <div className="mt-4 sm:mt-0 flex space-x-4 items-center">
+          <div className="relative">
+            <input
+              type="text"
+              value={_SEARCH_QUERY}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Filtrar resultados..."
+              className="pl-10 pr-4 py-2 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 w-[200px] placeholder-gray-900"
+            />
+            <Search className="w-5 h-5 text-gray-700 absolute left-3 top-1/2 transform -translate-y-1/2" />
+          </div>
           <button
             onClick={() => setListView(true)}
             className={`px-4 py-2 rounded-lg font-medium transition-all ${
@@ -306,12 +347,13 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           )}
         </div>
       ) : (
-        <MapComponent results={_ALL_RESULTS} coordinates={coordinates} />
+        <MapComponent results={_PAGINATED_RESULTS} coordinates={coordinates} />
       )}
     </div>
   );
 }
 
+// MapComponent remains unchanged
 const MapComponent = ({
   results,
   coordinates,
@@ -357,9 +399,17 @@ const MapComponent = ({
         popupContent.className = "popup-content";
         popupContent.innerHTML = `
           <div class="bg-white p-4 rounded-lg shadow-lg max-w-xs border border-gray-200">
-            <h3 class="text-base font-semibold text-blue-600 cursor-pointer hover:underline mb-1">${item.name}</h3>
-            <p class="text-sm text-gray-600">${item.address}, ${item.town ?? ""}, ${item.department ?? ""}</p>
-            <p class="text-xs text-gray-500 mt-1">Distancia: ${item.distance !== undefined ? `${Math.round(item.distance)} m` : "N/A"}</p>
+            <h3 class="text-base font-semibold text-blue-600 cursor-pointer hover:underline mb-1">${
+              item.name
+            }</h3>
+            <p class="text-sm text-gray-600">${item.address}, ${
+          item.town ?? ""
+        }, ${item.department ?? ""}</p>
+            <p class="text-xs text-gray-500 mt-1">Distancia: ${
+              item.distance !== undefined
+                ? `${Math.round(item.distance)} m`
+                : "N/A"
+            }</p>
           </div>
         `;
         popupContent.querySelector("h3")?.addEventListener("click", () => {
@@ -368,7 +418,9 @@ const MapComponent = ({
 
         new mapboxgl.Marker({ element: markerElement })
           .setLngLat([lng, lat])
-          .setPopup(new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupContent))
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupContent)
+          )
           .addTo(map);
       }
     });
@@ -385,13 +437,18 @@ const MapComponent = ({
   );
 };
 
-export default function ResultsPage({ specialties, eps }: SearchFormClientProps) {
+export default function ResultsPage({
+  specialties,
+  eps,
+}: SearchFormClientProps) {
   return (
     <Suspense
       fallback={
         <div className="h-screen flex flex-col items-center justify-center bg-gray-50">
           <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-700 text-lg mt-4">Cargando datos iniciales...</p>
+          <p className="text-gray-700 text-lg mt-4">
+            Cargando datos iniciales...
+          </p>
         </div>
       }
     >
