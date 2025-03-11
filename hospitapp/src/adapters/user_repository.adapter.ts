@@ -21,9 +21,9 @@ export default interface UserRepositoryAdapter {
      * Creates a new USER.
      * @async 
      * @param {User} user - The USER to create.
-     * @returns {Promise<void>} A promise that resolves when the USER is created.
+     * @returns {Promise<boolean>} A promise that resolves when the USER is created.
      */
 
-     create_user(email: string, password:string, name:string, address:string): Promise<void>;
+    createUser(eps: string, email: string, password: string, role: string, phone: string): Promise<boolean>;
 
 }    
