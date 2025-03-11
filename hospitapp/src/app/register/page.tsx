@@ -30,13 +30,36 @@ export default function RegisterPage() {
     (country) => country.code === _SELECTED_COUNTRY
   );
 
-  const _HANDLE_REGISTER = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    setTimeout(() => {
-      _ROUTER.push("/confirmation");
-    }, 1500);
-  };
+  const _HANDLE_REGISTER = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  
+    try {
+      const _EMAIL = (document.getElementById('email') as HTMLInputElement).value;
+      const _PASSWORD = (document.getElementById('password') as HTMLInputElement).value;
+      const _PHONE = (document.getElementById('phone') as HTMLInputElement).value;
+      const _EPS = (document.getElementById('eps') as HTMLInputElement).value;
+  
+      const _RESPONSE = await fetch('/api/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: _EMAIL, password: _PASSWORD, phone: _PHONE, eps: _EPS })
+      });
+  
+      const _DATA = await _RESPONSE.json();
+  
+      if (_DATA.success) {
+        setTimeout(() => {
+          _ROUTER.push("/confirmation");
+        }, 1500);
+      } else {
+        alert(_DATA.error);
+      }
+    } catch (error) {
+      console.error('Error al registrar:', error);
+    }
+  }
 
   return (
     <section className="flex min-h-screen">
@@ -80,6 +103,7 @@ export default function RegisterPage() {
             <div className="relative">
               <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
               <input
+                id="email"
                 type="email"
                 placeholder="Correo electrónico"
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -133,6 +157,7 @@ export default function RegisterPage() {
                 <div className="h-6 w-px bg-gray-300 mx-2"></div>
 
                 <input
+                  id="phone"
                   type="tel"
                   placeholder="Número de celular"
                   className="w-full pl-2 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
@@ -143,7 +168,7 @@ export default function RegisterPage() {
 
             <div className="relative">
               <User className="absolute left-3 top-3 text-gray-400" size={20} />
-              <select className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+              <select  id="eps"className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                 <option value="">Selecciona tu EPS</option>
                 <option value="coosalud">COOSALUD EPS</option>
                 <option value="coomeva">COOMEVA EPS</option>
@@ -175,6 +200,7 @@ export default function RegisterPage() {
               <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
               <input
                 type={_PASSWORD_VISIBLE ? "text" : "password"}
+                id="password"
                 placeholder="Contraseña"
                 className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 required

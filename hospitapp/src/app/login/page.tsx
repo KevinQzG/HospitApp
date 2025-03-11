@@ -29,7 +29,7 @@ export default function LoginPage() {
 
       if (_DATA.success) {
         // Redirect to the dashboard
-        window.location.href = '/dashboard';
+        window.location.href = '/';
       } else {
         alert('Correo electrónico o contraseña incorrectos');
       }
