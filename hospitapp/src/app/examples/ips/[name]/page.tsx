@@ -103,7 +103,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
               </p>
               <div className="mt-4 space-y-2">
                 <a
-                  href={_IPS.maps}
+                  href={`https://www.google.com/maps?q=${_IPS.location.coordinates[1]},${_IPS.location.coordinates[0]}`}	
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline block"
@@ -111,7 +111,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
                   View on Google Maps →
                 </a>
                 <a
-                  href={_IPS.waze}
+                  href={`https://waze.com/ul?ll=${_IPS.location.coordinates[1]},${_IPS.location.coordinates[0]}&navigate=yes`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline block"
