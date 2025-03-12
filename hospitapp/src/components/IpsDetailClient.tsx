@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MapPin, Mail, Phone, Home, ArrowLeft, Hospital } from "lucide-react";
+import { MapPin, Mail, Phone, Home, ArrowLeft, Hospital, Stethoscope, UserCheck } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import Image from "next/image"; 
 import { LookIpsResponse } from "@/app/api/search_ips/ips/route"; 
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string;
+mapboxgl.accessToken = process.env._NEXT_PUBLIC_MAPBOX_API_KEY as string;
 
 interface IpsDetailClientProps {
   ipsData: NonNullable<LookIpsResponse["data"]>;
@@ -17,6 +17,9 @@ interface IpsDetailClientProps {
 export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<"details" | "map">("details");
+
+  const _GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}`;
+  const _WAZE_URL = `https://waze.com/ul?ll=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}&navigate=yes`;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 font-sans">
@@ -83,122 +86,136 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
   );
 }
 
-const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]> }) => (
-  <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-    <section className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
-        <Hospital className="w-6 h-6 text-blue-600 mr-2" />
-        Información General
-      </h2>
-      <ul className="space-y-5 text-gray-700">
-        <li className="flex items-center">
-          <MapPin size={20} className="mr-3 text-blue-600" />
-          <span>
-            {ipsData.department}, {ipsData.town}
-          </span>
-        </li>
-        <li className="flex items-center">
-          <MapPin size={20} className="mr-3 text-blue-600" />
-          <span>{ipsData.address}</span>
-        </li>
-        {ipsData.phone && (
-          <li className="flex items-center">
-            <Phone size={20} className="mr-3 text-blue-600" />
-            <span>{ipsData.phone}</span>
-          </li>
-        )}
-        {ipsData.email && (
-          <li className="flex items-center">
-            <Mail size={20} className="mr-3 text-blue-600" />
-            <span>{ipsData.email}</span>
-          </li>
-        )}
-        {ipsData.level && (
-          <li className="flex items-center">
-            <span className="font-medium text-gray-900 mr-2">Nivel:</span>
-            <span>{ipsData.level}</span>
-          </li>
-        )}
-      </ul>
-    </section>
+const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]> }) => {
+  // Dynamically generate Google Maps and Waze URLs based on coordinates
+  const _GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}`;
+  const _WAZE_URL = `https://waze.com/ul?ll=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}&navigate=yes`;
 
-    <section className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Cómo llegar</h2>
-      <nav aria-label="Opciones de navegación">
-        <ul className="space-y-6">
-          <li className="flex flex-col items-start">
-            <a
-              href={ipsData.maps}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-start transition-all duration-300 w-full"
-              aria-label="Abrir ubicación en Google Maps"
-            >
-              <Image
-                src="/stock/GMaps.png"
-                alt="Google Maps Icon"
-                width={0}
-                height={0} 
-                sizes="100vw"
-                className="w-full h-16 object-contain rounded-lg" 
-              />
-            </a>
+  return (
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+      <section className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+          <Hospital className="w-6 h-6 text-blue-600 mr-2" />
+          Información General
+        </h2>
+        <ul className="space-y-5 text-gray-700">
+          <li className="flex items-center">
+            <MapPin size={20} className="mr-3 text-blue-600" />
+            <span>
+              {ipsData.department}, {ipsData.town}
+            </span>
           </li>
-          <li className="flex flex-col items-start">
-            <a
-              href={ipsData.waze}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-start transition-all duration-300 w-full"
-              aria-label="Abrir ubicación en Waze"
-            >
-              <Image
-                src="/stock/Waze.png"
-                alt="Waze Icon"
-                width={0} 
-                height={0} 
-                sizes="100vw" 
-                className="w-full h-16 object-contain rounded-lg"
-              />
-            </a>
+          <li className="flex items-center">
+            <MapPin size={20} className="mr-3 text-blue-600" />
+            <span>{ipsData.address}</span>
           </li>
+          {ipsData.phone && (
+            <li className="flex items-center">
+              <Phone size={20} className="mr-3 text-blue-600" />
+              <span>{ipsData.phone}</span>
+            </li>
+          )}
+          {ipsData.email && (
+            <li className="flex items-center">
+              <Mail size={20} className="mr-3 text-blue-600" />
+              <span>{ipsData.email}</span>
+            </li>
+          )}
+          {ipsData.level && (
+            <li className="flex items-center">
+              <span className="font-medium text-gray-900 mr-2">Nivel:</span>
+              <span>{ipsData.level}</span>
+            </li>
+          )}
         </ul>
-      </nav>
-    </section>
-
-    {ipsData.eps && ipsData.eps.length > 0 && (
-      <section className="bg-white rounded-2xl shadow-lg p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">EPS Aceptadas</h2>
-        <div className="flex flex-wrap gap-3">
-          {ipsData.eps.map((eps) => (
-            <span
-              key={eps._id}
-              className="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-200 transition-all duration-300"
-            >
-              {eps.name}
-            </span>
-          ))}
-        </div>
       </section>
-    )}
 
-    {ipsData.specialties && ipsData.specialties.length > 0 && (
-      <section className="bg-white rounded-2xl shadow-lg p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Especialidades</h2>
-        <div className="flex flex-wrap gap-3">
-          {ipsData.specialties.map((spec) => (
-            <span
-              key={spec._id}
-              className="px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium hover:bg-green-200 transition-all duration-300"
-            >
-              {spec.name}
-            </span>
-          ))}
-        </div>
+      <section className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Cómo llegar</h2>
+        <nav aria-label="Opciones de navegación">
+          <ul className="space-y-4">
+            <li className="flex flex-col items-start">
+              <a
+                href={_GOOGLE_MAPS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex justify-center items-center w-full bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 p-4"
+                aria-label="Abrir ubicación en Google Maps"
+              >
+                <Image
+                  src="/stock/GMaps.png"
+                  alt="Google Maps Icon"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="w-full h-12 object-contain"
+                />
+              </a>
+            </li>
+            <li className="flex flex-col items-start">
+              <a
+                href={_WAZE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex justify-center items-center w-full bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 p-4"
+                aria-label="Abrir ubicación en Waze"
+              >
+                <Image
+                  src="/stock/Waze.png"
+                  alt="Waze Icon"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="w-full h-12 object-contain"
+                />
+              </a>
+            </li>
+          </ul>
+        </nav>
       </section>
-    )}
-  </div>
-);
+
+      {ipsData.eps && ipsData.eps.length > 0 && (
+        <section className="bg-white rounded-2xl shadow-lg p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+            <UserCheck className="w-6 h-6 text-blue-600 mr-2" />
+            EPS Aceptadas
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {ipsData.eps.map((eps) => (
+              <div
+                key={eps._id}
+                className="flex items-center bg-blue-50 border border-blue-100 rounded-lg p-3 hover:bg-blue-100 hover:shadow-sm transition-all duration-300"
+              >
+                <UserCheck className="w-5 h-5 text-blue-600 mr-2" />
+                <span className="text-sm font-medium text-gray-800">{eps.name}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {ipsData.specialties && ipsData.specialties.length > 0 && (
+        <section className="bg-white rounded-2xl shadow-lg p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+            <Stethoscope className="w-6 h-6 text-blue-600 mr-2" />
+            Especialidades
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {ipsData.specialties.map((spec) => (
+              <div
+                key={spec._id}
+                className="flex items-center bg-blue-50 border border-blue-100 rounded-lg p-3 hover:bg-blue-100 hover:shadow-sm transition-all duration-300"
+              >
+                <Stethoscope className="w-5 h-5 text-blue-600 mr-2" />
+                <span className="text-sm font-medium text-gray-800">{spec.name}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+};
 
 const MapView = ({
   ipsData,
@@ -236,9 +253,9 @@ const MapView = ({
     const popupContent = document.createElement("div");
     popupContent.className = "popup-content";
     popupContent.innerHTML = `
-      <div class="bg-white p-4 rounded-xl shadow-xl max-w-sm border border-gray-100">
+      <div class="bg-white p-4 rounded-xl shadow-xl max-w-sm border border-gray-200">
         <h3 class="text-lg font-semibold text-blue-600 cursor-pointer hover:underline mb-2">${ipsData.name}</h3>
-        <p class="text-sm text-gray-600">${ipsData.address}, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
+        <p className="text-sm text-gray-600">${ipsData.address}, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
       </div>
     `;
     popupContent.querySelector("h3")?.addEventListener("click", () => {
