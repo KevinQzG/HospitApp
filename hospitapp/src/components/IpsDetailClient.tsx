@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MapPin, Mail, Phone, Home, ArrowLeft, Hospital, Stethoscope, UserCheck } from "lucide-react";
 import mapboxgl from "mapbox-gl";
-import Image from "next/image"; 
-import { LookIpsResponse } from "@/app/api/search_ips/ips/route"; 
+import Image from "next/image";
+import { LookIpsResponse } from "@/app/api/search_ips/ips/route";
 
 mapboxgl.accessToken = process.env._NEXT_PUBLIC_MAPBOX_API_KEY as string;
 
@@ -24,25 +24,25 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 font-sans">
       <header className="bg-white shadow-lg rounded-b-xl">
-        <div className="max-w-6xl mx-auto px-6 py-6">
-          <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-            <div className="flex items-center space-x-3">
-              <Hospital className="w-8 h-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-800">{ipsData.name}</h1>
+        <div className="max-w-6xl mx-auto px-4 py-4 sm:px-6 sm:py-6">
+          <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <Hospital className="w-6 h-6 text-blue-600 sm:w-8 sm:h-8" />
+              <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">{ipsData.name}</h1>
             </div>
-            <div className="flex space-x-4">
+            <div className="flex space-x-3">
               <Link
                 href="/"
-                className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg"
+                className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg sm:px-4 sm:py-2 sm:text-sm"
               >
-                <Home className="w-4 h-4 mr-2" />
+                <Home className="w-3 h-3 mr-1 sm:w-4 sm:h-4 sm:mr-2" />
                 Inicio
               </Link>
               <Link
                 href="/results"
-                className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg"
+                className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg sm:px-4 sm:py-2 sm:text-sm"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeft className="w-3 h-3 mr-1 sm:w-4 sm:h-4 sm:mr-2" />
                 Resultados
               </Link>
             </div>
@@ -50,12 +50,12 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="flex flex-col sm:flex-row justify-end items-center mb-8">
-          <div className="flex space-x-4">
+      <main className="max-w-6xl mx-auto px-4 py-6 sm:px-6 sm:py-12">
+        <div className="flex flex-col sm:flex-row justify-end items-center mb-6 sm:mb-8">
+          <div className="flex space-x-2 sm:space-x-4">
             <button
               onClick={() => setViewMode("details")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-medium text-xs transition-all sm:px-4 sm:py-2 sm:text-sm ${
                 viewMode === "details"
                   ? "bg-blue-700 text-white shadow-sm"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -65,7 +65,7 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
             </button>
             <button
               onClick={() => setViewMode("map")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-medium text-xs transition-all sm:px-4 sm:py-2 sm:text-sm ${
                 viewMode === "map"
                   ? "bg-blue-700 text-white shadow-sm"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -87,59 +87,58 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
 }
 
 const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]> }) => {
-  // Dynamically generate Google Maps and Waze URLs based on coordinates
   const _GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}`;
   const _WAZE_URL = `https://waze.com/ul?ll=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}&navigate=yes`;
 
   return (
-    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-      <section className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
-          <Hospital className="w-6 h-6 text-blue-600 mr-2" />
+    <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2">
+      <section className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 sm:p-8">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center sm:text-2xl sm:mb-6">
+          <Hospital className="w-5 h-5 text-blue-600 mr-2 sm:w-6 sm:h-6" />
           Información General
         </h2>
-        <ul className="space-y-5 text-gray-700">
+        <ul className="space-y-4 text-gray-700 sm:space-y-5">
           <li className="flex items-center">
-            <MapPin size={20} className="mr-3 text-blue-600" />
-            <span>
+            <MapPin size={18} className="mr-2 text-blue-600 sm:mr-3 sm:size-20" />
+            <span className="text-sm sm:text-base">
               {ipsData.department}, {ipsData.town}
             </span>
           </li>
           <li className="flex items-center">
-            <MapPin size={20} className="mr-3 text-blue-600" />
-            <span>{ipsData.address}</span>
+            <MapPin size={18} className="mr-2 text-blue-600 sm:mr-3 sm:size-20" />
+            <span className="text-sm sm:text-base">{ipsData.address}</span>
           </li>
           {ipsData.phone && (
             <li className="flex items-center">
-              <Phone size={20} className="mr-3 text-blue-600" />
-              <span>{ipsData.phone}</span>
+              <Phone size={18} className="mr-2 text-blue-600 sm:mr-3 sm:size-20" />
+              <span className="text-sm sm:text-base">{ipsData.phone}</span>
             </li>
           )}
           {ipsData.email && (
             <li className="flex items-center">
-              <Mail size={20} className="mr-3 text-blue-600" />
-              <span>{ipsData.email}</span>
+              <Mail size={18} className="mr-2 text-blue-600 sm:mr-3 sm:size-20" />
+              <span className="text-sm sm:text-base">{ipsData.email}</span>
             </li>
           )}
           {ipsData.level && (
             <li className="flex items-center">
-              <span className="font-medium text-gray-900 mr-2">Nivel:</span>
-              <span>{ipsData.level}</span>
+              <span className="font-medium text-gray-900 mr-2 text-sm sm:text-base">Nivel:</span>
+              <span className="text-sm sm:text-base">{ipsData.level}</span>
             </li>
           )}
         </ul>
       </section>
 
-      <section className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Cómo llegar</h2>
+      <section className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 sm:p-8">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4 sm:text-2xl sm:mb-6">Cómo llegar</h2>
         <nav aria-label="Opciones de navegación">
-          <ul className="space-y-4">
+          <ul className="space-y-3 sm:space-y-4">
             <li className="flex flex-col items-start">
               <a
                 href={_GOOGLE_MAPS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex justify-center items-center w-full bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 p-4"
+                className="flex justify-center items-center w-full bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 p-3 sm:p-4"
                 aria-label="Abrir ubicación en Google Maps"
               >
                 <Image
@@ -148,7 +147,7 @@ const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]
                   width={0}
                   height={0}
                   sizes="100vw"
-                  className="w-full h-12 object-contain"
+                  className="w-full h-10 object-contain sm:h-12"
                 />
               </a>
             </li>
@@ -157,7 +156,7 @@ const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]
                 href={_WAZE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex justify-center items-center w-full bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 p-4"
+                className="flex justify-center items-center w-full bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 p-3 sm:p-4"
                 aria-label="Abrir ubicación en Waze"
               >
                 <Image
@@ -166,7 +165,7 @@ const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]
                   width={0}
                   height={0}
                   sizes="100vw"
-                  className="w-full h-12 object-contain"
+                  className="w-full h-10 object-contain sm:h-12"
                 />
               </a>
             </li>
@@ -175,19 +174,19 @@ const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]
       </section>
 
       {ipsData.eps && ipsData.eps.length > 0 && (
-        <section className="bg-white rounded-2xl shadow-lg p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
-            <UserCheck className="w-6 h-6 text-blue-600 mr-2" />
+        <section className="bg-white rounded-2xl shadow-lg p-6 md:col-span-2 hover:shadow-xl transition-all duration-300 sm:p-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center sm:text-2xl sm:mb-6">
+            <UserCheck className="w-5 h-5 text-blue-600 mr-2 sm:w-6 sm:h-6" />
             EPS Aceptadas
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {ipsData.eps.map((eps) => (
               <div
                 key={eps._id}
-                className="flex items-center bg-blue-50 border border-blue-100 rounded-lg p-3 hover:bg-blue-100 hover:shadow-sm transition-all duration-300"
+                className="flex items-center bg-blue-50 border border-blue-100 rounded-lg p-2 hover:bg-blue-100 hover:shadow-sm transition-all duration-300 sm:p-3"
               >
-                <UserCheck className="w-5 h-5 text-blue-600 mr-2" />
-                <span className="text-sm font-medium text-gray-800">{eps.name}</span>
+                <UserCheck className="w-4 h-4 text-blue-600 mr-2 sm:w-5 sm:h-5" />
+                <span className="text-xs font-medium text-gray-800 sm:text-sm">{eps.name}</span>
               </div>
             ))}
           </div>
@@ -195,19 +194,19 @@ const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]
       )}
 
       {ipsData.specialties && ipsData.specialties.length > 0 && (
-        <section className="bg-white rounded-2xl shadow-lg p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
-            <Stethoscope className="w-6 h-6 text-blue-600 mr-2" />
+        <section className="bg-white rounded-2xl shadow-lg p-6 md:col-span-2 hover:shadow-xl transition-all duration-300 sm:p-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center sm:text-2xl sm:mb-6">
+            <Stethoscope className="w-5 h-5 text-blue-600 mr-2 sm:w-6 sm:h-6" />
             Especialidades
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {ipsData.specialties.map((spec) => (
               <div
                 key={spec._id}
-                className="flex items-center bg-blue-50 border border-blue-100 rounded-lg p-3 hover:bg-blue-100 hover:shadow-sm transition-all duration-300"
+                className="flex items-center bg-blue-50 border border-blue-100 rounded-lg p-2 hover:bg-blue-100 hover:shadow-sm transition-all duration-300 sm:p-3"
               >
-                <Stethoscope className="w-5 h-5 text-blue-600 mr-2" />
-                <span className="text-sm font-medium text-gray-800">{spec.name}</span>
+                <Stethoscope className="w-4 h-4 text-blue-600 mr-2 sm:w-5 sm:h-5" />
+                <span className="text-xs font-medium text-gray-800 sm:text-sm">{spec.name}</span>
               </div>
             ))}
           </div>
@@ -274,7 +273,7 @@ const MapView = ({
   return (
     <div
       id="map"
-      className="w-full h-[500px] rounded-2xl shadow-xl overflow-hidden border border-gray-200"
+      className="w-full h-[400px] rounded-2xl shadow-xl overflow-hidden border border-gray-200 sm:h-[500px]"
     />
   );
 };
