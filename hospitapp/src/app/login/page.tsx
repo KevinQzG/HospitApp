@@ -10,6 +10,35 @@ import { faGoogle, faFacebook, faApple } from '@fortawesome/free-brands-svg-icon
 export default function LoginPage() {
   const [_PASSWORD_VISIBLE, _SET_PASSWORD_VISIBLE] = useState(false);
 
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try{
+      const _EMAIL = (document.getElementById('email') as HTMLInputElement).value;
+      const _PASSWORD = (document.getElementById('password') as HTMLInputElement).value;
+
+      const _RESPONSE = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: _EMAIL, password: _PASSWORD })
+      });
+
+      const _DATA = await _RESPONSE.json();
+
+      if (_DATA.success) {
+        // Redirect to the dashboard
+        window.location.href = '/';
+      } else {
+        alert('Correo electrónico o contraseña incorrectos');
+      }
+    }
+    catch (error) {
+      console.error('Error al iniciar sesión:', error);
+    }
+  }
+
   return (
     <section className="flex min-h-screen">
       {/* Left Side - Branding & Image */}
@@ -46,7 +75,7 @@ export default function LoginPage() {
           </p>
 
           {/* Login Form */}
-          <form className="mt-8 space-y-6">
+          <form className="mt-8 space-y-6"  onSubmit={handleLogin}>
             <div>
               <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
                 Correo electrónico
@@ -93,6 +122,7 @@ export default function LoginPage() {
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
+             
             >
               Iniciar sesión
             </button>
