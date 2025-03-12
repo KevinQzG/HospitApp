@@ -198,16 +198,18 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           Resultados de Búsqueda
         </h1>
         <div className="mt-4 sm:mt-0 flex space-x-4 items-center">
-          <div className="relative">
-            <input
-              type="text"
-              value={_SEARCH_QUERY}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filtrar resultados..."
-              className="pl-10 pr-4 py-2 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 w-[200px] placeholder-gray-900"
-            />
-            <Search className="w-5 h-5 text-gray-700 absolute left-3 top-1/2 transform -translate-y-1/2" />
-          </div>
+          {_LIST_VIEW && (
+            <div className="relative">
+              <input
+                type="text"
+                value={_SEARCH_QUERY}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Filtrar resultados..."
+                className="pl-10 pr-4 py-2 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 w-[200px] placeholder-gray-900"
+              />
+              <Search className="w-5 h-5 text-gray-700 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            </div>
+          )}
           <button
             onClick={() => setListView(true)}
             className={`px-4 py-2 rounded-lg font-medium transition-all ${
