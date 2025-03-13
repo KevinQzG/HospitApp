@@ -225,7 +225,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                       {item.town && `, ${item.town}`}
                       {item.department && `, ${item.department}`}
                     </p>
-                    <p className="text-gray-500 text-xs mt-1">
+                    <p className="text-gray-800 text-ms mt-1">
                       Distancia: {item.distance !== undefined ? `${Math.round(item.distance)} m` : "N/A"}
                     </p>
                   </div>
@@ -345,7 +345,7 @@ const MapComponent = ({ results, coordinates }: { results: IpsResponse[]; coordi
           <div class="bg-white p-4 rounded-lg shadow-lg max-w-xs border border-gray-200">
             <h3 class="text-base font-semibold text-blue-600 cursor-pointer hover:underline mb-1">${item.name}</h3>
             <p class="text-sm text-gray-600">${item.address}, ${item.town ?? ""}, ${item.department ?? ""}</p>
-            <p class="text-xs text-gray-500 mt-1">Distancia: ${item.distance !== undefined ? `${Math.round(item.distance)} m` : "N/A"}</p>
+            <p class="text-sm text-gray-600 mt-1">Distancia: ${item.distance !== undefined ? `${Math.round(item.distance)} m` : "N/A"}</p>
           </div>
         `;
         popupContent.querySelector("h3")?.addEventListener("click", () => {

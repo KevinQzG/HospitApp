@@ -159,32 +159,158 @@ const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]
 };
 
 const MapView = ({ ipsData, router }: { ipsData: NonNullable<LookIpsResponse["data"]>; router: ReturnType<typeof useRouter>; }) => {
+  const [distance, setDistance] = useState<number | null>(null);
+
   useEffect(() => {
-    const [lng, lat] = ipsData.location.coordinates;
+    const [hospitalLng, hospitalLat] = ipsData.location.coordinates;
     const map = new mapboxgl.Map({
       container: "map",
       style: "mapbox://styles/mapbox/streets-v12",
-      center: [lng, lat],
-      zoom: 14,
+      center: [hospitalLng, hospitalLat],
+      zoom: 12,
     });
 
     map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
     map.addControl(new mapboxgl.FullscreenControl(), "top-right");
-    map.addControl(new mapboxgl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: true }), "top-right");
 
-    const markerElement = document.createElement("div");
-    markerElement.innerHTML = `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h2v-2h2v-2h-2V9h-2v3H9v2h2zm1-10c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/></svg>`;
+    const geolocate = new mapboxgl.GeolocateControl({
+      positionOptions: { enableHighAccuracy: true },
+      trackUserLocation: true,
+      showUserLocation: false,
+    });
+    map.addControl(geolocate, "top-right");
+
+    const hospitalMarkerElement = document.createElement("div");
+    hospitalMarkerElement.innerHTML = `
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h2v-2h2v-2h-2V9h-2v3H9v2h2zm1-10c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+      </svg>
+    `;
 
     const popupContent = document.createElement("div");
     popupContent.className = "popup-content";
-    popupContent.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-xl max-w-sm border border-gray-200"><h3 class="text-lg font-semibold text-blue-600 cursor-pointer hover:underline mb-2">${ipsData.name}</h3><p className="text-sm text-gray-600">${ipsData.address}, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p></div>`;
-    popupContent.querySelector("h3")?.addEventListener("click", () => { router.push(`/ips-details/${encodeURIComponent(ipsData.name)}`); });
+    popupContent.innerHTML = `
+      <div class="bg-white p-4 rounded-xl shadow-xl max-w-sm border border-gray-200">
+        <h3 class="text-lg font-semibold text-blue-600 cursor-pointer hover:underline mb-2">${ipsData.name}</h3>
+        <p className="text-sm text-gray-600">${ipsData.address}, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
+      </div>
+    `;
+    popupContent.querySelector("h3")?.addEventListener("click", () => {
+      router.push(`/ips-details/${encodeURIComponent(ipsData.name)}`);
+    });
 
-    new mapboxgl.Marker({ element: markerElement }).setLngLat([lng, lat]).setPopup(new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupContent)).addTo(map);
+    new mapboxgl.Marker({ element: hospitalMarkerElement })
+      .setLngLat([hospitalLng, hospitalLat])
+      .setPopup(new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupContent))
+      .addTo(map);
 
-    map.on("load", () => map.resize());
-    return () => map.remove();
+    let userMarker: mapboxgl.Marker | null = null;
+
+    const addRoute = (userLng: number, userLat: number) => {
+      fetch(
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${userLng},${userLat};${hospitalLng},${hospitalLat}?geometries=geojson&access_token=${mapboxgl.accessToken}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.routes && data.routes.length > 0) {
+            const route = data.routes[0].geometry.coordinates;
+            const routeDistance = data.routes[0].distance / 1000;
+            setDistance(parseFloat(routeDistance.toFixed(2)));
+
+            if (map.getSource("route")) {
+              (map.getSource("route") as mapboxgl.GeoJSONSource).setData({
+                type: "Feature",
+                properties: {},
+                geometry: {
+                  type: "LineString",
+                  coordinates: route,
+                },
+              });
+            } else {
+              map.addSource("route", {
+                type: "geojson",
+                data: {
+                  type: "Feature",
+                  properties: {},
+                  geometry: {
+                    type: "LineString",
+                    coordinates: route,
+                  },
+                },
+              });
+              map.addLayer({
+                id: "route",
+                type: "line",
+                source: "route",
+                layout: {
+                  "line-join": "round",
+                  "line-cap": "round",
+                },
+                paint: {
+                  "line-color": "#2563EB",
+                  "line-width": 5,
+                  "line-opacity": 0.85,
+                },
+              });
+            }
+          }
+        })
+        .catch((error) => console.error("Error fetching route:", error));
+    };
+
+    const recenterMap = (userLng?: number, userLat?: number) => {
+      const bounds = new mapboxgl.LngLatBounds();
+      bounds.extend([hospitalLng, hospitalLat]);
+      if (userLng && userLat) bounds.extend([userLng, userLat]);
+      map.fitBounds(bounds, { padding: 50, duration: 1000 });
+    };
+
+    geolocate.on("geolocate", (e: any) => {
+      const userLng = e.coords.longitude;
+      const userLat = e.coords.latitude;
+
+      if (userMarker) {
+        userMarker.setLngLat([userLng, userLat]);
+      } else {
+        const userMarkerElement = document.createElement("div");
+        userMarkerElement.innerHTML = `
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="#D73535" stroke="#FFFFFF" stroke-width="1.5"/>
+            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-2 2h4v6h-1v-2h-2v2h-1v-6z" fill="#FFFFFF"/>
+          </svg>
+        `;
+
+        userMarker = new mapboxgl.Marker({ element: userMarkerElement })
+          .setLngLat([userLng, userLat])
+          .addTo(map);
+      }
+
+      recenterMap(userLng, userLat);
+      addRoute(userLng, userLat);
+    });
+
+    map.on("load", () => {
+      map.resize();
+      geolocate.trigger();
+    });
+
+    return () => {
+      map.remove();
+      if (userMarker) userMarker.remove();
+    };
   }, [ipsData, router]);
 
-  return <div id="map" className="w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-2xl shadow-xl overflow-hidden border border-gray-200" />;
+  return (
+    <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+      <div id="map" className="w-full h-full" />
+      {distance !== null && (
+        <div className="absolute top-4 left-4 bg-white p-3 rounded-lg shadow-md border border-gray-200 flex items-center space-x-2">
+          <MapPin className="w-5 h-5 text-blue-600" />
+          <span className="text-sm font-medium text-gray-800">
+            {distance} km
+          </span>
+        </div>
+      )}
+    </div>
+  );
 };
