@@ -52,7 +52,7 @@ export default function SearchFormClient({
               return;
             }
             navigator.geolocation.getCurrentPosition(resolve, reject, {
-              enableHighAccuracy: false,
+              enableHighAccuracy: true,
               timeout: 5000,
             });
           }
