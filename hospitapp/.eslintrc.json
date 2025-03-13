@@ -6,13 +6,21 @@
         "error",
         {
           "selector": "variable",
-          "format": ["snake_case"]
+          "format": ["snake_case"],
+          "filter": {
+            "regex": "^(?!.*\\(\\)).*$",
+            "match": true
+          }
         },
         {
           "selector": "variable",
           "modifiers": ["const"],
           "format": ["UPPER_CASE"],
-          "prefix": ["_"]
+          "prefix": ["_"],
+          "filter": {
+            "regex": "^(?!.*\\(\\)).*$",
+            "match": true
+          }
         },
         {
           "selector": "function",
