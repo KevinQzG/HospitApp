@@ -1,16 +1,19 @@
+const jsdoc = require("eslint-plugin-jsdoc");
+const tsPlugin = require("@typescript-eslint/eslint-plugin");
+const tsParser = require("@typescript-eslint/parser");
+const nextConfig = require("eslint-config-next").flat;
+
+// Exportamos la configuración en formato Flat Config (arreglo de objetos)
 module.exports = [
+  ...nextConfig, // Agregamos la configuración de Next.js directamente
   {
     plugins: {
-      "@typescript-eslint": require("@typescript-eslint/eslint-plugin"),
-      jsdoc: require("eslint-plugin-jsdoc"),
+      "@typescript-eslint": tsPlugin,
+      jsdoc: jsdoc,
     },
     languageOptions: {
-      parser: require("@typescript-eslint/parser"),
+      parser: tsParser,
     },
-    extends: [
-      "next/core-web-vitals",
-      "plugin:@typescript-eslint/recommended",
-    ],
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",
