@@ -41,7 +41,7 @@
     ".next/types/**/*.ts",
     "src/types/next-pwa.d.ts",
     "src/types/google-translate.d.ts"
-  ],
+, "src/components/SearchFormClient.tsx"  ],
   "exclude": [
     "node_modules"
   ]

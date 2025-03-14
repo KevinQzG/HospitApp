@@ -14,6 +14,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@heroicons/react": "^2.2.0",
     "@next/font": "^14.2.15",
@@ -23,7 +24,9 @@
     "country-flag-icons": "^1.5.18",
     "country-telephone-data": "^0.6.3",
     "inversify": "^7.0.1",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.477.0",
+    "mapbox-gl": "^3.10.0",
     "mongodb": "^6.13.1",
     "next": "^15.1.7",
     "next-i18next": "^15.4.2",
@@ -31,6 +34,8 @@
     "react-bootstrap": "^2.10.9",
     "react-country-flag": "^3.1.0",
     "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "react-leaflet": "^5.0.0",
     "react-select": "^5.10.1",
     "reflect-metadata": "^0.2.2",
     "swr": "^2.3.2",
@@ -55,5 +60,6 @@
     "ts-jest": "^29.2.6",
     "typedoc": "^0.27.9",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
