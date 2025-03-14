@@ -33,9 +33,7 @@
         {
           "patterns": ["../components/*"]
         }
-      ],
-      "jsdoc/check-alignment": ["warn"],
-      "jsdoc/require-jsdoc": ["warn", { "publicOnly": true }]
+      ]
     }
   }
   
