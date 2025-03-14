@@ -16,14 +16,23 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd hospitapp
+          npm install
+
+      - name: Run Biome Linter
+        run: |
+          cd hospitapp
+          npx biome ci .
 
       - name: Run Biome and save report
         run: npx biome ci . --out biome-report.json
 
       - name: Upload Biome report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: biome-report
           path: biome-report.json
+    
+
 
