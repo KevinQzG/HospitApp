@@ -1,0 +1,30 @@
+{
+  "formatter": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "naming-convention": [
+        {
+          "selector": "variable",
+          "format": ["snake_case"]
+        },
+        {
+          "selector": "variable",
+          "modifiers": ["const"],
+          "format": ["UPPER_CASE"],
+          "prefix": ["_"]
+        },
+        {
+          "selector": "function",
+          "format": ["snake_case"]
+        }
+      ],
+      "camelcase": "off",
+      "no-restricted-imports": {
+        "patterns": ["../components/*"]
+      }
+    }
+  }
+}
