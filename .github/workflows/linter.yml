@@ -1,0 +1,26 @@
+name: Next.js Linter
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          cd hospitapp
+          npm install
+
+      - name: Run Biome Linter
+        run: |
+          cd hospitapp
+          npx biome ci .
