@@ -14,6 +14,7 @@ import { UserMapper  } from "@/utils/mappers/user_mapper";
  * @description This class allows me to interact with the User collection in the database.
  */
 
+
 @injectable()
 export class UserMongoRepository implements UserRepositoryAdapter {
     /**
