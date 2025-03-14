@@ -1,13 +1,10 @@
-import jsdoc from "eslint-plugin-jsdoc";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
-import next from "eslint-config-next";
+const jsdoc = require("eslint-plugin-jsdoc");
+const tsPlugin = require("@typescript-eslint/eslint-plugin");
+const tsParser = require("@typescript-eslint/parser");
+const next = require("eslint-config-next");
 
-export default [
-  // Configuración base de Next.js
+module.exports = [
   ...next,
-
-  // Configuración para TypeScript
   {
     languageOptions: {
       parser: tsParser,
@@ -38,3 +35,4 @@ export default [
     },
   },
 ];
+
