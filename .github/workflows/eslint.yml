@@ -21,9 +21,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: | 
-          cd hospitapp 
-          npm ci
+        run: |
+          cd hospitapp
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Run ESLint
         env:
