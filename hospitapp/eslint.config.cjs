@@ -5,35 +5,19 @@ const next = require("eslint-config-next");
 
 
 module.exports = [
-  ...next,
+  require("eslint-config-next"),
+  require("@typescript-eslint/eslint-plugin"),
   {
-    languageOptions: {
-      parser: tsParser,
-    },
-    plugins: {
-      "@typescript-eslint": tsPlugin,
-      jsdoc: jsdoc,
-    },
+    plugins: ["@typescript-eslint", "jsdoc"],
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",
         { selector: "variable", format: ["snake_case"] },
-        {
-          selector: "variable",
-          modifiers: ["const"],
-          format: ["UPPER_CASE"],
-          prefix: ["_"],
-        },
-        { selector: "function", format: ["snake_case"] },
+        { selector: "variable", modifiers: ["const"], format: ["UPPER_CASE"], prefix: ["_"] },
+        { selector: "function", format: ["snake_case"] }
       ],
-      camelcase: "off",
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: ["../components/*"],
-        },
-      ],
-    },
-  },
+      "camelcase": "off",
+      "no-restricted-imports": ["error", { patterns: ["../components/*"] }]
+    }
+  }
 ];
-
