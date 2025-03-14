@@ -34,5 +34,5 @@ jobs:
           SARIF_ESLINT_IGNORE_SUPPRESSED: "true"
         run: |
           cd hospitapp
-          npx eslint . --ext .js,.jsx,.ts,.tsx --config .eslintrc.json --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
+          npx eslint . --ext .js,.jsx,.ts,.tsx --config .eslintrc.cjs --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
         continue-on-error: true
