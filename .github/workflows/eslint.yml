@@ -32,5 +32,7 @@ jobs:
       - name: Run ESLint
         env:
           SARIF_ESLINT_IGNORE_SUPPRESSED: "true"
-        run: npx eslint . --ext .js,.jsx,.ts,.tsx --config .eslintrc.json --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
+        run: |
+          cd hospitapp
+          npx eslint . --ext .js,.jsx,.ts,.tsx --config .eslintrc.json --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
         continue-on-error: true
