@@ -1,6 +1,6 @@
-export default [
+module.exports = [
   {
-    ignores: ["node_modules/", "dist/"],
+    ignores: ["node_modules/", "dist/"], // Ignora carpetas innecesarias
   },
   {
     extends: ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
