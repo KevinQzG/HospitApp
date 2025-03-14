@@ -3,9 +3,8 @@ const tsPlugin = require("@typescript-eslint/eslint-plugin");
 const tsParser = require("@typescript-eslint/parser");
 const nextConfig = require("eslint-config-next").flat;
 
-// Exportamos la configuración en formato Flat Config (arreglo de objetos)
 module.exports = [
-  ...nextConfig, // Agregamos la configuración de Next.js directamente
+  ...nextConfig, 
   {
     plugins: {
       "@typescript-eslint": tsPlugin,
