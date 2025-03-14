@@ -3,6 +3,7 @@ const tsPlugin = require("@typescript-eslint/eslint-plugin");
 const tsParser = require("@typescript-eslint/parser");
 const next = require("eslint-config-next");
 
+
 module.exports = [
   ...next,
   {
