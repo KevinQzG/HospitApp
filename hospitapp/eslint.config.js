@@ -1,38 +1,40 @@
-module.exports = [
+import jsdoc from "eslint-plugin-jsdoc";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import next from "eslint-config-next";
+
+export default [
+  // Configuración base de Next.js
+  ...next,
+
+  // Configuración para TypeScript
   {
-    ignores: ["node_modules/", "dist/"], // Ignora carpetas innecesarias
-  },
-  {
-    extends: ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
+    languageOptions: {
+      parser: tsParser,
+    },
     plugins: {
-      "@typescript-eslint": require("@typescript-eslint/eslint-plugin"),
-      jsdoc: require("eslint-plugin-jsdoc"),
+      "@typescript-eslint": tsPlugin,
+      jsdoc: jsdoc,
     },
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",
-        {
-          selector: "variable",
-          format: ["snake_case"]
-        },
+        { selector: "variable", format: ["snake_case"] },
         {
           selector: "variable",
           modifiers: ["const"],
           format: ["UPPER_CASE"],
-          prefix: ["_"]
+          prefix: ["_"],
         },
-        {
-          selector: "function",
-          format: ["snake_case"]
-        }
+        { selector: "function", format: ["snake_case"] },
       ],
       camelcase: "off",
       "no-restricted-imports": [
         "error",
         {
-          patterns: ["../components/*"]
-        }
-      ]
-    }
-  }
+          patterns: ["../components/*"],
+        },
+      ],
+    },
+  },
 ];
