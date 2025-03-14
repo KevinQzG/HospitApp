@@ -1,14 +1,16 @@
-const jsdoc = require("eslint-plugin-jsdoc");
-const tsPlugin = require("@typescript-eslint/eslint-plugin");
-const tsParser = require("@typescript-eslint/parser");
-const next = require("eslint-config-next");
-
-
 module.exports = [
-  require("eslint-config-next"),
-  require("@typescript-eslint/eslint-plugin"),
   {
-    plugins: ["@typescript-eslint", "jsdoc"],
+    plugins: {
+      "@typescript-eslint": require("@typescript-eslint/eslint-plugin"),
+      jsdoc: require("eslint-plugin-jsdoc"),
+    },
+    languageOptions: {
+      parser: require("@typescript-eslint/parser"),
+    },
+    extends: [
+      "next/core-web-vitals",
+      "plugin:@typescript-eslint/recommended",
+    ],
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",
@@ -16,7 +18,7 @@ module.exports = [
         { selector: "variable", modifiers: ["const"], format: ["UPPER_CASE"], prefix: ["_"] },
         { selector: "function", format: ["snake_case"] }
       ],
-      "camelcase": "off",
+      camelcase: "off",
       "no-restricted-imports": ["error", { patterns: ["../components/*"] }]
     }
   }
