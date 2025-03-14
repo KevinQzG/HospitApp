@@ -1,6 +1,6 @@
 export default [
   {
-    ignores: ["node_modules/", "dist/"], // Ignorar carpetas innecesarias
+    ignores: ["node_modules/", "dist/"],
   },
   {
     extends: ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
@@ -13,21 +13,13 @@ export default [
         "error",
         {
           selector: "variable",
-          format: ["snake_case"],
-          filter: {
-            regex: "^(?!.*\\(\\)).*$",
-            match: true
-          }
+          format: ["snake_case"]
         },
         {
           selector: "variable",
           modifiers: ["const"],
           format: ["UPPER_CASE"],
-          prefix: ["_"],
-          filter: {
-            regex: "^(?!.*\\(\\)).*$",
-            match: true
-          }
+          prefix: ["_"]
         },
         {
           selector: "function",
