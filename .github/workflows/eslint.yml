@@ -34,5 +34,5 @@ jobs:
           SARIF_ESLINT_IGNORE_SUPPRESSED: "true"
         run: |
           cd hospitapp
-          npx eslint . --ext .js,.jsx,.ts,.tsx --config .eslintrc.json --loader=json
+          npx eslint . --ext .js,.jsx,.ts,.tsx --no-esm --config hospitapp/.eslintrc.json
         continue-on-error: true
