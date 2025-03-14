@@ -1,11 +1,40 @@
 @import "tailwindcss/preflight";
 @import "tailwindcss/utilities";
 @import "tailwindcss";
+@import 'mapbox-gl/dist/mapbox-gl.css';
 
 body {
   background-color: #f7fafc; /* bg-gray-100 */
   color: #2d3748; /* text-gray-800 */
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-in-out;
+}
+
+
+
+.mapboxgl-popup-content {
+  font-family: 'Arial', sans-serif;
+  padding: 0 !important; 
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: #ffffff !important; 
 }
 
 /* -------------------------------------------------------------------------
