@@ -6,7 +6,7 @@ import { Stethoscope, Search } from "lucide-react";
 import SpecialtyCard from "@/components/SpecialtyCard";
 import { useRouter } from "next/navigation";
 
-const _SPECIALTIES = [
+const SPECIALTIES = [
   {
     category: "Diagnóstico",
     specialties: [
@@ -104,12 +104,12 @@ const _SPECIALTIES = [
 
 export default function SpecialtiesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredSpecialties, setFilteredSpecialties] = useState(_SPECIALTIES);
+  const [filteredSpecialties, setFilteredSpecialties] = useState(SPECIALTIES);
   const router = useRouter();
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      const filtered = _SPECIALTIES
+      const filtered = SPECIALTIES
         .map((category) => ({
           ...category,
           specialties: category.specialties.filter((specialty) =>
@@ -130,9 +130,9 @@ export default function SpecialtiesPage() {
       const queryParams = new URLSearchParams({
         specialties: searchTerm,
         coordinates: "-75.5849,6.1816", // Default coordinates
-        max_distance: "20000",
+        maxDistance: "20000",
         page: "1",
-        page_size: "21",
+        pageSize: "21",
       });
       router.push(`/results?${queryParams.toString()}`);
     }

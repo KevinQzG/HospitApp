@@ -15,7 +15,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
   const { name } = resolvedParams;
   const decodedName = decodeURIComponent(name);
 
-  let ipsData: LookIpsResponse["data"] | null = null;
+  let IPS_DATA: LookIpsResponse["data"] | null = null;
   let error: string | null = null;
 
   try {
@@ -30,8 +30,8 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
       error = errorData.error || "Failed to fetch IPS data";
     } else {
       const data: LookIpsResponse = await response.json();
-      ipsData = data.data;
-      if (!ipsData) {
+      IPS_DATA = data.data;
+      if (!IPS_DATA) {
         error = "IPS not found";
       }
     }
@@ -39,7 +39,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
     error = err instanceof Error ? err.message : "Unknown error occurred";
   }
 
-  if (error || !ipsData) {
+  if (error || !IPS_DATA) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
         <div className="text-center">
@@ -59,5 +59,5 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
     );
   }
 
-  return <IpsDetailClient ipsData={ipsData} />;
+  return <IpsDetailClient ipsData={IPS_DATA} />;
 }

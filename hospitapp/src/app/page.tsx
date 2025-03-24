@@ -2,7 +2,7 @@
 import { Suspense } from "react";
 import {
   SearchFormClientProps,
-  get_search_ips_cached_props,
+  get_search_ips_cached_props as getSearchIpsCachedProps,
 } from "@/services/search_ips/data_caching.service";
 import LandingSearchForm from "@/components/LandingSearchForm";
 import SpecialtiesSection from "@/components/SpecialtiesSection";
@@ -11,7 +11,7 @@ export default async function HomePage() {
   let config: SearchFormClientProps;
 
   try {
-    config = await get_search_ips_cached_props();
+    config = await getSearchIpsCachedProps();
   } catch (error) {
     console.error("Page initialization failed:", error);
     return (

@@ -5,61 +5,55 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGoogle,
-  faFacebook,
-  faApple,
-} from "@fortawesome/free-brands-svg-icons";
 import ReactCountryFlag from "react-country-flag";
 import { allCountries } from "country-telephone-data";
 
 export default function RegisterPage() {
-  const [_PASSWORD_VISIBLE, _SET_PASSWORD_VISIBLE] = useState(false);
-  const [_SELECTED_COUNTRY, _SET_SELECTED_COUNTRY] = useState("+57"); // Default: Colombia
-  const [_IS_DROPDOWN_OPEN, _SET_IS_DROPDOWN_OPEN] = useState(false);
-  const _ROUTER = useRouter(); // Hook para manejar redirección
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState("+57"); // Default: Colombia
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const router = useRouter();
 
-  const _COUNTRY_CODES = allCountries.map((country) => ({
+  const COUNTRY_CODES = allCountries.map((country) => ({
     code: country.dialCode,
-    country_code: country.iso2,
+    countryCode: country.iso2,
     name: country.name,
   }));
 
-  const _SELECTED_COUNTRY_DATA = _COUNTRY_CODES.find(
-    (country) => country.code === _SELECTED_COUNTRY
+  const selectedCountryData = COUNTRY_CODES.find(
+    (country) => country.code === selectedCountry
   );
 
-  const _HANDLE_REGISTER = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   
     try {
-      const _EMAIL = (document.getElementById('email') as HTMLInputElement).value;
-      const _PASSWORD = (document.getElementById('password') as HTMLInputElement).value;
-      const _PHONE = (document.getElementById('phone') as HTMLInputElement).value;
-      const _EPS = (document.getElementById('eps') as HTMLInputElement).value;
+      const email = (document.getElementById('email') as HTMLInputElement).value;
+      const password = (document.getElementById('password') as HTMLInputElement).value;
+      const phone = (document.getElementById('phone') as HTMLInputElement).value;
+      const eps = (document.getElementById('eps') as HTMLInputElement).value;
   
-      const _RESPONSE = await fetch('/api/create', {
+      const response = await fetch('/api/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email: _EMAIL, password: _PASSWORD, phone: _PHONE, eps: _EPS })
+        body: JSON.stringify({ email, password, phone, eps })
       });
   
-      const _DATA = await _RESPONSE.json();
+      const data = await response.json();
   
-      if (_DATA.success) {
+      if (data.success) {
         setTimeout(() => {
-          _ROUTER.push("/confirmation");
+          router.push("/confirmation");
         }, 1500);
       } else {
-        alert(_DATA.error);
+        alert(data.error);
       }
     } catch (error) {
       console.error('Error al registrar:', error);
     }
-  }
+  };
 
   return (
     <section className="flex min-h-screen">
@@ -99,7 +93,7 @@ export default function RegisterPage() {
             </Link>
           </p>
 
-          <form className="mt-8 space-y-6" onSubmit={_HANDLE_REGISTER}>
+          <form className="mt-8 space-y-6" onSubmit={handleRegister}>
             <div className="relative">
               <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
               <input
@@ -115,33 +109,33 @@ export default function RegisterPage() {
               <div className="flex items-center border border-gray-300 rounded-lg px-3 shadow-sm hover:shadow-md transition-shadow relative">
                 <button
                   type="button"
-                  onClick={() => _SET_IS_DROPDOWN_OPEN(!_IS_DROPDOWN_OPEN)}
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex items-center gap-2 p-2 focus:outline-none"
                 >
-                  {_SELECTED_COUNTRY_DATA && (
+                  {selectedCountryData && (
                     <ReactCountryFlag
-                      countryCode={_SELECTED_COUNTRY_DATA.country_code}
+                      countryCode={selectedCountryData.countryCode}
                       svg
                       style={{ width: "1.5em", height: "1.5em" }}
                     />
                   )}
-                  <span className="text-gray-700">{_SELECTED_COUNTRY}</span>
+                  <span className="text-gray-700">{selectedCountry}</span>
                 </button>
 
-                {_IS_DROPDOWN_OPEN && (
+                {isDropdownOpen && (
                   <div className="absolute top-12 left-0 bg-white border border-gray-300 rounded-lg shadow-lg z-10 w-64 max-h-64 overflow-y-auto">
                     <ul>
-                      {_COUNTRY_CODES.map((country, index) => (
+                      {COUNTRY_CODES.map((country, index) => (
                         <li
                           key={index}
                           className="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer"
                           onClick={() => {
-                            _SET_SELECTED_COUNTRY(country.code);
-                            _SET_IS_DROPDOWN_OPEN(false);
+                            setSelectedCountry(country.code);
+                            setIsDropdownOpen(false);
                           }}
                         >
                           <ReactCountryFlag
-                            countryCode={country.country_code}
+                            countryCode={country.countryCode}
                             svg
                             style={{ width: "1.5em", height: "1.5em" }}
                           />
@@ -168,7 +162,7 @@ export default function RegisterPage() {
 
             <div className="relative">
               <User className="absolute left-3 top-3 text-gray-400" size={20} />
-              <select  id="eps"className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+              <select id="eps" className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                 <option value="">Selecciona tu EPS</option>
                 <option value="coosalud">COOSALUD EPS</option>
                 <option value="coomeva">COOMEVA EPS</option>
@@ -199,7 +193,7 @@ export default function RegisterPage() {
             <div className="relative">
               <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
               <input
-                type={_PASSWORD_VISIBLE ? "text" : "password"}
+                type={passwordVisible ? "text" : "password"}
                 id="password"
                 placeholder="Contraseña"
                 className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -208,9 +202,9 @@ export default function RegisterPage() {
               <button
                 type="button"
                 className="absolute right-3 top-3 text-gray-400 hover:text-gray-700 transition"
-                onClick={() => _SET_PASSWORD_VISIBLE(!_PASSWORD_VISIBLE)}
+                onClick={() => setPasswordVisible(!passwordVisible)}
               >
-                {_PASSWORD_VISIBLE ? <EyeOff size={20} /> : <Eye size={20} />}
+                {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
 

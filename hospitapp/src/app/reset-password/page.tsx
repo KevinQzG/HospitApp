@@ -6,17 +6,17 @@ import Image from "next/image";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 export default function ResetPasswordPage() {
-  const [_PASSWORD, _SET_PASSWORD] = useState("");
-  const [_CONFIRM_PASSWORD, _SET_CONFIRM_PASSWORD] = useState("");
-  const [_PASSWORD_VISIBLE, _SET_PASSWORD_VISIBLE] = useState(false);
-  const [_CONFIRM_PASSWORD_VISIBLE, _SET_CONFIRM_PASSWORD_VISIBLE] = useState(false);
-  const [_PASSWORD_RESET, _SET_PASSWORD_RESET] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [passwordReset, setPasswordReset] = useState(false);
 
-  const _HANDLE_SUBMIT = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (_PASSWORD === _CONFIRM_PASSWORD) {
-      _SET_PASSWORD_RESET(true);
+    if (password === confirmPassword) {
+      setPasswordReset(true);
       setTimeout(() => {
         window.location.href = "/login";
       }, 3000);
@@ -62,13 +62,13 @@ export default function ResetPasswordPage() {
           </p>
 
           {/* Success Message */}
-          {_PASSWORD_RESET ? (
+          {passwordReset ? (
             <div className="mt-8 p-6 bg-green-50 border border-green-200 text-green-700 rounded-lg text-center">
               <p className="text-lg">✅ ¡Tu contraseña ha sido restablecida con éxito!</p>
               <p className="text-sm mt-2">Serás redirigido al inicio de sesión en unos segundos...</p>
             </div>
           ) : (
-            <form onSubmit={_HANDLE_SUBMIT} className="mt-8 space-y-6">
+            <form onSubmit={handleSubmit} className="mt-8 space-y-6">
               {/* New Password Field */}
               <div className="relative">
                 <label htmlFor="password" className="block text-gray-700 font-medium mb-2">
@@ -77,19 +77,19 @@ export default function ResetPasswordPage() {
                 <div className="relative">
                   <input
                     id="password"
-                    type={_PASSWORD_VISIBLE ? "text" : "password"}
+                    type={passwordVisible ? "text" : "password"}
                     placeholder="Ingresa tu nueva contraseña"
-                    value={_PASSWORD}
-                    onChange={(e) => _SET_PASSWORD(e.target.value)}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     required
                   />
                   <button
                     type="button"
                     className="absolute right-3 top-3 text-gray-500 hover:text-gray-700 transition"
-                    onClick={() => _SET_PASSWORD_VISIBLE(!_PASSWORD_VISIBLE)}
+                    onClick={() => setPasswordVisible(!passwordVisible)}
                   >
-                    {_PASSWORD_VISIBLE ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
               </div>
@@ -102,19 +102,19 @@ export default function ResetPasswordPage() {
                 <div className="relative">
                   <input
                     id="confirm-password"
-                    type={_CONFIRM_PASSWORD_VISIBLE ? "text" : "password"}
+                    type={confirmPasswordVisible ? "text" : "password"}
                     placeholder="Confirma tu nueva contraseña"
-                    value={_CONFIRM_PASSWORD}
-                    onChange={(e) => _SET_CONFIRM_PASSWORD(e.target.value)}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     required
                   />
                   <button
                     type="button"
                     className="absolute right-3 top-3 text-gray-500 hover:text-gray-700 transition"
-                    onClick={() => _SET_CONFIRM_PASSWORD_VISIBLE(!_CONFIRM_PASSWORD_VISIBLE)}
+                    onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
                   >
-                    {_CONFIRM_PASSWORD_VISIBLE ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {confirmPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
               </div>

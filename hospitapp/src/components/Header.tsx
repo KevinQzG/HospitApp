@@ -6,32 +6,31 @@ import { usePathname } from "next/navigation";
 import { Home, Info, LogIn, Globe, ChevronDown } from "lucide-react";
 
 export default function Header() {
-  const [_IS_OPEN, _SET_IS_OPEN] = useState(false);
-  const [_IS_MOBILE, _SET_IS_MOBILE] = useState(false);
-  const [_LANGUAGE_INDEX, _SET_LANGUAGE_INDEX] = useState(0);
-  const [_IS_DROPDOWN_OPEN, _SET_IS_DROPDOWN_OPEN] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [languageIndex, setLanguageIndex] = useState(0);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const pathname = usePathname(); // Get current route
-  const _LANGUAGES = ["ES", "EN", "FR", "IT", "PT", "DE"];
+  const LANGUAGES = ["ES", "EN", "FR", "IT", "PT", "DE"];
 
   useEffect(() => {
-    const _HANDLE_RESIZE = () => _SET_IS_MOBILE(window.innerWidth <= 768);
-    _HANDLE_RESIZE();
-    window.addEventListener("resize", _HANDLE_RESIZE);
-    return () => window.removeEventListener("resize", _HANDLE_RESIZE);
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
-    const _LOAD_GOOGLE_TRANSLATE = () => {
+    const loadGoogleTranslate = () => {
       if (!navigator.userAgent.includes("Chrome-Lighthouse")) {
         setTimeout(() => {
           if (!document.getElementById("google-translate-script")) {
-            const _SCRIPT = document.createElement("script");
-            _SCRIPT.id = "google-translate-script";
-            _SCRIPT.src =
+            const script = document.createElement("script");
+            script.id = "google-translate-script";
+            script.src =
               "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-            _SCRIPT.async = true;
-            document.body.appendChild(_SCRIPT);
+            script.async = true;
+            document.body.appendChild(script);
           }
 
           window.googleTranslateElementInit = () => {
@@ -44,52 +43,50 @@ export default function Header() {
               "google_translate_element"
             );
 
-            const _STYLE = document.createElement("style");
-            _STYLE.innerHTML = `
+            const style = document.createElement("style");
+            style.innerHTML = `
               .goog-te-banner-frame, .goog-te-gadget, .goog-tooltip, .goog-te-menu-frame, .skiptranslate {
                 display: none !important;
               }
               body { top: 0px !important; }
             `;
-            document.head.appendChild(_STYLE);
+            document.head.appendChild(style);
           };
         }, 4000);
       }
     };
 
-    _LOAD_GOOGLE_TRANSLATE();
+    loadGoogleTranslate();
 
-    let _SAVED_LANGUAGE = localStorage.getItem("language") || "ES";
-    const _SAVED_INDEX = _LANGUAGES.indexOf(_SAVED_LANGUAGE);
-    _SET_LANGUAGE_INDEX(_SAVED_INDEX !== -1 ? _SAVED_INDEX : 0);
+    const savedLanguage = localStorage.getItem("language") || "ES";
+    const savedIndex = LANGUAGES.indexOf(savedLanguage);
+    setLanguageIndex(savedIndex !== -1 ? savedIndex : 0);
 
     setTimeout(() => {
-      _CHANGE_LANGUAGE(_SAVED_LANGUAGE.toLowerCase());
+      changeLanguage(savedLanguage.toLowerCase());
     }, 2000);
   }, []);
 
-  const _CHANGE_LANGUAGE = (lang: string) => {
-    const _SELECT = document.querySelector(
-      ".goog-te-combo"
-    ) as HTMLSelectElement;
-    if (_SELECT) {
-      _SELECT.value = lang;
-      _SELECT.dispatchEvent(new Event("change"));
+  const changeLanguage = (lang: string) => {
+    const select = document.querySelector(".goog-te-combo") as HTMLSelectElement;
+    if (select) {
+      select.value = lang;
+      select.dispatchEvent(new Event("change"));
     }
     localStorage.setItem("language", lang.toUpperCase());
   };
 
-  const _HANDLE_LANGUAGE_CHANGE_MOBILE = () => {
-    const _NEW_INDEX = (_LANGUAGE_INDEX + 1) % _LANGUAGES.length;
-    _SET_LANGUAGE_INDEX(_NEW_INDEX);
-    const _NEW_LANGUAGE = _LANGUAGES[_NEW_INDEX];
-    _CHANGE_LANGUAGE(_NEW_LANGUAGE.toLowerCase());
+  const handleLanguageChangeMobile = () => {
+    const newIndex = (languageIndex + 1) % LANGUAGES.length;
+    setLanguageIndex(newIndex);
+    const newLanguage = LANGUAGES[newIndex];
+    changeLanguage(newLanguage.toLowerCase());
   };
 
   return (
     <>
       {/* TOP NAVBAR (Only for Desktop & Tablet) */}
-      {!_IS_MOBILE && (
+      {!isMobile && (
         <header className="bg-[#ECF6FF] py-4 px-6 relative z-50">
           <div className="container mx-auto flex justify-between items-center relative">
             <Link href="/" className="text-2xl font-bold z-50">
@@ -135,28 +132,28 @@ export default function Header() {
 
               <div className="relative">
                 <button
-                  onClick={() => _SET_IS_DROPDOWN_OPEN(!_IS_DROPDOWN_OPEN)}
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex items-center gap-2 text-gray-700 hover:text-blue-600 px-4 border border-gray-300 rounded-lg py-1 transition"
                 >
                   <Globe size={18} className="text-gray-700" />
                   <span className="notranslate">
-                    {_LANGUAGES[_LANGUAGE_INDEX]}
+                    {LANGUAGES[languageIndex]}
                   </span>
                   <ChevronDown size={16} className="text-gray-700" />
                 </button>
 
-                {_IS_DROPDOWN_OPEN && (
+                {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg w-24">
-                    {_LANGUAGES.map((lang, index) => (
+                    {LANGUAGES.map((lang, index) => (
                       <button
                         key={index}
                         onClick={() => {
-                          _SET_LANGUAGE_INDEX(index);
-                          _CHANGE_LANGUAGE(lang.toLowerCase());
-                          _SET_IS_DROPDOWN_OPEN(false);
+                          setLanguageIndex(index);
+                          changeLanguage(lang.toLowerCase());
+                          setIsDropdownOpen(false);
                         }}
                         className={`block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-center ${
-                          _LANGUAGE_INDEX === index
+                          languageIndex === index
                             ? "font-bold text-blue-600"
                             : ""
                         }`}
@@ -173,7 +170,7 @@ export default function Header() {
       )}
 
       {/* BOTTOM NAVBAR (Only for Mobile) */}
-      {_IS_MOBILE && (
+      {isMobile && (
         <nav className="fixed bottom-0 left-0 w-full bg-white shadow-t-lg flex justify-around py-3 border-t border-gray-200 z-50">
           <Link
             href="/"
@@ -209,12 +206,12 @@ export default function Header() {
             <span className="text-xs">Ingresar</span>
           </Link>
           <button
-            onClick={_HANDLE_LANGUAGE_CHANGE_MOBILE}
+            onClick={handleLanguageChangeMobile}
             className="flex flex-col items-center text-gray-700 hover:text-blue-600"
           >
             <Globe size={22} className="text-blue-600" />
             <span className="text-xs font-bold notranslate">
-              {_LANGUAGES[_LANGUAGE_INDEX]}
+              {LANGUAGES[languageIndex]}
             </span>
           </button>
         </nav>
