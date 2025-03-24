@@ -1,0 +1,16 @@
+| **Field**    | **Value**               |
+|--------------|-------------------------|
+| **ID**       | Test01 |
+| **Tester**     | Kevin Quioz |
+| **User Story**    | FR01 |
+| **Preconditions**  | None |
+| **Epic**     | Search for an IPS       |
+| **Priority** | High                    |
+
+| Step | Action | Expected Result | Status | Comments | Environment |
+|-----|--|---|---|---|---|
+| 1 | Enter to the main page at https://hospitapp.vercel.app/ | The home page should render with a Buscar button in the middle of the page. | Passed | None |  Mac (Server) - Client (Google Chrome and Safari, Mac) |
+| 2 | Click on the "Buscar" Button | The application should redirect to a page where filter fields can be selected and IPSs can be watched. | Passed | None |  Mac (Server) - Client (Google Chrome and Safari, Mac) |
+| 3 | Select the "EPS" options (1 or many) you want to filter IPSs with, "Specialties" options (1 or many) you want to filter IPSs with, and the "distance" option (just 1) for the range of search in kilometers. All fields here are optional. | If selected one or more options for the fields, the app should show the selected options. | Passed | None |  Mac (Server) - Client (Google Chrome and Safari, Mac) |
+| 4 | Click on the "Buscar" button | The search button should display the IPSs that match with the selected options, unless the location permission haven't been accepted or rejected, which will display a pop up asking about it. | Passed | None |  Mac (Server) - Client (Google Chrome and Safari, Mac) |
+| 5 | Accept the location permission request if wanted to use the location feature. If you don't, then don't accept it. | The system should show the IPSs that matched the specified filters and location if accepted | Not Passed | When the location is not permitted an error message is shown, instead of the IPSs that matched the other fields. The reported bug was in the [Bug 01](https://github.com/users/KevinQzG/projects/5/views/9?filterQuery=bug&pane=issue&itemId=100699802&issue=KevinQzG%7CHospitApp%7C29). *Additional Note:* This bug was already fixed by Juan Felipe Restrepo.<br><br>Additionally, another [bug 02](https://github.com/users/KevinQzG/projects/5/views/9?filterQuery=bug&pane=issue&itemId=101710267&issue=KevinQzG%7CHospitApp%7C34) was found. The distance doesn't match the actual distance to the IPS because the user coordinates are not as accurate as the system needs them to be. This [bug 02](https://github.com/users/KevinQzG/projects/5/views/9?filterQuery=bug&pane=issue&itemId=101710267&issue=KevinQzG%7CHospitApp%7C34) should be fixed by Kevin Quiroz. *Additional Note:* This bug was already fixed by Kevin Quiroz. | Mac (Server) - Client (Google Chrome and Safari, Mac) |
