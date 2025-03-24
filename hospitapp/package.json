@@ -24,6 +24,7 @@
     "bootstrap": "^5.3.3",
     "country-flag-icons": "^1.5.18",
     "country-telephone-data": "^0.6.3",
+    "framer-motion": "^12.5.0",
     "inversify": "^7.0.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.477.0",

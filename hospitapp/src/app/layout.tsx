@@ -17,17 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning={true}>
       <head>
-        {/* Favicon browser*/}
+        {/* Icons and PWA meta tags */}
         <link
           rel="icon"
           type="image/png"
           sizes="48x48"
           href="/icons/icon-48x48.png"
         />
-
-        {/* Apple Touch Icons para iOS */}
         <link
           rel="apple-touch-icon"
           sizes="192x192"
@@ -38,8 +36,6 @@ export default function RootLayout({
           sizes="512x512"
           href="/icons/icon-512x512.png"
         />
-
-        {/* Android Chrome Icons */}
         <link
           rel="shortcut icon"
           type="image/png"
@@ -52,9 +48,7 @@ export default function RootLayout({
           sizes="512x512"
           href="/icons/icon-512x512.png"
         />
-
         <link rel="manifest" href="/manifest.json" />
-
         <meta name="theme-color" content="#1D4ED8" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -65,11 +59,26 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="HospitAPP" />
         <meta name="application-name" content="HospitAPP" />
       </head>
-      <body className="bg-[#ECF6FF]">
+      <body className="transition-colors duration-300 bg-[#ECF6FF] text-black dark:bg-[#0a0a0a] dark:text-white">
         <Header />
         <main>{children}</main>
         <Footer />
         <PwaHandler />
+        {/* Apply saved theme on first load */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const theme = localStorage.getItem("theme") || "light";
+                if (theme === "dark") {
+                  document.documentElement.classList.add("dark");
+                } else {
+                  document.documentElement.classList.remove("dark");
+                }
+              })();
+            `,
+          }}
+        />
       </body>
     </html>
   );

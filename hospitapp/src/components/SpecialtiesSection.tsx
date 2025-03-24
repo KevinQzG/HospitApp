@@ -1,4 +1,3 @@
-// components/SpecialtiesSection.tsx
 "use client";
 
 import {
@@ -28,16 +27,16 @@ export default function SpecialtiesSection() {
   ];
 
   return (
-    <section className="py-12 sm:py-16 text-center px-4 sm:px-6 lg:px-8">
+    <section className="py-12 sm:py-16 text-center px-4 sm:px-6 lg:px-8 bg-[#F9FCFF] dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
           Especialidades más buscadas
         </h2>
-        <p className="text-sm sm:text-base text-gray-500 mt-2">
-          No encuentras la especialidad que buscas?{" "}
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-2">
+          ¿No encuentras la especialidad que buscas?{" "}
           <a
-            href="specialties"
-            className="text-blue-700 underline hover:text-blue-700"
+            href="/specialties"
+            className="text-blue-800 dark:text-blue-400 underline hover:text-blue-900 dark:hover:text-blue-300 transition-colors"
           >
             Ver todas las especialidades
           </a>
