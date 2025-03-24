@@ -6,12 +6,12 @@ import Image from "next/image";
 import { Mail, ArrowLeft } from "lucide-react";
 
 export default function ForgotPasswordPage() {
-  const [_EMAIL_SENT, _SET_EMAIL_SENT] = useState(false);
-  const [_EMAIL, _SET_EMAIL] = useState("");
+  const [emailSent, setEmailSent] = useState(false);
+  const [email, setEmail] = useState("");
 
-  const _HANDLE_SUBMIT = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    _SET_EMAIL_SENT(true);
+    setEmailSent(true);
   };
 
   return (
@@ -51,17 +51,17 @@ export default function ForgotPasswordPage() {
           </p>
 
           {/* Success Message */}
-          {_EMAIL_SENT ? (
+          {emailSent ? (
             <div className="mt-8 p-6 bg-green-50 border border-green-200 text-green-700 rounded-lg text-center">
               <p className="text-lg">
-                📩 Hemos enviado un enlace de recuperación a <b>{_EMAIL}</b>.
+                📩 Hemos enviado un enlace de recuperación a <b>{email}</b>.
               </p>
               <p className="text-sm mt-2">
                 Revisa tu bandeja de entrada o la carpeta de spam.
               </p>
             </div>
           ) : (
-            <form onSubmit={_HANDLE_SUBMIT} className="mt-8 space-y-6">
+            <form onSubmit={handleSubmit} className="mt-8 space-y-6">
               {/* Email Field */}
               <div className="relative">
                 <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
@@ -73,8 +73,8 @@ export default function ForgotPasswordPage() {
                     id="email"
                     type="email"
                     placeholder="Ingresa tu correo electrónico"
-                    value={_EMAIL}
-                    onChange={(e) => _SET_EMAIL(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     required
                   />

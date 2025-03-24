@@ -1,7 +1,7 @@
 import Image from "next/image";
 
-export default function about_page() {
-  const _TEAM_MEMBERS = [
+export default function aboutPage() {
+  const TEAM_MEMBERS = [
     {
       name: "Luis Carlos Castro",
       role: "Product Owner",
@@ -92,7 +92,7 @@ export default function about_page() {
           Contamos con un equipo multidisciplinario enfocado en crear una plataforma confiable y eficiente.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mt-12">
-          {_TEAM_MEMBERS.map((member, index) => (
+          {TEAM_MEMBERS.map((member, index) => (
             <div
               key={index}
               className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center"

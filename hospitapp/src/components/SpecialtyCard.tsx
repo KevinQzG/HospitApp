@@ -41,14 +41,14 @@ export default function SpecialtyCard({
     const queryParams = new URLSearchParams({
       specialties: name,
       coordinates: coordinates.join(","),
-      max_distance: "20000",
+      maxDistance: "20000",
       page: "1",
-      page_size: "21",
+      pageSize: "21",
     });
     router.push(`/results?${queryParams.toString()}`);
   };
 
-  const _CARD_CLASSES = `
+  const CARD_CLASSES = `
     group p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg 
     flex flex-col items-center justify-center transition-all duration-300 cursor-pointer
     ${
@@ -58,14 +58,14 @@ export default function SpecialtyCard({
     }
   `;
 
-  const _ICON_CLASSES = `
+  const ICON_CLASSES = `
     w-6 h-6 sm:w-8 sm:h-8 transition-colors duration-300 
     ${active ? "text-white" : "text-blue-500 group-hover:text-white"}
   `;
 
   return (
-    <div className={_CARD_CLASSES} onClick={handleClick}>
-      <Icon className={_ICON_CLASSES} />
+    <div className={CARD_CLASSES} onClick={handleClick}>
+      <Icon className={ICON_CLASSES} />
       <h3 className="text-sm sm:text-base font-medium mt-2 sm:mt-3 text-center">
         {name}
       </h3>

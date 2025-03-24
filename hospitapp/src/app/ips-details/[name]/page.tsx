@@ -10,28 +10,28 @@ type IpsDetailPageProps = {
   params: Promise<{ name: string }>;
 };
 
-export default async function ips_detail_page({ params }: IpsDetailPageProps) {
-  const _resolvedParams = await params;
-  const { name: _name } = _resolvedParams;
-  const _decodedName = decodeURIComponent(_name);
+export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
+  const resolvedParams = await params;
+  const { name } = resolvedParams;
+  const decodedName = decodeURIComponent(name);
 
-  let ips_data: LookIpsResponse["data"] | null = null;
+  let IPS_DATA: LookIpsResponse["data"] | null = null;
   let error: string | null = null;
 
   try {
-    const _response = await fetch(`${_ENV.NEXT_PUBLIC_API_URL}/search_ips/ips`, {
+    const response = await fetch(`${_ENV.NEXT_PUBLIC_API_URL}/search_ips/ips`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: _decodedName }),
+      body: JSON.stringify({ name: decodedName }),
     });
 
-    if (!_response.ok) {
-      const _errorData: LookIpsResponse = await _response.json();
-      error = _errorData.error || "Failed to fetch IPS data";
+    if (!response.ok) {
+      const errorData: LookIpsResponse = await response.json();
+      error = errorData.error || "Failed to fetch IPS data";
     } else {
-      const _data: LookIpsResponse = await _response.json();
-      ips_data = _data.data;
-      if (!ips_data) {
+      const data: LookIpsResponse = await response.json();
+      IPS_DATA = data.data;
+      if (!IPS_DATA) {
         error = "IPS not found";
       }
     }
@@ -39,7 +39,7 @@ export default async function ips_detail_page({ params }: IpsDetailPageProps) {
     error = err instanceof Error ? err.message : "Unknown error occurred";
   }
 
-  if (error || !ips_data) {
+  if (error || !IPS_DATA) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
         <div className="text-center">
@@ -59,5 +59,5 @@ export default async function ips_detail_page({ params }: IpsDetailPageProps) {
     );
   }
 
-  return <IpsDetailClient ipsData={ips_data} />;
+  return <IpsDetailClient ipsData={IPS_DATA} />;
 }

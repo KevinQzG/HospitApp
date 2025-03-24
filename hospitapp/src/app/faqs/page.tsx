@@ -1,5 +1,5 @@
-export default function faqs_page() {
-  const _FAQS = [
+export default function FaqsPage() {
+  const FAQS = [
     {
       question: "¿Cómo funciona HospitAPP?",
       answer:
@@ -58,7 +58,7 @@ export default function faqs_page() {
 
       {/* FAQ List */}
       <div className="max-w-3xl mx-auto mt-16 space-y-6">
-        {_FAQS.map((faq, index) => (
+        {FAQS.map((faq, index) => (
           <details
             key={index}
             className="group bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
