@@ -7,13 +7,13 @@ import { Eye, EyeOff } from "lucide-react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle, faFacebook, faApple } from '@fortawesome/free-brands-svg-icons';
 
-export default function LoginPage() {
+export default function login_page() {
   const [_PASSWORD_VISIBLE, _SET_PASSWORD_VISIBLE] = useState(false);
 
-  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+  const _handle_login = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    try{
+    try {
       const _EMAIL = (document.getElementById('email') as HTMLInputElement).value;
       const _PASSWORD = (document.getElementById('password') as HTMLInputElement).value;
 
@@ -33,11 +33,10 @@ export default function LoginPage() {
       } else {
         alert('Correo electrónico o contraseña incorrectos');
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error al iniciar sesión:', error);
     }
-  }
+  };
 
   return (
     <section className="flex min-h-screen">
@@ -75,7 +74,7 @@ export default function LoginPage() {
           </p>
 
           {/* Login Form */}
-          <form className="mt-8 space-y-6"  onSubmit={handleLogin}>
+          <form className="mt-8 space-y-6" onSubmit={_handle_login}>
             <div>
               <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
                 Correo electrónico
@@ -122,7 +121,6 @@ export default function LoginPage() {
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
-             
             >
               Iniciar sesión
             </button>

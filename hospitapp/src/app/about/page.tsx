@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function AboutPage() {
+export default function about_page() {
   const _TEAM_MEMBERS = [
     {
       name: "Luis Carlos Castro",

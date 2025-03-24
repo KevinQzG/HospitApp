@@ -102,39 +102,39 @@ const _SPECIALTIES = [
   },
 ];
 
-export default function SpecialtiesPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredSpecialties, setFilteredSpecialties] = useState(_SPECIALTIES);
-  const router = useRouter();
+export default function specialties_page() {
+  const [_searchTerm, _setSearchTerm] = useState("");
+  const [_filteredSpecialties, _setFilteredSpecialties] = useState(_SPECIALTIES);
+  const _router = useRouter();
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      const filtered = _SPECIALTIES
+    const _delayDebounceFn = setTimeout(() => {
+      const _filtered = _SPECIALTIES
         .map((category) => ({
           ...category,
           specialties: category.specialties.filter((specialty) =>
-            specialty.toLowerCase().includes(searchTerm.toLowerCase())
+            specialty.toLowerCase().includes(_searchTerm.toLowerCase())
           ),
         }))
         .filter((category) => category.specialties.length > 0);
 
-      setFilteredSpecialties(filtered);
+      _setFilteredSpecialties(_filtered);
     }, 300);
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+    return () => clearTimeout(_delayDebounceFn);
+  }, [_searchTerm]);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const _handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchTerm) {
+    if (_searchTerm) {
       const queryParams = new URLSearchParams({
-        specialties: searchTerm,
+        specialties: _searchTerm,
         coordinates: "-75.5849,6.1816", // Default coordinates
         max_distance: "20000",
         page: "1",
         page_size: "21",
       });
-      router.push(`/results?${queryParams.toString()}`);
+      _router.push(`/results?${queryParams.toString()}`);
     }
   };
 
@@ -152,7 +152,7 @@ export default function SpecialtiesPage() {
 
         <div className="mt-8 max-w-2xl mx-auto">
           <form
-            onSubmit={handleSearchSubmit}
+            onSubmit={_handleSearchSubmit}
             className="relative max-w-lg mx-auto w-full"
           >
             <div className="flex items-center w-full bg-white rounded-full shadow-md transition-shadow duration-300 border border-gray-300 focus-within:shadow-lg focus-within:border-gray-400 overflow-hidden">
@@ -161,8 +161,8 @@ export default function SpecialtiesPage() {
               <input
                 type="text"
                 placeholder="Buscar especialidad..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={_searchTerm}
+                onChange={(e) => _setSearchTerm(e.target.value)}
                 className="w-full py-3 pl-12 pr-16 text-gray-700 bg-transparent border-none focus:ring-0 focus:outline-none placeholder-gray-400 text-base"
                 aria-label="Buscar especialidad médica"
               />
@@ -179,7 +179,7 @@ export default function SpecialtiesPage() {
       </div>
 
       <div className="max-w-7xl mx-auto mt-10">
-        {filteredSpecialties.map((category, index) => (
+        {_filteredSpecialties.map((category, index) => (
           <div key={index} className="mb-8">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               {category.category}

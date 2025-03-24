@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Hospital, ArrowLeft } from "lucide-react";
 
-export default function NotFound() {
+export default function not_found() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#ECF6FF] text-gray-800 p-6">
       {/* Icon */}

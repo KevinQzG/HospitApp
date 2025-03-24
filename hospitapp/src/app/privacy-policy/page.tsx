@@ -1,4 +1,4 @@
-export default function PrivacyPolicyPage() {
+export default function privacy_policy_page() {
   const _CONTACT_INFO = {
     email: "admin@hospitapp.com",
     location: "Medellín, Antioquia, Colombia",

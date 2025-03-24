@@ -8,7 +8,7 @@
           "selector": "variable",
           "format": ["snake_case"],
           "filter": {
-            "regex": "^(?!.*\\(\\)).*$",
+            "regex": "^[A-Z]",
             "match": true
           }
         },

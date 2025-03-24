@@ -5,20 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGoogle,
-  faFacebook,
-  faApple,
-} from "@fortawesome/free-brands-svg-icons";
 import ReactCountryFlag from "react-country-flag";
 import { allCountries } from "country-telephone-data";
 
-export default function RegisterPage() {
+export default function register_page() {
   const [_PASSWORD_VISIBLE, _SET_PASSWORD_VISIBLE] = useState(false);
   const [_SELECTED_COUNTRY, _SET_SELECTED_COUNTRY] = useState("+57"); // Default: Colombia
   const [_IS_DROPDOWN_OPEN, _SET_IS_DROPDOWN_OPEN] = useState(false);
-  const _ROUTER = useRouter(); // Hook para manejar redirección
+  const _ROUTER = useRouter();
 
   const _COUNTRY_CODES = allCountries.map((country) => ({
     code: country.dialCode,
@@ -59,7 +53,7 @@ export default function RegisterPage() {
     } catch (error) {
       console.error('Error al registrar:', error);
     }
-  }
+  };
 
   return (
     <section className="flex min-h-screen">
@@ -168,7 +162,7 @@ export default function RegisterPage() {
 
             <div className="relative">
               <User className="absolute left-3 top-3 text-gray-400" size={20} />
-              <select  id="eps"className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+              <select id="eps" className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                 <option value="">Selecciona tu EPS</option>
                 <option value="coosalud">COOSALUD EPS</option>
                 <option value="coomeva">COOMEVA EPS</option>

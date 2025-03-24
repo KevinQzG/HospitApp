@@ -7,7 +7,7 @@ import {
 import LandingSearchForm from "@/components/LandingSearchForm";
 import SpecialtiesSection from "@/components/SpecialtiesSection";
 
-export default async function HomePage() {
+export default async function home_page() {
   let config: SearchFormClientProps;
 
   try {

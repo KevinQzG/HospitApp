@@ -1,4 +1,4 @@
-export default function TermsOfServicePage() {
+export default function terms_of_service_page() {
   const _CONTACT_INFO = {
     email: "admin@hospitapp.com",
     location: "Medellín, Antioquia, Colombia",

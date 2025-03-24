@@ -4,14 +4,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PwaHandler from "@/components/PwaHandler";
 
-export const metadata: Metadata = {
+export const _metadata: Metadata = {
   title: "HospitApp",
   description:
     "The fastest, safest, and smartest way to find medical care in Antioquia, Colombia.",
   manifest: "/manifest.json",
 };
 
-export default function RootLayout({
+export default function root_layout({
   children,
 }: {
   children: React.ReactNode;

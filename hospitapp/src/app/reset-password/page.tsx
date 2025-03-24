@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
-export default function ResetPasswordPage() {
+export default function reset_password_page() {
   const [_PASSWORD, _SET_PASSWORD] = useState("");
   const [_CONFIRM_PASSWORD, _SET_CONFIRM_PASSWORD] = useState("");
   const [_PASSWORD_VISIBLE, _SET_PASSWORD_VISIBLE] = useState(false);
