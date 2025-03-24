@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import DBAdapter from '@/adapters/db.adapter';
-import _CONTAINER from "@/adapters/container";
+import CONTAINER from "@/adapters/container";
 import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
-import { _TYPES } from "@/adapters/types";
-import { is_type_array } from "@/utils/helpers/validation";
+import { TYPES } from "@/adapters/types";
+import { IS_TYPE_ARRAY } from "@/utils/helpers/validation";
 import { IpsResponse } from "@/models/ips.interface";
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
@@ -40,9 +40,9 @@ export interface SearchResponse {
     data?: IpsResponse[];
     pagination?: {
         total: number;
-        total_pages: number;
+        totalPages: number;
         page: number;
-        page_size: number;
+        pageSize: number;
     };
 }
 
@@ -51,14 +51,14 @@ export interface SearchResponse {
  * @param {SearchRequest} body - The request body to validate
  * @returns {{ success: boolean; error: string }} True if the body is valid, false otherwise with an error message
  */
-const validate_request_body = (body: SearchRequest): { success: boolean; error: string } => {
-    if (body.coordinates && !is_type_array(body.coordinates, "number", 2)) {
+const VALIDATE_REQUEST_BODY = (body: SearchRequest): { success: boolean; error: string } => {
+    if (body.coordinates && !IS_TYPE_ARRAY(body.coordinates, "number", 2)) {
         return { success: false, error: "Invalid request: coordinates must be an array of two numbers [longitude, latitude]." };
     } else if (body.max_distance && typeof body.max_distance !== "number") {
         return { success: false, error: "Invalid request: maximum distance must be a number representing meters." };
-    } else if (body.specialties && !is_type_array(body.specialties, "string")) {
+    } else if (body.specialties && !IS_TYPE_ARRAY(body.specialties, "string")) {
         return { success: false, error: "Invalid request: specialties must be an array of strings." };
-    } else if (body.eps_names && !is_type_array(body.eps_names, "string")) {
+    } else if (body.eps_names && !IS_TYPE_ARRAY(body.eps_names, "string")) {
         return { success: false, error: "Invalid request: EPS names must be an array of strings." };
     } else if (body.page && typeof body.page !== "number") {
         return { success: false, error: "Invalid request: page must be a number." };
@@ -97,50 +97,50 @@ const validate_request_body = (body: SearchRequest): { success: boolean; error: 
  * }
  */
 export async function POST(req: NextRequest): Promise<NextResponse<SearchResponse>> {
-    const _DB_HANDLER: DBAdapter = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
-    const _SEARCH_SERVICE: SearchIpsServiceAdapter = _CONTAINER.get<SearchIpsServiceAdapter>(
-        _TYPES.SearchIpsServiceAdapter
+    const DB_HANDLER: DBAdapter = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
+    const SEARCH_SERVICE: SearchIpsServiceAdapter = CONTAINER.get<SearchIpsServiceAdapter>(
+        TYPES.SearchIpsServiceAdapter
     );
     try {
         // Parse and validate request body
-        const _BODY: SearchRequest = await req.json();
+        const BODY: SearchRequest = await req.json();
 
         // Body validation
-        const { success: _SUCCESS, error: _ERROR } = validate_request_body(_BODY);
-        if (!_SUCCESS) {
-            return NextResponse.json({ success: false, error: _ERROR }, { status: 400 });
+        const { success: SUCCESS, error: ERROR } = VALIDATE_REQUEST_BODY(BODY);
+        if (!SUCCESS) {
+            return NextResponse.json({ success: false, error: ERROR }, { status: 400 });
         }
         let latitude: number | null = null;
         let longitude: number | null = null;
-        if (_BODY.coordinates) {
-            longitude = _BODY.coordinates[0];
-            latitude = _BODY.coordinates[1];
+        if (BODY.coordinates) {
+            longitude = BODY.coordinates[0];
+            latitude = BODY.coordinates[1];
         }
 
-        const { results: _RESULTS, total: _TOTAL } = await _SEARCH_SERVICE.filter_ips(
+        const { results: RESULTS, total: TOTAL } = await SEARCH_SERVICE.filter_ips(
             longitude,
             latitude,
-            _BODY.max_distance || null,
-            _BODY.specialties || [],
-            _BODY.eps_names || [],
-            _BODY.page || 1,
-            _BODY.page_size || 10
+            BODY.max_distance || null,
+            BODY.specialties || [],
+            BODY.eps_names || [],
+            BODY.page || 1,
+            BODY.page_size || 10
         );
 
-        await _DB_HANDLER.close();
+        await DB_HANDLER.close();
         // revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)
         return NextResponse.json({
             success: true,
-            data: _RESULTS,
+            data: RESULTS,
             pagination: {
-                total: _TOTAL,
-                total_pages: Math.ceil(_TOTAL / (_BODY.page_size || 10)),
-                page: _BODY.page || 1,
-                page_size: _BODY.page_size || 10,
+                total: TOTAL,
+                totalPages: Math.ceil(TOTAL / (BODY.page_size || 10)),
+                page: BODY.page || 1,
+                pageSize: BODY.page_size || 10,
             }
         });
     } catch (error) {
-        await _DB_HANDLER.close();
+        await DB_HANDLER.close();
         
         console.error("API Error:", error);
         return NextResponse.json(

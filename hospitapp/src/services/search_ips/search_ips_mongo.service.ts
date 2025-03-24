@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
-import { _TYPES } from "@/adapters/types";
+import { TYPES } from "@/adapters/types";
 import type IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
 import { IpsResponse } from "@/models/ips.interface";
 import type SpecialtyRepositoryAdapter from "@/adapters/specialty_repository.adapter";
@@ -27,9 +27,9 @@ export class SearchIpsMongoService implements SearchIpsServiceAdapter {
      * @throws {Error} If the database connection fails.
      */
     constructor(
-        @inject(_TYPES.IpsRepositoryAdapter) private ips_repository: IpsRepositoryAdapter,
-        @inject(_TYPES.SpecialtyRepositoryAdapter) private specialty_repository: SpecialtyRepositoryAdapter,
-        @inject(_TYPES.EpsRepositoryAdapter) private eps_repository: EPSRepositoryAdapter
+        @inject(TYPES.IpsRepositoryAdapter) private ips_repository: IpsRepositoryAdapter,
+        @inject(TYPES.SpecialtyRepositoryAdapter) private specialty_repository: SpecialtyRepositoryAdapter,
+        @inject(TYPES.EpsRepositoryAdapter) private eps_repository: EPSRepositoryAdapter
         
     ) { }
 

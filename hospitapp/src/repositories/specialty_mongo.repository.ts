@@ -1,11 +1,11 @@
 import { injectable, inject } from "inversify";
 import { Db } from "mongodb";
 import SpecialtyRepositoryAdapter from "@/adapters/specialty_repository.adapter";
-import { _TYPES } from "@/adapters/types";
+import { TYPES } from "@/adapters/types";
 import { SpecialtyDocument } from "@/models/specialty.interface";
 import { Specialty } from "@/models/specialty";
 import type DBAdapter from "@/adapters/db.adapter";
-import { SpecialtyMapper } from "@/utils/mappers/specialty_mapper";
+import { specialtyMapper } from "@/utils/mappers/specialty_mapper";
 // import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
 
 /**
@@ -24,7 +24,7 @@ export class SpecialtyMongoRepository implements SpecialtyRepositoryAdapter {
      * @throws {Error} If the database connection fails.
      */
     constructor(
-        @inject(_TYPES.DBAdapter) private db_handler: DBAdapter<Db>
+        @inject(TYPES.DBAdapter) private db_handler: DBAdapter<Db>
     ) { }
 
     async find_all(): Promise<Specialty[]> {
@@ -37,6 +37,6 @@ export class SpecialtyMongoRepository implements SpecialtyRepositoryAdapter {
         }
 
         // Map the results to EPS entities
-        return _RESULTS.map(SpecialtyMapper.from_document_to_domain);
+        return _RESULTS.map(specialtyMapper.fromDocumentToDomain);
     }
 }

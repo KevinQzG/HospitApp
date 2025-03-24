@@ -25,9 +25,9 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password })
       });
 
-      const data = await response.json();
+      const DATA = await response.json();
 
-      if (data.success) {
+      if (DATA.success) {
         // Redirect to the dashboard
         window.location.href = '/';
       } else {

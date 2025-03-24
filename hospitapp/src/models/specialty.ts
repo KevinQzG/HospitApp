@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { SpecialtyDocument, SpecialtyResponse } from './specialty.interface';
-import { SpecialtyMapper } from '@/utils/mappers/specialty_mapper';
+import { specialtyMapper } from '@/utils/mappers/specialty_mapper';
 
 /**
  * Class that defines the structure and behavior of the Specialty entity.
@@ -56,7 +56,7 @@ export class Specialty {
      * @returns {SpecialtyDocument} A plain object representation of the Specialty.
      */
     to_object(): SpecialtyDocument {
-        return SpecialtyMapper.from_domain_to_document(this);
+        return specialtyMapper.fromDomainToDocument(this);
     }
 
     /**
@@ -64,7 +64,7 @@ export class Specialty {
      * @returns {SpecialtyResponse} A plain object representation of the Specialty.
      */
     to_response(): SpecialtyResponse {
-        return SpecialtyMapper.from_domain_to_response(this);
+        return specialtyMapper.fromDomainToResponse(this);
     }
 
     /**

@@ -10,7 +10,7 @@ type IpsDetailPageProps = {
   params: Promise<{ name: string }>;
 };
 
-export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
+export default async function ipsDetailPage({ params }: IpsDetailPageProps) {
   const resolvedParams = await params;
   const { name } = resolvedParams;
   const decodedName = decodeURIComponent(name);

@@ -1,7 +1,7 @@
 import { injectable, inject } from "inversify";
 import { Db, ObjectId } from "mongodb";
 import UserRepositoryAdapter from "@/adapters/user_repository.adapter";
-import { _TYPES } from "@/adapters/types";
+import { TYPES } from "@/adapters/types";
 import { UserDocument } from "@/models/user.interface";
 import { User } from "@/models/user";
 import type DBAdapter from "@/adapters/db.adapter";
@@ -26,7 +26,7 @@ export class UserMongoRepository implements UserRepositoryAdapter {
      * @throws {Error} If the database connection fails.
      */
     constructor(
-        @inject(_TYPES.DBAdapter) private db_handler: DBAdapter<Db>
+        @inject(TYPES.DBAdapter) private db_handler: DBAdapter<Db>
     ) { }
 
     async findUserByEmail(email: string): Promise<User | null> {
@@ -39,7 +39,7 @@ export class UserMongoRepository implements UserRepositoryAdapter {
             console.log(_USER_DOC);
             
 
-            return _USER_DOC? UserMapper.from_document_to_domain(_USER_DOC) : null;
+            return _USER_DOC? UserMapper.fromDocumentToDomain(_USER_DOC) : null;
         } catch (error) {
             console.error("Error finding user by email:", error);
             throw new Error("Database error");
