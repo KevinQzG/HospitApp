@@ -6,19 +6,19 @@ import { _TYPES } from '@/adapters/types';
 import { Specialty } from '@/models/specialty';
 
 describe('SpecialtyMongoRepository Integration Test', () => {
-    let db_handler: DBAdapter;
+    let dbHandler: DBAdapter;
     let repository: SpecialtyRepositoryAdapter;
 
     let results: Specialty[];
 
     beforeAll(async () => {
-        db_handler = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
+        dbHandler = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
         repository = _CONTAINER.get<SpecialtyRepositoryAdapter>(_TYPES.SpecialtyRepositoryAdapter);
-        await db_handler.connect();
+        await dbHandler.connect();
     });
 
     afterAll(async () => {
-        await db_handler.close();
+        await dbHandler.close();
     });
 
     describe('find_all', () => {
@@ -36,14 +36,14 @@ describe('SpecialtyMongoRepository Integration Test', () => {
 
         it('should return correct EPS document structure', async () => {
             results = await repository.find_all();
-            const _SAMPLE_EPS = results[0];
+            const sampleEps = results[0];
 
-            const _EXPECTED_DATA = {
+            const expectedData = {
                 _id: new ObjectId("67b3e928b1ae5d9e47ae7224"),
                 name: "ENFERMERÍA",
             };
 
-            expect(_SAMPLE_EPS.to_object()).toMatchObject(_EXPECTED_DATA);
+            expect(sampleEps.to_object()).toMatchObject(expectedData);
         });
     });
 });

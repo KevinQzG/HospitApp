@@ -73,11 +73,11 @@ export default function SearchFormClient({
 
       const queryParams = new URLSearchParams({
         coordinates: coordinates.join(","),
-        max_distance: maxDistance,
+        maxDistance: maxDistance,
         specialties: specialties.join(","),
         eps: eps.join(","),
         page,
-        page_size: pageSize,
+        pageSize: pageSize,
       });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
