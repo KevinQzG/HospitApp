@@ -92,7 +92,7 @@ export class Ips {
      * @returns {IpsDocument} A plain object representation of the IPS.
      */
     to_object(): IpsDocument {
-        return IpsMapper.from_domain_to_document(this);
+        return IpsMapper.fromDomainToDocument(this);
     }
 
     /**
@@ -100,7 +100,7 @@ export class Ips {
      * @returns {IpsResponse} A plain response object representation of the IPS.
      */
     to_response(): IpsResponse {
-        return IpsMapper.from_domain_to_response(this);
+        return IpsMapper.fromDomainToResponse(this);
     }    
 
     /**

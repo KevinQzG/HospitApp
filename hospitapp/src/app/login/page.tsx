@@ -8,36 +8,35 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle, faFacebook, faApple } from '@fortawesome/free-brands-svg-icons';
 
 export default function LoginPage() {
-  const [_PASSWORD_VISIBLE, _SET_PASSWORD_VISIBLE] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    try{
-      const _EMAIL = (document.getElementById('email') as HTMLInputElement).value;
-      const _PASSWORD = (document.getElementById('password') as HTMLInputElement).value;
+    try {
+      const email = (document.getElementById('email') as HTMLInputElement).value;
+      const password = (document.getElementById('password') as HTMLInputElement).value;
 
-      const _RESPONSE = await fetch('/api/login', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email: _EMAIL, password: _PASSWORD })
+        body: JSON.stringify({ email, password })
       });
 
-      const _DATA = await _RESPONSE.json();
+      const DATA = await response.json();
 
-      if (_DATA.success) {
+      if (DATA.success) {
         // Redirect to the dashboard
         window.location.href = '/';
       } else {
         alert('Correo electrónico o contraseña incorrectos');
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error al iniciar sesión:', error);
     }
-  }
+  };
 
   return (
     <section className="flex min-h-screen">
@@ -75,7 +74,7 @@ export default function LoginPage() {
           </p>
 
           {/* Login Form */}
-          <form className="mt-8 space-y-6"  onSubmit={handleLogin}>
+          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
             <div>
               <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
                 Correo electrónico
@@ -95,7 +94,7 @@ export default function LoginPage() {
               </label>
               <input
                 id="password"
-                type={_PASSWORD_VISIBLE ? "text" : "password"}
+                type={passwordVisible ? "text" : "password"}
                 placeholder="Ingresa tu contraseña"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 required
@@ -103,9 +102,9 @@ export default function LoginPage() {
               <button
                 type="button"
                 className="absolute right-4 top-10 text-gray-500 hover:text-gray-700 transition"
-                onClick={() => _SET_PASSWORD_VISIBLE(!_PASSWORD_VISIBLE)}
+                onClick={() => setPasswordVisible(!passwordVisible)}
               >
-                {_PASSWORD_VISIBLE ? <EyeOff size={20} /> : <Eye size={20} />}
+                {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
 
@@ -122,7 +121,6 @@ export default function LoginPage() {
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
-             
             >
               Iniciar sesión
             </button>

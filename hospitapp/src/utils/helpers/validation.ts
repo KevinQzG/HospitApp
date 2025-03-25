@@ -5,7 +5,7 @@
  * @param length - The expected length of the array
  * @returns {boolean} True if the array is a string array, false otherwise
  */
-const is_type_array = (arr: unknown[], type: string, length?: number): arr is unknown[] => {
+const IS_TYPE_ARRAY = (arr: unknown[], type: string, length?: number): arr is unknown[] => {
     return Array.isArray(arr) && 
         (length === undefined || arr.length === length) 
         && arr.every(item => typeof item === type);
@@ -13,5 +13,5 @@ const is_type_array = (arr: unknown[], type: string, length?: number): arr is un
 
 
 // Export the helper functions
-export { is_type_array };
+export { IS_TYPE_ARRAY };
 

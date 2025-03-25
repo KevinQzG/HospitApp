@@ -6,7 +6,7 @@ import {
 } from "@/services/search_ips/data_caching.service";
 import ResultsPage from "@/components/ResultsPage";
 
-export default async function Results() {
+export default async function results() {
   let config: SearchFormClientProps;
 
   try {

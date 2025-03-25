@@ -1,39 +1,43 @@
 {
-    "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
-    "plugins": ["@typescript-eslint", "jsdoc"],
-    "rules": {
-      "@typescript-eslint/naming-convention": [
-        "error",
-        {
-          "selector": "variable",
-          "format": ["snake_case"],
-          "filter": {
-            "regex": "^(?!.*\\(\\)).*$",
-            "match": true
-          }
-        },
-        {
-          "selector": "variable",
-          "modifiers": ["const"],
-          "format": ["UPPER_CASE"],
-          "prefix": ["_"],
-          "filter": {
-            "regex": "^(?!.*\\(\\)).*$",
-            "match": true
-          }
-        },
-        {
-          "selector": "function",
-          "format": ["snake_case"]
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module"
+  },
+  "rules": {
+    "camelcase": "error",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variable",
+        "format": ["camelCase", "UPPER_CASE"]
+      },
+      {
+        "selector": "function",
+        "format": ["camelCase", "PascalCase"],
+        "filter": {
+          "regex": "^[A-Z]",
+          "match": true
         }
-      ],
-      "camelcase": "off",
-      "no-restricted-imports": [
-        "error",
-        {
-          "patterns": ["../components/*"]
-        }
-      ]
-    }
+      },
+      {
+        "selector": "function",
+        "format": ["camelCase"]
+      },
+      {
+        "selector": "typeLike",
+        "format": ["PascalCase"]
+      }
+    ]
   }
-  
+}

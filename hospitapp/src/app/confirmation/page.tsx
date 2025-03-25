@@ -4,16 +4,16 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle } from "lucide-react";
 
-export default function ConfirmationPage() {
-  const _ROUTER = useRouter();
+export default function confirmationPage() {
+  const ROUTER = useRouter();
 
   useEffect(() => {
-    const _TIMEOUT = setTimeout(() => {
-      _ROUTER.push("/");
+    const TIMEOUT = setTimeout(() => {
+      ROUTER.push("/");
     }, 5000);
 
-    return () => clearTimeout(_TIMEOUT);
-  }, [_ROUTER]);
+    return () => clearTimeout(TIMEOUT);
+  }, [ROUTER]);
 
   return (
     <section className="flex min-h-screen justify-center items-center px-6 md:px-12 bg-gradient-to-b from-[#F9FCFF] to-[#E6F0FF]">
@@ -30,7 +30,7 @@ export default function ConfirmationPage() {
         </p>
 
         <button
-          onClick={() => _ROUTER.push("/")}
+          onClick={() => ROUTER.push("/")}
           className="w-full bg-blue-600 text-white py-3 mt-8 rounded-lg font-semibold hover:bg-blue-700 transition-all"
         >
           Ir al inicio
