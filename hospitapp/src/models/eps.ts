@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { EpsDocument, EpsResponse } from './eps.interface';
-import { EPSMapper } from '@/utils/mappers/eps_mapper';
+import { EpsMapper } from '@/utils/mappers/eps_mapper';
 
 /**
  * Class that defines the structure and behavior of the EPS entity.
@@ -44,7 +44,7 @@ export class Eps {
      * @returns {EpsDocument} A plain object representation of the EPS.
      */
     to_object(): EpsDocument {
-        return EPSMapper.from_domain_to_document(this);
+        return EpsMapper.fromDomainToDocument(this);
     }
 
     /**
@@ -52,7 +52,7 @@ export class Eps {
      * @returns {EpsResponse} A plain response object representation of the EPS.
      */
     to_response(): EpsResponse {
-        return EPSMapper.from_domain_to_response(this);
+        return EpsMapper.fromDomainToResponse(this);
     }    
 
     /**

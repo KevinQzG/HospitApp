@@ -1,4 +1,4 @@
-export default function FaqsPage() {
+export default function fAQsPage() {
   const FAQS = [
     {
       question: "¿Cómo funciona HospitAPP?",

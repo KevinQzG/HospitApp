@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import DBAdapter from '@/adapters/db.adapter';
-import _CONTAINER from "@/adapters/container";
+//import DBAdapter from '@/adapters/db.adapter';
+import CONTAINER from "@/adapters/container";
 import UserRepositoryAdapter from "@/adapters/user_repository.adapter";
-import { _TYPES } from "@/adapters/types";
+import { TYPES } from "@/adapters/types";
 
 export interface RegisterRequest {
     email: string;
@@ -14,7 +14,7 @@ export interface RegisterRequest {
 /**
  * Function to validate the body of the request
  */
-const validate_request_body = (body: RegisterRequest): { success: boolean; error: string } => {
+const validateRequestBody = (body: RegisterRequest): { success: boolean; error: string } => {
     if (!body.email) return { success: false, error: "Missing required field: email" };
     if (typeof body.email !== "string") return { success: false, error: "Invalid type for email" };
     
@@ -33,18 +33,18 @@ const validate_request_body = (body: RegisterRequest): { success: boolean; error
 
 
 export async function POST(request: Request) {
-    const _DB = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
-    const _USER_REPO = _CONTAINER.get<UserRepositoryAdapter>(_TYPES.UserRepositoryAdapter);
+    //const DB = CONTAINER.get<DBAdapter>(TYPES.DBAdapter); never used
+    const USER_REPO = CONTAINER.get<UserRepositoryAdapter>(TYPES.UserRepositoryAdapter);
 
     try {
         const body: RegisterRequest = await request.json();
-        const validation = validate_request_body(body);
+        const validation = validateRequestBody(body);
         
         if (!validation.success) {
             return NextResponse.json({ success: false, error: validation.error }, { status: 400 });
         }
 
-        const res = await _USER_REPO.createUser(body.eps, body.email, body.password, "USER", body.phone);
+        const res = await USER_REPO.createUser(body.eps, body.email, body.password, "USER", body.phone);
         
         if (res) {
             return NextResponse.json({ success: true }, { status: 200 });

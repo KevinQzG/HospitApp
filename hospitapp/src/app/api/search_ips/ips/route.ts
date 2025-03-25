@@ -30,7 +30,7 @@ export interface LookIpsResponse {
  * @param {LookIpsRequest} body - The request body to validate
  * @returns {{ success: boolean; error: string }} True if the body is valid, false otherwise with an error message
  */
-const validate_request_body = (body: LookIpsRequest): { success: boolean; error: string } => {
+const VALIDATE_REQUEST_BODY = (body: LookIpsRequest): { success: boolean; error: string } => {
     if (!body.name) {
         return { success: false, error: "Missing required field: name" };
     } else if (typeof body.name !== "string") {
@@ -64,23 +64,23 @@ const validate_request_body = (body: LookIpsRequest): { success: boolean; error:
 export async function POST(req: NextRequest): Promise<NextResponse<LookIpsResponse>> {
     try {
         // Parse and validate request body
-        const _BODY: LookIpsRequest = await req.json();
+        const BODY: LookIpsRequest = await req.json();
 
         // Body validation
-        const { success: _SUCCESS, error: _ERROR } = validate_request_body(_BODY);
-        if (!_SUCCESS) {
-            return NextResponse.json({ success: false, error: _ERROR }, { status: 400 });
+        const { success: SUCCESS, error: ERROR } = VALIDATE_REQUEST_BODY(BODY);
+        if (!SUCCESS) {
+            return NextResponse.json({ success: false, error: ERROR }, { status: 400 });
         }
 
-        const _IPS = await get_ips_props({ name: _BODY.name });
+        const IPS = await get_ips_props({ name: BODY.name });
 
-        if (!_IPS) {
+        if (!IPS) {
             return NextResponse.json({ success: false, error: "IPS not found" }, { status: 404 });
         }
 
         return NextResponse.json({
             success: true,
-            data: _IPS
+            data: IPS
         });
     } catch (error) {
         console.error("API Error:", error);

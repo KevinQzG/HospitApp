@@ -6,13 +6,13 @@ import { Specialty } from "@/models/specialty";
  * Class that allows to map Specialty entities from domain to document and vice versa.
  * @class SpecialtyMapper
  */
-export class SpecialtyMapper {
+export class specialtyMapper {
     /**
      * Maps an Specialty document to an Specialty entity.
      * @param {SpecialtyDocument} raw - The Specialty document.
      * @returns {Specialty} The Specialty entity.
      */
-    static from_document_to_domain(raw: SpecialtyDocument): Specialty {
+    static fromDocumentToDomain(raw: SpecialtyDocument): Specialty {
         return new Specialty(
             raw._id,
             raw.name,
@@ -31,7 +31,7 @@ export class SpecialtyMapper {
      * @param {Specialty} specialty - The Specialty entity.
      * @returns {SpecialtyDocument} The Specialty document.
      */
-    static from_domain_to_document(specialty: Specialty): SpecialtyDocument {
+    static fromDomainToDocument(specialty: Specialty): SpecialtyDocument {
         return {
             _id: specialty.get_id(),
             name: specialty.get_name(),
@@ -50,7 +50,7 @@ export class SpecialtyMapper {
      * @param {SpecialtyResponse} raw - The Specialty response.
      * @returns {Specialty} The Specialty entity.
      */
-    static from_response_to_domain(raw: SpecialtyResponse): Specialty {
+    static fromResponseToDomain(raw: SpecialtyResponse): Specialty {
         return new Specialty(
             new ObjectId(raw._id),
             raw.name,
@@ -69,7 +69,7 @@ export class SpecialtyMapper {
      * @param {Specialty} specialty - The Specialty entity.
      * @returns {SpecialtyResponse} The Specialty response.
      */
-    static from_domain_to_response(specialty: Specialty): SpecialtyResponse {
+    static fromDomainToResponse(specialty: Specialty): SpecialtyResponse {
         return {
             _id: specialty.get_id().toHexString(),
             name: specialty.get_name(),

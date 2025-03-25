@@ -1,7 +1,7 @@
 import { injectable, inject } from "inversify";
 import { Db } from "mongodb";
 import IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
-import { _TYPES } from "@/adapters/types";
+import { TYPES } from "@/adapters/types";
 import { IpsDocument } from "@/models/ips.interface";
 import { Ips } from "@/models/ips";
 import type DBAdapter from "@/adapters/db.adapter";
@@ -25,7 +25,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
      * @throws {Error} If the database connection fails.
      */
     constructor(
-        @inject(_TYPES.DBAdapter) private db_handler: DBAdapter<Db>
+        @inject(TYPES.DBAdapter) private db_handler: DBAdapter<Db>
     ) { }
 
     async find_all_by_distance_specialty_eps(
@@ -61,7 +61,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 
         // Convert the IPS document to a IPS entity and return the results
         return {
-            results: _RESULTS.map(IpsMapper.from_document_to_domain),
+            results: _RESULTS.map(IpsMapper.fromDocumentToDomain),
             total: _TOTAL
         };
     }
@@ -85,6 +85,6 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
         }
 
         // Convert the IPS document to a IPS entity
-        return IpsMapper.from_document_to_domain(_AGGREGATION_RESULT);
+        return IpsMapper.fromDocumentToDomain(_AGGREGATION_RESULT);
     }
 }

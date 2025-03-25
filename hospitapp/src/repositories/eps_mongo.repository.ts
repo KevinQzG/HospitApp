@@ -1,11 +1,11 @@
 import { injectable, inject } from "inversify";
 import { Db } from "mongodb";
 import EpsRepositoryAdapter from "@/adapters/eps_repository.adapter";
-import { _TYPES } from "@/adapters/types";
+import { TYPES } from "@/adapters/types";
 import { EpsDocument } from "@/models/eps.interface";
 import { Eps } from "@/models/eps";
 import type DBAdapter from "@/adapters/db.adapter";
-import { EPSMapper } from "@/utils/mappers/eps_mapper";
+import { EpsMapper } from "@/utils/mappers/eps_mapper";
 // import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
 
 /**
@@ -24,7 +24,7 @@ export class EpsMongoRepository implements EpsRepositoryAdapter {
      * @throws {Error} If the database connection fails.
      */
     constructor(
-        @inject(_TYPES.DBAdapter) private db_handler: DBAdapter<Db>
+        @inject(TYPES.DBAdapter) private db_handler: DBAdapter<Db>
     ) { }
 
     async find_all(): Promise<Eps[]> {
@@ -37,6 +37,6 @@ export class EpsMongoRepository implements EpsRepositoryAdapter {
         }
 
         // Map the results to EPS entities
-        return _RESULTS.map(EPSMapper.from_document_to_domain);
+        return _RESULTS.map(EpsMapper.fromDocumentToDomain);
     }
 }
