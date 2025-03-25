@@ -15,7 +15,7 @@ export interface SearchFormClientProps {
 // Cache configuration
 const CACHE_TAG = 'search-config';
 
-export const get_search_ips_cached_props = cache(
+export const getSearchIpsCachedProps = cache(
     async (): Promise<SearchFormClientProps> => {
         try {
             // Inject the dependencies
@@ -23,14 +23,14 @@ export const get_search_ips_cached_props = cache(
             const SEARCH_IPS_SERVICE = CONTAINER.get<SearchIpsServiceAdapter>(TYPES.SearchIpsServiceAdapter);
 
             // Fetch the data
-            const _RESULTS = {
+            const RESULTS = {
                 specialties: await SEARCH_IPS_SERVICE.getAllSpecialties(),
                 eps: await SEARCH_IPS_SERVICE.getAllEps()
             }
 
             // Close the database connection and return the results
             await DB_HANDLER.close();
-            return _RESULTS;
+            return RESULTS;
         } catch (error) {
             if (error instanceof Error) {
                 throw new Error(`Error fetching page props: ${error.message}`);

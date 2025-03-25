@@ -73,7 +73,7 @@ export class IpsPipelineBuilder {
         this.pipeline.push(
             { $lookup: this.epsLookup },
             { $lookup: this.epsJoin },
-            { $project: { eps_ips: 0 } }
+            { $project: { "eps_ips": 0 } }
         );
 
         return this;

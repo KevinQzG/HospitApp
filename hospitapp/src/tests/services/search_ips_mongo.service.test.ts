@@ -82,7 +82,7 @@ describe('SearchIpsMongoService Integration Test', () => {
 
     describe('filter', () => {
         it('should correctly delegate to repository and return documents', async () => {
-            const { results, total } = await service.filter_ips(
+            const { results, total } = await service.filterIps(
                 TEST_COORDINATES[0],
                 TEST_COORDINATES[1],
                 5000,
@@ -109,7 +109,7 @@ describe('SearchIpsMongoService Integration Test', () => {
         });
 
         it('should convert all results to IPSDocument format', async () => {
-            const { results } = await service.filter_ips(
+            const { results } = await service.filterIps(
                 TEST_COORDINATES[0],
                 TEST_COORDINATES[1],
                 5000,
@@ -133,7 +133,7 @@ describe('SearchIpsMongoService Integration Test', () => {
         });
 
         it('should handle pagination parameters correctly', async () => {
-            const { total } = await service.filter_ips(
+            const { total } = await service.filterIps(
                 TEST_COORDINATES[0],
                 TEST_COORDINATES[1],
                 5000,
@@ -158,7 +158,7 @@ describe('SearchIpsMongoService Integration Test', () => {
         it('should handle repository errors', async () => {
             mockIpsRepository.findAllByDistanceSpecialtyEps.mockRejectedValueOnce(new Error('DB error'));
 
-            await expect(service.filter_ips(
+            await expect(service.filterIps(
                 TEST_COORDINATES[0],
                 TEST_COORDINATES[1],
                 5000,

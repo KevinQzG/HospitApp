@@ -117,7 +117,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<SearchRespons
             latitude = BODY.coordinates[1];
         }
 
-        const { results: RESULTS, total: TOTAL } = await SEARCH_SERVICE.filter_ips(
+        const { results: RESULTS, total: TOTAL } = await SEARCH_SERVICE.filterIps(
             longitude,
             latitude,
             BODY.max_distance || null,

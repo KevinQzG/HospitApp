@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import DBAdapter from '@/adapters/db.adapter';
 import IpsRepositoryAdapter from '@/adapters/ips_repository.adapter';
 import CONTAINER from '@/adapters/container';
