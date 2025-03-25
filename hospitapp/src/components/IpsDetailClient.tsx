@@ -3,10 +3,19 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MapPin, Mail, Phone, Home, ArrowLeft, Hospital, Stethoscope, UserCheck } from "lucide-react";
+import {
+  MapPin,
+  Mail,
+  Phone,
+  Home,
+  ArrowLeft,
+  Hospital,
+  Stethoscope,
+  UserCheck,
+} from "lucide-react";
 import mapboxgl from "mapbox-gl";
-import Image from "next/image"; 
-import { LookIpsResponse } from "@/app/api/search_ips/ips/route"; 
+import Image from "next/image";
+import { LookIpsResponse } from "@/app/api/search_ips/ips/route";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string;
 
@@ -22,20 +31,28 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
   const WAZE_URL = `https://waze.com/ul?ll=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}&navigate=yes`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 font-sans flex flex-col">
-      <header className="bg-white shadow-lg rounded-b-xl">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans flex flex-col transition-colors duration-300">
+      <header className="bg-white dark:bg-gray-800 shadow-lg rounded-b-xl">
         <div className="max-w-6xl mx-auto px-4 py-4 sm:px-6 sm:py-6">
           <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
             <div className="flex items-center space-x-3">
-              <Hospital className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 flex-shrink-0" />
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 whitespace-normal break-words max-w-xs sm:max-w-none">{ipsData.name}</h1>
+              <Hospital className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white whitespace-normal break-words max-w-xs sm:max-w-none">
+                {ipsData.name}
+              </h1>
             </div>
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-              <Link href="/" className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-2 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg">
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-2 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg"
+              >
                 <Home className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Inicio
               </Link>
-              <Link href="/results" className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-2 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg">
+              <Link
+                href="/results"
+                className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-2 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg"
+              >
                 <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Resultados
               </Link>
@@ -47,74 +64,138 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
       <main className="flex-grow max-w-6xl mx-auto px-4 py-6 sm:px-6 sm:py-12 w-full">
         <div className="flex flex-col sm:flex-row justify-end items-center mb-6 sm:mb-8">
           <div className="flex space-x-2 sm:space-x-4">
-            <button onClick={() => setViewMode("details")} className={`px-2 py-1 sm:px-3 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${viewMode === "details" ? "bg-blue-700 text-white shadow-sm" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>
+            <button
+              onClick={() => setViewMode("details")}
+              className={`px-2 py-1 sm:px-3 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
+                viewMode === "details"
+                  ? "bg-blue-700 text-white shadow-sm dark:bg-blue-600"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              }`}
+            >
               Detalles
             </button>
-            <button onClick={() => setViewMode("map")} className={`px-2 py-1 sm:px-3 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${viewMode === "map" ? "bg-blue-700 text-white shadow-sm" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>
+            <button
+              onClick={() => setViewMode("map")}
+              className={`px-2 py-1 sm:px-3 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
+                viewMode === "map"
+                  ? "bg-blue-700 text-white shadow-sm dark:bg-blue-600"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              }`}
+            >
               Mapa
             </button>
           </div>
         </div>
 
-        {viewMode === "details" ? <DetailsView ipsData={ipsData} /> : <MapView ipsData={ipsData} router={router} />}
+        {viewMode === "details" ? (
+          <DetailsView ipsData={ipsData} />
+        ) : (
+          <MapView ipsData={ipsData} router={router} />
+        )}
       </main>
     </div>
   );
 }
 
-const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]> }) => {
+const DetailsView = ({
+  ipsData,
+}: {
+  ipsData: NonNullable<LookIpsResponse["data"]>;
+}) => {
   const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}`;
   const WAZE_URL = `https://waze.com/ul?ll=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}&navigate=yes`;
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2">
-      <section className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all duration-300">
-        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
-          <Hospital className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 flex-shrink-0" />
+      <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all duration-300">
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center">
+          <Hospital className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0" />
           Información General
         </h2>
-        <ul className="space-y-4 sm:space-y-5 text-gray-700 text-sm sm:text-base">
+        <ul className="space-y-4 sm:space-y-5 text-gray-700 dark:text-gray-300 text-sm sm:text-base">
           <li className="flex items-center">
-            <MapPin size={18} className="mr-2 sm:mr-3 text-blue-600 flex-shrink-0" />
-            <span>{ipsData.department}, {ipsData.town}</span>
+            <MapPin
+              size={18}
+              className="mr-2 sm:mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0"
+            />
+            <span>
+              {ipsData.department}, {ipsData.town}
+            </span>
           </li>
           <li className="flex items-center">
-            <MapPin size={18} className="mr-2 sm:mr-3 text-blue-600 flex-shrink-0" />
+            <MapPin
+              size={18}
+              className="mr-2 sm:mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0"
+            />
             <span>{ipsData.address}</span>
           </li>
           {ipsData.phone && (
             <li className="flex items-center">
-              <Phone size={18} className="mr-2 sm:mr-3 text-blue-600 flex-shrink-0" />
+              <Phone
+                size={18}
+                className="mr-2 sm:mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0"
+              />
               <span>{ipsData.phone}</span>
             </li>
           )}
           {ipsData.email && (
             <li className="flex items-center">
-              <Mail size={18} className="mr-2 sm:mr-3 text-blue-600 flex-shrink-0" />
+              <Mail
+                size={18}
+                className="mr-2 sm:mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0"
+              />
               <span>{ipsData.email}</span>
             </li>
           )}
           {ipsData.level && (
             <li className="flex items-center">
-              <span className="font-medium text-gray-900 mr-2">Nivel:</span>
+              <span className="font-medium text-gray-900 dark:text-gray-200 mr-2">Nivel:</span>
               <span>{ipsData.level}</span>
             </li>
           )}
         </ul>
       </section>
 
-      <section className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all duration-300">
-        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6">Cómo llegar</h2>
+      <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all duration-300">
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">
+          Cómo llegar
+        </h2>
         <nav aria-label="Opciones de navegación">
           <ul className="space-y-4">
             <li className="flex flex-col items-start">
-              <a href={GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer" className="flex justify-center items-center w-full bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 p-4" aria-label="Abrir ubicación en Google Maps">
-                <Image src="/stock/GMaps.png" alt="Google Maps Icon" width={0} height={0} sizes="100vw" className="w-3/4 sm:w-full h-10 sm:h-12 object-contain" />
+              <a
+                href={GOOGLE_MAPS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex justify-center items-center w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 p-4"
+                aria-label="Abrir ubicación en Google Maps"
+              >
+                <Image
+                  src="/stock/GMaps.png"
+                  alt="Google Maps Icon"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="w-3/4 sm:w-full h-10 sm:h-12 object-contain"
+                />
               </a>
             </li>
             <li className="flex flex-col items-start">
-              <a href={WAZE_URL} target="_blank" rel="noopener noreferrer" className="flex justify-center items-center w-full bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 p-4" aria-label="Abrir ubicación en Waze">
-                <Image src="/stock/Waze.png" alt="Waze Icon" width={0} height={0} sizes="100vw" className="w-3/4 sm:w-full h-10 sm:h-12 object-contain" />
+              <a
+                href={WAZE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex justify-center items-center w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 p-4"
+                aria-label="Abrir ubicación en Waze"
+              >
+                <Image
+                  src="/stock/Waze.png"
+                  alt="Waze Icon"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="w-3/4 sm:w-full h-10 sm:h-12 object-contain"
+                />
               </a>
             </li>
           </ul>
@@ -122,16 +203,21 @@ const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]
       </section>
 
       {ipsData.eps && ipsData.eps.length > 0 && (
-        <section className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
-            <UserCheck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 flex-shrink-0" />
+        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center">
+            <UserCheck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0" />
             EPS Aceptadas
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {ipsData.eps.map((eps) => (
-              <div key={eps._id} className="flex items-center bg-blue-50 border border-blue-100 rounded-lg p-3 hover:bg-blue-100 hover:shadow-sm transition-all duration-300">
-                <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mr-2 flex-shrink-0" />
-                <span className="text-sm font-medium text-gray-800">{eps.name}</span>
+              <div
+                key={eps._id}
+                className="flex items-center bg-blue-50 dark:bg-blue-900/50 border border-blue-100 dark:border-blue-800 rounded-lg p-3 hover:bg-blue-100 dark:hover:bg-blue-800 hover:shadow-sm transition-all duration-300"
+              >
+                <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0" />
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                  {eps.name}
+                </span>
               </div>
             ))}
           </div>
@@ -139,16 +225,21 @@ const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]
       )}
 
       {ipsData.specialties && ipsData.specialties.length > 0 && (
-        <section className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
-            <Stethoscope className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 flex-shrink-0" />
+        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center">
+            <Stethoscope className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0" />
             Especialidades
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {ipsData.specialties.map((spec) => (
-              <div key={spec._id} className="flex items-center bg-blue-50 border border-blue-100 rounded-lg p-3 hover:bg-blue-100 hover:shadow-sm transition-all duration-300">
-                <Stethoscope className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mr-2 flex-shrink-0" />
-                <span className="text-sm font-medium text-gray-800">{spec.name}</span>
+              <div
+                key={spec._id}
+                className="flex items-center bg-blue-50 dark:bg-blue-900/50 border border-blue-100 dark:border-blue-800 rounded-lg p-3 hover:bg-blue-100 dark:hover:bg-blue-800 hover:shadow-sm transition-all duration-300"
+              >
+                <Stethoscope className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0" />
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                  {spec.name}
+                </span>
               </div>
             ))}
           </div>
@@ -158,27 +249,35 @@ const DetailsView = ({ ipsData }: { ipsData: NonNullable<LookIpsResponse["data"]
   );
 };
 
-const MapView = ({ ipsData, router }: { ipsData: NonNullable<LookIpsResponse["data"]>; router: ReturnType<typeof useRouter>; }) => {
+const MapView = ({
+  ipsData,
+  router,
+}: {
+  ipsData: NonNullable<LookIpsResponse["data"]>;
+  router: ReturnType<typeof useRouter>;
+}) => {
   const [distance, setDistance] = useState<number | null>(null);
+  const [map, setMap] = useState<mapboxgl.Map | null>(null);
+  let userMarker: mapboxgl.Marker | null = null;
 
   useEffect(() => {
     const [hospitalLng, hospitalLat] = ipsData.location.coordinates;
-    const map = new mapboxgl.Map({
+    const initializedMap = new mapboxgl.Map({
       container: "map",
       style: "mapbox://styles/mapbox/streets-v12",
       center: [hospitalLng, hospitalLat],
       zoom: 12,
     });
 
-    map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
-    map.addControl(new mapboxgl.FullscreenControl(), "top-right");
+    initializedMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+    initializedMap.addControl(new mapboxgl.FullscreenControl(), "top-right");
 
     const geolocate = new mapboxgl.GeolocateControl({
       positionOptions: { enableHighAccuracy: true },
       trackUserLocation: true,
       showUserLocation: false,
     });
-    map.addControl(geolocate, "top-right");
+    initializedMap.addControl(geolocate, "top-right");
 
     const hospitalMarkerElement = document.createElement("div");
     hospitalMarkerElement.innerHTML = `
@@ -190,9 +289,9 @@ const MapView = ({ ipsData, router }: { ipsData: NonNullable<LookIpsResponse["da
     const popupContent = document.createElement("div");
     popupContent.className = "popup-content";
     popupContent.innerHTML = `
-      <div class="bg-white p-4 rounded-xl shadow-xl max-w-sm border border-gray-200">
-        <h3 class="text-lg font-semibold text-blue-600 cursor-pointer hover:underline mb-2">${ipsData.name}</h3>
-        <p className="text-sm text-gray-600">${ipsData.address}, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
+      <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl max-w-sm border border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400 cursor-pointer hover:underline mb-2">${ipsData.name}</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">${ipsData.address}, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
       </div>
     `;
     popupContent.querySelector("h3")?.addEventListener("click", () => {
@@ -202,9 +301,7 @@ const MapView = ({ ipsData, router }: { ipsData: NonNullable<LookIpsResponse["da
     new mapboxgl.Marker({ element: hospitalMarkerElement })
       .setLngLat([hospitalLng, hospitalLat])
       .setPopup(new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupContent))
-      .addTo(map);
-
-    let userMarker: mapboxgl.Marker | null = null;
+      .addTo(initializedMap);
 
     const addRoute = (userLng: number, userLat: number) => {
       fetch(
@@ -217,8 +314,8 @@ const MapView = ({ ipsData, router }: { ipsData: NonNullable<LookIpsResponse["da
             const routeDistance = data.routes[0].distance / 1000;
             setDistance(parseFloat(routeDistance.toFixed(2)));
 
-            if (map.getSource("route")) {
-              (map.getSource("route") as mapboxgl.GeoJSONSource).setData({
+            if (initializedMap.getSource("route")) {
+              (initializedMap.getSource("route") as mapboxgl.GeoJSONSource).setData({
                 type: "Feature",
                 properties: {},
                 geometry: {
@@ -227,7 +324,7 @@ const MapView = ({ ipsData, router }: { ipsData: NonNullable<LookIpsResponse["da
                 },
               });
             } else {
-              map.addSource("route", {
+              initializedMap.addSource("route", {
                 type: "geojson",
                 data: {
                   type: "Feature",
@@ -238,7 +335,7 @@ const MapView = ({ ipsData, router }: { ipsData: NonNullable<LookIpsResponse["da
                   },
                 },
               });
-              map.addLayer({
+              initializedMap.addLayer({
                 id: "route",
                 type: "line",
                 source: "route",
@@ -262,8 +359,14 @@ const MapView = ({ ipsData, router }: { ipsData: NonNullable<LookIpsResponse["da
       const bounds = new mapboxgl.LngLatBounds();
       bounds.extend([hospitalLng, hospitalLat]);
       if (userLng && userLat) bounds.extend([userLng, userLat]);
-      map.fitBounds(bounds, { padding: 50, duration: 1000 });
+      initializedMap.fitBounds(bounds, { padding: 50, duration: 1000 });
     };
+
+    initializedMap.on("load", () => {
+      initializedMap.resize();
+      setMap(initializedMap); // Guardamos la instancia del mapa en el estado
+      geolocate.trigger(); // Activamos la geolocalización una vez que el mapa esté cargado
+    });
 
     geolocate.on("geolocate", (e: any) => {
       const userLng = e.coords.longitude;
@@ -282,31 +385,37 @@ const MapView = ({ ipsData, router }: { ipsData: NonNullable<LookIpsResponse["da
 
         userMarker = new mapboxgl.Marker({ element: userMarkerElement })
           .setLngLat([userLng, userLat])
-          .addTo(map);
+          .addTo(initializedMap);
       }
 
       recenterMap(userLng, userLat);
       addRoute(userLng, userLat);
     });
 
-    map.on("load", () => {
-      map.resize();
-      geolocate.trigger();
-    });
+    // Detectar el modo oscuro y ajustar el estilo del mapa
+    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleDarkModeChange = (e: MediaQueryListEvent) => {
+      initializedMap.setStyle(e.matches ? "mapbox://styles/mapbox/dark-v10" : "mapbox://styles/mapbox/streets-v12");
+    };
+    darkModeMediaQuery.addEventListener("change", handleDarkModeChange);
+    if (darkModeMediaQuery.matches) {
+      initializedMap.setStyle("mapbox://styles/mapbox/dark-v10");
+    }
 
     return () => {
-      map.remove();
+      initializedMap.remove();
       if (userMarker) userMarker.remove();
+      darkModeMediaQuery.removeEventListener("change", handleDarkModeChange);
     };
   }, [ipsData, router]);
 
   return (
-    <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+    <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
       <div id="map" className="w-full h-full" />
       {distance !== null && (
-        <div className="absolute top-4 left-4 bg-white p-3 rounded-lg shadow-md border border-gray-200 flex items-center space-x-2">
-          <MapPin className="w-5 h-5 text-blue-600" />
-          <span className="text-sm font-medium text-gray-800">
+        <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
+          <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
             {distance} km
           </span>
         </div>

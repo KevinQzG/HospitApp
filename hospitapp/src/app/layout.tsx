@@ -59,10 +59,10 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="HospitAPP" />
         <meta name="application-name" content="HospitAPP" />
       </head>
-      <body className="transition-colors duration-300 bg-[#ECF6FF] text-black dark:bg-[#0a0a0a] dark:text-white">
-        <Header />
+      <body className="min-h-screen bg-[#ECF6FF] text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
+      <Header />
         <main>{children}</main>
-        <Footer />
+        <Footer />  
         <PwaHandler />
         {/* Apply saved theme on first load */}
         <script

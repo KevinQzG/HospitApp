@@ -27,35 +27,38 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
 
     if (!response.ok) {
       const errorData: LookIpsResponse = await response.json();
-      error = errorData.error || "Failed to fetch IPS data";
+      error = errorData.error || "No se pudo obtener información de la IPS.";
     } else {
       const data: LookIpsResponse = await response.json();
       IPS_DATA = data.data;
       if (!IPS_DATA) {
-        error = "IPS not found";
+        error = "La IPS no fue encontrada.";
       }
     }
   } catch (err) {
-    error = err instanceof Error ? err.message : "Unknown error occurred";
+    error = err instanceof Error ? err.message : "Ocurrió un error desconocido.";
   }
 
   if (error || !IPS_DATA) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-900 sm:text-3xl">
-            {error ? "Error Loading IPS" : "IPS Not Found"}
+      <section className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 transition-colors">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2">
+            {error ? "Error al cargar la IPS" : "IPS no encontrada"}
           </h1>
-          <p className="mt-2 text-sm text-gray-500">{error || "No data available"}</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            {error || "No hay datos disponibles para esta IPS."}
+          </p>
+
           <Link
             href="/results"
-            className="mt-4 inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors duration-300"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow transition-all"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4" />
             Volver a resultados
           </Link>
         </div>
-      </div>
+      </section>
     );
   }
 
