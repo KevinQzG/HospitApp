@@ -27,7 +27,7 @@ export class EpsMongoRepository implements EpsRepositoryAdapter {
         @inject(TYPES.DBAdapter) private db_handler: DBAdapter<Db>
     ) { }
 
-    async find_all(): Promise<Eps[]> {
+    async findAll(): Promise<Eps[]> {
         // Get all the EPS Documents
         const _DB = await this.db_handler.connect();
         const _RESULTS = await _DB.collection<EpsDocument>('EPS').find().toArray();

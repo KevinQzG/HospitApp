@@ -11,5 +11,5 @@ export default interface EpsRepositoryAdapter {
      * @async
      * @returns {Promise<Eps[]>} 
      */
-    find_all(): Promise<Eps[]>;
+    findAll(): Promise<Eps[]>;
 }

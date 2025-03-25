@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
 import { EpsDocument } from '@/models/eps.interface';
 import { Eps } from '@/models/eps';
-import { EPSMapper } from '@/utils/mappers/eps_mapper';
+import { EpsMapper } from '@/utils/mappers/eps_mapper';
 
-describe('EPSMapper', () => {
-  const _SAMPLE_DOC: EpsDocument = {
+describe('EpsMapper', () => {
+  const SAMPLE_DOC: EpsDocument = {
     _id: new ObjectId('67b7885ec6dcb343450c057f'),
     name: 'Test EPS',
     '01_8000_phone': '1234567',
@@ -12,7 +12,7 @@ describe('EPSMapper', () => {
     emails: 'example@example.com  , example@example.com'
   };
 
-  const _AUTO_GENERATED_DOC: EpsDocument = {
+  const AUTO_GENERATED_DOC: EpsDocument = {
     _id: new ObjectId(),
     name: 'Auto-generated EPS',
     '01_8000_phone': '1234567',
@@ -24,33 +24,33 @@ describe('EPSMapper', () => {
   let doc: EpsDocument;
 
   it('should correctly map document to domain with full data', () => {
-    eps = EPSMapper.from_document_to_domain(_SAMPLE_DOC);
+    eps = EpsMapper.fromDocumentToDomain(SAMPLE_DOC);
     
-    expect(eps.get_id()).toEqual(_SAMPLE_DOC._id);
-    expect(eps.get_name()).toBe(_SAMPLE_DOC.name);
-    expect(eps.get_phone()).toBe(_SAMPLE_DOC['01_8000_phone']);
-    expect(eps.get_fax()).toBe(_SAMPLE_DOC.fax);
-    expect(eps.get_emails()).toBe(_SAMPLE_DOC.emails);
+    expect(eps.getId()).toEqual(SAMPLE_DOC._id);
+    expect(eps.getName()).toBe(SAMPLE_DOC.name);
+    expect(eps.getPhone()).toBe(SAMPLE_DOC['01_8000_phone']);
+    expect(eps.getFax()).toBe(SAMPLE_DOC.fax);
+    expect(eps.getEmails()).toBe(SAMPLE_DOC.emails);
   });
 
   it('should handle auto-generated ID in document to domain mapping', () => {
-    eps = EPSMapper.from_document_to_domain(_AUTO_GENERATED_DOC);
+    eps = EpsMapper.fromDocumentToDomain(AUTO_GENERATED_DOC);
     
-    expect(eps.get_id()).toBeInstanceOf(ObjectId);
-    expect(eps.get_name()).toBe(_AUTO_GENERATED_DOC.name);
+    expect(eps.getId()).toBeInstanceOf(ObjectId);
+    expect(eps.getName()).toBe(AUTO_GENERATED_DOC.name);
   });
 
   it('should correctly map domain to document with provided ID', () => {
-    eps = new Eps(_SAMPLE_DOC._id, _SAMPLE_DOC.name, _SAMPLE_DOC['01_8000_phone'], _SAMPLE_DOC.fax, _SAMPLE_DOC.emails);
-    doc = EPSMapper.from_domain_to_document(eps);
+    eps = new Eps(SAMPLE_DOC._id, SAMPLE_DOC.name, SAMPLE_DOC['01_8000_phone'], SAMPLE_DOC.fax, SAMPLE_DOC.emails);
+    doc = EpsMapper.fromDomainToDocument(eps);
     
-    expect(doc).toEqual(_SAMPLE_DOC);
-    expect(doc._id.equals(_SAMPLE_DOC._id)).toBe(true);
+    expect(doc).toEqual(SAMPLE_DOC);
+    expect(doc._id.equals(SAMPLE_DOC._id)).toBe(true);
   });
 
   it('should handle auto-generated ID in domain to document mapping', () => {
     eps = new Eps(undefined, 'New EPS', '1234567', '7654321', 'eexample@example.com');
-    doc = EPSMapper.from_domain_to_document(eps);
+    doc = EpsMapper.fromDomainToDocument(eps);
     
     expect(doc._id).toBeInstanceOf(ObjectId);
     expect(doc.name).toBe('New EPS');
@@ -61,11 +61,11 @@ describe('EPSMapper', () => {
 
   it('should maintain data integrity in both directions', () => {
     // Document -> Domain
-    const _DOMAIN_EPS = EPSMapper.from_document_to_domain(_SAMPLE_DOC);
+    const DOMAIN_EPS = EpsMapper.fromDocumentToDomain(SAMPLE_DOC);
     
     // Domain -> Document
-    const _NEW_DOC = EPSMapper.from_domain_to_document(_DOMAIN_EPS);
+    const NEW_DOC = EpsMapper.fromDomainToDocument(DOMAIN_EPS);
     
-    expect(_NEW_DOC).toEqual(_SAMPLE_DOC);
+    expect(NEW_DOC).toEqual(SAMPLE_DOC);
   });
 });

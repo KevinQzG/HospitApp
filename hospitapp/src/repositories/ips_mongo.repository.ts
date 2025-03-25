@@ -28,7 +28,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
         @inject(TYPES.DBAdapter) private db_handler: DBAdapter<Db>
     ) { }
 
-    async find_all_by_distance_specialty_eps(
+    async findAllByDistanceSpecialtyEps(
         longitude: number | null,
         latitude: number | null,
         max_distance: number | null,
@@ -39,10 +39,10 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
     ): Promise<{ results: Ips[]; total: number }> {
         // Build the pipeline
         const _PIPELINE = new IpsPipelineBuilder()
-            .add_geo_stage(longitude, latitude, max_distance)
-            .matches_specialties(specialties)
-            .matches_eps(eps_names)
-            .with_pagination(page, page_size)
+            .addGeoStage(longitude, latitude, max_distance)
+            .matchesSpecialties(specialties)
+            .matchesEps(eps_names)
+            .withPagination(page, page_size)
             .build();
 
         // Execute the pipeline
@@ -66,12 +66,12 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
         };
     }
 
-    async find_by_name(name: string): Promise<Ips | null> {
+    async findByName(name: string): Promise<Ips | null> {
         // Build the pipeline
         const _PIPELINE = new IpsPipelineBuilder()
-            .add_match_name_stage(name)
-            .with_eps()
-            .with_specialties()
+            .addMatchNameStage(name)
+            .withEps()
+            .withSpecialties()
             .build();
 
         // Execute the pipeline

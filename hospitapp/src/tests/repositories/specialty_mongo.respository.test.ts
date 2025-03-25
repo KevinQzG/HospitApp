@@ -1,29 +1,29 @@
 import { ObjectId } from 'mongodb';
 import DBAdapter from '@/adapters/db.adapter';
 import SpecialtyRepositoryAdapter from '@/adapters/specialty_repository.adapter';
-import _CONTAINER from '@/adapters/container';
-import { _TYPES } from '@/adapters/types';
+import CONTAINER from '@/adapters/container';
+import { TYPES } from '@/adapters/types';
 import { Specialty } from '@/models/specialty';
 
 describe('SpecialtyMongoRepository Integration Test', () => {
-    let db_handler: DBAdapter;
+    let dbHandler: DBAdapter;
     let repository: SpecialtyRepositoryAdapter;
 
     let results: Specialty[];
 
     beforeAll(async () => {
-        db_handler = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
-        repository = _CONTAINER.get<SpecialtyRepositoryAdapter>(_TYPES.SpecialtyRepositoryAdapter);
-        await db_handler.connect();
+        dbHandler = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
+        repository = CONTAINER.get<SpecialtyRepositoryAdapter>(TYPES.SpecialtyRepositoryAdapter);
+        await dbHandler.connect();
     });
 
     afterAll(async () => {
-        await db_handler.close();
+        await dbHandler.close();
     });
 
     describe('find_all', () => {
         it('should retrieve all Specialty documents', async () => {
-            results = await repository.find_all();
+            results = await repository.findAll();
 
             // Verify total count
             expect(results).toHaveLength(138);
@@ -35,15 +35,15 @@ describe('SpecialtyMongoRepository Integration Test', () => {
         });
 
         it('should return correct EPS document structure', async () => {
-            results = await repository.find_all();
-            const _SAMPLE_EPS = results[0];
+            results = await repository.findAll();
+            const SAMPLE_EPS = results[0];
 
-            const _EXPECTED_DATA = {
+            const EXPECTED_DATA = {
                 _id: new ObjectId("67b3e928b1ae5d9e47ae7224"),
                 name: "ENFERMERÍA",
             };
 
-            expect(_SAMPLE_EPS.to_object()).toMatchObject(_EXPECTED_DATA);
+            expect(SAMPLE_EPS.toObject()).toMatchObject(EXPECTED_DATA);
         });
     });
 });

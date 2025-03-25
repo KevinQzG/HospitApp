@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { IpsDocument, IpsResponse } from "@/models/ips.interface";
 import { Ips } from "@/models/ips";
 import { EpsMapper } from './eps_mapper';
-import { specialtyMapper } from './specialty_mapper';
+import { SpecialtyMapper } from './specialty_mapper';
 
 /**
  * Class that allows to map IPS entities from domain to document and vice versa.
@@ -27,7 +27,7 @@ export class IpsMapper {
             raw.level,
             raw.distance,
             raw.eps?.map(EpsMapper.fromDocumentToDomain),
-            raw.specialties?.map(specialtyMapper.fromDocumentToDomain)
+            raw.specialties?.map(SpecialtyMapper.fromDocumentToDomain)
         );
     }
 
@@ -38,18 +38,18 @@ export class IpsMapper {
      */
     static fromDomainToDocument(ips: Ips): IpsDocument {
         return {
-            _id: ips.get_id(),
-            name: ips.get_name(),
-            department: ips.get_department(),
-            town: ips.get_town(),
-            address: ips.get_address(),
-            phone: ips.get_phone(),
-            email: ips.get_email(),
-            location: ips.get_location(),
-            level: ips.get_level(),
-            distance: ips.get_distance(),
-            eps: ips.get_eps()?.map(EpsMapper.fromDomainToDocument),
-            specialties: ips.get_specialties()?.map(specialtyMapper.fromDomainToDocument)
+            _id: ips.getId(),
+            name: ips.getName(),
+            department: ips.getDepartment(),
+            town: ips.getTown(),
+            address: ips.getAddress(),
+            phone: ips.getPhone(),
+            email: ips.getEmail(),
+            location: ips.getLocation(),
+            level: ips.getLevel(),
+            distance: ips.getDistance(),
+            eps: ips.getEps()?.map(EpsMapper.fromDomainToDocument),
+            specialties: ips.getSpecialties()?.map(SpecialtyMapper.fromDomainToDocument)
         };
     }
 
@@ -71,7 +71,7 @@ export class IpsMapper {
             raw.level,
             raw.distance,
             raw.eps?.map(EpsMapper.fromResponseToDomain),
-            raw.specialties?.map(specialtyMapper.fromResponseToDomain)
+            raw.specialties?.map(SpecialtyMapper.fromResponseToDomain)
         );
     }
 
@@ -82,18 +82,18 @@ export class IpsMapper {
      */
     static fromDomainToResponse(ips: Ips): IpsResponse {
         return {
-            _id: ips.get_id().toHexString(),
-            name: ips.get_name(),
-            department: ips.get_department(),
-            town: ips.get_town(),
-            address: ips.get_address(),
-            phone: ips.get_phone(),
-            email: ips.get_email(),
-            location: ips.get_location(),
-            level: ips.get_level(),
-            distance: ips.get_distance(),
-            eps: ips.get_eps()?.map(EpsMapper.fromDomainToResponse),
-            specialties: ips.get_specialties()?.map(specialtyMapper.fromDomainToResponse)
+            _id: ips.getId().toHexString(),
+            name: ips.getName(),
+            department: ips.getDepartment(),
+            town: ips.getTown(),
+            address: ips.getAddress(),
+            phone: ips.getPhone(),
+            email: ips.getEmail(),
+            location: ips.getLocation(),
+            level: ips.getLevel(),
+            distance: ips.getDistance(),
+            eps: ips.getEps()?.map(EpsMapper.fromDomainToResponse),
+            specialties: ips.getSpecialties()?.map(SpecialtyMapper.fromDomainToResponse)
         };
     }
 }

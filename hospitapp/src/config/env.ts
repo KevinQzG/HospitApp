@@ -20,8 +20,8 @@ interface EnvironmentVariables {
  * @returns {EnvironmentVariables} An object containing all validated environment variables.
  * @throws {Error} If any required environment variable is missing.
  */
-const validate_env = (): EnvironmentVariables => {
-  const _ENV = {
+const validateEnv = (): EnvironmentVariables => {
+  const ENV = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     DATABASE_URL: process.env.DATABASE_URL,
@@ -30,13 +30,13 @@ const validate_env = (): EnvironmentVariables => {
   };
 
   // Check for missing required variables
-  for (const [_KEY, _VALUE] of Object.entries(_ENV)) {
-    if (!_VALUE) {
-      throw new Error(`Missing environment variable: ${_KEY}`);
+  for (const [KEY, VALUE] of Object.entries(ENV)) {
+    if (!VALUE) {
+      throw new Error(`Missing environment variable: ${KEY}`);
     }
   }
 
-  return _ENV as EnvironmentVariables;
+  return ENV as EnvironmentVariables;
 };
 
 /**
@@ -44,4 +44,4 @@ const validate_env = (): EnvironmentVariables => {
  * @constant _ENV
  * @type {EnvironmentVariables}
  */
-export const _ENV = validate_env();
+export const ENV = validateEnv();

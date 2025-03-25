@@ -5,7 +5,7 @@ import { TYPES } from "@/adapters/types";
 import { SpecialtyDocument } from "@/models/specialty.interface";
 import { Specialty } from "@/models/specialty";
 import type DBAdapter from "@/adapters/db.adapter";
-import { specialtyMapper } from "@/utils/mappers/specialty_mapper";
+import { SpecialtyMapper } from "@/utils/mappers/specialty_mapper";
 // import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
 
 /**
@@ -27,7 +27,7 @@ export class SpecialtyMongoRepository implements SpecialtyRepositoryAdapter {
         @inject(TYPES.DBAdapter) private db_handler: DBAdapter<Db>
     ) { }
 
-    async find_all(): Promise<Specialty[]> {
+    async findAll(): Promise<Specialty[]> {
         // Get all the EPS Documents
         const _DB = await this.db_handler.connect();
         const _RESULTS = await _DB.collection<SpecialtyDocument>('Specialty').find().toArray();
@@ -37,6 +37,6 @@ export class SpecialtyMongoRepository implements SpecialtyRepositoryAdapter {
         }
 
         // Map the results to EPS entities
-        return _RESULTS.map(specialtyMapper.fromDocumentToDomain);
+        return _RESULTS.map(SpecialtyMapper.fromDocumentToDomain);
     }
 }

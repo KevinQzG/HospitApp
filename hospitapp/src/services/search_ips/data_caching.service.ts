@@ -5,7 +5,7 @@ import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
 import { TYPES } from "@/adapters/types";
 import { SpecialtyResponse } from '@/models/specialty.interface';
 import { EpsResponse } from '@/models/eps.interface';
-import { _ENV } from '@/config/env';
+import { ENV } from '@/config/env';
 
 export interface SearchFormClientProps {
     specialties: SpecialtyResponse[];
@@ -24,8 +24,8 @@ export const get_search_ips_cached_props = cache(
 
             // Fetch the data
             const _RESULTS = {
-                specialties: await SEARCH_IPS_SERVICE.get_all_specialties(),
-                eps: await SEARCH_IPS_SERVICE.get_all_eps()
+                specialties: await SEARCH_IPS_SERVICE.getAllSpecialties(),
+                eps: await SEARCH_IPS_SERVICE.getAllEps()
             }
 
             // Close the database connection and return the results
@@ -40,5 +40,5 @@ export const get_search_ips_cached_props = cache(
         }
     },
     [CACHE_TAG],
-    { revalidate: _ENV.CACHE_TTL, tags: [CACHE_TAG] }
+    { revalidate: ENV.CACHE_TTL, tags: [CACHE_TAG] }
 )

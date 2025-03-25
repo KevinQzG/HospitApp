@@ -34,29 +34,29 @@ export class SearchIpsMongoService implements SearchIpsServiceAdapter {
     ) { }
 
     async filter_ips(longitude: number | null, latitude: number | null, max_distance: number | null, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IpsResponse[]; total: number; }> {
-        const _RESULTS = await this.ips_repository.find_all_by_distance_specialty_eps(longitude, latitude, max_distance, specialties, eps_names, page, page_size);
+        const _RESULTS = await this.ips_repository.findAllByDistanceSpecialtyEps(longitude, latitude, max_distance, specialties, eps_names, page, page_size);
 
         return {
-            results: _RESULTS.results.map(ips => {return ips.to_response();}),
+            results: _RESULTS.results.map(ips => {return ips.toResponse();}),
             total: _RESULTS.total
         };
     }
 
-    async get_all_specialties(): Promise<SpecialtyResponse[]> {
-        const _SPECIALTIES = await this.specialty_repository.find_all();
-        return _SPECIALTIES.map(specialty => {return specialty.to_response();});
+    async getAllSpecialties(): Promise<SpecialtyResponse[]> {
+        const _SPECIALTIES = await this.specialty_repository.findAll();
+        return _SPECIALTIES.map(specialty => {return specialty.toResponse();});
     }
 
-    async get_all_eps(): Promise<EpsResponse[]> {
-        const _EPS = await this.eps_repository.find_all();
-        return _EPS.map(eps => {return eps.to_response();});
+    async getAllEps(): Promise<EpsResponse[]> {
+        const _EPS = await this.eps_repository.findAll();
+        return _EPS.map(eps => {return eps.toResponse();});
     }
 
-    async get_ips_by_name(name: string): Promise<IpsResponse | null> {
-        const _IPS = await this.ips_repository.find_by_name(name);
+    async getIpsByName(name: string): Promise<IpsResponse | null> {
+        const _IPS = await this.ips_repository.findByName(name);
         if (!_IPS) {
             return null;
         }
-        return _IPS.to_response();
+        return _IPS.toResponse();
     }
 }

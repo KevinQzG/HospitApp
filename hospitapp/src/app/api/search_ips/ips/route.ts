@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { IpsResponse } from "@/models/ips.interface";
-import { get_ips_props } from '@/services/search_ips/data_fetching.service';
+import { getIpsProps } from '@/services/search_ips/data_fetching.service';
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
 /**
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<LookIpsRespon
             return NextResponse.json({ success: false, error: ERROR }, { status: 400 });
         }
 
-        const IPS = await get_ips_props({ name: BODY.name });
+        const IPS = await getIpsProps({ name: BODY.name });
 
         if (!IPS) {
             return NextResponse.json({ success: false, error: "IPS not found" }, { status: 404 });

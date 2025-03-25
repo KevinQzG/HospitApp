@@ -1,6 +1,6 @@
 import { MongoClient, Db } from 'mongodb';
 import DBAdapter from '@/adapters/db.adapter';
-import { _ENV } from './env';
+import { ENV } from './env';
 import { injectable } from "inversify";
 
 /**
@@ -25,7 +25,7 @@ class MongoDB implements DBAdapter<Db> {
 
     try {
       // Create a new MongoDB client
-      this.client = new MongoClient(_ENV.DATABASE_URL, {
+      this.client = new MongoClient(ENV.DATABASE_URL, {
         maxPoolSize: 10,
         minPoolSize: 2,
         serverSelectionTimeoutMS: 5000,
@@ -39,7 +39,7 @@ class MongoDB implements DBAdapter<Db> {
       console.log('Connected to MongoDB');
 
       // Get the database instance
-      this.db = this.client.db(_ENV.DATABASE_NAME);
+      this.db = this.client.db(ENV.DATABASE_NAME);
       return this.db;
     } catch (error) {
       console.error('Failed to connect to MongoDB:', error);

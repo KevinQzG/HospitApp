@@ -1,85 +1,85 @@
 import { ObjectId } from 'mongodb';
 import DBAdapter from '@/adapters/db.adapter';
 import IpsRepositoryAdapter from '@/adapters/ips_repository.adapter';
-import _CONTAINER from '@/adapters/container';
-import { _TYPES } from '@/adapters/types';
+import CONTAINER from '@/adapters/container';
+import { TYPES } from '@/adapters/types';
 import { Ips } from '@/models/ips';
 
 describe('IpsMongoRepository Integration Test', () => {
-  let db_handler: DBAdapter;
+  let dbHandler: DBAdapter;
   let repository: IpsRepositoryAdapter;
 
   beforeAll(async () => {
     // Initialize dependencies from container
-    db_handler = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
-    repository = _CONTAINER.get<IpsRepositoryAdapter>(_TYPES.IpsRepositoryAdapter);
+    dbHandler = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
+    repository = CONTAINER.get<IpsRepositoryAdapter>(TYPES.IpsRepositoryAdapter);
 
     // Establish database connection
-    await db_handler.connect();
+    await dbHandler.connect();
   });
 
   afterAll(async () => {
-    await db_handler.close();
+    await dbHandler.close();
   });
 
   describe('find_all_by_distance_specialty_eps', () => {
-    const _TEST_COORDINATES = [-75.63813564857911, 6.133477697463028];
-    let test_specialties = ["ENFERMERÍA", "CARDIOLOGÍA"];
-    let test_eps_names = ["SALUDCOOP EPS-C", "ECOOPSOS EPS-S"];
-    const _MAX_DISTANCE_METERS = 5000; // 5km
-    const _EXPECTED_IPS_ID = new ObjectId("67b3e98bb1ae5d9e47ae7a07");
+    const TEST_COORDINATES = [-75.63813564857911, 6.133477697463028];
+    let testSpecialties = ["ENFERMERÍA", "CARDIOLOGÍA"];
+    let testEpsNames = ["SALUDCOOP EPS-C", "ECOOPSOS EPS-S"];
+    const MAX_DISTANCE_METERS = 5000; // 5km
+    const EXPECTED_IPS_ID = new ObjectId("67b3e98bb1ae5d9e47ae7a07");
 
     it('should retrieve the all the IPS that matches without the coordinates', async () => {
-      const { results: _RESULTS, total: _TOTAL } = await repository.find_all_by_distance_specialty_eps(
+      const { results: RESULTS, total: TOTAL } = await repository.findAllByDistanceSpecialtyEps(
         null,
         null,
         null,
-        test_specialties,
-        test_eps_names,
+        testSpecialties,
+        testEpsNames,
         1,
         10
       );
 
-      expect(_RESULTS).toHaveLength(10);
-      expect(_TOTAL).toBeGreaterThan(0);
-      expect(_TOTAL).toBe(110);
+      expect(RESULTS).toHaveLength(10);
+      expect(TOTAL).toBeGreaterThan(0);
+      expect(TOTAL).toBe(110);
     });
 
     it('should retrieve exactly one matching IPS with correct data', async () => {
-      const { results: _RESULTS } = await repository.find_all_by_distance_specialty_eps(
-        _TEST_COORDINATES[0],
-        _TEST_COORDINATES[1],
-        _MAX_DISTANCE_METERS,
-        test_specialties,
-        test_eps_names,
+      const { results: RESULTS } = await repository.findAllByDistanceSpecialtyEps(
+        TEST_COORDINATES[0],
+        TEST_COORDINATES[1],
+        MAX_DISTANCE_METERS,
+        testSpecialties,
+        testEpsNames,
         1,
         10
       );
 
-      expect(_RESULTS).toHaveLength(1);
+      expect(RESULTS).toHaveLength(1);
 
-      const _IPS = _RESULTS[0];
-      expect(_IPS.get_id()).toEqual(_EXPECTED_IPS_ID);
-      expect(_IPS.get_name()).toBe('ESE HOSPITAL VENANCIO DIAZ DIAZ');
-      expect(_IPS.get_department()).toBe('ANTIOQUIA');
-      expect(_IPS.get_town()).toBe('SABANETA');
-      expect(_IPS.get_distance()).toBeCloseTo(2415.089412549286, 4);
+      const IPS = RESULTS[0];
+      expect(IPS.getId()).toEqual(EXPECTED_IPS_ID);
+      expect(IPS.getName()).toBe('ESE HOSPITAL VENANCIO DIAZ DIAZ');
+      expect(IPS.getDepartment()).toBe('ANTIOQUIA');
+      expect(IPS.getTown()).toBe('SABANETA');
+      expect(IPS.getDistance()).toBeCloseTo(2415.089412549286, 4);
     });
 
     it('should validate complete IPS document structure', async () => {
-      const { results: _RESULTS } = await repository.find_all_by_distance_specialty_eps(
-        _TEST_COORDINATES[0],
-        _TEST_COORDINATES[1],
-        _MAX_DISTANCE_METERS,
-        test_specialties,
-        test_eps_names,
+      const { results: RESULTS } = await repository.findAllByDistanceSpecialtyEps(
+        TEST_COORDINATES[0],
+        TEST_COORDINATES[1],
+        MAX_DISTANCE_METERS,
+        testSpecialties,
+        testEpsNames,
         1,
         10
       );
 
-      const [_IPS] = _RESULTS;
-      const _EXPECTED_DATA = {
-        _id: _EXPECTED_IPS_ID,
+      const [IPS] = RESULTS;
+      const EXPECTED_DATA = {
+        _id: EXPECTED_IPS_ID,
         name: 'ESE HOSPITAL VENANCIO DIAZ DIAZ',
         department: 'ANTIOQUIA',
         town: 'SABANETA',
@@ -94,68 +94,68 @@ describe('IpsMongoRepository Integration Test', () => {
         distance: 2415.089412549286
       };
 
-      expect(_IPS.to_object()).toMatchObject({
-        ..._EXPECTED_DATA,
-        distance: expect.closeTo(_EXPECTED_DATA.distance, 4)
+      expect(IPS.toObject()).toMatchObject({
+        ...EXPECTED_DATA,
+        distance: expect.closeTo(EXPECTED_DATA.distance, 4)
       });
     });
 
     it('should validate geospatial query accuracy', async () => {
-      const { results: _RESULTS } = await repository.find_all_by_distance_specialty_eps(
-        _TEST_COORDINATES[0],
-        _TEST_COORDINATES[1],
-        _MAX_DISTANCE_METERS,
-        test_specialties,
-        test_eps_names,
+      const { results: RESULTS } = await repository.findAllByDistanceSpecialtyEps(
+        TEST_COORDINATES[0],
+        TEST_COORDINATES[1],
+        MAX_DISTANCE_METERS,
+        testSpecialties,
+        testEpsNames,
         1,
         10
       );
 
-      const [_IPS] = _RESULTS;
+      const [IPS] = RESULTS;
 
       // Validate coordinates precision
-      expect(_IPS.get_location().coordinates[0]).toBeCloseTo(-75.6221158, 7);
-      expect(_IPS.get_location().coordinates[1]).toBeCloseTo(6.1482081, 7);
+      expect(IPS.getLocation().coordinates[0]).toBeCloseTo(-75.6221158, 7);
+      expect(IPS.getLocation().coordinates[1]).toBeCloseTo(6.1482081, 7);
 
       // Validate distance calculation
-      expect(_IPS.get_distance()).toBeGreaterThan(2400);
-      expect(_IPS.get_distance()).toBeLessThan(2500);
+      expect(IPS.getDistance()).toBeGreaterThan(2400);
+      expect(IPS.getDistance()).toBeLessThan(2500);
     });
 
     // New test for pagination
     it('should return correct pagination metadata', async () => {
-      const _PAGE_SIZE = 1;
-      const { results: _RESULTS, total: _TOTAL } = await repository.find_all_by_distance_specialty_eps(
-        _TEST_COORDINATES[0],
-        _TEST_COORDINATES[1],
-        _MAX_DISTANCE_METERS,
-        test_specialties,
-        test_eps_names,
+      const PAGE_SIZE = 1;
+      const { results: RESULTS, total: TOTAL } = await repository.findAllByDistanceSpecialtyEps(
+        TEST_COORDINATES[0],
+        TEST_COORDINATES[1],
+        MAX_DISTANCE_METERS,
+        testSpecialties,
+        testEpsNames,
         1,
-        _PAGE_SIZE
+        PAGE_SIZE
       );
 
-      expect(_RESULTS).toHaveLength(_PAGE_SIZE);
-      expect(_TOTAL).toBeGreaterThan(0);
-      expect(_TOTAL).toBe(1);
+      expect(RESULTS).toHaveLength(PAGE_SIZE);
+      expect(TOTAL).toBeGreaterThan(0);
+      expect(TOTAL).toBe(1);
     });
 
     it('should return correct data', async () => {
-      test_specialties = ["ENFERMERÍA", "CARDIOLOGÍA", "CIRUGÍA DE MANO"];
-      test_eps_names = [];
-      const _PAGE_SIZE = 10;
-      const { results: _RESULTS, total: _TOTAL } = await repository.find_all_by_distance_specialty_eps(
-        _TEST_COORDINATES[0],
-        _TEST_COORDINATES[1],
-        _MAX_DISTANCE_METERS,
-        test_specialties,
-        test_eps_names,
+      testSpecialties = ["ENFERMERÍA", "CARDIOLOGÍA", "CIRUGÍA DE MANO"];
+      testEpsNames = [];
+      const PAGE_SIZE = 10;
+      const { results: RESULTS, total: TOTAL } = await repository.findAllByDistanceSpecialtyEps(
+        TEST_COORDINATES[0],
+        TEST_COORDINATES[1],
+        MAX_DISTANCE_METERS,
+        testSpecialties,
+        testEpsNames,
         1,
-        _PAGE_SIZE
+        PAGE_SIZE
       );
 
-      const _IPS = _RESULTS[3];
-      const _EXPECTED_DATA = {
+      const IPS = RESULTS[3];
+      const EXPECTED_DATA = {
         _id: new ObjectId("67b3e98bb1ae5d9e47ae747c"),
         name: 'CIS LA ESTRELLA CENTRAL DE SERVICIOS SUR',
         department: 'ANTIOQUIA',
@@ -170,35 +170,35 @@ describe('IpsMongoRepository Integration Test', () => {
         distance: 2566.342006462017
       };
 
-      expect(_IPS.to_object()).toMatchObject({
-        ..._EXPECTED_DATA,
-        distance: expect.closeTo(_EXPECTED_DATA.distance, 4)
+      expect(IPS.toObject()).toMatchObject({
+        ...EXPECTED_DATA,
+        distance: expect.closeTo(EXPECTED_DATA.distance, 4)
       });
 
-      expect(_RESULTS).toHaveLength(_PAGE_SIZE);
-      expect(_TOTAL).toBeGreaterThan(0);
-      expect(_TOTAL).toBe(24);
+      expect(RESULTS).toHaveLength(PAGE_SIZE);
+      expect(TOTAL).toBeGreaterThan(0);
+      expect(TOTAL).toBe(24);
     });
   });
 
   describe('find_by_name', () => {
-    const _EXPECTED_IPS_NAME = "INSTITUTO DEL CORAZON SEDE CENTRO";
+    const EXPECTED_IPS_NAME = "INSTITUTO DEL CORAZON SEDE CENTRO";
     let ips: Ips | null;
 
     it('should retrieve exactly one matching IPS with correct data', async () => {
-      ips = await repository.find_by_name(_EXPECTED_IPS_NAME);
+      ips = await repository.findByName(EXPECTED_IPS_NAME);
 
-      expect(ips?.get_name()).toBe(_EXPECTED_IPS_NAME);
-      expect(ips?.get_department()).toBe('ANTIOQUIA');
-      expect(ips?.get_town()).toBe('MEDELLÍN');
+      expect(ips?.getName()).toBe(EXPECTED_IPS_NAME);
+      expect(ips?.getDepartment()).toBe('ANTIOQUIA');
+      expect(ips?.getTown()).toBe('MEDELLÍN');
     });
 
     it('should validate complete IPS document structure', async () => {
-      ips = await repository.find_by_name(_EXPECTED_IPS_NAME);
+      ips = await repository.findByName(EXPECTED_IPS_NAME);
 
-      const _EXPECTED_DATA = {
+      const EXPECTED_DATA = {
         _id: new ObjectId('67b3e98bb1ae5d9e47ae72a8'),
-        name: _EXPECTED_IPS_NAME,
+        name: EXPECTED_IPS_NAME,
         department: 'ANTIOQUIA',
         town: 'MEDELLÍN',
         address: 'CALLE 54 # 49-69',
@@ -320,7 +320,7 @@ describe('IpsMongoRepository Integration Test', () => {
 
       };
 
-      expect(ips?.to_object()).toMatchObject(_EXPECTED_DATA);
+      expect(ips?.toObject()).toMatchObject(EXPECTED_DATA);
     });
 
   });

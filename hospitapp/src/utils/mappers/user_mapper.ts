@@ -35,12 +35,12 @@ export class UserMapper {
 
     static fromDomainToDocument(user: User): UserDocument {
         return {
-            _id: user.get_id(),
-            phone: user.get_phone(),
-            email: user.get_email(),
-            password: user.get_password(),
-            role: user.get_role(),
-            eps: user.get_eps()
+            _id: user.getId(),
+            phone: user.getPhone(),
+            email: user.getEmail(),
+            password: user.getPassword(),
+            role: user.getRole(),
+            eps: user.getEps()
         };
     }
 
@@ -67,12 +67,12 @@ export class UserMapper {
      */
     static fromDomainToResponse(user: User): UserResponse {
         return {
-            _id: user.get_id().toHexString(),
-            phone: user.get_phone(),
-            email: user.get_email(),
-            password: user.get_password(),
-            role: user.get_role(),
-            eps: user.get_eps()
+            _id: user.getId().toHexString(),
+            phone: user.getPhone(),
+            email: user.getEmail(),
+            password: user.getPassword(),
+            role: user.getRole(),
+            eps: user.getEps()
         };
     }
 }
