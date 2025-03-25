@@ -30,7 +30,7 @@
     "lucide-react": "^0.477.0",
     "mapbox-gl": "^3.10.0",
     "mongodb": "^6.13.1",
-    "next": "^15.1.7",
+    "next": "^15.2.2",
     "next-i18next": "^15.4.2",
     "next-pwa": "^5.6.0",
     "react-bootstrap": "^2.10.9",
