@@ -91,7 +91,7 @@ export class Ips {
      * Converts the IPS entity to a plain object.
      * @returns {IpsDocument} A plain object representation of the IPS.
      */
-    to_object(): IpsDocument {
+    toObject(): IpsDocument {
         return IpsMapper.fromDomainToDocument(this);
     }
 
@@ -99,7 +99,7 @@ export class Ips {
      * Converts the IPS entity to a plain response object.
      * @returns {IpsResponse} A plain response object representation of the IPS.
      */
-    to_response(): IpsResponse {
+    toResponse(): IpsResponse {
         return IpsMapper.fromDomainToResponse(this);
     }    
 
@@ -107,7 +107,7 @@ export class Ips {
      * Gets the unique identifier of the IPS.
      * @returns {ObjectId} The unique identifier of the IPS.
      */
-    get_id(): ObjectId {
+    getId(): ObjectId {
         return this._id;
     }
 
@@ -115,7 +115,7 @@ export class Ips {
      * Gets the name of the IPS.
      * @returns {string} The name of the IPS.
      */
-    get_name(): string {
+    getName(): string {
         return this.name;
     }
 
@@ -123,7 +123,7 @@ export class Ips {
      * Gets the department where the IPS is located.
      * @returns {string} The department where the IPS is located.
      */
-    get_department(): string {
+    getDepartment(): string {
         return this.department;
     }
 
@@ -131,7 +131,7 @@ export class Ips {
      * Gets the town where the IPS is located.
      * @returns {string} The town where the IPS is located.
      */
-    get_town(): string {
+    getTown(): string {
         return this.town;
     }
 
@@ -139,7 +139,7 @@ export class Ips {
      * Gets the address of the IPS.
      * @returns {string} The address of the IPS.
      */
-    get_address(): string {
+    getAddress(): string {
         return this.address;
     }
 
@@ -147,7 +147,7 @@ export class Ips {
      * Gets the phone number of the IPS.
      * @returns {string | number | undefined} The phone number of the IPS.
      */
-    get_phone(): string | number | undefined{
+    getPhone(): string | number | undefined{
         return this.phone;
     }
 
@@ -155,7 +155,7 @@ export class Ips {
      * Gets the email of the IPS.
      * @returns {string | undefined} The email of the IPS.
      */
-    get_email(): string | undefined {
+    getEmail(): string | undefined {
         return this.email;
     }
 
@@ -165,7 +165,7 @@ export class Ips {
      * @property {string} type - The type of location.
      * @property {[number, number]} coordinates - The coordinates of the IPS.
      */
-    get_location(): {
+    getLocation(): {
         type: string;
         coordinates: [number, number];
     } {
@@ -176,7 +176,7 @@ export class Ips {
      * Gets the level of the IPS.
      * @returns {number | undefined} The level of the IPS.
      */
-    get_level(): number | undefined {
+    getLevel(): number | undefined {
         return this.level;
     }
 
@@ -184,7 +184,7 @@ export class Ips {
      * Gets the distance from the IPS to the user.
      * @returns {number | undefined} The distance from the IPS to the user.
      */
-    get_distance(): number | undefined {
+    getDistance(): number | undefined {
         return this.distance;
     }
 
@@ -192,7 +192,7 @@ export class Ips {
      * Gets the EPS entities associated with the IPS.
      * @returns {Eps[] | undefined} The EPS entities associated with the IPS.
      */
-    get_eps(): Eps[] | undefined {
+    getEps(): Eps[] | undefined {
         return this.eps;
     }
 
@@ -200,7 +200,7 @@ export class Ips {
      * Gets the Specialty entities associated with the IPS.
      * @returns {Specialty[] | undefined} The Specialty entities associated with the IPS.
      */
-    get_specialties(): Specialty[] | undefined {
+    getSpecialties(): Specialty[] | undefined {
         return this.specialties;
     }
 
@@ -211,7 +211,7 @@ export class Ips {
      * 
      * @throws {Error} If the Specialty entity is invalid.
      */
-    add_specialty(specialty: Specialty): void {
+    addSpecialty(specialty: Specialty): void {
         if (!specialty) {
             throw new Error('Invalid Specialty entity');
         }
@@ -228,7 +228,7 @@ export class Ips {
      *  
      * @throws {Error} If the EPS entity is invalid.
      */
-    add_eps(eps: Eps): void {
+    addEps(eps: Eps): void {
         if (!eps) {
             throw new Error('Invalid EPS entity');
         }
@@ -242,7 +242,7 @@ export class Ips {
      * Sets the distance from the IPS to the user.
      * @param {number} distance - The distance from the IPS to the user.
      */
-    set_distance(distance: number): void {
+    setDistance(distance: number): void {
         this.distance = distance;
     }
 
@@ -251,7 +251,7 @@ export class Ips {
      * 
      * @param {string} phone - The phone number of the IPS.
      */
-    set_phone(phone: string): void {
+    setPhone(phone: string): void {
         this.phone = phone;
     }
 
@@ -260,7 +260,7 @@ export class Ips {
      * 
      * @param {string} email - The email of the IPS.
      */
-    set_email(email: string): void {
+    setEmail(email: string): void {
         this.email = email;
     }
 
@@ -271,7 +271,7 @@ export class Ips {
      * 
      * @throws {Error} If the level is invalid.
      */
-    set_level(level: number): void {
+    setLevel(level: number): void {
         if (level < 0) {
             throw new Error('Invalid level');
         }
@@ -285,7 +285,7 @@ export class Ips {
      * @param {string} location.type - The type of location.
      * @param {[number, number]} location.coordinates - The coordinates of the IPS.
      */
-    set_location(location: {
+    setLocation(location: {
         type: string;
         coordinates: [number, number];
     }): void {
@@ -304,7 +304,7 @@ export class Ips {
      * 
      * @throws {Error} If the address is invalid.
      */
-    set_address(address: string): void {
+    setAddress(address: string): void {
         this.address = address;
         this.validate();
     }
@@ -316,7 +316,7 @@ export class Ips {
      * 
      * @throws {Error} If the town is invalid.
      */
-    set_town(town: string): void {
+    setTown(town: string): void {
         this.town = town;
         this.validate();
     }
@@ -328,7 +328,7 @@ export class Ips {
      * 
      * @throws {Error} If the department is invalid.
      */
-    set_department(department: string): void {
+    setDepartment(department: string): void {
         this.department = department;
         this.validate();
     }
@@ -340,7 +340,7 @@ export class Ips {
      * 
      * @throws {Error} If the name is invalid.
      */
-    set_name(name: string): void {
+    setName(name: string): void {
         this.name = name;
         this.validate();
     }
@@ -349,7 +349,7 @@ export class Ips {
      * Converts the IPS entity to a string.
      * @returns {string} A string representation of the IPS.
      */
-    to_string(): string {
-        return JSON.stringify(this.to_object());
+    toString(): string {
+        return JSON.stringify(this.toObject());
     }
 }

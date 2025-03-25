@@ -6,7 +6,7 @@ import { Specialty } from "@/models/specialty";
  * Class that allows to map Specialty entities from domain to document and vice versa.
  * @class SpecialtyMapper
  */
-export class specialtyMapper {
+export class SpecialtyMapper {
     /**
      * Maps an Specialty document to an Specialty entity.
      * @param {SpecialtyDocument} raw - The Specialty document.
@@ -33,15 +33,15 @@ export class specialtyMapper {
      */
     static fromDomainToDocument(specialty: Specialty): SpecialtyDocument {
         return {
-            _id: specialty.get_id(),
-            name: specialty.get_name(),
-            schedule_monday: specialty.get_schedule_monday(),
-            schedule_tuesday: specialty.get_schedule_tuesday(),
-            schedule_wednesday: specialty.get_schedule_wednesday(),
-            schedule_thursday: specialty.get_schedule_thursday(),
-            schedule_friday: specialty.get_schedule_friday(),
-            schedule_saturday: specialty.get_schedule_saturday(),
-            schedule_sunday: specialty.get_schedule_sunday()         
+            _id: specialty.getId(),
+            name: specialty.getName(),
+            "schedule_monday": specialty.getScheduleMonday(),
+            "schedule_tuesday": specialty.getScheduleTuesday(),
+            "schedule_wednesday": specialty.getScheduleWednesday(),
+            "schedule_thursday": specialty.getScheduleThursday(),
+            "schedule_friday": specialty.getScheduleFriday(),
+            "schedule_saturday": specialty.getScheduleSaturday(),
+            "schedule_sunday": specialty.getScheduleSunday()         
         };
     }
 
@@ -71,15 +71,15 @@ export class specialtyMapper {
      */
     static fromDomainToResponse(specialty: Specialty): SpecialtyResponse {
         return {
-            _id: specialty.get_id().toHexString(),
-            name: specialty.get_name(),
-            schedule_monday: specialty.get_schedule_monday(),
-            schedule_tuesday: specialty.get_schedule_tuesday(),
-            schedule_wednesday: specialty.get_schedule_wednesday(),
-            schedule_thursday: specialty.get_schedule_thursday(),
-            schedule_friday: specialty.get_schedule_friday(),
-            schedule_saturday: specialty.get_schedule_saturday(),
-            schedule_sunday: specialty.get_schedule_sunday()
+            _id: specialty.getId().toHexString(),
+            name: specialty.getName(),
+            "schedule_monday": specialty.getScheduleMonday(),
+            "schedule_tuesday": specialty.getScheduleTuesday(),
+            "schedule_wednesday": specialty.getScheduleWednesday(),
+            "schedule_thursday": specialty.getScheduleThursday(),
+            "schedule_friday": specialty.getScheduleFriday(),
+            "schedule_saturday": specialty.getScheduleSaturday(),
+            "schedule_sunday": specialty.getScheduleSunday()
         };
     }
 }

@@ -29,11 +29,11 @@ export class EpsMapper {
      */
     static fromDomainToDocument(eps: Eps): EpsDocument {
         return {
-            _id: eps.get_id(),
-            name: eps.get_name(),
-            "01_8000_phone": eps.get_phone(),
-            fax: eps.get_fax(),
-            emails: eps.get_emails()            
+            _id: eps.getId(),
+            name: eps.getName(),
+            "01_8000_phone": eps.getPhone(),
+            fax: eps.getFax(),
+            emails: eps.getEmails()            
         };
     }
 
@@ -59,11 +59,11 @@ export class EpsMapper {
      */
     static fromDomainToResponse(eps: Eps): EpsResponse {
         return {
-            _id: eps.get_id().toHexString(),
-            name: eps.get_name(),
-            "01_8000_phone": eps.get_phone(),
-            fax: eps.get_fax(),
-            emails: eps.get_emails()            
+            _id: eps.getId().toHexString(),
+            name: eps.getName(),
+            "01_8000_phone": eps.getPhone(),
+            fax: eps.getFax(),
+            emails: eps.getEmails()            
         };
     }
 }

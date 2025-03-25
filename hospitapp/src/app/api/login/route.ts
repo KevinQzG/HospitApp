@@ -30,9 +30,9 @@ export async function POST(request: Request) {
         }
 
         const user = await userRepo.findUserByEmail(body.email);
-        if (user && user.compare_password(body.password)) {
+        if (user && user.comparePassword(body.password)) {
             console.log("creating something");
-            const session = createSession(user.get_email());
+            const session = createSession(user.getEmail());
            
             const response = NextResponse.json({ success: true }, { status: 200 });
             

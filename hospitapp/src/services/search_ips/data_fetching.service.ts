@@ -5,14 +5,14 @@ import { TYPES } from "@/adapters/types";
 import { IpsResponse } from '@/models/ips.interface';
 
 
-export const get_ips_props = async (params: { name: string }): Promise<IpsResponse | null> => {
+export const getIpsProps = async (params: { name: string }): Promise<IpsResponse | null> => {
     try {
         // Inject the dependencies
         const DB_HANDLER = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
         const SEARCH_IPS_SERVICE = CONTAINER.get<SearchIpsServiceAdapter>(TYPES.SearchIpsServiceAdapter);
 
         // Fetch the data
-        const IPS = await SEARCH_IPS_SERVICE.get_ips_by_name(params.name);
+        const IPS = await SEARCH_IPS_SERVICE.getIpsByName(params.name);
 
         // Close the database connection and return the results
         await DB_HANDLER.close();

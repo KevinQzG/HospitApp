@@ -21,7 +21,7 @@ export default interface SearchIpsServiceAdapter {
      * @param {number} page_size - The number of results per page.
      * @returns {Promise<{ results: IPS[]; total: number }>} The results is an array of IPSs that meet the specified criteria without surpassing the page size, and the total is the total number of IPSs that meet the specified criteria.
      */
-    filter_ips(longitude: number | null, latitude: number | null, max_distance: number | null, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IpsResponse[]; total: number }>;
+    filterIps(longitude: number | null, latitude: number | null, max_distance: number | null, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IpsResponse[]; total: number }>;
 
 
     /**
@@ -29,14 +29,14 @@ export default interface SearchIpsServiceAdapter {
      * @async
      * @returns {Promise<Specialty[]>} The specialties from the database.
      */
-    get_all_specialties(): Promise<SpecialtyResponse[]>;
+    getAllSpecialties(): Promise<SpecialtyResponse[]>;
 
     /**
      * Gets all the EPSs from the database.
      * @async
      * @returns {Promise<EPS[]>} The EPSs from the database.
      */
-    get_all_eps(): Promise<EpsResponse[]>;
+    getAllEps(): Promise<EpsResponse[]>;
 
     /**
      * Gets an IPS by its name.
@@ -45,5 +45,5 @@ export default interface SearchIpsServiceAdapter {
      * @param {string} name - The name of the IPS.
      * @returns {Promise<IpsResponse | null>} The IPS with the specified name, or null if it does not exist.
      */
-    get_ips_by_name(name: string): Promise<IpsResponse | null>;
+    getIpsByName(name: string): Promise<IpsResponse | null>;
 }

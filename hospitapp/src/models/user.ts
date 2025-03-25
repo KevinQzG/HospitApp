@@ -47,23 +47,23 @@ export class User {
      * Converts the USER entity to a plain object.
      * @returns {UserDocument} A plain object representation of the USER.
      */
-    to_object(): UserDocument {
-        return UserMapper.from_domain_to_document(this);
+    toObject(): UserDocument {
+        return UserMapper.fromDomainToDocument(this);
     }
     
     /**
      * Converts the USER entity to a plain response object.
      * @returns {UserResponse} A plain response object representation of the USER.
      */
-    to_response(): UserResponse {
-        return UserMapper.from_domain_to_response(this);
+    toResponse(): UserResponse {
+        return UserMapper.fromDomainToResponse(this);
     }
     
     /**
      * Gets the unique identifier of the USER.
      * @returns {ObjectId} The unique identifier of the USER.
      */
-    get_id(): ObjectId {
+    getId(): ObjectId {
         return this._id;
     }
     
@@ -71,7 +71,7 @@ export class User {
      * Gets the eps of the USER.
      * @returns {string} The username of the USER.
      */
-    get_eps(): string {
+    getEps(): string {
         return this.eps;
     }
     
@@ -82,14 +82,14 @@ export class User {
      * 
      * @throws {Error} If the eps is invalid.
      */
-    set_eps(eps: string): void {
+    setEps(eps: string): void {
         this.eps = eps;
     }
     /**
      * Gets the email of the USER.
      * @returns {string} The email of the USER.
      */
-    get_email(): string {
+    getEmail(): string {
         return this.email;
     }
     
@@ -101,7 +101,7 @@ export class User {
      * @throws {Error} If the email is invalid.
      */
 
-    set_email(email: string): void {
+    setEmail(email: string): void {
         this.email = email;
         this.validate();
     }
@@ -110,7 +110,7 @@ export class User {
      * Gets the adress of the USER.
      * @returns {string} The adress of the USER.
      */
-    get_phone(): string { 
+    getPhone(): string { 
         return this.phone;
     }
 
@@ -121,7 +121,7 @@ export class User {
      * 
      * @throws {Error} If the adress is invalid.
      */
-    set_adress(phone: string): void {
+    setAdress(phone: string): void {
         this.phone = phone;
         this.validate();
     }
@@ -130,11 +130,11 @@ export class User {
      * Gets the password of the USER.
      *  @returns {string} The password of the USER.
      */
-    get_password(): string {
+    getPassword(): string {
         return this.password;
     }
     
-    set_password(password: string): void {
+    setPassword(password: string): void {
         this.password = password;
         this.validate();
     }
@@ -144,7 +144,7 @@ export class User {
      * Gets the role of the USER.
      * @returns {string} The role of the USER.
      */
-    get_role(): string {
+    getRole(): string {
         return this.role;
     }
     
@@ -155,7 +155,7 @@ export class User {
      * 
      * @throws {Error} If the role is invalid.
      */
-    set_role(role: string): void {
+    setRole(role: string): void {
         this.role = role;
         this.validate();
     }
@@ -164,7 +164,7 @@ export class User {
      * Chek if the user password match with the password in the login request
      * @param {string} password - The password of the Login.
      */
-    compare_password(password: string): boolean {
+    comparePassword(password: string): boolean {
         return this.password === password;
     }    
 

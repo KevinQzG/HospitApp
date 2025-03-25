@@ -43,7 +43,7 @@ export class Eps {
      * Converts the EPS entity to a plain object.
      * @returns {EpsDocument} A plain object representation of the EPS.
      */
-    to_object(): EpsDocument {
+    toObject(): EpsDocument {
         return EpsMapper.fromDomainToDocument(this);
     }
 
@@ -51,7 +51,7 @@ export class Eps {
      * Converts the EPS entity to a plain response object.
      * @returns {EpsResponse} A plain response object representation of the EPS.
      */
-    to_response(): EpsResponse {
+    toResponse(): EpsResponse {
         return EpsMapper.fromDomainToResponse(this);
     }    
 
@@ -59,7 +59,7 @@ export class Eps {
      * Gets the unique identifier of the EPS.
      * @returns {ObjectId} The unique identifier of the EPS.
      */
-    get_id(): ObjectId {
+    getId(): ObjectId {
         return this._id;
     }
 
@@ -67,7 +67,7 @@ export class Eps {
      * Gets the name of the EPS.
      * @returns {string} The name of the EPS.
      */
-    get_name(): string {
+    getName(): string {
         return this.name;
     }
 
@@ -78,7 +78,7 @@ export class Eps {
      * 
      * @throws {Error} If the name is invalid.
      */
-    set_name(name: string): void {
+    setName(name: string): void {
         this.name = name;
         this.validate();
     }
@@ -88,7 +88,7 @@ export class Eps {
      * Gets the phone number of the EPS.
      * @returns {string} The phone number of the EPS.
      */
-    get_phone(): string {
+    getPhone(): string {
         return this.phone;
     }
 
@@ -99,7 +99,7 @@ export class Eps {
      * 
      * @throws {Error} If the phone number is invalid.
      */
-    set_phone(phone: string): void {
+    setPhone(phone: string): void {
         this.phone = phone;
         this.validate();
     }
@@ -108,7 +108,7 @@ export class Eps {
      * Gets the fax number of the EPS.
      * @returns {string} The fax number of the EPS.
      */
-    get_fax(): string {
+    getFax(): string {
         return this.fax;
     }
 
@@ -119,7 +119,7 @@ export class Eps {
      * 
      * @throws {Error} If the fax number is invalid.
      */
-    set_fax(fax: string): void {
+    setFax(fax: string): void {
         this.fax = fax;
         this.validate();
     }
@@ -128,7 +128,7 @@ export class Eps {
      * Gets the email of the EPS.
      * @returns {string} The email of the EPS.
      */
-    get_emails(): string {
+    getEmails(): string {
         return this.emails;
     }
 
@@ -139,7 +139,7 @@ export class Eps {
      * 
      * @throws {Error} If the email is invalid.
      */
-    set_emails(emails: string): void {
+    setEmails(emails: string): void {
         this.emails = emails;
         this.validate();
     }
@@ -148,7 +148,7 @@ export class Eps {
      * Converts the EPS entity to a string.
      * @returns {string} A string representation of the EPS.
      */
-    to_string(): string {
-        return JSON.stringify(this.to_object());
+    toString(): string {
+        return JSON.stringify(this.toObject());
     }
 }

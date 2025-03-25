@@ -18,45 +18,45 @@ import { EpsResponse } from "@/models/eps.interface";
 export class SearchIpsMongoService implements SearchIpsServiceAdapter {
     /**
      * @constructor
-     * @param {IpsRepositoryAdapter} ips_repository - The repository handler for IPSs.
-     * @param {SpecialtyRepositoryAdapter} specialty_repository - The repository handler for specialties.
-     * @param {EPSRepositoryAdapter} eps_repository - The repository handler for EPSs.
+     * @param {IpsRepositoryAdapter} ipsRepository - The repository handler for IPSs.
+     * @param {SpecialtyRepositoryAdapter} specialtyRepository - The repository handler for specialties.
+     * @param {EPSRepositoryAdapter} epsRepository - The repository handler for EPSs.
      * @returns {void}
      * @description Creates an instance of the FilterAndSortIpsService class.
      * @throws {Error} If the database handler is null.
      * @throws {Error} If the database connection fails.
      */
     constructor(
-        @inject(TYPES.IpsRepositoryAdapter) private ips_repository: IpsRepositoryAdapter,
-        @inject(TYPES.SpecialtyRepositoryAdapter) private specialty_repository: SpecialtyRepositoryAdapter,
-        @inject(TYPES.EpsRepositoryAdapter) private eps_repository: EPSRepositoryAdapter
+        @inject(TYPES.IpsRepositoryAdapter) private ipsRepository: IpsRepositoryAdapter,
+        @inject(TYPES.SpecialtyRepositoryAdapter) private specialtyRepository: SpecialtyRepositoryAdapter,
+        @inject(TYPES.EpsRepositoryAdapter) private epsRepository: EPSRepositoryAdapter
         
     ) { }
 
-    async filter_ips(longitude: number | null, latitude: number | null, max_distance: number | null, specialties: string[], eps_names: string[], page: number, page_size: number): Promise<{ results: IpsResponse[]; total: number; }> {
-        const _RESULTS = await this.ips_repository.find_all_by_distance_specialty_eps(longitude, latitude, max_distance, specialties, eps_names, page, page_size);
+    async filterIps(longitude: number | null, latitude: number | null, maxDistance: number | null, specialties: string[], epsNames: string[], page: number, pageSize: number): Promise<{ results: IpsResponse[]; total: number; }> {
+        const RESULTS = await this.ipsRepository.findAllByDistanceSpecialtyEps(longitude, latitude, maxDistance, specialties, epsNames, page, pageSize);
 
         return {
-            results: _RESULTS.results.map(ips => {return ips.to_response();}),
-            total: _RESULTS.total
+            results: RESULTS.results.map(ips => {return ips.toResponse();}),
+            total: RESULTS.total
         };
     }
 
-    async get_all_specialties(): Promise<SpecialtyResponse[]> {
-        const _SPECIALTIES = await this.specialty_repository.find_all();
-        return _SPECIALTIES.map(specialty => {return specialty.to_response();});
+    async getAllSpecialties(): Promise<SpecialtyResponse[]> {
+        const SPECIALTIES = await this.specialtyRepository.findAll();
+        return SPECIALTIES.map(specialty => {return specialty.toResponse();});
     }
 
-    async get_all_eps(): Promise<EpsResponse[]> {
-        const _EPS = await this.eps_repository.find_all();
-        return _EPS.map(eps => {return eps.to_response();});
+    async getAllEps(): Promise<EpsResponse[]> {
+        const EPS = await this.epsRepository.findAll();
+        return EPS.map(eps => {return eps.toResponse();});
     }
 
-    async get_ips_by_name(name: string): Promise<IpsResponse | null> {
-        const _IPS = await this.ips_repository.find_by_name(name);
-        if (!_IPS) {
+    async getIpsByName(name: string): Promise<IpsResponse | null> {
+        const IPS = await this.ipsRepository.findByName(name);
+        if (!IPS) {
             return null;
         }
-        return _IPS.to_response();
+        return IPS.toResponse();
     }
 }
