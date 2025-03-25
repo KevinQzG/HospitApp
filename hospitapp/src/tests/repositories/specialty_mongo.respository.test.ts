@@ -39,8 +39,8 @@ describe('SpecialtyMongoRepository Integration Test', () => {
             const SAMPLE_EPS = results[0];
 
             const EXPECTED_DATA = {
-                _id: new ObjectId("67b3e928b1ae5d9e47ae7224"),
-                name: "ENFERMERÍA",
+                _id: new ObjectId("67b3e928b1ae5d9e47ae721a"),
+                name: "DIAGNÓSTICO VASCULAR",
             };
 
             expect(SAMPLE_EPS.toObject()).toMatchObject(EXPECTED_DATA);

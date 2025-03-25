@@ -27,7 +27,7 @@ describe('IpsMongoRepository Integration Test', () => {
     let testSpecialties = ["ENFERMERÍA", "CARDIOLOGÍA"];
     let testEpsNames = ["SALUDCOOP EPS-C", "ECOOPSOS EPS-S"];
     const MAX_DISTANCE_METERS = 5000; // 5km
-    const EXPECTED_IPS_ID = new ObjectId("67b3e98bb1ae5d9e47ae7a07");
+    const EXPECTED_IPS_ID = "67b3e98bb1ae5d9e47ae7a07";
 
     it('should retrieve the all the IPS that matches without the coordinates', async () => {
       const { results: RESULTS, total: TOTAL } = await repository.findAllByDistanceSpecialtyEps(
@@ -59,7 +59,7 @@ describe('IpsMongoRepository Integration Test', () => {
       expect(RESULTS).toHaveLength(1);
 
       const IPS = RESULTS[0];
-      expect(IPS.getId()).toEqual(EXPECTED_IPS_ID);
+      expect(IPS.getId().toString()).toEqual(EXPECTED_IPS_ID);
       expect(IPS.getName()).toBe('ESE HOSPITAL VENANCIO DIAZ DIAZ');
       expect(IPS.getDepartment()).toBe('ANTIOQUIA');
       expect(IPS.getTown()).toBe('SABANETA');
@@ -94,7 +94,7 @@ describe('IpsMongoRepository Integration Test', () => {
         distance: 2415.089412549286
       };
 
-      expect(IPS.toObject()).toMatchObject({
+      expect(IPS.toResponse()).toMatchObject({
         ...EXPECTED_DATA,
         distance: expect.closeTo(EXPECTED_DATA.distance, 4)
       });
@@ -156,7 +156,7 @@ describe('IpsMongoRepository Integration Test', () => {
 
       const IPS = RESULTS[3];
       const EXPECTED_DATA = {
-        _id: new ObjectId("67b3e98bb1ae5d9e47ae747c"),
+        _id: "67b3e98bb1ae5d9e47ae747c",
         name: 'CIS LA ESTRELLA CENTRAL DE SERVICIOS SUR',
         department: 'ANTIOQUIA',
         town: 'LA ESTRELLA',
@@ -170,7 +170,7 @@ describe('IpsMongoRepository Integration Test', () => {
         distance: 2566.342006462017
       };
 
-      expect(IPS.toObject()).toMatchObject({
+      expect(IPS.toResponse()).toMatchObject({
         ...EXPECTED_DATA,
         distance: expect.closeTo(EXPECTED_DATA.distance, 4)
       });
@@ -197,7 +197,7 @@ describe('IpsMongoRepository Integration Test', () => {
       ips = await repository.findByName(EXPECTED_IPS_NAME);
 
       const EXPECTED_DATA = {
-        _id: new ObjectId('67b3e98bb1ae5d9e47ae72a8'),
+        _id: '67b3e98bb1ae5d9e47ae72a8',
         name: EXPECTED_IPS_NAME,
         department: 'ANTIOQUIA',
         town: 'MEDELLÍN',
@@ -210,14 +210,14 @@ describe('IpsMongoRepository Integration Test', () => {
         },
         eps: [
           {
-            _id: new ObjectId("67b7885ec6dcb343450c057a"),
+            _id: "67b7885ec6dcb343450c057a",
             name: "COOMEVA EPS-C",
             "01_8000_phone": "18000942404",
             fax: "6044545 OPCION 1",
             emails: "<CLARAI_PELAEZ@COOMEVA.COM.CO>, <PAULOA_GIRALDO@COOMEVA.COM.CO>, JAZMINJ_MEZA@COOMEVA.COM.CO"
           },
           {
-            _id: new ObjectId("67b7885ec6dcb343450c057f"),
+            _id: "67b7885ec6dcb343450c057f",
             name: "FUNDACION MEDICO PREVENTIVA EPS-C",
             "01_8000_phone": "18000111080",
             fax: "2160054",
@@ -226,7 +226,7 @@ describe('IpsMongoRepository Integration Test', () => {
         ],
         specialties: [
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae721a"),
+            "_id": "67b3e928b1ae5d9e47ae721a",
             "name": "DIAGNÓSTICO VASCULAR",
             "schedule_monday": "07:00A17:00",
             "schedule_tuesday": "07:00A17:00",
@@ -237,7 +237,7 @@ describe('IpsMongoRepository Integration Test', () => {
             "schedule_sunday": "07:00A13:00"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae721c"),
+            "_id": "67b3e928b1ae5d9e47ae721c",
             "name": "TERAPIA RESPIRATORIA",
             "schedule_monday": "07:00A19:00",
             "schedule_tuesday": "07:00A19:00",
@@ -247,7 +247,7 @@ describe('IpsMongoRepository Integration Test', () => {
             "schedule_saturday": "07:00A19:00"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae721f"),
+            "_id": "67b3e928b1ae5d9e47ae721f",
             "name": "TOMA DE MUESTRAS DE LABORATORIO CLÍNICO",
             "schedule_monday": "06:00A14:00",
             "schedule_tuesday": "06:00A14:00",
@@ -256,15 +256,15 @@ describe('IpsMongoRepository Integration Test', () => {
             "schedule_friday": "06:00A14:00"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae7222"),
+            "_id": "67b3e928b1ae5d9e47ae7222",
             "name": "ENDOCRINOLOGÍA"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae7223"),
+            "_id": "67b3e928b1ae5d9e47ae7223",
             "name": "CARDIOLOGÍA"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae7224"),
+            "_id": "67b3e928b1ae5d9e47ae7224",
             "name": "ENFERMERÍA",
             "schedule_monday": "06:00A19:00",
             "schedule_tuesday": "06:00A19:00",
@@ -274,11 +274,11 @@ describe('IpsMongoRepository Integration Test', () => {
             "schedule_saturday": "06:00A19:00"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae7225"),
+            "_id": "67b3e928b1ae5d9e47ae7225",
             "name": "MEDICINA GENERAL"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae7226"),
+            "_id": "67b3e928b1ae5d9e47ae7226",
             "name": "GINECOBSTETRICIA",
             "schedule_monday": "07:00A18:00",
             "schedule_tuesday": "07:00A18:00",
@@ -287,11 +287,11 @@ describe('IpsMongoRepository Integration Test', () => {
             "schedule_friday": "07:00A18:00"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae7227"),
+            "_id": "67b3e928b1ae5d9e47ae7227",
             "name": "MEDICINA INTERNA"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae7228"),
+            "_id": "67b3e928b1ae5d9e47ae7228",
             "name": "NUTRICIÓN Y DIETÉTICA",
             "schedule_monday": "07:00A19:00",
             "schedule_tuesday": "07:00A19:00",
@@ -301,7 +301,7 @@ describe('IpsMongoRepository Integration Test', () => {
             "schedule_saturday": "07:00A19:00"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae7229"),
+            "_id": "67b3e928b1ae5d9e47ae7229",
             "name": "PSICOLOGÍA",
             "schedule_monday": "07:00A19:00",
             "schedule_tuesday": "07:00A19:00",
@@ -311,7 +311,7 @@ describe('IpsMongoRepository Integration Test', () => {
             "schedule_saturday": "07:00A19:00"
           },
           {
-            "_id": new ObjectId("67b3e928b1ae5d9e47ae722b"),
+            "_id": "67b3e928b1ae5d9e47ae722b",
             "name": "NEUROLOGÍA",
             "schedule_tuesday": "08:00A17:00",
             "schedule_wednesday": "08:00A17:00"
@@ -320,7 +320,7 @@ describe('IpsMongoRepository Integration Test', () => {
 
       };
 
-      expect(ips?.toObject()).toMatchObject(EXPECTED_DATA);
+      expect(ips?.toResponse()).toMatchObject(EXPECTED_DATA);
     });
 
   });
