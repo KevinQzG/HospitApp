@@ -4,8 +4,14 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { IoClose, IoDownloadOutline } from "react-icons/io5";
 
+// Define the type for BeforeInstallPromptEvent
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+}
+
 export default function InstallButton() {
-  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
   const pathname = usePathname();
@@ -15,29 +21,29 @@ export default function InstallButton() {
 
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
-      setInstallPrompt(event);
+      setInstallPrompt(event as BeforeInstallPromptEvent);
       setIsVisible(true);
 
-      setTimeout(() => {
+      // Ocultar automáticamente después de 8 segundos
+      const timeout = setTimeout(() => {
         setIsVisible(false);
       }, 8000);
+
+      return () => clearTimeout(timeout);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt
-      );
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     };
   }, [pathname]);
 
   const handleInstall = async () => {
     if (installPrompt) {
       setIsInstalling(true);
-      (installPrompt as any).prompt();
-      const choiceResult = await (installPrompt as any).userChoice;
+      await installPrompt.prompt();
+      const choiceResult = await installPrompt.userChoice;
       if (choiceResult.outcome === "accepted") {
         console.log("Usuario aceptó la instalación");
         setIsVisible(false);
@@ -56,21 +62,28 @@ export default function InstallButton() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 animate-fade-in-up">
-      <div className="bg-white shadow-xl rounded-2xl p-4 flex items-center space-x-4 w-96 border border-gray-200">
+    <div className="fixed bottom-6 right-6 z-50 animate-fade-in-up">
+      <div className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl p-4 flex items-center space-x-4 w-96">
         <div className="flex-shrink-0 text-blue-600 text-4xl">📲</div>
         <div className="flex-1">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             Instala HospitAPP
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             Accede rápidamente a hospitales y clínicas cerca de ti.
           </p>
         </div>
+
         <button
           onClick={handleInstall}
           disabled={isInstalling}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all shadow-md"
+          aria-label="Instalar aplicación"
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+            ${
+              isInstalling
+                ? "cursor-wait bg-blue-400 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
         >
           {isInstalling ? (
             <>
@@ -84,10 +97,11 @@ export default function InstallButton() {
             </>
           )}
         </button>
+
         <button
           onClick={handleClose}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-all"
-          aria-label="Cerrar"
+          className="absolute top-2 right-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-all"
+          aria-label="Cerrar ventana de instalación"
         >
           <IoClose className="text-xl" />
         </button>

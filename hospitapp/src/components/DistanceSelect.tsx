@@ -10,7 +10,6 @@ interface DistanceSelectProps {
 
 export function DistanceSelect({ name, onChange, value }: DistanceSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [clickCount, setClickCount] = useState(0);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const optionRefs = useRef<(HTMLLabelElement | null)[]>([]);
@@ -26,7 +25,6 @@ export function DistanceSelect({ name, onChange, value }: DistanceSelectProps) {
     const handleClickOutside = (event: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setIsOpen(false);
-        setClickCount(0);
         setFocusedIndex(-1);
       }
     };
@@ -42,14 +40,12 @@ export function DistanceSelect({ name, onChange, value }: DistanceSelectProps) {
   }, [focusedIndex, isOpen]);
 
   const handleInputClick = () => {
-    setClickCount((prev) => prev + 1);
     setIsOpen(true);
   };
 
   const handleSelect = (selectedValue: string) => {
     onChange(selectedValue);
     setIsOpen(false);
-    setClickCount(0);
     setFocusedIndex(-1);
   };
 

@@ -3,7 +3,7 @@
 import { FormEvent, useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { SearchFormClientProps } from "@/services/search_ips/data_caching.service";
-import { SearchableSelect } from "@/components/searchable_select";
+import { SearchableSelect } from "@/components/Searchable_select";
 import { DistanceSelect } from "./DistanceSelect";
 
 export type SearchFormSubmitHandler = (isSubmitting: boolean) => void;
@@ -73,11 +73,11 @@ export default function SearchFormClient({
 
       const queryParams = new URLSearchParams({
         coordinates: coordinates.join(","),
-        max_distance: maxDistance,
+        "max_distance": maxDistance,
         specialties: specialties.join(","),
-        eps: eps.join(","),
+        "eps_names": eps.join(","),
         page,
-        page_size: pageSize,
+        "page_size": pageSize,
       });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));

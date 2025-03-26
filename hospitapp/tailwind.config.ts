@@ -2,6 +2,7 @@ import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -11,14 +12,14 @@ const config: Config = {
     extend: {
       fontFamily: {
         apple: [
-          "-apple-system", 
-          "BlinkMacSystemFont", 
-          "SF Pro", 
-          "SF Pro Display", 
-          "SF Pro Text", 
-          "Helvetica Neue", 
-          "Arial", 
-          "sans-serif"
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "SF Pro",
+          "SF Pro Display",
+          "SF Pro Text",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
         ],
       },
       colors: {

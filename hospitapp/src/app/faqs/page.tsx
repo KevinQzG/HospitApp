@@ -38,7 +38,7 @@ export default function fAQsPage() {
     {
       question: "¿Cómo puedo contactar con atención al cliente de HospitAPP?",
       answer:
-        "Puedes escribirnos al correo electrónico <a href='mailto:admin@hospitapp.com' class='text-blue-600 hover:underline'>admin@hospitapp.com</a> y te responderemos a la brevedad.",
+        "Puedes escribirnos al correo electrónico <a href='mailto:admin@hospitapp.com' class='text-blue-600 dark:text-blue-400 hover:underline'>admin@hospitapp.com</a> y te responderemos a la brevedad.",
     },
     {
       question: "¿Qué hago si encuentro información incorrecta en la plataforma?",
@@ -48,24 +48,26 @@ export default function fAQsPage() {
   ];
 
   return (
-    <section className="min-h-screen bg-gradient-to-b from-[#F9FCFF] to-[#E6F0FF] py-20 px-6 md:px-12">
+    <section className="min-h-screen bg-gradient-to-b from-[#F9FCFF] to-[#E6F0FF] dark:from-[#111827] dark:to-[#1f2937] py-20 px-6 md:px-12">
       <div className="max-w-4xl mx-auto text-center">
-        <h1 className="text-5xl font-bold text-gray-900 mb-6">Preguntas Frecuentes</h1>
-        <p className="text-gray-700 text-xl">
+        <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
+          Preguntas Frecuentes
+        </h1>
+        <p className="text-gray-700 dark:text-gray-300 text-xl leading-relaxed">
           Encuentra respuestas a las dudas más comunes sobre HospitAPP. Si no encuentras lo que buscas, no dudes en contactarnos.
         </p>
       </div>
 
-      {/* FAQ List */}
+      {/* Lista de FAQs */}
       <div className="max-w-3xl mx-auto mt-16 space-y-6">
         {FAQS.map((faq, index) => (
           <details
             key={index}
-            className="group bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
+            className="group bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
           >
-            <summary className="flex justify-between items-center text-xl font-semibold text-gray-900">
+            <summary className="flex justify-between items-center text-xl font-semibold text-gray-900 dark:text-white">
               {faq.question}
-              <span className="text-blue-600 transform transition-transform duration-300 group-open:rotate-90">
+              <span className="text-blue-600 dark:text-blue-400 transform transition-transform duration-300 group-open:rotate-90">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
@@ -83,9 +85,9 @@ export default function fAQsPage() {
               </span>
             </summary>
             <p
-              className="mt-4 text-gray-700 leading-relaxed"
+              className="mt-4 text-gray-700 dark:text-gray-300 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: faq.answer }}
-            ></p>
+            />
           </details>
         ))}
       </div>

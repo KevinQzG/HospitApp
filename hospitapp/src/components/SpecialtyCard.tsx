@@ -1,4 +1,3 @@
-// src/components/SpecialtyCard.tsx
 "use client";
 
 import { LucideIcon } from "lucide-react";
@@ -48,24 +47,33 @@ export default function SpecialtyCard({
     router.push(`/results?${queryParams.toString()}`);
   };
 
-  const CARD_CLASSES = `
-    group p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg 
-    flex flex-col items-center justify-center transition-all duration-300 cursor-pointer
-    ${
-      active
-        ? "bg-blue-500 text-white shadow-xl"
-        : "bg-white hover:bg-blue-500 hover:text-white hover:shadow-xl"
-    }
-  `;
-
-  const ICON_CLASSES = `
-    w-6 h-6 sm:w-8 sm:h-8 transition-colors duration-300 
-    ${active ? "text-white" : "text-blue-500 group-hover:text-white"}
-  `;
-
   return (
-    <div className={CARD_CLASSES} onClick={handleClick}>
-      <Icon className={ICON_CLASSES} />
+    <div
+      onClick={handleClick}
+      className={`
+        group p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg 
+        flex flex-col items-center justify-center transition-all duration-300 cursor-pointer
+        focus:outline-none focus:ring-2 focus:ring-blue-500
+        ${
+          active
+            ? "bg-blue-600 text-white shadow-xl"
+            : "bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200 hover:bg-blue-600 hover:text-white"
+        }
+      `}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && handleClick()}
+    >
+      <Icon
+        className={`
+          w-6 h-6 sm:w-8 sm:h-8 transition-colors duration-300 
+          ${
+            active
+              ? "text-white"
+              : "text-blue-600 dark:text-blue-400 group-hover:text-white"
+          }
+        `}
+      />
       <h3 className="text-sm sm:text-base font-medium mt-2 sm:mt-3 text-center">
         {name}
       </h3>

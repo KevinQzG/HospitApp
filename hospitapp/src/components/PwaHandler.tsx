@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import InstallButton from "@/components/InstallButton";
 
 export default function PwaHandler() {
-  const [_IS_PWA, _SET_IS_PWA] = useState(false);
+  const [isPwa, setIsPwa] = useState(false);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -14,9 +14,9 @@ export default function PwaHandler() {
     }
 
     if (window.matchMedia("(display-mode: standalone)").matches) {
-      _SET_IS_PWA(true);
+      setIsPwa(true);
     }
   }, []);
 
-  return !_IS_PWA ? <InstallButton /> : null;
+  return !isPwa ? <InstallButton /> : null;
 }
