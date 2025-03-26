@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
-export default function RootLayout({
+export default function rootLayout({
   children,
 }: {
   children: React.ReactNode;

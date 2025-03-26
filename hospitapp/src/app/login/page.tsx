@@ -23,10 +23,11 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const DATA = await response.json();
 
-      if (data.success) {
-        window.location.href = "/";
+      if (DATA.success) {
+        // Redirect to the dashboard
+        window.location.href = '/';
       } else {
         alert("Correo electrónico o contraseña incorrectos");
       }

@@ -2,7 +2,7 @@
 
 import {
   SearchFormClientProps,
-  get_search_ips_cached_props,
+  getSearchIpsCachedProps,
 } from "@/services/search_ips/data_caching.service";
 import ResultsPage from "@/components/ResultsPage";
 
@@ -10,7 +10,7 @@ export default async function results() {
   let config: SearchFormClientProps;
 
   try {
-    config = await get_search_ips_cached_props();
+    config = await getSearchIpsCachedProps();
   } catch (error) {
     console.error("Page initialization failed:", error);
     return (

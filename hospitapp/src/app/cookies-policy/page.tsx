@@ -1,4 +1,4 @@
-export default function CookiesPolicyPage() {
+export default function cookiesPolicyPage() {
   const CONTACT_INFO = {
     email: "admin@hospitapp.com",
     location: "Medellín, Antioquia, Colombia",

@@ -111,7 +111,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
     );
     setTotalResults(filtered.length);
     setTotalPages(Math.ceil(filtered.length / pageSize));
-    setCurrentPage(1);
+    const pageFromParams = parseInt(searchParams.get("page") ?? "1");
+    setCurrentPage(pageFromParams);
     const start = 0;
     const end = pageSize;
     setPaginatedResults(filtered.slice(start, end));
@@ -119,7 +120,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
-    setCurrentPage(newPage);
     const currentParams = new URLSearchParams(searchParams.toString());
     currentParams.set("page", newPage.toString());
     router.push(`/results?${currentParams.toString()}`);

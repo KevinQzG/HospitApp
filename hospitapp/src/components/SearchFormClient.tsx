@@ -3,7 +3,7 @@
 import { FormEvent, useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { SearchFormClientProps } from "@/services/search_ips/data_caching.service";
-import { SearchableSelect } from "./Searchable_select";
+import { SearchableSelect } from "@/components/searchable_select";
 import { DistanceSelect } from "./DistanceSelect";
 
 export type SearchFormSubmitHandler = (isSubmitting: boolean) => void;

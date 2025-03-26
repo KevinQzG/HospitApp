@@ -1,22 +1,22 @@
 import DBAdapter from '@/adapters/db.adapter';
-import _CONTAINER from "@/adapters/container";
+import CONTAINER from "@/adapters/container";
 import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
-import { _TYPES } from "@/adapters/types";
+import { TYPES } from "@/adapters/types";
 import { IpsResponse } from '@/models/ips.interface';
 
 
-export const get_ips_props = async (params: { name: string }): Promise<IpsResponse | null> => {
+export const getIpsProps = async (params: { name: string }): Promise<IpsResponse | null> => {
     try {
         // Inject the dependencies
-        const _DB_HANDLER = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
-        const _SEARCH_IPS_SERVICE = _CONTAINER.get<SearchIpsServiceAdapter>(_TYPES.SearchIpsServiceAdapter);
+        const DB_HANDLER = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
+        const SEARCH_IPS_SERVICE = CONTAINER.get<SearchIpsServiceAdapter>(TYPES.SearchIpsServiceAdapter);
 
         // Fetch the data
-        const _IPS = await _SEARCH_IPS_SERVICE.get_ips_by_name(params.name);
+        const IPS = await SEARCH_IPS_SERVICE.getIpsByName(params.name);
 
         // Close the database connection and return the results
-        await _DB_HANDLER.close();
-        return _IPS;
+        await DB_HANDLER.close();
+        return IPS;
     } catch (error) {
         if (error instanceof Error) {
             throw error

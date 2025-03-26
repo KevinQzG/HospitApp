@@ -11,5 +11,5 @@ export default interface SpecialtyRepositoryAdapter {
      * @async
      * @returns {Promise<Specialty[]>} 
      */
-    find_all(): Promise<Specialty[]>;
+    findAll(): Promise<Specialty[]>;
 }

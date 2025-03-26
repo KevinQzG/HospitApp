@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { PipelineStage, LookupStage, AddFieldsStage, ProjectStage } from "./ips.pipeline.interface";
 
 /**
@@ -18,15 +17,15 @@ export class IpsPipelineBuilder {
      *
      * @param {number} longitude - Longitude of the user.
      * @param {number} latitude - Latitude of the user.
-     * @param {number} max_distance - Maximum distance to search.
+     * @param {number} maxDistance - Maximum distance to search.
      * @returns {IpsPipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
      * @name add_geo_stage
      */
-    add_geo_stage(longitude: number | null, latitude: number | null, max_distance: number | null): this {
-        if (longitude === null || latitude === null || max_distance === null) return this;
+    addGeoStage(longitude: number | null, latitude: number | null, maxDistance: number | null): this {
+        if (longitude === null || latitude === null || maxDistance === null) return this;
 
         this.pipeline.push({
             $geoNear: {
@@ -35,7 +34,7 @@ export class IpsPipelineBuilder {
                     coordinates: [longitude, latitude]
                 },
                 distanceField: 'distance',
-                maxDistance: max_distance,
+                maxDistance: maxDistance,
                 spherical: true
             }
         });
@@ -53,7 +52,7 @@ export class IpsPipelineBuilder {
      * @method
      * @name add_match_name_stage
      */
-    add_match_name_stage(name: string): this {
+    addMatchNameStage(name: string): this {
         this.pipeline.push({
             $match: { name: name }
         });
@@ -70,11 +69,11 @@ export class IpsPipelineBuilder {
      * @method
      * @name with_eps
      */
-    with_eps(): this {
+    withEps(): this {
         this.pipeline.push(
-            { $lookup: this.eps_lookup },
-            { $lookup: this.eps_join },
-            { $project: { eps_ips: 0 } }
+            { $lookup: this.epsLookup },
+            { $lookup: this.epsJoin },
+            { $project: { "eps_ips": 0 } }
         );
 
         return this;
@@ -89,12 +88,12 @@ export class IpsPipelineBuilder {
      * @method
      * @name with_specialties
      */
-    with_specialties(): this {
+    withSpecialties(): this {
         this.pipeline.push(
-            { $lookup: this.specialty_lookup },
-            { $lookup: this.specialty_join },
-            { $addFields: this.specialty_add_fields_name_schedules },
-            { $project: { specialty_details: 0 } }
+            { $lookup: this.specialtyLookup },
+            { $lookup: this.specialtyJoin },
+            { $addFields: this.specialtyAddFieldsNameSchedules },
+            { $project: { specialtyDetails: 0 } }
         );
 
         return this;
@@ -110,14 +109,14 @@ export class IpsPipelineBuilder {
      * @method
      * @name matches_specialties
      */
-    matches_specialties(specialties: string[]): this {
+    matchesSpecialties(specialties: string[]): this {
         if (specialties.length === 0) return this;
 
         this.pipeline.push(
-            { $lookup: this.specialty_lookup },
-            { $lookup: this.specialty_join },
+            { $lookup: this.specialtyLookup },
+            { $lookup: this.specialtyJoin },
             { $match: { 'specialty_details.name': { $in: specialties } } },
-            { $project: this.base_projection }
+            { $project: this.baseProjection }
         );
 
         return this;
@@ -126,21 +125,21 @@ export class IpsPipelineBuilder {
     /**
      * Adds an EPS filter to the pipeline.
      *
-     * @param {string[]} eps_names - The EPS to filter.
+     * @param {string[]} epsNames - The EPS to filter.
      * @returns {IpsPipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
      * @name matches_eps
      */
-    matches_eps(eps_names: string[]): this {
-        if (eps_names.length === 0) return this;
+    matchesEps(epsNames: string[]): this {
+        if (epsNames.length === 0) return this;
 
         this.pipeline.push(
-            { $lookup: this.eps_lookup },
-            { $lookup: this.eps_join },
-            { $match: { 'eps.name': { $in: eps_names } } },
-            { $project: this.base_projection }
+            { $lookup: this.epsLookup },
+            { $lookup: this.epsJoin },
+            { $match: { 'eps.name': { $in: epsNames } } },
+            { $project: this.baseProjection }
         );
 
         return this;
@@ -150,20 +149,20 @@ export class IpsPipelineBuilder {
      * Adds a pagination stage to the pipeline.
      *
      * @param {number} page - The page number.
-     * @param {number} page_size - The page size.
+     * @param {number} pageSize - The page size.
      * @returns {IpsPipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
      * @name with_pagination
      */
-    with_pagination(page: number, page_size: number): this {
+    withPagination(page: number, pageSize: number): this {
         this.pipeline.push({
             $facet: {
                 metadata: [{ $count: "total" }],
                 data: [
-                    { $skip: (page - 1) * page_size },
-                    { $limit: page_size }
+                    { $skip: (page - 1) * pageSize },
+                    { $limit: pageSize }
                 ]
             }
         });
@@ -183,7 +182,7 @@ export class IpsPipelineBuilder {
      * Returns the lookup stage for specialties.
      * @returns {LookupStage} The lookup stage.
      */
-    private get specialty_lookup(): LookupStage {
+    private get specialtyLookup(): LookupStage {
         return {
             from: 'IPS_Specialty',
             localField: '_id',
@@ -196,7 +195,7 @@ export class IpsPipelineBuilder {
      * Returns the lookup stage for specialties.
      * @returns {LookupStage} The lookup stage.
      */
-    private get specialty_join(): LookupStage {
+    private get specialtyJoin(): LookupStage {
         return {
             from: 'Specialty',
             localField: 'specialties.specialty_id',
@@ -209,7 +208,7 @@ export class IpsPipelineBuilder {
      * Returns the lookup stage for EPS.
      * @returns {LookupStage} The lookup stage.
      */
-    private get eps_lookup(): LookupStage {
+    private get epsLookup(): LookupStage {
         return {
             from: 'EPS_IPS',
             localField: '_id',
@@ -222,7 +221,7 @@ export class IpsPipelineBuilder {
      * Returns the lookup stage for EPS.
      * @returns {LookupStage} The lookup stage.
      */
-    private get eps_join(): LookupStage {
+    private get epsJoin(): LookupStage {
         return {
             from: 'EPS',
             localField: 'eps_ips.eps_id',
@@ -235,7 +234,7 @@ export class IpsPipelineBuilder {
      * Returns the base projection for the pipeline.
      * @returns {ProjectStage} The projection stage.
      */
-    private get base_projection(): ProjectStage {
+    private get baseProjection(): ProjectStage {
         return {
             name: 1,
             department: 1,
@@ -253,7 +252,7 @@ export class IpsPipelineBuilder {
      * Returns the add fields stage for specialties.
      * @returns {AddFieldsStage} The add fields stage.
      */
-    private get specialty_add_fields_name_schedules(): AddFieldsStage {
+    private get specialtyAddFieldsNameSchedules(): AddFieldsStage {
         return {
             specialties: {
                 $map: {
@@ -308,16 +307,16 @@ export class IpsPipelineBuilder {
                                 in: "$$matched.name"
                             }
                         },
-                        schedule_monday: "$$s.schedule_monday",
-                        schedule_tuesday: "$$s.schedule_tuesday",
-                        schedule_wednesday:
+                        "schedule_monday": "$$s.schedule_monday",
+                        "schedule_tuesday": "$$s.schedule_tuesday",
+                        "schedule_wednesday":
                             "$$s.schedule_wednesday",
-                        schedule_thursday:
+                        "schedule_thursday":
                             "$$s.schedule_thursday",
-                        schedule_friday: "$$s.schedule_friday",
-                        schedule_saturday:
+                        "schedule_friday": "$$s.schedule_friday",
+                        "schedule_saturday":
                             "$$s.schedule_saturday",
-                        schedule_sunday: "$$s.schedule_sunday"
+                        "schedule_sunday": "$$s.schedule_sunday"
                     }
                 }
             }

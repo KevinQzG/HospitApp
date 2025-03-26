@@ -1,7 +1,7 @@
 "use server";
 
 import Link from "next/link";
-import { _ENV } from "@/config/env";
+import { ENV } from "@/config/env";
 import { LookIpsResponse } from "@/app/api/search_ips/ips/route";
 import IpsDetailClient from "@/components/IpsDetailClient";
 import { ArrowLeft } from "lucide-react";
@@ -10,7 +10,7 @@ type IpsDetailPageProps = {
   params: Promise<{ name: string }>;
 };
 
-export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
+export default async function ipsDetailPage({ params }: IpsDetailPageProps) {
   const resolvedParams = await params;
   const { name } = resolvedParams;
   const decodedName = decodeURIComponent(name);
@@ -19,7 +19,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
   let error: string | null = null;
 
   try {
-    const response = await fetch(`${_ENV.NEXT_PUBLIC_API_URL}/search_ips/ips`, {
+    const response = await fetch(`${ENV.NEXT_PUBLIC_API_URL}/search_ips/ips`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: decodedName }),

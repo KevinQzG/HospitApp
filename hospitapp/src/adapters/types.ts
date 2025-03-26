@@ -1,4 +1,4 @@
-export const _TYPES = {
+export const TYPES = {
     UserRepositoryAdapter: Symbol.for('UserRepositoryAdapter'),
     DBAdapter: Symbol.for('DBAdapter'),
     IpsRepositoryAdapter: Symbol.for('IpsRepositoryAdapter'),

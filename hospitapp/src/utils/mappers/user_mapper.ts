@@ -15,7 +15,7 @@ export class UserMapper {
      * @returns {User} The USER entity.
      */
 
-    static from_document_to_domain(raw: UserDocument): User {
+    static fromDocumentToDomain(raw: UserDocument): User {
         return new User(
             raw._id,
             raw.email,
@@ -33,14 +33,14 @@ export class UserMapper {
      */
 
 
-    static from_domain_to_document(user: User): UserDocument {
+    static fromDomainToDocument(user: User): UserDocument {
         return {
-            _id: user.get_id(),
-            phone: user.get_phone(),
-            email: user.get_email(),
-            password: user.get_password(),
-            role: user.get_role(),
-            eps: user.get_eps()
+            _id: user.getId(),
+            phone: user.getPhone(),
+            email: user.getEmail(),
+            password: user.getPassword(),
+            role: user.getRole(),
+            eps: user.getEps()
         };
     }
 
@@ -49,7 +49,7 @@ export class UserMapper {
      * @param {UserResponse} raw - The User response.
      * @returns {User} The User entity.
      */
-    static from_response_to_domain(raw: UserResponse): User {
+    static fromResponseToDomain(raw: UserResponse): User {
         return new User(
             new ObjectId(raw._id),
             raw.phone,
@@ -65,14 +65,14 @@ export class UserMapper {
      * @param {User} user - The User entity.
      * @returns {UserResponse} The User response.
      */
-    static from_domain_to_response(user: User): UserResponse {
+    static fromDomainToResponse(user: User): UserResponse {
         return {
-            _id: user.get_id().toHexString(),
-            phone: user.get_phone(),
-            email: user.get_email(),
-            password: user.get_password(),
-            role: user.get_role(),
-            eps: user.get_eps()
+            _id: user.getId().toHexString(),
+            phone: user.getPhone(),
+            email: user.getEmail(),
+            password: user.getPassword(),
+            role: user.getRole(),
+            eps: user.getEps()
         };
     }
 }

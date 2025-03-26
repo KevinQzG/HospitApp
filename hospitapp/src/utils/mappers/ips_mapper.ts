@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { IpsDocument, IpsResponse } from "@/models/ips.interface";
 import { Ips } from "@/models/ips";
-import { EPSMapper } from './eps_mapper';
+import { EpsMapper } from './eps_mapper';
 import { SpecialtyMapper } from './specialty_mapper';
 
 /**
@@ -14,7 +14,7 @@ export class IpsMapper {
      * @param {IpsDocument} raw - The IPS document.
      * @returns {Ips} The IPS entity.
      */
-    static from_document_to_domain(raw: IpsDocument): Ips {
+    static fromDocumentToDomain(raw: IpsDocument): Ips {
         return new Ips(
             raw._id,
             raw.name,
@@ -26,8 +26,8 @@ export class IpsMapper {
             raw.email,
             raw.level,
             raw.distance,
-            raw.eps?.map(EPSMapper.from_document_to_domain),
-            raw.specialties?.map(SpecialtyMapper.from_document_to_domain)
+            raw.eps?.map(EpsMapper.fromDocumentToDomain),
+            raw.specialties?.map(SpecialtyMapper.fromDocumentToDomain)
         );
     }
 
@@ -36,20 +36,20 @@ export class IpsMapper {
      * @param {Ips} ips - The IPS entity.
      * @returns {IpsDocument} The IPS document.
      */
-    static from_domain_to_document(ips: Ips): IpsDocument {
+    static fromDomainToDocument(ips: Ips): IpsDocument {
         return {
-            _id: ips.get_id(),
-            name: ips.get_name(),
-            department: ips.get_department(),
-            town: ips.get_town(),
-            address: ips.get_address(),
-            phone: ips.get_phone(),
-            email: ips.get_email(),
-            location: ips.get_location(),
-            level: ips.get_level(),
-            distance: ips.get_distance(),
-            eps: ips.get_eps()?.map(EPSMapper.from_domain_to_document),
-            specialties: ips.get_specialties()?.map(SpecialtyMapper.from_domain_to_document)
+            _id: ips.getId(),
+            name: ips.getName(),
+            department: ips.getDepartment(),
+            town: ips.getTown(),
+            address: ips.getAddress(),
+            phone: ips.getPhone(),
+            email: ips.getEmail(),
+            location: ips.getLocation(),
+            level: ips.getLevel(),
+            distance: ips.getDistance(),
+            eps: ips.getEps()?.map(EpsMapper.fromDomainToDocument),
+            specialties: ips.getSpecialties()?.map(SpecialtyMapper.fromDomainToDocument)
         };
     }
 
@@ -58,7 +58,7 @@ export class IpsMapper {
      * @param {IpsResponse} raw - The IPS response.
      * @returns {Ips} The IPS entity.
      */
-    static from_response_to_domain(raw: IpsResponse): Ips {
+    static fromResponseToDomain(raw: IpsResponse): Ips {
         return new Ips(
             new ObjectId(raw._id),
             raw.name,
@@ -70,8 +70,8 @@ export class IpsMapper {
             raw.email,
             raw.level,
             raw.distance,
-            raw.eps?.map(EPSMapper.from_response_to_domain),
-            raw.specialties?.map(SpecialtyMapper.from_response_to_domain)
+            raw.eps?.map(EpsMapper.fromResponseToDomain),
+            raw.specialties?.map(SpecialtyMapper.fromResponseToDomain)
         );
     }
 
@@ -80,20 +80,20 @@ export class IpsMapper {
      * @param {Ips} ips - The IPS entity.
      * @returns {IpsResponse} The IPS response.
      */
-    static from_domain_to_response(ips: Ips): IpsResponse {
+    static fromDomainToResponse(ips: Ips): IpsResponse {
         return {
-            _id: ips.get_id().toHexString(),
-            name: ips.get_name(),
-            department: ips.get_department(),
-            town: ips.get_town(),
-            address: ips.get_address(),
-            phone: ips.get_phone(),
-            email: ips.get_email(),
-            location: ips.get_location(),
-            level: ips.get_level(),
-            distance: ips.get_distance(),
-            eps: ips.get_eps()?.map(EPSMapper.from_domain_to_response),
-            specialties: ips.get_specialties()?.map(SpecialtyMapper.from_domain_to_response)
+            _id: ips.getId().toHexString(),
+            name: ips.getName(),
+            department: ips.getDepartment(),
+            town: ips.getTown(),
+            address: ips.getAddress(),
+            phone: ips.getPhone(),
+            email: ips.getEmail(),
+            location: ips.getLocation(),
+            level: ips.getLevel(),
+            distance: ips.getDistance(),
+            eps: ips.getEps()?.map(EpsMapper.fromDomainToResponse),
+            specialties: ips.getSpecialties()?.map(SpecialtyMapper.fromDomainToResponse)
         };
     }
 }

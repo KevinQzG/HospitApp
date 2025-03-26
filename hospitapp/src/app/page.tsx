@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import {
   SearchFormClientProps,
-  get_search_ips_cached_props as getSearchIpsCachedProps,
+  getSearchIpsCachedProps as getSearchIpsCachedProps,
 } from "@/services/search_ips/data_caching.service";
 import LandingSearchForm from "@/components/LandingSearchForm";
 import SpecialtiesSection from "@/components/SpecialtiesSection";

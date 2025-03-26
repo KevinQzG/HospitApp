@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 import DBAdapter from '@/adapters/db.adapter';
 import SpecialtyRepositoryAdapter from '@/adapters/specialty_repository.adapter';
-import _CONTAINER from '@/adapters/container';
-import { _TYPES } from '@/adapters/types';
+import CONTAINER from '@/adapters/container';
+import { TYPES } from '@/adapters/types';
 import { Specialty } from '@/models/specialty';
 
 describe('SpecialtyMongoRepository Integration Test', () => {
@@ -12,8 +12,13 @@ describe('SpecialtyMongoRepository Integration Test', () => {
     let results: Specialty[];
 
     beforeAll(async () => {
+<<<<<<< HEAD
         dbHandler = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
         repository = _CONTAINER.get<SpecialtyRepositoryAdapter>(_TYPES.SpecialtyRepositoryAdapter);
+=======
+        dbHandler = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
+        repository = CONTAINER.get<SpecialtyRepositoryAdapter>(TYPES.SpecialtyRepositoryAdapter);
+>>>>>>> origin/main
         await dbHandler.connect();
     });
 
@@ -23,7 +28,7 @@ describe('SpecialtyMongoRepository Integration Test', () => {
 
     describe('find_all', () => {
         it('should retrieve all Specialty documents', async () => {
-            results = await repository.find_all();
+            results = await repository.findAll();
 
             // Verify total count
             expect(results).toHaveLength(138);
@@ -35,6 +40,7 @@ describe('SpecialtyMongoRepository Integration Test', () => {
         });
 
         it('should return correct EPS document structure', async () => {
+<<<<<<< HEAD
             results = await repository.find_all();
             const sampleEps = results[0];
 
@@ -44,6 +50,17 @@ describe('SpecialtyMongoRepository Integration Test', () => {
             };
 
             expect(sampleEps.to_object()).toMatchObject(expectedData);
+=======
+            results = await repository.findAll();
+            const SAMPLE_EPS = results[0];
+
+            const EXPECTED_DATA = {
+                _id: new ObjectId("67b3e928b1ae5d9e47ae721a"),
+                name: "DIAGNÓSTICO VASCULAR",
+            };
+
+            expect(SAMPLE_EPS.toObject()).toMatchObject(EXPECTED_DATA);
+>>>>>>> origin/main
         });
     });
 });
