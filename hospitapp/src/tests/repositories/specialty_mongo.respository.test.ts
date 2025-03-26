@@ -12,13 +12,8 @@ describe('SpecialtyMongoRepository Integration Test', () => {
     let results: Specialty[];
 
     beforeAll(async () => {
-<<<<<<< HEAD
-        dbHandler = _CONTAINER.get<DBAdapter>(_TYPES.DBAdapter);
-        repository = _CONTAINER.get<SpecialtyRepositoryAdapter>(_TYPES.SpecialtyRepositoryAdapter);
-=======
         dbHandler = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
         repository = CONTAINER.get<SpecialtyRepositoryAdapter>(TYPES.SpecialtyRepositoryAdapter);
->>>>>>> origin/main
         await dbHandler.connect();
     });
 
@@ -40,17 +35,6 @@ describe('SpecialtyMongoRepository Integration Test', () => {
         });
 
         it('should return correct EPS document structure', async () => {
-<<<<<<< HEAD
-            results = await repository.find_all();
-            const sampleEps = results[0];
-
-            const expectedData = {
-                _id: new ObjectId("67b3e928b1ae5d9e47ae7224"),
-                name: "ENFERMERÍA",
-            };
-
-            expect(sampleEps.to_object()).toMatchObject(expectedData);
-=======
             results = await repository.findAll();
             const SAMPLE_EPS = results[0];
 
@@ -60,7 +44,6 @@ describe('SpecialtyMongoRepository Integration Test', () => {
             };
 
             expect(SAMPLE_EPS.toObject()).toMatchObject(EXPECTED_DATA);
->>>>>>> origin/main
         });
     });
 });

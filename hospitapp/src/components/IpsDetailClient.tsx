@@ -27,9 +27,6 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<"details" | "map">("details");
 
-  const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}`;
-  const WAZE_URL = `https://waze.com/ul?ll=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}&navigate=yes`;
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans flex flex-col transition-colors duration-300">
       <header className="bg-white dark:bg-gray-800 shadow-lg rounded-b-xl">
@@ -97,11 +94,11 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
   );
 }
 
-const DetailsView = ({
+function DetailsView({
   ipsData,
 }: {
   ipsData: NonNullable<LookIpsResponse["data"]>;
-}) => {
+}) {
   const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}`;
   const WAZE_URL = `https://waze.com/ul?ll=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}&navigate=yes`;
 
@@ -247,17 +244,16 @@ const DetailsView = ({
       )}
     </div>
   );
-};
+}
 
-const MapView = ({
+function MapView({
   ipsData,
   router,
 }: {
   ipsData: NonNullable<LookIpsResponse["data"]>;
   router: ReturnType<typeof useRouter>;
-}) => {
+}) {
   const [distance, setDistance] = useState<number | null>(null);
-  const [map, setMap] = useState<mapboxgl.Map | null>(null);
   let userMarker: mapboxgl.Marker | null = null;
 
   useEffect(() => {
@@ -364,11 +360,10 @@ const MapView = ({
 
     initializedMap.on("load", () => {
       initializedMap.resize();
-      setMap(initializedMap); // Guardamos la instancia del mapa en el estado
       geolocate.trigger(); // Activamos la geolocalización una vez que el mapa esté cargado
     });
 
-    geolocate.on("geolocate", (e: any) => {
+    geolocate.on("geolocate", (e: GeolocationPosition) => {
       const userLng = e.coords.longitude;
       const userLat = e.coords.latitude;
 
@@ -395,7 +390,9 @@ const MapView = ({
     // Detectar el modo oscuro y ajustar el estilo del mapa
     const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleDarkModeChange = (e: MediaQueryListEvent) => {
-      initializedMap.setStyle(e.matches ? "mapbox://styles/mapbox/dark-v10" : "mapbox://styles/mapbox/streets-v12");
+      initializedMap.setStyle(
+        e.matches ? "mapbox://styles/mapbox/dark-v10" : "mapbox://styles/mapbox/streets-v12"
+      );
     };
     darkModeMediaQuery.addEventListener("change", handleDarkModeChange);
     if (darkModeMediaQuery.matches) {
@@ -422,4 +419,4 @@ const MapView = ({
       )}
     </div>
   );
-};
+}

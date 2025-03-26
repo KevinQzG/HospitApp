@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -17,6 +17,16 @@ import { Suspense } from "react";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string;
 
+interface Specialty {
+  _id: string;
+  name: string;
+}
+
+interface Eps {
+  _id: string;
+  name: string;
+}
+
 interface IpsResponse {
   _id: string;
   name: string;
@@ -27,12 +37,66 @@ interface IpsResponse {
   phone?: string | number;
   email?: string;
   level?: number;
-  distance?: number;
-  specialties?: any[];
-  eps?: any[];
+  distance?: number; // Distancia en metros
+  specialties?: Specialty[];
+  eps?: Eps[];
   maps?: string;
   waze?: string;
 }
+
+interface SearchResponse {
+  success: boolean;
+  error?: string;
+  data?: IpsResponse[];
+  pagination?: {
+    total: number;
+    totalPages: number;
+    page: number;
+    pageSize: number;
+  };
+}
+
+// Función para calcular la distancia en metros usando la fórmula de Haversine
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371000; // Radio de la Tierra en metros
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distancia en metros
+}
+
+// Componente memoizado para renderizar cada resultado y evitar re-renderizados innecesarios
+const ResultItem = memo(({ item }: { item: IpsResponse }) => (
+  <Link
+    href={`/ips-details/${encodeURIComponent(item.name)}`}
+    className="block p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
+  >
+    <div className="flex items-center space-x-4">
+      <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
+        <Hospital className="w-10 h-10 text-blue-700 dark:text-blue-400" />
+      </div>
+      <div>
+        <h2 className="text-lg font-semibold">{item.name}</h2>
+        <p className="text-gray-600 dark:text-gray-300 text-sm">
+          {item.address}
+          {item.town && `, ${item.town}`}
+          {item.department && `, ${item.department}`}
+        </p>
+        <p className="text-gray-800 dark:text-gray-200 text-ms mt-1">
+          Distancia:{" "}
+          {item.distance !== undefined
+            ? `${Math.round(item.distance)} metros`
+            : "N/A"}
+        </p>
+      </div>
+    </div>
+  </Link>
+));
+
+ResultItem.displayName = "ResultItem";
 
 function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const searchParams = useSearchParams();
@@ -48,61 +112,126 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const pageSize = 21;
   const [totalResults, setTotalResults] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [userCoordinates, setUserCoordinates] = useState<[number, number] | null>(null);
+  const [isNewSearch, setIsNewSearch] = useState(false);
 
+  // Obtener la ubicación del usuario al montar el componente
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserCoordinates([position.coords.longitude, position.coords.latitude]);
+        },
+        (err) => {
+          console.warn("No se pudo obtener la ubicación del usuario:", err);
+          setUserCoordinates([-75.5849, 6.1816]); // Coordenadas por defecto
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    } else {
+      console.warn("Geolocalización no soportada");
+      setUserCoordinates([-75.5849, 6.1816]); // Coordenadas por defecto
+    }
+  }, []);
+
+  // Obtener los resultados filtrados desde el servidor
   useEffect(() => {
     const fetchFilteredResults = async () => {
       try {
-        const maxDistance = searchParams.get("max_distance") ?? "20000";
+        // Obtener los parámetros de la URL
+        const maxDistance = searchParams.get("maxDistance") ?? "20000";
         const specialtiesParam =
           searchParams.get("specialties")?.split(",").filter(Boolean) || [];
         const epsParam =
           searchParams.get("eps")?.split(",").filter(Boolean) || [];
         const coordinatesStr = searchParams.get("coordinates");
-        let coordinates: [number, number] = [-75.5849, 6.1816];
+        let coordinates: [number, number] = userCoordinates || [-75.5849, 6.1816];
         if (coordinatesStr) {
           const [lng, lat] = coordinatesStr.split(",").map(Number);
           if (!isNaN(lng) && !isNaN(lat)) coordinates = [lng, lat];
         }
 
-        const isUnfilteredSearch =
-          specialtiesParam.length === 0 && epsParam.length === 0;
+        // Construir el cuerpo de la solicitud para la API
+        const requestBody: any = {
+          coordinates, // Coordenadas del usuario
+          max_distance: parseInt(maxDistance), // Distancia máxima en metros
+          page: 1,
+          page_size: 2890, // Traer todos los resultados para paginar en el cliente
+        };
+
+        // Incluir especialidades solo si se seleccionaron
+        if (specialtiesParam.length > 0) {
+          requestBody.specialties = specialtiesParam;
+        }
+
+        // Incluir EPS solo si se seleccionaron
+        if (epsParam.length > 0) {
+          requestBody.eps_names = epsParam;
+        }
+
+        // Si no se seleccionaron ni especialidades ni EPS, la API debería devolver todos los IPS
+        // dentro del rango de distancia y según la ubicación del usuario
 
         const response = await fetch("/api/search_ips/filter", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            coordinates,
-            max_distance: parseInt(maxDistance),
-            specialties: isUnfilteredSearch ? undefined : specialtiesParam,
-            eps: isUnfilteredSearch ? undefined : epsParam,
-            page: 1,
-            page_size: 2890,
-          }),
+          body: JSON.stringify(requestBody),
         });
 
-        if (!response.ok) throw new Error("Failed to fetch filtered results");
+        if (!response.ok) throw new Error("No se pudieron obtener los resultados filtrados");
 
-        const data = await response.json();
-        const filteredResults = data.data || [];
+        const data: SearchResponse = await response.json();
+        let filteredResults = data.data || [];
+
+        // Log para depurar el número de resultados
+        console.log("Resultados del servidor:", filteredResults.length);
+        console.log("Paginación del servidor:", data.pagination);
+
+        // Calcular las distancias si tenemos las coordenadas del usuario
+        if (userCoordinates) {
+          filteredResults = filteredResults.map((item: IpsResponse) => ({
+            ...item,
+            distance: calculateDistance(
+              userCoordinates[1], // Latitud del usuario
+              userCoordinates[0], // Longitud del usuario
+              item.location.coordinates[1], // Latitud del IPS
+              item.location.coordinates[0] // Longitud del IPS
+            ),
+          }));
+
+          // Ordenar los resultados por distancia (ascendente)
+          filteredResults.sort((a: IpsResponse, b: IpsResponse) => (a.distance || 0) - (b.distance || 0));
+        }
+
         setAllResults(filteredResults);
-        setTotalResults(filteredResults.length);
-        setTotalPages(Math.ceil(filteredResults.length / pageSize));
+        setTotalResults(data.pagination?.total || filteredResults.length);
+        setTotalPages(data.pagination?.totalPages || Math.ceil(filteredResults.length / pageSize));
 
-        const pageFromParams = parseInt(searchParams.get("page") ?? "1");
-        setCurrentPage(pageFromParams);
-        const start = (pageFromParams - 1) * pageSize;
+        // Establecer la página actual desde los parámetros de la URL solo si es una nueva búsqueda
+        if (isNewSearch) {
+          setCurrentPage(1); // Reiniciar a la página 1 para una nueva búsqueda
+          setIsNewSearch(false); // Reiniciar la bandera
+        } else {
+          const pageFromParams = parseInt(searchParams.get("page") ?? "1");
+          setCurrentPage(pageFromParams);
+        }
+
+        const start = (currentPage - 1) * pageSize;
         const end = start + pageSize;
         setPaginatedResults(filteredResults.slice(start, end));
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error occurred");
+        setError(err instanceof Error ? err.message : "Ocurrió un error desconocido");
       } finally {
         setTimeout(() => setLoading(false), 500);
       }
     };
 
-    fetchFilteredResults();
-  }, [searchParams]);
+    if (userCoordinates !== null) {
+      fetchFilteredResults();
+    }
+  }, [searchParams, userCoordinates, isNewSearch]);
 
+  // Manejar los cambios en la búsqueda y la paginación
   useEffect(() => {
     const filtered = allResults.filter((item) =>
       `${item.name} ${item.address} ${item.town || ""} ${item.department || ""}`
@@ -111,26 +240,27 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
     );
     setTotalResults(filtered.length);
     setTotalPages(Math.ceil(filtered.length / pageSize));
-    const pageFromParams = parseInt(searchParams.get("page") ?? "1");
-    setCurrentPage(pageFromParams);
-    const start = 0;
-    const end = pageSize;
+
+    // Actualizar los resultados paginados instantáneamente sin transición
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
     setPaginatedResults(filtered.slice(start, end));
-  }, [searchQuery, allResults]);
+  }, [searchQuery, allResults, currentPage]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    // Actualizar la URL sin recargar la página
     const currentParams = new URLSearchParams(searchParams.toString());
     currentParams.set("page", newPage.toString());
-    router.push(`/results?${currentParams.toString()}`);
-    const filtered = allResults.filter((item) =>
-      `${item.name} ${item.address} ${item.town || ""} ${item.department || ""}`
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
-    );
-    const start = (newPage - 1) * pageSize;
-    const end = start + pageSize;
-    setPaginatedResults(filtered.slice(start, end));
+    router.push(`/results?${currentParams.toString()}`, { scroll: false });
+  };
+
+  const handleSearchSubmit: SearchFormSubmitHandler = (isSubmitting) => {
+    setSearchLoading(isSubmitting);
+    if (isSubmitting) {
+      setIsNewSearch(true); // Marcar una nueva búsqueda para reiniciar la página
+    }
   };
 
   const maxVisiblePages = 5;
@@ -144,10 +274,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
     { length: endPage - startPage + 1 },
     (_, i) => startPage + i
   );
-
-  const handleSearchSubmit: SearchFormSubmitHandler = (isSubmitting) => {
-    setSearchLoading(isSubmitting);
-  };
 
   if (loading || searchLoading) {
     return (
@@ -169,7 +295,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   }
 
   const coordinatesStr = searchParams.get("coordinates");
-  let coordinates: [number, number] = [-75.5849, 6.1816];
+  let coordinates: [number, number] = userCoordinates || [-75.5849, 6.1816];
   if (coordinatesStr) {
     const [lng, lat] = coordinatesStr.split(",").map(Number);
     if (!isNaN(lng) && !isNaN(lat)) coordinates = [lng, lat];
@@ -229,40 +355,16 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         </div>
       </div>
 
-      {/* Results List */}
+      {/* Lista de Resultados */}
       {listView ? (
         <div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedResults.map((item) => (
-              <Link
-                key={item._id}
-                href={`/ips-details/${encodeURIComponent(item.name)}`}
-                className="block p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                    <Hospital className="w-10 h-10 text-blue-700 dark:text-blue-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold">{item.name}</h2>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">
-                      {item.address}
-                      {item.town && `, ${item.town}`}
-                      {item.department && `, ${item.department}`}
-                    </p>
-                    <p className="text-gray-800 dark:text-gray-200 text-ms mt-1">
-                      Distancia:{" "}
-                      {item.distance !== undefined
-                        ? `${Math.round(item.distance)} m`
-                        : "N/A"}
-                    </p>
-                  </div>
-                </div>
-              </Link>
+              <ResultItem key={item._id} item={item} />
             ))}
           </div>
 
-          {/* Pagination */}
+          {/* Paginación */}
           {totalPages > 1 && (
             <div className="mt-10 flex flex-col items-center space-y-4">
               <p className="text-sm font-medium">
@@ -283,6 +385,18 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                   <ChevronLeft className="w-5 h-5" />
                 </button>
 
+                {startPage > 1 && (
+                  <>
+                    <button
+                      onClick={() => handlePageChange(1)}
+                      className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                    >
+                      1
+                    </button>
+                    {startPage > 2 && <span className="text-gray-600 dark:text-gray-300 px-2">...</span>}
+                  </>
+                )}
+
                 {pageNumbers.map((page) => (
                   <button
                     key={page}
@@ -296,6 +410,18 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                     {page}
                   </button>
                 ))}
+
+                {endPage < totalPages && (
+                  <>
+                    {endPage < totalPages - 1 && <span className="text-gray-600 dark:text-gray-300 px-2">...</span>}
+                    <button
+                      onClick={() => handlePageChange(totalPages)}
+                      className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                    >
+                      {totalPages}
+                    </button>
+                  </>
+                )}
 
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
@@ -319,13 +445,13 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   );
 }
 
-const MapComponent = ({
+function MapComponent({
   results,
   coordinates,
 }: {
   results: IpsResponse[];
   coordinates: [number, number];
-}) => {
+}) {
   const router = useRouter();
 
   useEffect(() => {
@@ -360,12 +486,9 @@ const MapComponent = ({
         const popupContent = document.createElement("div");
         popupContent.innerHTML = `
           <div class="bg-white p-4 rounded-lg shadow-lg max-w-xs text-sm">
-            <h3 class="text-blue-600 font-semibold mb-1 cursor-pointer hover:underline">${
-              item.name
-            }</h3>
-            <p class="text-gray-700">${item.address}, ${item.town ?? ""}, ${
-          item.department ?? ""
-        }</p>
+            <h3 class="text-blue-600 font-semibold mb-1 cursor-pointer hover:underline">${item.name}</h3>
+            <p class="text-gray-700">${item.address}, ${item.town ?? ""}, ${item.department ?? ""}</p>
+            <p class="text-gray-700">Distancia: ${item.distance !== undefined ? Math.round(item.distance) + " metros" : "N/A"}</p>
           </div>
         `;
         popupContent.querySelector("h3")?.addEventListener("click", () => {
@@ -391,7 +514,7 @@ const MapComponent = ({
       className="w-full h-[400px] sm:h-[600px] rounded-xl shadow-lg overflow-hidden"
     />
   );
-};
+}
 
 export default function ResultsPage({
   specialties,

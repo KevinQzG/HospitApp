@@ -12,7 +12,6 @@ import {
 import {
   Mail,
   MapPin,
-  Phone,
   Globe,
   Users,
   ClipboardList,

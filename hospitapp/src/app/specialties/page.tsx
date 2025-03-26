@@ -102,8 +102,8 @@ const SPECIALTIES = [
 ];
 
 export default function SpecialtiesPage() {
-  const [search_term, setSearchTerm] = useState("");
-  const [filtered_specialties, setFilteredSpecialties] = useState(SPECIALTIES);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredSpecialties, setFilteredSpecialties] = useState(SPECIALTIES);
   const router = useRouter();
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export default function SpecialtiesPage() {
       const filtered = SPECIALTIES.map((category) => ({
         ...category,
         specialties: category.specialties.filter((specialty) =>
-          specialty.toLowerCase().includes(search_term.toLowerCase())
+          specialty.toLowerCase().includes(searchTerm.toLowerCase())
         ),
       })).filter((category) => category.specialties.length > 0);
 
@@ -119,21 +119,21 @@ export default function SpecialtiesPage() {
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [search_term]);
+  }, [searchTerm]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (search_term) {
-      const query_params = new URLSearchParams({
-        specialties: search_term,
+    if (searchTerm) {
+      const queryParams = new URLSearchParams({
+        specialties: searchTerm,
         coordinates: "-75.5849,6.1816",
         maxDistance: "20000",
         page: "1",
         pageSize: "21",
       });
 
-      router.push(`/results?${query_params.toString()}`);
+      router.push(`/results?${queryParams.toString()}`);
     }
   };
 
@@ -157,7 +157,7 @@ export default function SpecialtiesPage() {
               <input
                 type="text"
                 placeholder="Buscar especialidad..."
-                value={search_term}
+                value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full py-3 pl-12 pr-16 text-gray-700 dark:text-gray-100 bg-transparent border-none focus:ring-0 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 text-base"
                 aria-label="Buscar especialidad médica"
@@ -175,7 +175,7 @@ export default function SpecialtiesPage() {
       </div>
 
       <div className="max-w-7xl mx-auto mt-10">
-        {filtered_specialties.map((category, index) => (
+        {filteredSpecialties.map((category, index) => (
           <div key={index} className="mb-10">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
               {category.category}

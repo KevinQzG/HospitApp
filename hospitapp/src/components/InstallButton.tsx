@@ -4,8 +4,14 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { IoClose, IoDownloadOutline } from "react-icons/io5";
 
+// Define the type for BeforeInstallPromptEvent
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+}
+
 export default function InstallButton() {
-  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
   const pathname = usePathname();
@@ -15,7 +21,7 @@ export default function InstallButton() {
 
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
-      setInstallPrompt(event);
+      setInstallPrompt(event as BeforeInstallPromptEvent);
       setIsVisible(true);
 
       // Ocultar automáticamente después de 8 segundos
@@ -36,8 +42,8 @@ export default function InstallButton() {
   const handleInstall = async () => {
     if (installPrompt) {
       setIsInstalling(true);
-      (installPrompt as any).prompt();
-      const choiceResult = await (installPrompt as any).userChoice;
+      await installPrompt.prompt();
+      const choiceResult = await installPrompt.userChoice;
       if (choiceResult.outcome === "accepted") {
         console.log("Usuario aceptó la instalación");
         setIsVisible(false);
