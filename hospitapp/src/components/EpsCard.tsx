@@ -35,11 +35,11 @@ export default function EpsCard({ name, displayName, icon: Icon, active = false 
     }
 
     const queryParams = new URLSearchParams({
-      eps_names: name,
+      "eps_names": name,
       coordinates: coordinates.join(","),
-      max_distance: "20000",
+      "max_distance": "20000",
       page: "1",
-      page_size: "21",
+      "page_size": "21",
     });
     router.push(`/results?${queryParams.toString()}`);
   };
