@@ -56,20 +56,27 @@ interface SearchResponse {
   };
 }
 
-// Función para calcular la distancia en metros usando la fórmula de Haversine
+interface SearchRequestBody {
+  coordinates: [number, number];
+  max_distance: number;
+  page: number;
+  page_size: number;
+  specialties?: string[];
+  eps_names?: string[];
+}
+
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371000; // Radio de la Tierra en metros
+  const R = 6371000;
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // Distancia en metros
+  return R * c;
 }
 
-// Componente memoizado para renderizar cada resultado y evitar re-renderizados innecesarios
-const ResultItem = memo(({ item }: { item: IpsResponse }) => (
+const RESULT_ITEM = memo(({ item }: { item: IpsResponse }) => (
   <Link
     href={`/ips-details/${encodeURIComponent(item.name)}`}
     className="block p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
@@ -96,7 +103,7 @@ const ResultItem = memo(({ item }: { item: IpsResponse }) => (
   </Link>
 ));
 
-ResultItem.displayName = "ResultItem";
+RESULT_ITEM.displayName = "RESULT_ITEM";
 
 function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const searchParams = useSearchParams();
@@ -115,7 +122,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const [userCoordinates, setUserCoordinates] = useState<[number, number] | null>(null);
   const [isNewSearch, setIsNewSearch] = useState(false);
 
-  // Obtener la ubicación del usuario al montar el componente
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -130,15 +136,13 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
       );
     } else {
       console.warn("Geolocalización no soportada");
-      setUserCoordinates([-75.5849, 6.1816]); // Coordenadas por defecto
+      setUserCoordinates([-75.5849, 6.1816]); 
     }
   }, []);
 
-  // Obtener los resultados filtrados desde el servidor
   useEffect(() => {
     const fetchFilteredResults = async () => {
       try {
-        // Obtener los parámetros de la URL
         const maxDistance = searchParams.get("maxDistance") ?? "20000";
         const specialtiesParam =
           searchParams.get("specialties")?.split(",").filter(Boolean) || [];
@@ -151,26 +155,22 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           if (!isNaN(lng) && !isNaN(lat)) coordinates = [lng, lat];
         }
 
-        // Construir el cuerpo de la solicitud para la API
-        const requestBody: any = {
-          coordinates, // Coordenadas del usuario
-          max_distance: parseInt(maxDistance), // Distancia máxima en metros
+        const requestBody: SearchRequestBody = {
+          coordinates,
+          "max_distance": parseInt(maxDistance),
           page: 1,
-          page_size: 2890, // Traer todos los resultados para paginar en el cliente
+          "page_size": 2890,
         };
 
-        // Incluir especialidades solo si se seleccionaron
         if (specialtiesParam.length > 0) {
           requestBody.specialties = specialtiesParam;
         }
 
-        // Incluir EPS solo si se seleccionaron
         if (epsParam.length > 0) {
-          requestBody.eps_names = epsParam;
+          requestBody["eps_names"] = epsParam;
         }
 
-        // Si no se seleccionaron ni especialidades ni EPS, la API debería devolver todos los IPS
-        // dentro del rango de distancia y según la ubicación del usuario
+        console.log("Parámetros enviados a la API:", requestBody);
 
         const response = await fetch("/api/search_ips/filter", {
           method: "POST",
@@ -183,9 +183,24 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         const data: SearchResponse = await response.json();
         let filteredResults = data.data || [];
 
-        // Log para depurar el número de resultados
-        console.log("Resultados del servidor:", filteredResults.length);
+        // Log para depurar los resultados recibidos de la API
+        console.log("Resultados recibidos de la API:", filteredResults.length);
         console.log("Paginación del servidor:", data.pagination);
+        console.log("Primeros 5 resultados:", filteredResults.slice(0, 5));
+
+        // Filtrado adicional en el cliente para asegurarnos de que solo se muestren los IPS con la EPS seleccionada
+        if (epsParam.length > 0) {
+          filteredResults = filteredResults.filter((item: IpsResponse) => {
+            if (!item.eps || item.eps.length === 0) return false;
+            const hasMatchingEps = item.eps.some((epsItem) =>
+              epsParam.includes(epsItem._id)
+            );
+            if (!hasMatchingEps) {
+              console.log(`IPS "${item.name}" no coincide con las EPS seleccionadas (${epsParam}):`, item.eps);
+            }
+            return hasMatchingEps;
+          });
+        }
 
         // Calcular las distancias si tenemos las coordenadas del usuario
         if (userCoordinates) {
@@ -199,15 +214,13 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
             ),
           }));
 
-          // Ordenar los resultados por distancia (ascendente)
           filteredResults.sort((a: IpsResponse, b: IpsResponse) => (a.distance || 0) - (b.distance || 0));
         }
 
         setAllResults(filteredResults);
-        setTotalResults(data.pagination?.total || filteredResults.length);
-        setTotalPages(data.pagination?.totalPages || Math.ceil(filteredResults.length / pageSize));
+        setTotalResults(filteredResults.length); // Usar la longitud de los resultados filtrados
+        setTotalPages(Math.ceil(filteredResults.length / pageSize));
 
-        // Establecer la página actual desde los parámetros de la URL solo si es una nueva búsqueda
         if (isNewSearch) {
           setCurrentPage(1); // Reiniciar a la página 1 para una nueva búsqueda
           setIsNewSearch(false); // Reiniciar la bandera
@@ -266,7 +279,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const maxVisiblePages = 5;
   const pageRange = Math.floor(maxVisiblePages / 2);
   let startPage = Math.max(1, currentPage - pageRange);
-  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
   if (endPage - startPage + 1 < maxVisiblePages) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1);
   }
@@ -360,7 +373,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         <div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedResults.map((item) => (
-              <ResultItem key={item._id} item={item} />
+              <RESULT_ITEM key={item._id} item={item} />
             ))}
           </div>
 
