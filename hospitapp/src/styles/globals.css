@@ -3,6 +3,11 @@
 @import "tailwindcss";
 @import 'mapbox-gl/dist/mapbox-gl.css';
 
+html {
+  scroll-behavior: smooth;
+}
+
+
 body {
   background-color: #f7fafc; /* bg-gray-100 */
   color: #2d3748; /* text-gray-800 */
