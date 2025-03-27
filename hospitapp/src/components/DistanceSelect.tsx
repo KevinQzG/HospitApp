@@ -85,7 +85,7 @@ export function DistanceSelect({ name, onChange, value }: DistanceSelectProps) {
   return (
     <div className="relative" ref={wrapperRef}>
       <div
-        className="flex items-center p-2 border border-gray-200 rounded-lg bg-white shadow-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 transition-all cursor-pointer"
+        className="flex items-center p-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 transition-all cursor-pointer"
         onClick={handleInputClick}
         onKeyDown={handleKeyDown}
         tabIndex={0}
@@ -93,14 +93,14 @@ export function DistanceSelect({ name, onChange, value }: DistanceSelectProps) {
         aria-expanded={isOpen}
         aria-label="Seleccionar distancia máxima"
       >
-        <span className={`flex-1 min-w-[150px] p-2 ${value ? "text-gray-700" : "text-gray-700"}`}>
+        <span className={`flex-1 min-w-[150px] p-2 ${value ? "text-gray-700 dark:text-gray-300" : "text-gray-500 dark:text-gray-400"}`}>
           {selectedLabel}
         </span>
       </div>
 
       {isOpen && (
         <div
-          className="absolute z-10 w-full mt-2 border border-gray-200 rounded-lg bg-white shadow-lg max-h-25 overflow-y-auto overflow-x-hidden"
+          className="absolute z-10 w-full mt-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-lg max-h-25 overflow-y-auto overflow-x-hidden"
           role="listbox"
         >
           {distances.map((distance, index) => (
@@ -109,7 +109,7 @@ export function DistanceSelect({ name, onChange, value }: DistanceSelectProps) {
               ref={(el) => {
                 optionRefs.current[index] = el;
               }}
-              className="flex items-center p-3 hover:bg-gray-50 cursor-pointer focus:bg-gray-100 outline-none"
+              className="flex items-center p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700 outline-none text-gray-700 dark:text-gray-300"
               role="option"
               tabIndex={-1}
               aria-selected={value === distance.value}
@@ -124,11 +124,11 @@ export function DistanceSelect({ name, onChange, value }: DistanceSelectProps) {
                 type="checkbox"
                 checked={value === distance.value}
                 onChange={() => handleSelect(distance.value)}
-                className="mr-3 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="mr-3 w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:bg-gray-800"
                 tabIndex={-1}
                 aria-hidden="true"
               />
-              <span className="text-gray-700">{distance.label}</span>
+              <span>{distance.label}</span>
             </label>
           ))}
         </div>

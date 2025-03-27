@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 
 interface SearchableSelectProps {
-  options: Array<{ _id: string; name: string }>;
+  options: Array<{ _id: string; name: string; displayName?: string }>; // Agregamos displayName como opcional
   placeholder: string;
   name: string;
   maxSelections?: number;
@@ -74,28 +74,31 @@ export function SearchableSelect({
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div className="flex flex-wrap gap-2 p-2 border border-gray-200 rounded-lg bg-white shadow-sm focus-within:border-blue-500 transition-colors">
-        {selectedOptions.map((name) => (
-          <span
-            key={name}
-            className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center"
-          >
-            {name}
-            <button
-              type="button"
-              onClick={() => toggleOption(name)}
-              className="ml-2 text-blue-600 hover:text-blue-800 focus:outline-none"
-              aria-label={`Remover ${name}`}
+      <div className="flex flex-wrap gap-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm focus-within:border-blue-500 transition-colors">
+        {selectedOptions.map((name) => {
+          const option = options.find((opt) => opt.name === name);
+          return (
+            <span
+              key={name}
+              className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm flex items-center"
             >
-              ×
-            </button>
-          </span>
-        ))}
+              {option?.displayName || option?.name || name} {/* Mostramos displayName si existe, si no, name */}
+              <button
+                type="button"
+                onClick={() => toggleOption(name)}
+                className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus:outline-none"
+                aria-label={`Remover ${name}`}
+              >
+                ×
+              </button>
+            </span>
+          );
+        })}
 
         <input
           type="text"
           placeholder={placeholder}
-          className="flex-1 min-w-[150px] p-2 border-none focus:ring-0 outline-none placeholder-gray-400 bg-transparent"
+          className="flex-1 min-w-[150px] p-2 border-none focus:ring-0 outline-none placeholder-gray-400 dark:placeholder-gray-500 bg-transparent text-gray-700 dark:text-gray-300"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onClick={handleInputClick}
@@ -107,28 +110,28 @@ export function SearchableSelect({
 
       {isOpen && (
         <div
-          className="absolute z-10 w-full mt-2 border border-gray-200 rounded-lg bg-white shadow-lg max-h-34 overflow-y-auto overflow-x-hidden"
+          className="absolute z-10 w-full mt-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-lg max-h-34 overflow-y-auto overflow-x-hidden"
           role="listbox"
         >
           {filteredOptions.length === 0 ? (
-            <div className="p-3 text-gray-500">
+            <div className="p-3 text-gray-500 dark:text-gray-400">
               No se encontraron coincidencias
             </div>
           ) : (
             filteredOptions.map((option) => (
               <label
                 key={option._id}
-                className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
+                className="flex items-center p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-gray-700 dark:text-gray-300"
                 role="option"
               >
                 <input
                   type="checkbox"
                   checked={selectedOptions.includes(option.name)}
                   onChange={() => toggleOption(option.name)}
-                  className="mr-3 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="mr-3 w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:bg-gray-800"
                   aria-label={`Seleccionar ${option.name}`}
                 />
-                <span className="text-gray-700">{option.name}</span>
+                <span>{option.displayName || option.name}</span>
               </label>
             ))
           )}
