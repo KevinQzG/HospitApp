@@ -1,11 +1,11 @@
-import { PipelineStage, LookupStage, AddFieldsStage, ProjectStage } from "./ips.pipeline.interface";
+import { PipelineStage, LookupStage, AddFieldsStage, ProjectStage } from "./pipeline.interface";
 
 /**
- * Class that allows to build a pipeline for IPS queries.
+ * Class that allows to build a pipeline for Mongo queries.
  * 
- * @class IpsPipelineBuilder
+ * @class PipelineBuilder
  */
-export class IpsPipelineBuilder {
+export class PipelineBuilder {
     private pipeline: PipelineStage[];
 
     constructor() {
@@ -18,7 +18,7 @@ export class IpsPipelineBuilder {
      * @param {number} longitude - Longitude of the user.
      * @param {number} latitude - Latitude of the user.
      * @param {number} maxDistance - Maximum distance to search.
-     * @returns {IpsPipelineBuilder} The builder instance.
+     * @returns {PipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
@@ -46,7 +46,7 @@ export class IpsPipelineBuilder {
      * Adds a match stage to the pipeline.
      *
      * @param {string} name - The name to match.
-     * @returns {IpsPipelineBuilder} The builder instance.
+     * @returns {PipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
@@ -63,7 +63,7 @@ export class IpsPipelineBuilder {
     /**
      * Adds an EPS join to the pipeline.
      *
-     * @returns {IpsPipelineBuilder} The builder instance.
+     * @returns {PipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
@@ -82,7 +82,7 @@ export class IpsPipelineBuilder {
     /**
      * Adds a specialty join to the pipeline.
      *
-     * @returns {IpsPipelineBuilder} The builder instance.
+     * @returns {PipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
@@ -103,7 +103,7 @@ export class IpsPipelineBuilder {
      * Adds a specialty filter to the pipeline.
      *
      * @param {string[]} specialties - The specialties to filter.
-     * @returns {IpsPipelineBuilder} The builder instance.
+     * @returns {PipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
@@ -126,7 +126,7 @@ export class IpsPipelineBuilder {
      * Adds an EPS filter to the pipeline.
      *
      * @param {string[]} epsNames - The EPS to filter.
-     * @returns {IpsPipelineBuilder} The builder instance.
+     * @returns {PipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
@@ -146,11 +146,27 @@ export class IpsPipelineBuilder {
     }
 
     /**
+     * Adds a sort stage to the pipeline.
+     * 
+     * @param {object} sort - The sort object.
+     * @returns {PipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name addSortStage
+     */
+    addSortStage(sort: { [key: string]: number }): this {
+        this.pipeline.push({ $sort: sort });
+
+        return this;
+    }
+
+    /**
      * Adds a pagination stage to the pipeline.
      *
      * @param {number} page - The page number.
      * @param {number} pageSize - The page size.
-     * @returns {IpsPipelineBuilder} The builder instance.
+     * @returns {PipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method

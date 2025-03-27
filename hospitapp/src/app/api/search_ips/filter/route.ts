@@ -127,7 +127,6 @@ export async function POST(req: NextRequest): Promise<NextResponse<SearchRespons
             BODY.page_size || 10
         );
 
-        await DB_HANDLER.close();
         // revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)
         return NextResponse.json({
             success: true,
@@ -140,12 +139,12 @@ export async function POST(req: NextRequest): Promise<NextResponse<SearchRespons
             }
         });
     } catch (error) {
-        await DB_HANDLER.close();
-        
         console.error("API Error:", error);
         return NextResponse.json(
             { success: false, error: "Internal server error" },
             { status: 500 }
         );
+    } finally {
+        await DB_HANDLER.close();
     }
 }

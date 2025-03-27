@@ -5,7 +5,7 @@ import { TYPES } from "@/adapters/types";
 import { IpsDocument } from "@/models/ips.interface";
 import { Ips } from "@/models/ips";
 import type DBAdapter from "@/adapters/db.adapter";
-import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
+import { PipelineBuilder } from "./builders/pipeline.builder";
 import { IpsMapper } from "@/utils/mappers/ips_mapper";
 import { AggregationResult } from "./ips_mongo.repository.interfaces";
 
@@ -38,7 +38,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
         pageSize: number = 10
     ): Promise<{ results: Ips[]; total: number }> {
         // Build the pipeline
-        const PIPELINE = new IpsPipelineBuilder()
+        const PIPELINE = new PipelineBuilder()
             .addGeoStage(longitude, latitude, maxDistance)
             .matchesSpecialties(specialties)
             .matchesEps(epsNames)
@@ -68,7 +68,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 
     async findByName(name: string): Promise<Ips | null> {
         // Build the pipeline
-        const PIPELINE = new IpsPipelineBuilder()
+        const PIPELINE = new PipelineBuilder()
             .addMatchNameStage(name)
             .withEps()
             .withSpecialties()
