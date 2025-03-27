@@ -6,7 +6,7 @@ import { SpecialtyDocument } from "@/models/specialty.interface";
 import { Specialty } from "@/models/specialty";
 import type DBAdapter from "@/adapters/db.adapter";
 import { SpecialtyMapper } from "@/utils/mappers/specialty_mapper";
-// import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
+import { PipelineBuilder } from "./builders/pipeline.builder";
 
 /**
  * @class
@@ -28,9 +28,10 @@ export class SpecialtyMongoRepository implements SpecialtyRepositoryAdapter {
     ) { }
 
     async findAll(): Promise<Specialty[]> {
+        const PIPELINE = new PipelineBuilder().addSortStage({ name: 1 }).build();
         // Get all the EPS Documents
         const DB = await this.dbHandler.connect();
-        const RESULTS = await DB.collection<SpecialtyDocument>('Specialty').find().toArray();
+        const RESULTS = await DB.collection<SpecialtyDocument>('Specialty').aggregate<SpecialtyDocument>(PIPELINE).toArray();
         
         if (!RESULTS) {
             return [];

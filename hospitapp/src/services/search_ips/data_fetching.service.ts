@@ -6,16 +6,15 @@ import { IpsResponse } from '@/models/ips.interface';
 
 
 export const getIpsProps = async (params: { name: string }): Promise<IpsResponse | null> => {
+    const DB_HANDLER = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
     try {
         // Inject the dependencies
-        const DB_HANDLER = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
+        
         const SEARCH_IPS_SERVICE = CONTAINER.get<SearchIpsServiceAdapter>(TYPES.SearchIpsServiceAdapter);
 
         // Fetch the data
         const IPS = await SEARCH_IPS_SERVICE.getIpsByName(params.name);
 
-        // Close the database connection and return the results
-        await DB_HANDLER.close();
         return IPS;
     } catch (error) {
         if (error instanceof Error) {
@@ -23,5 +22,7 @@ export const getIpsProps = async (params: { name: string }): Promise<IpsResponse
         } else {
             throw new Error('Error fetching page props');
         }
+    } finally {
+        await DB_HANDLER.close();
     }
 }

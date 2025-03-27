@@ -6,7 +6,8 @@ export type PipelineStage =
     | { $match: MatchStage }
     | { $project: ProjectStage }
     | { $facet: FacetStage }
-    | { $addFields: AddFieldsStage };
+    | { $addFields: AddFieldsStage }
+    | { $sort: SortStage };
 
 export interface GeoNearStage {
     near: {
@@ -26,21 +27,20 @@ export interface LookupStage {
 }
 
 export interface MatchStage {
-    [key: string]: { $in?: string[] } | ObjectId | unknown;
+    [key: string]: { $in?: string[] } | ObjectId | string;
 }
 
 export interface ProjectStage {
-    name?: number;
-    department?: number;
-    town?: number;
-    address?: number;
-    phone?: number;
-    email?: number;
-    location?: number;
-    level?: number;
-    distance?: number;
-    eps_ips?: number;
-    specialtyDetails?: number;
+    [key: string]: number | {
+        $sortArray: {
+            input: string;
+            sortBy: SortStage;
+        }
+    }
+}
+
+export interface SortStage {
+    [key: string]: number;
 }
 
 export interface AddFieldsStage {
