@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Eye, EyeOff, X } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,27 +11,26 @@ import { faGoogle, faFacebook, faApple } from "@fortawesome/free-brands-svg-icon
 export default function LoginPage() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
 
   // Efecto para cerrar el mensaje automáticamente después de 10 segundos
   useEffect(() => {
     if (errorMessage) {
       const timer = setTimeout(() => {
         setErrorMessage("");
-      }, 10000); // 10 segundos
+      }, 10000);
 
-      // Limpiar el temporizador si el componente se desmonta o el mensaje cambia
       return () => clearTimeout(timer);
     }
   }, [errorMessage]);
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setErrorMessage(""); // Limpiar mensaje previo
+    setErrorMessage("");
 
     const email = (document.getElementById("email") as HTMLInputElement).value;
     const password = (document.getElementById("password") as HTMLInputElement).value;
 
-    // Validación inmediata
     if (!email || !password) {
       setErrorMessage("Por favor, completa todos los campos");
       return;
@@ -46,7 +46,7 @@ export default function LoginPage() {
       const DATA = await response.json();
 
       if (DATA.success) {
-        window.location.href = "/";
+        router.push("/");
       } else {
         setErrorMessage("Correo electrónico o contraseña incorrectos");
       }
