@@ -3,20 +3,15 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  Info,
-  LogIn,
-  Globe,
-  ChevronDown,
-} from "lucide-react";
+import { Home, Info, LogIn, Globe, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Header() {
   const [isMobile, setIsMobile] = useState(false);
   const [languageIndex, setLanguageIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false); 
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const pathname = usePathname();
   const LANGUAGES = ["ES", "EN", "FR", "IT", "PT", "DE"];
@@ -29,55 +24,68 @@ export default function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Initialize language and theme
+  // Check session
   useEffect(() => {
-    // Google Translate
+    const checkSession = async () => {
+      try {
+        const res = await fetch("/api/session");
+        if (!res.ok) throw new Error("Session check failed");
+        const data = await res.json();
+        setIsLoggedIn(data.loggedIn);
+      } catch (error) {
+        console.error("Error checking session:", error);
+        setIsLoggedIn(false);
+      }
+    };
+    checkSession();
+  }, []);
+
+  const handleLogout = () => {
+    document.cookie = "session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    setIsLoggedIn(false);
+  };
+
+  // Google Translate + Language + Theme
+  useEffect(() => {
     const loadGoogleTranslate = () => {
-      if (!navigator.userAgent.includes("Chrome-Lighthouse")) {
-        setTimeout(() => {
-          if (!document.getElementById("google-translate-script")) {
-            const script = document.createElement("script");
-            script.id = "google-translate-script";
-            script.src =
-              "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-            script.async = true;
-            document.body.appendChild(script);
-          }
+      if (!navigator.userAgent.includes("Chrome-Lighthouse") && 
+          !document.getElementById("google-translate-script")) {
+        const script = document.createElement("script");
+        script.id = "google-translate-script";
+        script.src =
+          "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        script.async = true;
+        document.body.appendChild(script);
 
-          window.googleTranslateElementInit = () => {
-            new window.google.translate.TranslateElement(
-              {
-                pageLanguage: "es",
-                includedLanguages: "es,en,fr,it,pt,de",
-                autoDisplay: false,
-              },
-              "google_translate_element"
-            );
+        window.googleTranslateElementInit = () => {
+          new window.google.translate.TranslateElement(
+            {
+              pageLanguage: "es",
+              includedLanguages: "es,en,fr,it,pt,de",
+              autoDisplay: false,
+            },
+            "google_translate_element"
+          );
 
-            const style = document.createElement("style");
-            style.innerHTML = `
-              .goog-te-banner-frame, .goog-te-gadget, .goog-tooltip, .goog-te-menu-frame, .skiptranslate {
-                display: none !important;
-              }
-              body { top: 0px !important; }
-            `;
-            document.head.appendChild(style);
-          };
-        }, 4000);
+          const style = document.createElement("style");
+          style.innerHTML = `
+            .goog-te-banner-frame, .goog-te-gadget, .goog-tooltip, .goog-te-menu-frame, .skiptranslate {
+              display: none !important;
+            }
+            body { top: 0px !important; }
+          `;
+          document.head.appendChild(style);
+        };
       }
     };
 
     loadGoogleTranslate();
 
-    // Language
     const savedLanguage = localStorage.getItem("language") || "ES";
     const savedIndex = LANGUAGES.indexOf(savedLanguage);
     setLanguageIndex(savedIndex !== -1 ? savedIndex : 0);
-    setTimeout(() => {
-      changeLanguage(savedLanguage.toLowerCase());
-    }, 2000);
+    changeLanguage(savedLanguage.toLowerCase());
 
-    // Theme (solo inicialización, sin toggle)
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
@@ -112,7 +120,10 @@ export default function Header() {
               <span className="text-blue-500 notranslate" translate="no">
                 Hospit
               </span>
-              <span className="text-black dark:text-white notranslate" translate="no">
+              <span
+                className="text-black dark:text-white notranslate"
+                translate="no"
+              >
                 APP
               </span>
             </Link>
@@ -140,18 +151,27 @@ export default function Header() {
                 <Info size={18} /> Sobre Nosotros
               </Link>
 
-              <Link
-                href="/login"
-                className={`flex items-center gap-2 px-4 ${
-                  pathname === "/login"
-                    ? "text-blue-500"
-                    : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-                }`}
-              >
-                <LogIn size={18} /> Iniciar Sesión
-              </Link>
+              {!isLoggedIn ? (
+                <Link
+                  href="/login"
+                  className={`flex items-center gap-2 px-4 ${
+                    pathname === "/login"
+                      ? "text-blue-500"
+                      : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                  }`}
+                >
+                  <LogIn size={18} /> Iniciar Sesión
+                </Link>
+              ) : (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-4 text-gray-700 dark:text-gray-300 hover:text-red-500"
+                >
+                  <LogIn size={18} /> Cerrar Sesión
+                </button>
+              )}
 
-              {/* Idioma */}
+              {/* Language Dropdown */}
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <button
@@ -159,7 +179,9 @@ export default function Header() {
                     className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-blue-500 px-4 border border-gray-300 dark:border-gray-500 rounded-lg py-1 transition"
                   >
                     <Globe size={18} />
-                    <span className="notranslate">{LANGUAGES[languageIndex]}</span>
+                    <span className="notranslate">
+                      {LANGUAGES[languageIndex]}
+                    </span>
                     <ChevronDown size={16} />
                   </button>
 
@@ -218,20 +240,30 @@ export default function Header() {
             <span className="text-xs">Nosotros</span>
           </Link>
 
-          <Link
-            href="/login"
-            className={`flex flex-col items-center ${
-              pathname === "/login"
-                ? "text-blue-500"
-                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-            }`}
-          >
-            <LogIn size={22} />
-            <span className="text-xs">Ingresar</span>
-          </Link>
+          {!isLoggedIn ? (
+            <Link
+              href="/login"
+              className={`flex flex-col items-center ${
+                pathname === "/login"
+                  ? "text-blue-500"
+                  : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+              }`}
+            >
+              <LogIn size={22} />
+              <span className="text-xs">Ingresar</span>
+            </Link>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-redoml-500"
+            >
+              <LogIn size={22} />
+              <span className="text-xs">Salir</span>
+            </button>
+          )}
 
           <motion.button
-            whileTap={{ scale: 0.95 }} // Feedback táctil
+            whileTap={{ scale: 0.95 }}
             onClick={() => setIsLanguageModalOpen(true)}
             className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-blue-500"
           >
@@ -243,7 +275,7 @@ export default function Header() {
         </nav>
       )}
 
-      {/* Modal de selección de idioma para móvil */}
+      {/* Mobile Language Modal */}
       <AnimatePresence>
         {isMobile && isLanguageModalOpen && (
           <motion.div
