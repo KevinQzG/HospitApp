@@ -1,15 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebook, faApple } from "@fortawesome/free-brands-svg-icons";
 
 export default function LoginPage() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Efecto para cerrar el mensaje automáticamente después de 10 segundos
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage("");
+      }, 10000); // 10 segundos
+
+      // Limpiar el temporizador si el componente se desmonta o el mensaje cambia
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,6 +54,10 @@ export default function LoginPage() {
       console.error("Error al iniciar sesión:", error);
       setErrorMessage("Ocurrió un error al iniciar sesión");
     }
+  };
+
+  const closeErrorMessage = () => {
+    setErrorMessage("");
   };
 
   return (
@@ -85,10 +101,17 @@ export default function LoginPage() {
             {/* Mensaje de error */}
             {errorMessage && (
               <div
-                className="bg-red-600 text-white text-center font-medium py-3 px-4 rounded-lg shadow-md animate-fade-in"
+                className="bg-red-600 text-white font-medium py-3 px-4 rounded-lg shadow-md animate-fade-in relative flex items-center justify-between"
                 role="alert"
               >
-                {errorMessage}
+                <span className="flex-1 text-center">{errorMessage}</span>
+                <button
+                  onClick={closeErrorMessage}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-200 transition-all"
+                  aria-label="Cerrar mensaje de error"
+                >
+                  <X size={20} />
+                </button>
               </div>
             )}
 
