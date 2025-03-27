@@ -11,7 +11,7 @@ export default function Header() {
   const [languageIndex, setLanguageIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
-  const [is_logged_in, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -40,7 +40,6 @@ export default function Header() {
   
     checkSession();
   }, []);
-  
 
   const handleLogout = () => {
     // Delete the cookie
@@ -165,7 +164,7 @@ export default function Header() {
                 <Info size={18} /> Sobre Nosotros
               </Link>
 
-              {!is_logged_in ? (
+              {!isLoggedIn ? (
                 <Link
                   href="/login"
                   className={`flex items-center gap-2 px-4 ${
@@ -254,7 +253,7 @@ export default function Header() {
             <span className="text-xs">Nosotros</span>
           </Link>
 
-          {!is_logged_in ? (
+          {!isLoggedIn ? (
             <Link
               href="/login"
               className={`flex flex-col items-center ${
