@@ -3,7 +3,7 @@
 import { FormEvent, useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { SearchFormClientProps } from "@/services/search_ips/data_caching.service";
-import { SearchableSelect } from "@/components/Searchable_select";
+import { SearchableSelect } from "@/components/searchable_select";
 import { DistanceSelect } from "./DistanceSelect";
 
 export type SearchFormSubmitHandler = (isSubmitting: boolean) => void;
@@ -33,6 +33,22 @@ export default function SearchFormClient({
     setInitialSpecialties(newSpecialties);
     setInitialEps(newEps);
   }, [searchParams]);
+
+  const formatEpsName = (name: string): string => {
+    let formattedName = name.replace(/\bCrus Blanca\b/i, "Cruz Blanca");
+
+    formattedName = formattedName
+      .replace(/-(S|C)$/i, "") // Elimina "-S" o "-C" al final
+      .trim(); // Elimina espacios sobrante
+
+    return formattedName.toUpperCase();
+  };
+
+  const formattedEps = eps.map((epsItem) => ({
+    _id: epsItem._id,
+    name: epsItem.name,
+    displayName: formatEpsName(epsItem.name),
+  }));
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -92,13 +108,21 @@ export default function SearchFormClient({
   };
 
   return (
-    <div className="relative max-w-3xl w-full mx-auto px-6">
-      <form onSubmit={handleSubmit} className="p-8 rounded-2xl border border-gray-100 space-y-6 bg-white shadow-sm">
+    <div id="search-form" className="relative max-w-3xl w-full mx-auto px-6">
+      <form 
+        onSubmit={handleSubmit} 
+        className="p-8 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-6 bg-white dark:bg-gray-900 shadow-sm"
+      >
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1">
-            <label htmlFor="eps" className="block text-sm font-medium text-gray-700 mb-2">EPS</label>
+            <label 
+              htmlFor="eps" 
+              className="block text-base font-medium text-gray-800 dark:text-gray-200 mb-3"
+            >
+              EPS
+            </label>
             <SearchableSelect
-              options={eps}
+              options={formattedEps}
               placeholder="Selecciona EPS..."
               name="eps"
               initialValues={initialEps}
@@ -106,7 +130,12 @@ export default function SearchFormClient({
           </div>
 
           <div className="flex-1">
-            <label htmlFor="specialties" className="block text-sm font-medium text-gray-700 mb-2">Especialidades</label>
+            <label 
+              htmlFor="specialties" 
+              className="block text-base font-medium text-gray-800 dark:text-gray-200 mb-3"
+            >
+              Especialidades
+            </label>
             <SearchableSelect
               options={specialties}
               placeholder="Selecciona especialidades..."
@@ -118,7 +147,10 @@ export default function SearchFormClient({
 
         {pathname === "/results" && (
           <div className="flex-1">
-            <label htmlFor="distance" className="block text-sm font-medium text-gray-700 mb-2">
+            <label 
+              htmlFor="distance" 
+              className="block text-base font-medium text-gray-800 dark:text-gray-200 mb-3"
+            >
               Distancia máxima (km)
             </label>
             <DistanceSelect
@@ -130,7 +162,7 @@ export default function SearchFormClient({
         )}
 
         {error && (
-          <div className="p-3 bg-red-50 text-red-600 rounded-lg text-center border border-red-100">
+          <div className="p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 rounded-lg text-center border border-red-100 dark:border-red-800/40">
             <strong>Error:</strong> {error}
           </div>
         )}
@@ -138,7 +170,7 @@ export default function SearchFormClient({
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full bg-blue-600 text-white text-lg font-semibold py-3 rounded-2xl hover:bg-blue-700 transition-all duration-100 ease-in-out ${
+          className={`w-full bg-blue-600 text-white text-lg font-semibold py-3 rounded-2xl hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500 transition-all duration-100 ease-in-out ${
             isSubmitting ? "cursor-wait opacity-75" : "cursor-pointer"
           }`}
         >

@@ -27,6 +27,18 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<"details" | "map">("details");
 
+  const formatEpsName = (name: string): string => {
+    console.log("Nombre EPS original:", name);
+
+    let formattedName = name.replace(/\bCrus Blanca\b/i, "Cruz Blanca");
+    formattedName = formattedName.replace(/\bEPS-S\b|\bEPS-C\b/g, "EPS").trim();
+    formattedName = formattedName.toUpperCase();
+
+    // Log para depurar el nombre formateado
+    console.log("Nombre EPS formateado:", formattedName);
+    return formattedName;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans flex flex-col transition-colors duration-300">
       <header className="bg-white dark:bg-gray-800 shadow-lg rounded-b-xl">
@@ -63,21 +75,19 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
           <div className="flex space-x-2 sm:space-x-4">
             <button
               onClick={() => setViewMode("details")}
-              className={`px-2 py-1 sm:px-3 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
-                viewMode === "details"
+              className={`px-2 py-1 sm:px-3 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${viewMode === "details"
                   ? "bg-blue-700 text-white shadow-sm dark:bg-blue-600"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-              }`}
+                }`}
             >
               Detalles
             </button>
             <button
               onClick={() => setViewMode("map")}
-              className={`px-2 py-1 sm:px-3 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
-                viewMode === "map"
+              className={`px-2 py-1 sm:px-3 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${viewMode === "map"
                   ? "bg-blue-700 text-white shadow-sm dark:bg-blue-600"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-              }`}
+                }`}
             >
               Mapa
             </button>
@@ -85,7 +95,7 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
         </div>
 
         {viewMode === "details" ? (
-          <DetailsView ipsData={ipsData} />
+          <DetailsView ipsData={ipsData} formatEpsName={formatEpsName} />
         ) : (
           <MapView ipsData={ipsData} router={router} />
         )}
@@ -96,8 +106,10 @@ export default function IpsDetailClient({ ipsData }: IpsDetailClientProps) {
 
 function DetailsView({
   ipsData,
+  formatEpsName,
 }: {
   ipsData: NonNullable<LookIpsResponse["data"]>;
+  formatEpsName: (name: string) => string;
 }) {
   const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}`;
   const WAZE_URL = `https://waze.com/ul?ll=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}&navigate=yes`;
@@ -146,7 +158,9 @@ function DetailsView({
           )}
           {ipsData.level && (
             <li className="flex items-center">
-              <span className="font-medium text-gray-900 dark:text-gray-200 mr-2">Nivel:</span>
+              <span className="font-medium text-gray-900 dark:text-gray-200 mr-2">
+                Nivel:
+              </span>
               <span>{ipsData.level}</span>
             </li>
           )}
@@ -213,7 +227,7 @@ function DetailsView({
               >
                 <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0" />
                 <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                  {eps.name}
+                  {formatEpsName(eps.name)} {/* Aplicamos el formato aquí */}
                 </span>
               </div>
             ))}
@@ -286,8 +300,10 @@ function MapView({
     popupContent.className = "popup-content";
     popupContent.innerHTML = `
       <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl max-w-sm border border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400 cursor-pointer hover:underline mb-2">${ipsData.name}</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-300">${ipsData.address}, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
+        <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400 cursor-pointer hover:underline mb-2">${ipsData.name
+      }</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">${ipsData.address
+      }, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
       </div>
     `;
     popupContent.querySelector("h3")?.addEventListener("click", () => {
@@ -311,7 +327,9 @@ function MapView({
             setDistance(parseFloat(routeDistance.toFixed(2)));
 
             if (initializedMap.getSource("route")) {
-              (initializedMap.getSource("route") as mapboxgl.GeoJSONSource).setData({
+              (
+                initializedMap.getSource("route") as mapboxgl.GeoJSONSource
+              ).setData({
                 type: "Feature",
                 properties: {},
                 geometry: {
@@ -360,7 +378,7 @@ function MapView({
 
     initializedMap.on("load", () => {
       initializedMap.resize();
-      geolocate.trigger(); // Activamos la geolocalización una vez que el mapa esté cargado
+      geolocate.trigger();
     });
 
     geolocate.on("geolocate", (e: GeolocationPosition) => {
@@ -387,11 +405,14 @@ function MapView({
       addRoute(userLng, userLat);
     });
 
-    // Detectar el modo oscuro y ajustar el estilo del mapa
-    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const darkModeMediaQuery = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    );
     const handleDarkModeChange = (e: MediaQueryListEvent) => {
       initializedMap.setStyle(
-        e.matches ? "mapbox://styles/mapbox/dark-v10" : "mapbox://styles/mapbox/streets-v12"
+        e.matches
+          ? "mapbox://styles/mapbox/dark-v10"
+          : "mapbox://styles/mapbox/streets-v12"
       );
     };
     darkModeMediaQuery.addEventListener("change", handleDarkModeChange);

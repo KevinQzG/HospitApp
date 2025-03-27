@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 import {
   SearchFormClientProps,
-  getSearchIpsCachedProps as getSearchIpsCachedProps,
+  getSearchIpsCachedProps,
 } from "@/services/search_ips/data_caching.service";
 import LandingSearchForm from "@/components/LandingSearchForm";
 import SpecialtiesSection from "@/components/SpecialtiesSection";
+import EpsSection from "@/components/EpsSection";
 
 export default async function HomePage() {
   let config: SearchFormClientProps;
@@ -36,20 +37,37 @@ export default async function HomePage() {
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white">
                 Encuentra <br className="hidden md:block" />
                 Atención Médica <br />
-                <span className="text-blue-800 dark:text-blue-400">Rápida y Segura</span>
+                <span className="text-blue-800 dark:text-blue-400">
+                  Rápida y Segura
+                </span>
               </h1>
               <p className="mt-6 text-gray-700 dark:text-gray-300 text-lg md:text-xl max-w-prose mx-auto">
-                Con HospitApp, localiza centros médicos y especialistas cerca de ti de manera rápida y sencilla.
+                Con HospitApp, localiza centros médicos y especialistas cerca de
+                ti de manera rápida y sencilla.
               </p>
             </div>
 
             <div className="w-full mt-8">
-              <Suspense fallback={<div className="text-gray-600 dark:text-gray-300">Cargando formulario de búsqueda...</div>}>
-                <LandingSearchForm specialties={config.specialties} eps={config.eps} />
+              <Suspense
+                fallback={
+                  <div className="text-gray-600 dark:text-gray-300">
+                    Cargando formulario de búsqueda...
+                  </div>
+                }
+              >
+                <LandingSearchForm
+                  specialties={config.specialties}
+                  eps={config.eps}
+                />
               </Suspense>
             </div>
           </div>
         </div>
+      </section>
+
+      {/* EPS Section */}
+      <section className="bg-[#F9FCFF] dark:bg-gray-900 transition-colors duration-300">
+        <EpsSection eps={config.eps} />
       </section>
 
       {/* Specialties Section */}
