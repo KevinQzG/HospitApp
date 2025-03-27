@@ -41,11 +41,11 @@ describe("EpsMongoRepository Integration Test", () => {
       const SAMPLE_EPS = results[0];
 
       const EXPECTED_DATA = {
-        _id: new ObjectId("67b7885ec6dcb343450c0579"),
-        name: "COOSALUD EPS-S",
-        "01_8000_phone": "18000515611",
-        fax: "2606406, 2605354, 2602424 EXT 102",
-        emails: "COOSALUDEPS@UNE.NET.CO , EGARCIA@COOSALUD.COM",
+        _id: new ObjectId("67b7885ec6dcb343450c0586"),
+        name: "AIC EPS-S",
+        "01_8000_phone": "18000932811",
+        fax: "2632895",
+        emails: "ATMEDELLIN@AICSALUD.ORG.CO",
       };
 
       expect(SAMPLE_EPS.toObject()).toMatchObject(EXPECTED_DATA);

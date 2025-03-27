@@ -6,7 +6,7 @@ import { EpsDocument } from "@/models/eps.interface";
 import { Eps } from "@/models/eps";
 import type DBAdapter from "@/adapters/db.adapter";
 import { EpsMapper } from "@/utils/mappers/eps_mapper";
-// import { IpsPipelineBuilder } from "./builders/ips.pipeline.builder";
+import { PipelineBuilder } from "./builders/pipeline.builder";
 
 /**
  * @class
@@ -28,9 +28,11 @@ export class EpsMongoRepository implements EpsRepositoryAdapter {
     ) { }
 
     async findAll(): Promise<Eps[]> {
+        const PIPELINE = new PipelineBuilder().addSortStage({ name: 1 }).build();
+
         // Get all the EPS Documents
         const DB = await this.dbHandler.connect();
-        const RESULTS = await DB.collection<EpsDocument>('EPS').find().toArray();
+        const RESULTS = await DB.collection<EpsDocument>('EPS').aggregate<EpsDocument>(PIPELINE).toArray();
         
         if (!RESULTS) {
             return [];

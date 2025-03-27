@@ -27,11 +27,16 @@ export interface LookupStage {
 }
 
 export interface MatchStage {
-    [key: string]: { $in?: string[] } | ObjectId | unknown;
+    [key: string]: { $in?: string[] } | ObjectId | string;
 }
 
 export interface ProjectStage {
-    [key: string]: number;
+    [key: string]: number | {
+        $sortArray: {
+            input: string;
+            sortBy: SortStage;
+        }
+    }
 }
 
 export interface SortStage {
