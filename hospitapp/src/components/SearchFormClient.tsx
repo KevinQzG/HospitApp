@@ -39,13 +39,14 @@ export default function SearchFormClient({
 
     formattedName = formattedName
       .replace(/-(S|C)$/i, "") // Elimina "-S" o "-C" al final
-      .trim(); // Elimina espacios sobrantes
+      .trim(); // Elimina espacios sobrante
 
     return formattedName.toUpperCase();
   };
 
   const formattedEps = eps.map((epsItem) => ({
-    ...epsItem,
+    _id: epsItem._id,
+    name: epsItem.name,
     displayName: formatEpsName(epsItem.name),
   }));
 

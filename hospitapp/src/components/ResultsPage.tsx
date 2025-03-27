@@ -143,6 +143,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   useEffect(() => {
     const fetchFilteredResults = async () => {
       try {
+        // Obtener los parámetros de la URL
         const maxDistance = searchParams.get("maxDistance") ?? "20000";
         const specialtiesParam =
           searchParams.get("specialties")?.split(",").filter(Boolean) || [];

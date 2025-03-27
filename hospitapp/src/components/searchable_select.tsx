@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 
 interface SearchableSelectProps {
-  options: Array<{ _id: string; name: string; displayName?: string }>; 
+  options: Array<{ _id: string; name: string; displayName?: string }>; // Agregamos displayName como opcional
   placeholder: string;
   name: string;
   maxSelections?: number;
@@ -82,7 +82,7 @@ export function SearchableSelect({
               key={name}
               className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm flex items-center"
             >
-              {option?.displayName || option?.name || name}
+              {option?.displayName || option?.name || name} {/* Mostramos displayName si existe, si no, name */}
               <button
                 type="button"
                 onClick={() => toggleOption(name)}
