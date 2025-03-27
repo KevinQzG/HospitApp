@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Home, Info, LogIn, Globe, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -14,8 +14,6 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const pathname = usePathname();
-  const router = useRouter();
-
   const LANGUAGES = ["ES", "EN", "FR", "IT", "PT", "DE"];
 
   // Detect screen size
@@ -26,10 +24,12 @@ export default function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Check session
   useEffect(() => {
     const checkSession = async () => {
       try {
         const res = await fetch("/api/session");
+        if (!res.ok) throw new Error("Session check failed");
         const data = await res.json();
         setIsLoggedIn(data.loggedIn);
       } catch (error) {
@@ -37,52 +37,45 @@ export default function Header() {
         setIsLoggedIn(false);
       }
     };
-  
     checkSession();
   }, []);
 
   const handleLogout = () => {
-    // Delete the cookie
-    document.cookie =
-      "session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    document.cookie = "session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     setIsLoggedIn(false);
-    router.push("/");
   };
 
   // Google Translate + Language + Theme
   useEffect(() => {
     const loadGoogleTranslate = () => {
-      if (!navigator.userAgent.includes("Chrome-Lighthouse")) {
-        setTimeout(() => {
-          if (!document.getElementById("google-translate-script")) {
-            const script = document.createElement("script");
-            script.id = "google-translate-script";
-            script.src =
-              "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-            script.async = true;
-            document.body.appendChild(script);
-          }
+      if (!navigator.userAgent.includes("Chrome-Lighthouse") && 
+          !document.getElementById("google-translate-script")) {
+        const script = document.createElement("script");
+        script.id = "google-translate-script";
+        script.src =
+          "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        script.async = true;
+        document.body.appendChild(script);
 
-          window.googleTranslateElementInit = () => {
-            new window.google.translate.TranslateElement(
-              {
-                pageLanguage: "es",
-                includedLanguages: "es,en,fr,it,pt,de",
-                autoDisplay: false,
-              },
-              "google_translate_element"
-            );
+        window.googleTranslateElementInit = () => {
+          new window.google.translate.TranslateElement(
+            {
+              pageLanguage: "es",
+              includedLanguages: "es,en,fr,it,pt,de",
+              autoDisplay: false,
+            },
+            "google_translate_element"
+          );
 
-            const style = document.createElement("style");
-            style.innerHTML = `
-              .goog-te-banner-frame, .goog-te-gadget, .goog-tooltip, .goog-te-menu-frame, .skiptranslate {
-                display: none !important;
-              }
-              body { top: 0px !important; }
-            `;
-            document.head.appendChild(style);
-          };
-        }, 4000);
+          const style = document.createElement("style");
+          style.innerHTML = `
+            .goog-te-banner-frame, .goog-te-gadget, .goog-tooltip, .goog-te-menu-frame, .skiptranslate {
+              display: none !important;
+            }
+            body { top: 0px !important; }
+          `;
+          document.head.appendChild(style);
+        };
       }
     };
 
@@ -91,14 +84,10 @@ export default function Header() {
     const savedLanguage = localStorage.getItem("language") || "ES";
     const savedIndex = LANGUAGES.indexOf(savedLanguage);
     setLanguageIndex(savedIndex !== -1 ? savedIndex : 0);
-    setTimeout(() => {
-      changeLanguage(savedLanguage.toLowerCase());
-    }, 2000);
+    changeLanguage(savedLanguage.toLowerCase());
 
     const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
       document.documentElement.classList.add("dark");
     } else {
@@ -107,9 +96,7 @@ export default function Header() {
   }, []);
 
   const changeLanguage = (lang: string) => {
-    const select = document.querySelector(
-      ".goog-te-combo"
-    ) as HTMLSelectElement;
+    const select = document.querySelector(".goog-te-combo") as HTMLSelectElement;
     if (select) {
       select.value = lang;
       select.dispatchEvent(new Event("change"));
@@ -268,7 +255,7 @@ export default function Header() {
           ) : (
             <button
               onClick={handleLogout}
-              className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-red-500"
+              className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-redoml-500"
             >
               <LogIn size={22} />
               <span className="text-xs">Salir</span>
@@ -287,7 +274,8 @@ export default function Header() {
           </motion.button>
         </nav>
       )}
-      {/* Modal idioma móvil */}
+
+      {/* Mobile Language Modal */}
       <AnimatePresence>
         {isMobile && isLanguageModalOpen && (
           <motion.div
