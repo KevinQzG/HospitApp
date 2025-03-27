@@ -217,22 +217,26 @@ describe("IpsMongoRepository Integration Test", () => {
         },
         eps: [
           {
-            _id: "67b7885ec6dcb343450c057f",
-            name: "FUNDACION MEDICO PREVENTIVA EPS-C",
-            "01_8000_phone": "18000111080",
-            fax: "2160054",
-            emails: "CENTROREGULADORANT@FUNDAMEP.COM",
-          },
-          {
             _id: "67b7885ec6dcb343450c057a",
             name: "COOMEVA EPS-C",
             "01_8000_phone": "18000942404",
             fax: "6044545 OPCION 1",
             emails:
               "<CLARAI_PELAEZ@COOMEVA.COM.CO>, <PAULOA_GIRALDO@COOMEVA.COM.CO>, JAZMINJ_MEZA@COOMEVA.COM.CO",
+          },
+          {
+            _id: "67b7885ec6dcb343450c057f",
+            name: "FUNDACION MEDICO PREVENTIVA EPS-C",
+            "01_8000_phone": "18000111080",
+            fax: "2160054",
+            emails: "CENTROREGULADORANT@FUNDAMEP.COM",
           }
         ],
         specialties: [
+          {
+            _id: "67b3e928b1ae5d9e47ae7223",
+            name: "CARDIOLOGÍA",
+          },
           {
             _id: "67b3e928b1ae5d9e47ae721a",
             name: "DIAGNÓSTICO VASCULAR",
@@ -245,31 +249,8 @@ describe("IpsMongoRepository Integration Test", () => {
             "schedule_sunday": "07:00A13:00",
           },
           {
-            _id: "67b3e928b1ae5d9e47ae721c",
-            name: "TERAPIA RESPIRATORIA",
-            "schedule_monday": "07:00A19:00",
-            "schedule_tuesday": "07:00A19:00",
-            "schedule_wednesday": "07:00A19:00",
-            "schedule_thursday": "07:00A19:00",
-            "schedule_friday": "07:00A19:00",
-            "schedule_saturday": "07:00A19:00",
-          },
-          {
-            _id: "67b3e928b1ae5d9e47ae721f",
-            name: "TOMA DE MUESTRAS DE LABORATORIO CLÍNICO",
-            "schedule_monday": "06:00A14:00",
-            "schedule_tuesday": "06:00A14:00",
-            "schedule_wednesday": "06:00A14:00",
-            "schedule_thursday": "06:00A14:00",
-            "schedule_friday": "06:00A14:00",
-          },
-          {
             _id: "67b3e928b1ae5d9e47ae7222",
             name: "ENDOCRINOLOGÍA",
-          },
-          {
-            _id: "67b3e928b1ae5d9e47ae7223",
-            name: "CARDIOLOGÍA",
           },
           {
             _id: "67b3e928b1ae5d9e47ae7224",
@@ -282,10 +263,6 @@ describe("IpsMongoRepository Integration Test", () => {
             "schedule_saturday": "06:00A19:00",
           },
           {
-            _id: "67b3e928b1ae5d9e47ae7225",
-            name: "MEDICINA GENERAL",
-          },
-          {
             _id: "67b3e928b1ae5d9e47ae7226",
             name: "GINECOBSTETRICIA",
             "schedule_monday": "07:00A18:00",
@@ -295,8 +272,18 @@ describe("IpsMongoRepository Integration Test", () => {
             "schedule_friday": "07:00A18:00",
           },
           {
+            _id: "67b3e928b1ae5d9e47ae7225",
+            name: "MEDICINA GENERAL",
+          },
+          {
             _id: "67b3e928b1ae5d9e47ae7227",
             name: "MEDICINA INTERNA",
+          },
+          {
+            _id: "67b3e928b1ae5d9e47ae722b",
+            name: "NEUROLOGÍA",
+            "schedule_tuesday": "08:00A17:00",
+            "schedule_wednesday": "08:00A17:00",
           },
           {
             _id: "67b3e928b1ae5d9e47ae7228",
@@ -319,10 +306,23 @@ describe("IpsMongoRepository Integration Test", () => {
             "schedule_saturday": "07:00A19:00",
           },
           {
-            _id: "67b3e928b1ae5d9e47ae722b",
-            name: "NEUROLOGÍA",
-            "schedule_tuesday": "08:00A17:00",
-            "schedule_wednesday": "08:00A17:00",
+            _id: "67b3e928b1ae5d9e47ae721c",
+            name: "TERAPIA RESPIRATORIA",
+            "schedule_monday": "07:00A19:00",
+            "schedule_tuesday": "07:00A19:00",
+            "schedule_wednesday": "07:00A19:00",
+            "schedule_thursday": "07:00A19:00",
+            "schedule_friday": "07:00A19:00",
+            "schedule_saturday": "07:00A19:00",
+          },
+          {
+            _id: "67b3e928b1ae5d9e47ae721f",
+            name: "TOMA DE MUESTRAS DE LABORATORIO CLÍNICO",
+            "schedule_monday": "06:00A14:00",
+            "schedule_tuesday": "06:00A14:00",
+            "schedule_wednesday": "06:00A14:00",
+            "schedule_thursday": "06:00A14:00",
+            "schedule_friday": "06:00A14:00",
           },
         ],
       };

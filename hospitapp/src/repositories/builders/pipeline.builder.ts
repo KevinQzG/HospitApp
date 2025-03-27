@@ -1,4 +1,4 @@
-import { PipelineStage, LookupStage, AddFieldsStage, ProjectStage } from "./pipeline.interface";
+import { PipelineStage, LookupStage, AddFieldsStage, ProjectStage, MatchStage, SortStage } from "./pipeline.interface";
 
 /**
  * Class that allows to build a pipeline for Mongo queries.
@@ -37,24 +37,6 @@ export class PipelineBuilder {
                 maxDistance: maxDistance,
                 spherical: true
             }
-        });
-
-        return this;
-    }
-
-    /**
-     * Adds a match stage to the pipeline.
-     *
-     * @param {string} name - The name to match.
-     * @returns {PipelineBuilder} The builder instance.
-     * @memberof IpsPipelineBuilder
-     * @public
-     * @method
-     * @name add_match_name_stage
-     */
-    addMatchNameStage(name: string): this {
-        this.pipeline.push({
-            $match: { name: name }
         });
 
         return this;
@@ -148,15 +130,47 @@ export class PipelineBuilder {
     /**
      * Adds a sort stage to the pipeline.
      * 
-     * @param {object} sort - The sort object.
+     * @param {SortStage} sort - The sort object.
      * @returns {PipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
      * @method
      * @name addSortStage
      */
-    addSortStage(sort: { [key: string]: number }): this {
+    addSortStage(sort: SortStage): this {
         this.pipeline.push({ $sort: sort });
+
+        return this;
+    }
+
+    /**
+     * Adds a match stage to the pipeline.
+     * 
+     * @param {MatchStage} match - The match object.
+     * @returns {PipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name addMatchStage
+     */
+    addMatchStage(match: MatchStage): this {
+        this.pipeline.push({ $match: match });
+
+        return this;
+    }
+
+    /**
+     * Adds a project stage to the pipeline.
+     * 
+     * @param {ProjectStage} project - The project object.
+     * @returns {PipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name addProject
+     */
+    addProjectStage(project: ProjectStage): this {
+        this.pipeline.push({ $project: project });
 
         return this;
     }
