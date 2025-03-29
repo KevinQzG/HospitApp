@@ -10,6 +10,7 @@ import { ENV } from '@/config/env';
 export interface SearchFormClientProps {
     specialties: SpecialtyResponse[];
     eps: EpsResponse[];
+    is_admin?: boolean;
 }
 
 // Cache configuration

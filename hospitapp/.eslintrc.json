@@ -20,19 +20,11 @@
       "error",
       {
         "selector": "variable",
-        "format": ["camelCase", "UPPER_CASE"]
+        "format": ["camelCase", "UPPER_CASE", "PascalCase"]
       },
       {
         "selector": "function",
-        "format": ["camelCase", "PascalCase"],
-        "filter": {
-          "regex": "^[A-Z]",
-          "match": true
-        }
-      },
-      {
-        "selector": "function",
-        "format": ["camelCase"]
+        "format": ["camelCase", "PascalCase"]
       },
       {
         "selector": "typeLike",
