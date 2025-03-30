@@ -1,29 +1,63 @@
 import { getSearchIpsCachedProps } from "@/services/search_ips/data_caching.service";
-import SearchFormClient from "@/components/SearchFormClient";
-import IpsListAdmin from "@/components/IpsListAdmin";
-import { UserCircle } from "lucide-react";
+import AdminDashboardClient from "@/components/AdminDashboardClient";
 
-export default async function AdminDashboardPage() {
+interface IpsResult {
+  town?: string;
+  // Add other properties from your API response as needed
+  [key: string]: unknown; // This allows for additional properties while maintaining type safety
+}
+
+interface ApiResponse {
+  data: IpsResult[];
+  total?: number;
+  // Add other properties from your API response as needed
+}
+
+export default async function AdminDashboardPage({ 
+  searchParams 
+}: { 
+  searchParams: { page?: string } 
+}) {
   const { eps, specialties } = await getSearchIpsCachedProps();
 
+  const currentPage = parseInt(searchParams.page || "1", 10);
+  const pageSize = 10;
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) {
+    throw new Error("NEXT_PUBLIC_API_URL is not defined");
+  }
+
+  const res = await fetch(`${apiUrl}/search_ips/filter`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      coordinates: [-75.5849, 6.1816],
+      "max_distance": 20000, // Keeping snake_case for API compatibility
+      page: currentPage,
+      "page_size": pageSize,
+    }),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`API request failed with status ${res.status}`);
+  }
+
+  const data: ApiResponse = await res.json();
+  const towns = Array.from(
+    new Set(data.data.map((ips) => ips.town || "Sin municipio"))
+  ).filter(Boolean) as string[];
+
   return (
-    <div className="min-h-screen bg-[#ECF6FF] dark:bg-gray-900 transition-colors duration-300">
-      <div className="container mx-auto py-10 px-6">
-        <div className="flex items-center justify-center gap-4 mb-8">
-          <UserCircle className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-          <h1 className="text-3xl font-bold text-center text-blue-800 dark:text-white">
-            ¡Hola Admin! Gestiona las IPS fácilmente
-          </h1>
-        </div>
-
-        <div className="max-w-4xl mx-auto mb-12">
-          <SearchFormClient eps={eps} specialties={specialties} />
-        </div>
-
-        <div className="max-w-7xl mx-auto">
-          <IpsListAdmin />
-        </div>
-      </div>
-    </div>
+    <AdminDashboardClient
+      eps={eps}
+      specialties={specialties}
+      towns={towns}
+      initialData={data.data}
+      totalResults={data.total || 0}
+      currentPage={currentPage}
+      pageSize={pageSize}
+    />
   );
 }
