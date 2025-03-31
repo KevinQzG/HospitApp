@@ -11,14 +11,36 @@ interface IpsResponse {
   town?: string;
 }
 
+interface Props {
+  initialData: IpsResponse[];
+  totalResults: number;
+  currentPage: number;
+}
+
 const PAGE_SIZE = 10;
 
-const IpsListAdmin = () => {
-  const [ipsList, setIpsList] = useState<IpsResponse[]>([]);
+// Definimos una interfaz para el cuerpo de la solicitud
+interface SearchRequestBody {
+  page: number;
+  pageSize: number;
+  specialties?: string[];
+  epsNames?: string[];
+  town?: string;
+  name?: string;
+  coordinates?: [number, number];
+  maxDistance?: number;
+}
+
+const IpsListAdmin = ({
+  initialData,
+  totalResults: initialTotal,
+  currentPage: initialPage,
+}: Props) => {
+  const [ipsList, setIpsList] = useState<IpsResponse[]>(initialData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalResults, setTotalResults] = useState(0);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [totalResults, setTotalResults] = useState(initialTotal);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -29,27 +51,52 @@ const IpsListAdmin = () => {
         setLoading(true);
         setError(null);
 
+        // Obtener los filtros desde searchParams
         const specialties = searchParams.get("specialties")?.split(",") || [];
         const epsNames = searchParams.get("eps")?.split(",") || [];
+        const town = searchParams.get("town") || "";
+        const name = searchParams.get("name") || "";
 
-        const requestBody = {
-          coordinates: [-75.5849, 6.1816],
-          "max_distance": 20000,
+        const requestBody: SearchRequestBody = {
           page: 1,
-          "page_size": 9999,
+          pageSize: 9999, // Obtener todos los resultados de una vez
           specialties,
-          "eps_names": epsNames,
+          epsNames,
+          town: town || undefined,
+          name: name || undefined,
         };
+
+        // Solo incluir coordinates y maxDistance si NO se especifica un town
+        if (!town) {
+          requestBody.coordinates = [-75.5849, 6.1816];
+          requestBody.maxDistance = 20000;
+        }
+
+        // Convertimos el cuerpo de la solicitud al formato esperado por la API
+        const apiRequestBody = {
+          ...requestBody,
+          "page_size": requestBody.pageSize,
+          "eps_names": requestBody.epsNames,
+          "max_distance": requestBody.maxDistance,
+        };
+        delete (apiRequestBody as Partial<typeof apiRequestBody>).pageSize;
+        delete (apiRequestBody as Partial<typeof apiRequestBody>).epsNames;
+        delete (apiRequestBody as Partial<typeof apiRequestBody>).maxDistance;
 
         const res = await fetch("/api/search_ips/filter", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(apiRequestBody),
         });
+
+        if (!res.ok) {
+          throw new Error("Error al cargar los datos");
+        }
 
         const data = await res.json();
         const ips = data.data || [];
 
+        // Ordenar por municipio
         const sortedIps = [...ips].sort((a, b) => {
           const townA = a.town || "Sin municipio";
           const townB = b.town || "Sin municipio";
@@ -66,11 +113,17 @@ const IpsListAdmin = () => {
     };
 
     fetchFilteredIps();
-  }, [searchParams]);
+  }, [searchParams]); // Solo depende de searchParams, NO de currentPage
 
   const totalPages = Math.ceil(totalResults / PAGE_SIZE);
   const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      // Actualizar la URL con la nueva página
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", page.toString());
+      router.push(`?${params.toString()}`, { scroll: false });
+    }
   };
 
   const startIndex = (currentPage - 1) * PAGE_SIZE;
@@ -108,7 +161,10 @@ const IpsListAdmin = () => {
   if (endPage - startPage + 1 < maxVisiblePages) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1);
   }
-  const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
 
   if (loading) {
     return (
@@ -167,7 +223,9 @@ const IpsListAdmin = () => {
                         {item.name}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{item.address}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
+                      {item.address}
+                    </td>
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => router.push(`/admin/ips/${item._id}`)}
@@ -206,7 +264,9 @@ const IpsListAdmin = () => {
                 >
                   1
                 </button>
-                {startPage > 2 && <span className="text-gray-400 px-2">…</span>}
+                {startPage > 2 && (
+                  <span className="text-gray-400 px-2">…</span>
+                )}
               </>
             )}
 
@@ -226,7 +286,9 @@ const IpsListAdmin = () => {
 
             {endPage < totalPages && (
               <>
-                {endPage < totalPages - 1 && <span className="text-gray-400 px-2">…</span>}
+                {endPage < totalPages - 1 && (
+                  <span className="text-gray-400 px-2">…</span>
+                )}
                 <button
                   onClick={() => handlePageChange(totalPages)}
                   className="w-10 h-10 flex items-center justify-center rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
