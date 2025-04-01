@@ -71,7 +71,6 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
       .addMatchStage({ name: name })
       .withEps()
       .withSpecialties()
-      .addReviewsJoin()
       .addFinalProjection()
       .build();
 

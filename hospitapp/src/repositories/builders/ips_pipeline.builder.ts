@@ -137,24 +137,6 @@ export class IpsPipelineBuilder extends PipelineBuilder {
   }
 
   /**
-   * Adds a reviews join to the pipeline.
-   *
-   * @returns {PipelineBuilder} The builder instance.
-   * @memberof IpsPipelineBuilder
-   * @public
-   * @method
-   * @name addReviewsJoin
-   */
-  addReviewsJoin(): this {
-    this.getPipeline().push(
-      { $lookup: this.reviewsLookup },
-      { $lookup: this.userLookup },
-      { $addFields: this.reviewsAddFields }
-    );
-    return this;
-  }
-
-  /**
    * Returns the lookup stage for reviews.
    * @returns {LookupStage} The lookup stage.
    */
@@ -247,49 +229,6 @@ export class IpsPipelineBuilder extends PipelineBuilder {
       location: 1,
       level: 1,
       distance: 1,
-    };
-  }
-
-  /**
-   * Returns the add fields stage for REVIEWS
-   * @returns {AddFieldsStage} The add fields stage.
-   */
-  private get reviewsAddFields(): AddFieldsStage {
-    return {
-      reviews: {
-        $map: {
-          input: "$reviews",
-          as: "review",
-          in: {
-            _id: "$$review._id",
-            userEmail: {
-              $let: {
-                vars: {
-                  matchedUser: {
-                    $arrayElemAt: [
-                      {
-                        $filter: {
-                          input: "$user_details",
-                          as: "user",
-                          cond: {
-                            $eq: ["$$user._id", "$$review.user"],
-                          },
-                        },
-                      },
-                      0,
-                    ],
-                  },
-                },
-                in: "$$matchedUser.email",
-              },
-            },
-            user: "$$review.user",
-            ips: "$$review.ips",
-            rating: "$$review.rating",
-            comments: "$$review.comments",
-          },
-        },
-      },
     };
   }
 
