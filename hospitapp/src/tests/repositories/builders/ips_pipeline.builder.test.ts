@@ -1,5 +1,5 @@
 import { PipelineStage } from "@/repositories/builders/pipeline.interface";
-import { PipelineBuilder } from "@/repositories/builders/pipeline.builder";
+import { IpsPipelineBuilder } from "@/repositories/builders/ips_pipeline.builder";
 
 describe("IpsPipelineBuilder", () => {
   const TEST_COORDS = [-75.6381, 6.1334];
@@ -12,7 +12,7 @@ describe("IpsPipelineBuilder", () => {
   let pipeline: PipelineStage[];
 
   it("should build basic geo query pipeline", () => {
-    pipeline = new PipelineBuilder()
+    pipeline = new IpsPipelineBuilder()
       .addGeoStage(TEST_COORDS[0], TEST_COORDS[1], MAX_DISTANCE)
       .build();
 
@@ -31,7 +31,7 @@ describe("IpsPipelineBuilder", () => {
   });
 
   it("should add specialty filters when provided", () => {
-    pipeline = new PipelineBuilder()
+    pipeline = new IpsPipelineBuilder()
       .addGeoStage(TEST_COORDS[0], TEST_COORDS[1], MAX_DISTANCE)
       .matchesSpecialties(SPECIALTIES)
       .build();
@@ -54,7 +54,7 @@ describe("IpsPipelineBuilder", () => {
   });
 
   it("should skip specialty filters for empty array", () => {
-    pipeline = new PipelineBuilder()
+    pipeline = new IpsPipelineBuilder()
       .addGeoStage(TEST_COORDS[0], TEST_COORDS[1], MAX_DISTANCE)
       .matchesSpecialties([])
       .build();
@@ -64,7 +64,7 @@ describe("IpsPipelineBuilder", () => {
   });
 
   it("should add EPS filters when provided", () => {
-    pipeline = new PipelineBuilder()
+    pipeline = new IpsPipelineBuilder()
       .addGeoStage(TEST_COORDS[0], TEST_COORDS[1], MAX_DISTANCE)
       .matchesEps(EPS_NAMES)
       .build();
@@ -87,11 +87,11 @@ describe("IpsPipelineBuilder", () => {
   });
 
   it("should handle combined filters and pagination", () => {
-    pipeline = new PipelineBuilder()
+    pipeline = new IpsPipelineBuilder()
       .addGeoStage(TEST_COORDS[0], TEST_COORDS[1], MAX_DISTANCE)
       .matchesSpecialties(SPECIALTIES)
       .matchesEps(EPS_NAMES)
-      .withPagination(PAGE, PAGE_SIZE)
+      .addPagination(PAGE, PAGE_SIZE)
       .build();
 
     // Expected length: geo (1) + matchesSpecialties (4) + matchesEps (4) + pagination (1) = 10
@@ -104,11 +104,11 @@ describe("IpsPipelineBuilder", () => {
   });
 
   it("should maintain stage order", () => {
-    pipeline = new PipelineBuilder()
+    pipeline = new IpsPipelineBuilder()
       .addGeoStage(TEST_COORDS[0], TEST_COORDS[1], MAX_DISTANCE)
       .matchesEps(EPS_NAMES)
       .matchesSpecialties(SPECIALTIES)
-      .withPagination(PAGE, PAGE_SIZE)
+      .addPagination(PAGE, PAGE_SIZE)
       .build();
 
     // Expected stage order:
