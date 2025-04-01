@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
 import { ReviewResponse, ReviewDocument } from './review.interface';
-import { SpecialtyMapper } from '@/utils/mappers/specialty_mapper';
+import { ReviewMapper } from '@/utils/mappers/review_mapper';
 
 /**
- * Class that defines the structure and behavior of the Specialty entity.
- * @class Specialty
+ * Class that defines the structure and behavior of the Review entity.
+ * @class Review
  */
 export class Review {
     private _id: ObjectId;
