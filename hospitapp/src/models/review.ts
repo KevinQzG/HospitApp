@@ -35,7 +35,7 @@ export class Review {
      * @throws {Error} If any required field is missing or invalid.
      */
     validate(): void {
-        if (!this.user || !this.ips || !this.rating || !this.comments) {
+        if (!this.user || !this.ips || !this.rating || !(typeof this.comments === 'string') || this.comments.length < 0) {
             throw new Error('Missing required fields');
         }
 
@@ -106,6 +106,7 @@ export class Review {
      */
     setUser(user: ObjectId): void {
         this.user = user;
+        this.validate();
     }
 
     /**
@@ -114,6 +115,7 @@ export class Review {
      */
     setIps(ips: ObjectId): void {
         this.ips = ips;
+        this.validate();
     }
 
     /**
@@ -122,6 +124,7 @@ export class Review {
      */
     setRating(rating: number): void {
         this.rating = rating;
+        this.validate();
     }
 
     /**
@@ -130,6 +133,7 @@ export class Review {
      */
     setComments(comments: string): void {
         this.comments = comments;
+        this.validate();
     }
 
     /**
