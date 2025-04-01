@@ -1,6 +1,8 @@
 import { ObjectId } from "mongodb";
 import { EpsDocument, EpsResponse } from "./eps.interface";
 import { SpecialtyDocument, SpecialtyResponse } from "./specialty.interface";
+import { ReviewDocument, ReviewResponse } from "./review.interface";
+
 
 export interface IpsDocument {
     _id: ObjectId;
@@ -18,6 +20,7 @@ export interface IpsDocument {
     distance?: number;
     eps?: EpsDocument[];
     specialties?: SpecialtyDocument[];
+    reviews?: ReviewDocument[];
 }
 
 export interface IpsResponse {
@@ -38,4 +41,5 @@ export interface IpsResponse {
     specialties?: SpecialtyResponse[];
     maps?: string;
     waze?: string;
+    reviews?: ReviewResponse[];
 }

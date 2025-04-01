@@ -3,6 +3,7 @@ import { IpsDocument, IpsResponse } from './ips.interface';
 import { Eps } from './eps';
 import { Specialty } from './specialty';
 import { IpsMapper } from '@/utils/mappers/ips_mapper';
+import { Review } from './review';
 
 
 /**
@@ -25,6 +26,7 @@ export class Ips {
     private distance?: number;
     private eps?: Eps[];
     private specialties?: Specialty[];
+    private reviews?: Review[];
 
     /**
      * Creates an instance of IPS.
@@ -42,6 +44,7 @@ export class Ips {
      * @param {number} [distance] - Distance from the IPS to the user (optional).
      * @param {Eps[]} [eps] - EPS entities associated with the IPS (optional).
      * @param {Specialty[]} [specialties] - Specialty entities associated with the IPS (optional).
+     * @param {Review[]} [reviews] - Reviews associated with the IPS (optional).
      */
     constructor(_id: ObjectId = new ObjectId(), name: string, department: string, town: string, address: string,
         location: {
@@ -54,6 +57,7 @@ export class Ips {
         distance?: number,
         eps?: Eps[],
         specialties?: Specialty[],
+        reviews?: Review[]
     ) {
         this._id = _id;
         this.name = name;
@@ -67,6 +71,7 @@ export class Ips {
         this.distance = distance;
         this.eps = eps;
         this.specialties = specialties;
+        this.reviews = reviews;
     }
 
     /**
@@ -202,6 +207,31 @@ export class Ips {
      */
     getSpecialties(): Specialty[] | undefined {
         return this.specialties;
+    }
+
+    /**
+     * Gets the reviews associated with the IPS.
+     * @returns {Review[] | undefined} The reviews associated with the IPS.
+     */
+    getReviews(): Review[] | undefined {
+        return this.reviews;
+    }
+
+    /**
+     * Adds a Review entity to the IPS.
+     * 
+     * @param {Review} review - The Review entity to add.
+     * 
+     * @throws {Error} If the Review entity is invalid.
+     */
+    addReview(review: Review): void {
+        if (!review) {
+            throw new Error('Invalid Review entity');
+        }
+        if (!this.reviews) {
+            this.reviews = [];
+        }
+        this.reviews.push(review);
     }
 
     /**

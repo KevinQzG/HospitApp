@@ -6,6 +6,7 @@ export interface ReviewDocument {
     ips: ObjectId;
     rating: number;
     comments: string;
+    userEmail?: string;
 }
 
 export interface ReviewResponse {
@@ -14,4 +15,5 @@ export interface ReviewResponse {
     ips: string;
     rating: number;
     comments: string;
+    userEmail?: string;
 }

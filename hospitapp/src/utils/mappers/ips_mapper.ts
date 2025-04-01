@@ -3,6 +3,7 @@ import { IpsDocument, IpsResponse } from "@/models/ips.interface";
 import { Ips } from "@/models/ips";
 import { EpsMapper } from './eps_mapper';
 import { SpecialtyMapper } from './specialty_mapper';
+import { ReviewMapper } from './review_mapper';
 
 /**
  * Class that allows to map IPS entities from domain to document and vice versa.
@@ -27,7 +28,8 @@ export class IpsMapper {
             raw.level,
             raw.distance,
             raw.eps?.map(EpsMapper.fromDocumentToDomain),
-            raw.specialties?.map(SpecialtyMapper.fromDocumentToDomain)
+            raw.specialties?.map(SpecialtyMapper.fromDocumentToDomain),
+            raw.reviews?.map(ReviewMapper.fromDocumentToDomain)
         );
     }
 
@@ -49,7 +51,8 @@ export class IpsMapper {
             level: ips.getLevel(),
             distance: ips.getDistance(),
             eps: ips.getEps()?.map(EpsMapper.fromDomainToDocument),
-            specialties: ips.getSpecialties()?.map(SpecialtyMapper.fromDomainToDocument)
+            specialties: ips.getSpecialties()?.map(SpecialtyMapper.fromDomainToDocument),
+            reviews: ips.getReviews()?.map(ReviewMapper.fromDomainToDocument)
         };
     }
 
@@ -71,7 +74,8 @@ export class IpsMapper {
             raw.level,
             raw.distance,
             raw.eps?.map(EpsMapper.fromResponseToDomain),
-            raw.specialties?.map(SpecialtyMapper.fromResponseToDomain)
+            raw.specialties?.map(SpecialtyMapper.fromResponseToDomain),
+            raw.reviews?.map(ReviewMapper.fromResponseToDomain)
         );
     }
 
@@ -93,7 +97,8 @@ export class IpsMapper {
             level: ips.getLevel(),
             distance: ips.getDistance(),
             eps: ips.getEps()?.map(EpsMapper.fromDomainToResponse),
-            specialties: ips.getSpecialties()?.map(SpecialtyMapper.fromDomainToResponse)
+            specialties: ips.getSpecialties()?.map(SpecialtyMapper.fromDomainToResponse),
+            reviews: ips.getReviews()?.map(ReviewMapper.fromDomainToResponse)
         };
     }
 }

@@ -71,23 +71,8 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
       .addMatchStage({ name: name })
       .withEps()
       .withSpecialties()
-      .addProjectStage({
-        name: 1,
-        department: 1,
-        town: 1,
-        address: 1,
-        phone: 1,
-        email: 1,
-        location: 1,
-        level: 1,
-        distance: 1,
-        eps: {
-          $sortArray: { input: "$eps", sortBy: { name: 1 } },
-        },
-        specialties: {
-          $sortArray: { input: "$specialties", sortBy: { name: 1 } },
-        },
-      })
+      .addReviewsJoin()
+      .addFinalProjection()
       .build();
 
     // Execute the pipeline

@@ -230,7 +230,7 @@ describe("IpsMongoRepository Integration Test", () => {
             "01_8000_phone": "18000111080",
             fax: "2160054",
             emails: "CENTROREGULADORANT@FUNDAMEP.COM",
-          }
+          },
         ],
         specialties: [
           {
@@ -323,6 +323,35 @@ describe("IpsMongoRepository Integration Test", () => {
             "schedule_wednesday": "06:00A14:00",
             "schedule_thursday": "06:00A14:00",
             "schedule_friday": "06:00A14:00",
+          },
+        ],
+        reviews: [
+          {
+            _id: "67ec27ebb26664e3529b5094",
+            userEmail: "marcelabuitrago79@gmail.com",
+            user: "67d2445c378b61193bf98d5c",
+            ips: "67b3e98bb1ae5d9e47ae72a8",
+            rating: 5,
+            comments:
+              "Muy buena atención, pero es un lugar demasiado caro y que te cobran por lo que sea.",
+          },
+          {
+            _id: "67ec11feb26664e3529b5091",
+            userEmail: "test@example.com",
+            user: "67cfa3638fbc12e949c108ef",
+            ips: "67b3e98bb1ae5d9e47ae72a8",
+            rating: 5,
+            comments:
+              "Muy buena atención, pero es un lugar demasiado caro y que te cobran por lo que sea.",
+          },
+          {
+            _id: "67ec27b2b26664e3529b5093",
+            userEmail: "test@example.com",
+            user: "67cfa3638fbc12e949c108ef",
+            ips: "67b3e98bb1ae5d9e47ae72a8",
+            rating: 2,
+            comments:
+              "Muy buena atención, pero es un lugar demasiado caro y que te cobran por lo que sea.",
           },
         ],
       };

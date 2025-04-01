@@ -18,7 +18,8 @@ export class ReviewMapper {
             raw.user,
             raw.ips,
             raw.rating,
-            raw.comments
+            raw.comments,
+            raw.userEmail
         );
     }
 
@@ -33,7 +34,8 @@ export class ReviewMapper {
             user: Review.getUser(),
             ips: Review.getIps(),
             rating: Review.getRating(),
-            comments: Review.getComments()     
+            comments: Review.getComments(),
+            userEmail: Review.getUserEmail()     
         };
     }
 
@@ -48,7 +50,8 @@ export class ReviewMapper {
             new ObjectId(raw.user),
             new ObjectId(raw.ips),
             raw.rating,
-            raw.comments
+            raw.comments,
+            raw.userEmail
         );
     }
 
@@ -63,7 +66,8 @@ export class ReviewMapper {
             user: Review.getUser().toHexString(),
             ips: Review.getIps().toHexString(),
             rating: Review.getRating(),
-            comments: Review.getComments()
+            comments: Review.getComments(),
+            userEmail: Review.getUserEmail()
         };
     }
 }

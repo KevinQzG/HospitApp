@@ -12,6 +12,7 @@ export class Review {
     private ips: ObjectId;
     private rating: number;
     private comments: string;
+    private userEmail?: string;
 
 
     /**
@@ -21,13 +22,15 @@ export class Review {
      * @param {ObjectId} ips - Unique identifier of the IPS.
      * @param {number} rating - Rating given by the user.
      * @param {string} comments - Comments provided by the user.
+     * @param {string} userEmail - Email of the user. (optional)
      */
-    constructor(_id: ObjectId = new ObjectId(), user: ObjectId, ips: ObjectId, rating: number, comments: string) {
+    constructor(_id: ObjectId = new ObjectId(), user: ObjectId, ips: ObjectId, rating: number, comments: string, userEmail?: string) {
         this._id = _id;
         this.user = user;
         this.ips = ips;
         this.rating = rating;
         this.comments = comments;
+        this.userEmail = userEmail;
     }
 
     /**
@@ -101,6 +104,14 @@ export class Review {
     }
 
     /**
+     * Gets the email of the user.
+     * @returns {string} The email of the user.
+     */
+    getUserEmail(): string | undefined {
+        return this.userEmail;
+    }
+
+    /**
      * Sets the unique identifier of the user.
      * @param {ObjectId} user - The unique identifier of the user.
      */
@@ -134,6 +145,14 @@ export class Review {
     setComments(comments: string): void {
         this.comments = comments;
         this.validate();
+    }
+
+    /**
+     * Sets the email of the user.
+     * @param {string} userEmail - The email of the user.
+     */
+    setUserEmail(userEmail?: string): void {
+        this.userEmail = userEmail ? userEmail : undefined;
     }
 
     /**
