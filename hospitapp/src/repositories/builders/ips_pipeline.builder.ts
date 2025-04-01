@@ -1,4 +1,4 @@
-import { PipelineStage, LookupStage, AddFieldsStage, ProjectStage, MatchStage, SortStage } from "./pipeline.interface";
+import { LookupStage, AddFieldsStage, ProjectStage } from "./pipeline.interface";
 import { PipelineBuilder } from "./pipeline.builder";
 
 /**

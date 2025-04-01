@@ -71,7 +71,8 @@ describe("Review Model", () => {
     it("should throw error when user is missing", () => {
       const invalidReview = new Review(
         TEST_ID,
-        undefined as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        undefined as any, 
         TEST_IPS,
         TEST_RATING,
         TEST_COMMENTS
@@ -83,6 +84,7 @@ describe("Review Model", () => {
       const invalidReview = new Review(
         TEST_ID,
         TEST_USER,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         undefined as any,
         TEST_RATING,
         TEST_COMMENTS
@@ -95,6 +97,7 @@ describe("Review Model", () => {
         TEST_ID,
         TEST_USER,
         TEST_IPS,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         undefined as any,
         TEST_COMMENTS
       );
@@ -107,6 +110,7 @@ describe("Review Model", () => {
         TEST_USER,
         TEST_IPS,
         TEST_RATING,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         undefined as any
       );
       expect(() => invalidReview.validate()).toThrow("Missing required fields");

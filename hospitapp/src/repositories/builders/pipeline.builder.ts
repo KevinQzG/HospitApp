@@ -1,4 +1,4 @@
-import { PipelineStage, LookupStage, AddFieldsStage, ProjectStage, MatchStage, SortStage } from "./pipeline.interface";
+import { PipelineStage, ProjectStage, MatchStage, SortStage } from "./pipeline.interface";
 
 /**
  * Class that allows to build a pipeline for Mongo queries.
@@ -118,7 +118,6 @@ export class PipelineBuilder {
     /**
      * Adds a lookup stage to the pipeline.
      * 
-     * @param {LookupStage} lookup - The lookup object.
      * @returns {PipelineBuilder} The builder instance.
      * @memberof IpsPipelineBuilder
      * @public
@@ -132,7 +131,7 @@ export class PipelineBuilder {
             foreignField,
             as
         }});
-        
+
         return this;
     }
     /**
