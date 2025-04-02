@@ -1,6 +1,6 @@
 import DBAdapter from "@/adapters/db.adapter";
 import CONTAINER from "@/adapters/container";
-import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
+import SearchIpsServiceAdapter from "@/adapters/services/search_ips.service.adapter";
 import { TYPES } from "@/adapters/types";
 import { IpsResponse } from "@/models/ips.interface";
 

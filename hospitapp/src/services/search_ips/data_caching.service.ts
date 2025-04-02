@@ -1,7 +1,7 @@
 import { unstable_cache as cache } from "next/cache";
 import DBAdapter from "@/adapters/db.adapter";
 import CONTAINER from "@/adapters/container";
-import SearchIpsServiceAdapter from "@/adapters/search_ips.service.adapter";
+import SearchIpsServiceAdapter from "@/adapters/services/search_ips.service.adapter";
 import { TYPES } from "@/adapters/types";
 import { SpecialtyResponse } from "@/models/specialty.interface";
 import { EpsResponse } from "@/models/eps.interface";

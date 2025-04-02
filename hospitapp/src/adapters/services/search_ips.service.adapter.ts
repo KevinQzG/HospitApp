@@ -1,6 +1,5 @@
 import { IpsResponse } from "@/models/ips.interface";
-import { SpecialtyResponse } from "@/models/specialty.interface";
-import { EpsResponse } from "@/models/eps.interface";
+import { ReviewResponse } from "@/models/review.interface";
 
 /**
  * @interface
@@ -31,20 +30,6 @@ export default interface SearchIpsServiceAdapter {
 	): Promise<{ results: IpsResponse[]; total: number }>;
 
 	/**
-	 * Gets all the specialties from the database.
-	 * @async
-	 * @returns {Promise<Specialty[]>} The specialties from the database.
-	 */
-	getAllSpecialties(): Promise<SpecialtyResponse[]>;
-
-	/**
-	 * Gets all the EPSs from the database.
-	 * @async
-	 * @returns {Promise<EPS[]>} The EPSs from the database.
-	 */
-	getAllEps(): Promise<EpsResponse[]>;
-
-	/**
 	 * Gets an IPS by its name.
 	 *
 	 * @async
@@ -52,4 +37,22 @@ export default interface SearchIpsServiceAdapter {
 	 * @returns {Promise<IpsResponse | null>} The IPS with the specified name, or null if it does not exist.
 	 */
 	getIpsByName(name: string): Promise<IpsResponse | null>;
+
+	/**
+	 * Gets an IPS by its name with reviews.
+	 *
+	 * @async
+	 * @param {string} name - The name of the IPS.
+	 * @param {number} page - The page number.
+	 * @param {number} pageSize - The number of results per page.
+	 * @returns {Promise<{ ips: IpsResponse | null; reviewsResult: { reviews: ReviewResponse[]; total: number } }>} The IPS with the specified name and its reviews, or null if it does not exist.
+	 */
+	getIpsByNameWithReviews(
+		name: string,
+		page: number,
+		pageSize: number
+	): Promise<{
+		ips: IpsResponse | null;
+		reviewsResult: { reviews: ReviewResponse[]; total: number };
+	}>;
 }
