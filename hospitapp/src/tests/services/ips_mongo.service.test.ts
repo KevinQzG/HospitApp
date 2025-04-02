@@ -5,6 +5,8 @@ import type IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import type IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
 import type ReviewRepositoryAdapter from "@/adapters/review_repository.adapter";
 import { IpsResponse } from "@/models/ips.interface";
+import { ReviewMapper } from "@/utils/mappers/review_mapper";
+import { IpsMapper } from "@/utils/mappers/ips_mapper";
 
 describe("IpsMongoService Integration Test", () => {
 	const CONTAINER = new Container();
@@ -30,6 +32,28 @@ describe("IpsMongoService Integration Test", () => {
 		distance: 2415.089412549286,
 	};
 
+	const MOCK_IPS = IpsMapper.fromResponseToDomain(MOCK_IPS_RES);
+
+	const MOCK_REVIEW = [
+		ReviewMapper.fromResponseToDomain({
+			_id: "67b3e98bb1ae5d9e47ae7a08",
+			user: "67b3e98bb1ae5d9e47ae7a07",
+			ips: "67b3e98bb1ae5d9e47ae7a06",
+			rating: 4,
+			comments: "Great service!",
+		}),
+	];
+
+	const MOCK_REVIEW_RES = [
+		{
+			_id: "67b3e98bb1ae5d9e47ae7a08",
+			user: "67b3e98bb1ae5d9e47ae7a07",
+			ips: "67b3e98bb1ae5d9e47ae7a06",
+			rating: 4,
+			comments: "Great service!",
+		},
+	];
+
 	beforeAll(() => {
 		// Create mock repository
 		mockIpsRepository = {
@@ -41,15 +65,13 @@ describe("IpsMongoService Integration Test", () => {
 				],
 				total: 1,
 			}),
-			findByName: jest.fn().mockResolvedValue({
-				toResponse: () => MOCK_IPS_RES,
-			}),
+			findByName: jest.fn().mockResolvedValue(MOCK_IPS),
 		};
 
 		mockReviewRepository = {
 			findAllWithPagination: jest.fn().mockResolvedValue({
-				results: [],
-				total: 0,
+				results: MOCK_REVIEW,
+				total: 1,
 			}),
 		};
 
@@ -194,6 +216,49 @@ describe("IpsMongoService Integration Test", () => {
 			mockIpsRepository.findByName.mockRejectedValueOnce(error);
 
 			await expect(service.getIpsByName(name)).rejects.toThrow(error);
+		});
+	});
+
+	describe("getIpsByNameWithReviews", () => {
+		it("should retrieve IPS and its reviews", async () => {
+			const name = "ESE HOSPITAL VENANCIO DIAZ DIAZ";
+			const page = 1;
+			const pageSize = 10;
+
+			const { ips, reviewsResult } =
+				await service.getIpsByNameWithReviews(name, page, pageSize);
+
+			expect(mockIpsRepository.findByName).toHaveBeenCalledWith(name);
+			expect(
+				mockReviewRepository.findAllWithPagination
+			).toHaveBeenCalledWith(page, pageSize, MOCK_IPS.getId());
+			expect(ips).toEqual(MOCK_IPS_RES);
+			expect(reviewsResult).toEqual({
+				reviews: MOCK_REVIEW_RES,
+				total: 1,
+			});
+		});
+
+		it("should return null IPS and empty reviews if IPS not found", async () => {
+			const name = "non_existent_name";
+			mockIpsRepository.findByName.mockResolvedValueOnce(null);
+
+			const { ips, reviewsResult } =
+				await service.getIpsByNameWithReviews(name, 1, 10);
+
+			expect(mockIpsRepository.findByName).toHaveBeenCalledWith(name);
+			expect(ips).toBeNull();
+			expect(reviewsResult).toEqual({ reviews: [], total: 0 });
+		});
+
+		it("should handle repository errors", async () => {
+			const name = "error_name";
+			const error = new Error("DB error");
+			mockIpsRepository.findByName.mockRejectedValueOnce(error);
+
+			await expect(
+				service.getIpsByNameWithReviews(name, 1, 10)
+			).rejects.toThrow(error);
 		});
 	});
 });

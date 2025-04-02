@@ -191,7 +191,7 @@ describe("IpsMongoRepository Integration Test", () => {
 		});
 	});
 
-	describe("find_by_name", () => {
+	describe("findByName", () => {
 		const EXPECTED_IPS_NAME = "INSTITUTO DEL CORAZON SEDE CENTRO";
 		let ips: Ips | null;
 
