@@ -15,29 +15,31 @@ import { PipelineBuilder } from "./builders/pipeline.builder";
  */
 @injectable()
 export class SpecialtyMongoRepository implements SpecialtyRepositoryAdapter {
-    /**
-     * @constructor
-     * @param {DBAdapter} dbHandler - The database handler.
-     * @returns {void}
-     * @description Creates an instance of the IpsMongoRepository class.
-     * @throws {Error} If the database handler is null.
-     * @throws {Error} If the database connection fails.
-     */
-    constructor(
-        @inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>
-    ) { }
+	/**
+	 * @constructor
+	 * @param {DBAdapter} dbHandler - The database handler.
+	 * @returns {void}
+	 * @description Creates an instance of the IpsMongoRepository class.
+	 * @throws {Error} If the database handler is null.
+	 * @throws {Error} If the database connection fails.
+	 */
+	constructor(@inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>) {}
 
-    async findAll(): Promise<Specialty[]> {
-        const PIPELINE = new PipelineBuilder().addSortStage({ name: 1 }).build();
-        // Get all the EPS Documents
-        const DB = await this.dbHandler.connect();
-        const RESULTS = await DB.collection<SpecialtyDocument>('Specialty').aggregate<SpecialtyDocument>(PIPELINE).toArray();
-        
-        if (!RESULTS) {
-            return [];
-        }
+	async findAll(): Promise<Specialty[]> {
+		const PIPELINE = new PipelineBuilder()
+			.addSortStage({ name: 1 })
+			.build();
+		// Get all the EPS Documents
+		const DB = await this.dbHandler.connect();
+		const RESULTS = await DB.collection<SpecialtyDocument>("Specialty")
+			.aggregate<SpecialtyDocument>(PIPELINE)
+			.toArray();
 
-        // Map the results to EPS entities
-        return RESULTS.map(SpecialtyMapper.fromDocumentToDomain);
-    }
+		if (!RESULTS) {
+			return [];
+		}
+
+		// Map the results to EPS entities
+		return RESULTS.map(SpecialtyMapper.fromDocumentToDomain);
+	}
 }

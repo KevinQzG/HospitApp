@@ -15,30 +15,32 @@ import { PipelineBuilder } from "./builders/pipeline.builder";
  */
 @injectable()
 export class EpsMongoRepository implements EpsRepositoryAdapter {
-    /**
-     * @constructor
-     * @param {DBAdapter} dbHandler - The database handler.
-     * @returns {void}
-     * @description Creates an instance of the IpsMongoRepository class.
-     * @throws {Error} If the database handler is null.
-     * @throws {Error} If the database connection fails.
-     */
-    constructor(
-        @inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>
-    ) { }
+	/**
+	 * @constructor
+	 * @param {DBAdapter} dbHandler - The database handler.
+	 * @returns {void}
+	 * @description Creates an instance of the IpsMongoRepository class.
+	 * @throws {Error} If the database handler is null.
+	 * @throws {Error} If the database connection fails.
+	 */
+	constructor(@inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>) {}
 
-    async findAll(): Promise<Eps[]> {
-        const PIPELINE = new PipelineBuilder().addSortStage({ name: 1 }).build();
+	async findAll(): Promise<Eps[]> {
+		const PIPELINE = new PipelineBuilder()
+			.addSortStage({ name: 1 })
+			.build();
 
-        // Get all the EPS Documents
-        const DB = await this.dbHandler.connect();
-        const RESULTS = await DB.collection<EpsDocument>('EPS').aggregate<EpsDocument>(PIPELINE).toArray();
-        
-        if (!RESULTS) {
-            return [];
-        }
+		// Get all the EPS Documents
+		const DB = await this.dbHandler.connect();
+		const RESULTS = await DB.collection<EpsDocument>("EPS")
+			.aggregate<EpsDocument>(PIPELINE)
+			.toArray();
 
-        // Map the results to EPS entities
-        return RESULTS.map(EpsMapper.fromDocumentToDomain);
-    }
+		if (!RESULTS) {
+			return [];
+		}
+
+		// Map the results to EPS entities
+		return RESULTS.map(EpsMapper.fromDocumentToDomain);
+	}
 }
