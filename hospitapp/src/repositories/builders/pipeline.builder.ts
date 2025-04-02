@@ -1,4 +1,4 @@
-import { PipelineStage, ProjectStage, MatchStage, SortStage } from "./pipeline.interface";
+import { PipelineStage, ProjectStage, MatchStage, SortStage, AddFieldsStage } from "./pipeline.interface";
 
 /**
  * Class that allows to build a pipeline for Mongo queries.
@@ -134,6 +134,23 @@ export class PipelineBuilder {
 
         return this;
     }
+
+    /**
+     * Adds a AddFields stage to the pipeline.
+     *
+     * @param {AddFieldsStage} addField - The addField object.
+     * @returns {PipelineBuilder} The builder instance.
+     * @memberof IpsPipelineBuilder
+     * @public
+     * @method
+     * @name addFieldsStage
+     */
+    addFieldsStage(addField: AddFieldsStage): this {
+        this.pipeline.push({ $addFields: addField });
+
+        return this;
+    }
+    
     /**
      * Returns the pipeline stages.
      * @returns {PipelineStage[]} The pipeline stages.
