@@ -6,7 +6,7 @@ import { ReviewResponse } from "@/models/review.interface";
  * @name SearchIpsServiceAdapter
  * @description This interface should be implemented by the class that will filter, get and sort the IPSs.
  */
-export default interface SearchIpsServiceAdapter {
+export default interface IpsServiceAdapter {
 	/**
 	 * Gets all IPSs that are within a certain distance from the user and at least one of the specified specialties and EPSs.
 	 * @async

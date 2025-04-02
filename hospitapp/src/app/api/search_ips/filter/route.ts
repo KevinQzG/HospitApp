@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import DBAdapter from "@/adapters/db.adapter";
 import CONTAINER from "@/adapters/container";
-import SearchIpsServiceAdapter from "@/adapters/services/search_ips.service.adapter";
+import IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import { TYPES } from "@/adapters/types";
 import { IS_TYPE_ARRAY } from "@/utils/helpers/validation";
 import { IpsResponse } from "@/models/ips.interface";
@@ -120,8 +120,9 @@ export async function POST(
 	req: NextRequest
 ): Promise<NextResponse<SearchResponse>> {
 	const DB_HANDLER: DBAdapter = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
-	const SEARCH_SERVICE: SearchIpsServiceAdapter =
-		CONTAINER.get<SearchIpsServiceAdapter>(TYPES.SearchIpsServiceAdapter);
+	const SEARCH_SERVICE: IpsServiceAdapter = CONTAINER.get<IpsServiceAdapter>(
+		TYPES.IpsServiceAdapter
+	);
 	try {
 		// Parse and validate request body
 		const BODY: SearchRequest = await req.json();

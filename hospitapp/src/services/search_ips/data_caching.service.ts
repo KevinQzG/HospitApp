@@ -1,7 +1,8 @@
 import { unstable_cache as cache } from "next/cache";
 import DBAdapter from "@/adapters/db.adapter";
 import CONTAINER from "@/adapters/container";
-import SearchIpsServiceAdapter from "@/adapters/services/search_ips.service.adapter";
+import SpecialtyServiceAdapter from "@/adapters/services/specialty.service.adapter";
+import EpsServiceAdapter from "@/adapters/services/eps.service.adapter";
 import { TYPES } from "@/adapters/types";
 import { SpecialtyResponse } from "@/models/specialty.interface";
 import { EpsResponse } from "@/models/eps.interface";
@@ -20,14 +21,17 @@ export const getSearchIpsCachedProps = cache(
 		try {
 			// Inject the dependencies
 			const DB_HANDLER = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
-			const SEARCH_IPS_SERVICE = CONTAINER.get<SearchIpsServiceAdapter>(
-				TYPES.SearchIpsServiceAdapter
+			const EPS_SERVICE = CONTAINER.get<EpsServiceAdapter>(
+				TYPES.EpsServiceAdapter
+			);
+			const SPECIALTY_SERVICE = CONTAINER.get<SpecialtyServiceAdapter>(
+				TYPES.SpecialtyServiceAdapter
 			);
 
 			// Fetch the data
 			const RESULTS = {
-				specialties: await SEARCH_IPS_SERVICE.getAllSpecialties(),
-				eps: await SEARCH_IPS_SERVICE.getAllEps(),
+				specialties: await SPECIALTY_SERVICE.getAllSpecialties(),
+				eps: await EPS_SERVICE.getAllEps(),
 			};
 
 			// Close the database connection and return the results

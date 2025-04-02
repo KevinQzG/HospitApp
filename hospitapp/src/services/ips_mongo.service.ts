@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import SearchIpsServiceAdapter from "@/adapters/services/search_ips.service.adapter";
+import IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import { TYPES } from "@/adapters/types";
 import type IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
 import { IpsResponse } from "@/models/ips.interface";
@@ -8,11 +8,11 @@ import type ReviewRepositoryAdapter from "@/adapters/review_repository.adapter";
 
 /**
  * @class
- * @name IpsRepository
- * @description This class allows me to interact with the IPS collection in the database.
+ * @name IpsMongoService
+ * @description This class contains the logic to interact with the IPS collection in the database.
  */
 @injectable()
-export class SearchIpsMongoService implements SearchIpsServiceAdapter {
+export class IpsMongoService implements IpsServiceAdapter {
 	/**
 	 * @constructor
 	 * @param {IpsRepositoryAdapter} ipsRepository - The repository handler for IPSs.

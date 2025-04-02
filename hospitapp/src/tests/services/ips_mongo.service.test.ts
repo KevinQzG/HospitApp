@@ -1,18 +1,16 @@
 import { Container } from "inversify";
 import { TYPES } from "@/adapters/types";
-import { SearchIpsMongoService } from "@/services/search_ips/search_ips_mongo.service";
-import type SearchIpsServiceAdapter from "@/adapters/services/search_ips.service.adapter";
+import { IpsMongoService } from "@/services/ips_mongo.service";
+import type IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import type IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
-import type SpecialtyRepositoryAdapter from "@/adapters/specialty_repository.adapter";
-import type EPSRepositoryAdapter from "@/adapters/eps_repository.adapter";
+import type ReviewRepositoryAdapter from "@/adapters/review_repository.adapter";
 import { IpsResponse } from "@/models/ips.interface";
 
-describe("SearchIpsMongoService Integration Test", () => {
+describe("IpsMongoService Integration Test", () => {
 	const CONTAINER = new Container();
-	let service: SearchIpsMongoService;
+	let service: IpsMongoService;
 	let mockIpsRepository: jest.Mocked<IpsRepositoryAdapter>;
-	let mockSpecialtyRepository: jest.Mocked<SpecialtyRepositoryAdapter>;
-	let mockEpsRepository: jest.Mocked<EPSRepositoryAdapter>;
+	let mockReviewRepository: jest.Mocked<ReviewRepositoryAdapter>;
 
 	const TEST_COORDINATES = [-75.63813564857911, 6.133477697463028];
 
@@ -48,52 +46,32 @@ describe("SearchIpsMongoService Integration Test", () => {
 			}),
 		};
 
-		mockSpecialtyRepository = {
-			findAll: jest.fn().mockResolvedValue([
-				{
-					toResponse: () => ({
-						_id: "67b3e98bb1ae5d9e47ae7a08",
-						name: "ENFERMERÍA",
-					}),
-				},
-			]),
-		};
-
-		mockEpsRepository = {
-			findAll: jest.fn().mockResolvedValue([
-				{
-					toResponse: () => ({
-						_id: "67b3e98bb1ae5d9e47ae7a09",
-						name: "SALUD TOTAL",
-					}),
-				},
-			]),
+		mockReviewRepository = {
+			findAllWithPagination: jest.fn().mockResolvedValue({
+				results: [],
+				total: 0,
+			}),
 		};
 
 		// Rebind repository for testing
 		CONTAINER.bind<IpsRepositoryAdapter>(
 			TYPES.IpsRepositoryAdapter
 		).toConstantValue(mockIpsRepository);
-		CONTAINER.bind<SpecialtyRepositoryAdapter>(
-			TYPES.SpecialtyRepositoryAdapter
-		).toConstantValue(mockSpecialtyRepository);
-		CONTAINER.bind<EPSRepositoryAdapter>(
-			TYPES.EpsRepositoryAdapter
-		).toConstantValue(mockEpsRepository);
-		CONTAINER.bind<SearchIpsServiceAdapter>(
-			TYPES.SearchIpsServiceAdapter
-		).to(SearchIpsMongoService);
-
-		service = CONTAINER.get<SearchIpsMongoService>(
-			TYPES.SearchIpsServiceAdapter
+		CONTAINER.bind<ReviewRepositoryAdapter>(
+			TYPES.ReviewRepositoryAdapter
+		).toConstantValue(mockReviewRepository);
+		CONTAINER.bind<IpsServiceAdapter>(TYPES.IpsServiceAdapter).to(
+			IpsMongoService
 		);
+
+		service = CONTAINER.get<IpsMongoService>(TYPES.IpsServiceAdapter);
 	});
 
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
 
-	describe("filter", () => {
+	describe("filterIps", () => {
 		it("should correctly delegate to repository and return documents", async () => {
 			const { results, total } = await service.filterIps(
 				TEST_COORDINATES[0],
@@ -191,65 +169,7 @@ describe("SearchIpsMongoService Integration Test", () => {
 		});
 	});
 
-	describe("get_specialties", () => {
-		it("should retrieve and transform all specialties", async () => {
-			const specialties = await service.getAllSpecialties();
-
-			expect(mockSpecialtyRepository.findAll).toHaveBeenCalled();
-			expect(specialties).toEqual([
-				{
-					_id: "67b3e98bb1ae5d9e47ae7a08",
-					name: "ENFERMERÍA",
-				},
-			]);
-		});
-
-		it("should handle empty specialty list", async () => {
-			mockSpecialtyRepository.findAll.mockResolvedValueOnce([]);
-			const specialties = await service.getAllSpecialties();
-
-			expect(specialties).toEqual([]);
-		});
-
-		it("should handle repository errors", async () => {
-			mockSpecialtyRepository.findAll.mockRejectedValueOnce(
-				new Error("Specialty DB error")
-			);
-			await expect(service.getAllSpecialties()).rejects.toThrow(
-				"Specialty DB error"
-			);
-		});
-	});
-
-	describe("get_eps", () => {
-		it("should retrieve and transform all EPS entries", async () => {
-			const epsList = await service.getAllEps();
-
-			expect(mockEpsRepository.findAll).toHaveBeenCalled();
-			expect(epsList).toEqual([
-				{
-					_id: "67b3e98bb1ae5d9e47ae7a09",
-					name: "SALUD TOTAL",
-				},
-			]);
-		});
-
-		it("should handle empty EPS list", async () => {
-			mockEpsRepository.findAll.mockResolvedValueOnce([]);
-			const epsList = await service.getAllEps();
-
-			expect(epsList).toEqual([]);
-		});
-
-		it("should handle repository errors", async () => {
-			mockEpsRepository.findAll.mockRejectedValueOnce(
-				new Error("EPS DB error")
-			);
-			await expect(service.getAllEps()).rejects.toThrow("EPS DB error");
-		});
-	});
-
-	describe("get_ips_by_name", () => {
+	describe("getIpsByName", () => {
 		it("should retrieve IPS by ID and return transformed response", async () => {
 			const name = "ESE HOSPITAL VENANCIO DIAZ DIAZ";
 			const result = await service.getIpsByName(name);

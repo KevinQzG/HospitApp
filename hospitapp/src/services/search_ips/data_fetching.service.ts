@@ -1,6 +1,6 @@
 import DBAdapter from "@/adapters/db.adapter";
 import CONTAINER from "@/adapters/container";
-import SearchIpsServiceAdapter from "@/adapters/services/search_ips.service.adapter";
+import IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import { TYPES } from "@/adapters/types";
 import { IpsResponse } from "@/models/ips.interface";
 
@@ -11,8 +11,8 @@ export const getIpsProps = async (params: {
 	try {
 		// Inject the dependencies
 
-		const SEARCH_IPS_SERVICE = CONTAINER.get<SearchIpsServiceAdapter>(
-			TYPES.SearchIpsServiceAdapter
+		const SEARCH_IPS_SERVICE = CONTAINER.get<IpsServiceAdapter>(
+			TYPES.IpsServiceAdapter
 		);
 
 		// Fetch the data
