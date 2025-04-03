@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import DBAdapter from "@/adapters/db.adapter";
-import EpsRepositoryAdapter from "@/adapters/eps_repository.adapter";
+import EpsRepositoryAdapter from "@/adapters/repositories/eps_repository.adapter";
 import CONTAINER from "@/adapters/container";
 import { TYPES } from "@/adapters/types";
 import { Eps } from "@/models/eps";

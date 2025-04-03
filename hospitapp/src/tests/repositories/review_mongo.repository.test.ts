@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import DBAdapter from "@/adapters/db.adapter";
-import ReviewRepositoryAdapter from "@/adapters/review_repository.adapter";
+import ReviewRepositoryAdapter from "@/adapters/repositories/review_repository.adapter";
 import CONTAINER from "@/adapters/container";
 import { TYPES } from "@/adapters/types";
 import { Review } from "@/models/review";
@@ -113,17 +113,13 @@ describe("ReviewMongoRepository Integration Test", () => {
 			"Great service!"
 		);
 
-		console.log("REVIEW", REVIEW);
-
 		it("should create a new Review", async () => {
 			const CREATED_REVIEW_ID = await repository.create(REVIEW);
 
 			expect(CREATED_REVIEW_ID).toBeInstanceOf(ObjectId);
 			expect(CREATED_REVIEW_ID).toEqual(REVIEW.getId());
 
-			const CREATED_REVIEW = await repository.findAll(
-				REVIEW.getIps()
-			)
+			const CREATED_REVIEW = await repository.findAll(REVIEW.getIps());
 
 			expect(CREATED_REVIEW.length).toBe(1);
 			expect(CREATED_REVIEW[0].getId()).toEqual(REVIEW.getId());
@@ -136,14 +132,12 @@ describe("ReviewMongoRepository Integration Test", () => {
 
 			expect(UPDATED_REVIEW).toBeInstanceOf(Review);
 			expect(UPDATED_REVIEW?.getId()).toEqual(REVIEW.getId());
-			expect(UPDATED_REVIEW?.getComments()).toEqual(
-				REVIEW.getComments()
-			);
+			expect(UPDATED_REVIEW?.getComments()).toEqual(REVIEW.getComments());
 			expect(UPDATED_REVIEW?.getRating()).toEqual(REVIEW.getRating());
 			expect(UPDATED_REVIEW?.getUser()).toEqual(REVIEW.getUser());
 			expect(UPDATED_REVIEW?.getIps()).toEqual(REVIEW.getIps());
 		});
-		
+
 		it("should delete the Review", async () => {
 			const DELETED_REVIEW = await repository.delete(REVIEW.getId());
 

@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/adapters/types";
-import type SpecialtyRepositoryAdapter from "@/adapters/specialty_repository.adapter";
+import type SpecialtyRepositoryAdapter from "@/adapters/repositories/specialty_repository.adapter";
 import { SpecialtyResponse } from "@/models/specialty.interface";
 import SpecialtyServiceAdapter from "@/adapters/services/specialty.service.adapter";
 

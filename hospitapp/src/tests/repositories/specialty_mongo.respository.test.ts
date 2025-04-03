@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import DBAdapter from "@/adapters/db.adapter";
-import SpecialtyRepositoryAdapter from "@/adapters/specialty_repository.adapter";
+import SpecialtyRepositoryAdapter from "@/adapters/repositories/specialty_repository.adapter";
 import CONTAINER from "@/adapters/container";
 import { TYPES } from "@/adapters/types";
 import { Specialty } from "@/models/specialty";

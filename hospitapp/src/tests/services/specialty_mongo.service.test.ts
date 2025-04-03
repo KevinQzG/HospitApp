@@ -1,7 +1,7 @@
 import { Container } from "inversify";
 import { TYPES } from "@/adapters/types";
 import { SpecialtyMongoService } from "@/services/specialty_mongo.service";
-import type SpecialtyRepositoryAdapter from "@/adapters/specialty_repository.adapter";
+import type SpecialtyRepositoryAdapter from "@/adapters/repositories/specialty_repository.adapter";
 import SpecialtyServiceAdapter from "@/adapters/services/specialty.service.adapter";
 
 describe("SpecialtyMongoService Integration Test", () => {
@@ -24,9 +24,9 @@ describe("SpecialtyMongoService Integration Test", () => {
 		CONTAINER.bind<SpecialtyRepositoryAdapter>(
 			TYPES.SpecialtyRepositoryAdapter
 		).toConstantValue(mockSpecialtyRepository);
-		CONTAINER.bind<SpecialtyServiceAdapter>(TYPES.SpecialtyServiceAdapter).to(
-			SpecialtyMongoService
-		);
+		CONTAINER.bind<SpecialtyServiceAdapter>(
+			TYPES.SpecialtyServiceAdapter
+		).to(SpecialtyMongoService);
 
 		service = CONTAINER.get<SpecialtyMongoService>(
 			TYPES.SpecialtyServiceAdapter

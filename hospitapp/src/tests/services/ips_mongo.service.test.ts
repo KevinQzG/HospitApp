@@ -2,8 +2,8 @@ import { Container } from "inversify";
 import { TYPES } from "@/adapters/types";
 import { IpsMongoService } from "@/services/ips_mongo.service";
 import type IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
-import type IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
-import type ReviewRepositoryAdapter from "@/adapters/review_repository.adapter";
+import type IpsRepositoryAdapter from "@/adapters/repositories/ips_repository.adapter";
+import type ReviewRepositoryAdapter from "@/adapters/repositories/review_repository.adapter";
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewMapper } from "@/utils/mappers/review_mapper";
 import { IpsMapper } from "@/utils/mappers/ips_mapper";
@@ -86,7 +86,7 @@ describe("IpsMongoService Integration Test", () => {
 			findAll: jest.fn().mockResolvedValue(MOCK_REVIEW),
 			create: jest.fn().mockResolvedValue(MOCK_REVIEW[0].getId()),
 			delete: jest.fn().mockResolvedValue(true),
-			update: jest.fn().mockResolvedValue(MOCK_REVIEW[0])
+			update: jest.fn().mockResolvedValue(MOCK_REVIEW[0]),
 		};
 
 		// Rebind repository for testing

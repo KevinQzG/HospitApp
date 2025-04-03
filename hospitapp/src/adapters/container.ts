@@ -1,12 +1,12 @@
 // src/adapters/_container.ts
 import { Container } from "inversify";
 import { TYPES } from "./types";
-import IpsRepositoryAdapter from "./ips_repository.adapter";
-import EpsRepositoryAdapter from "./eps_repository.adapter";
-import SpecialtyRepositoryAdapter from "./specialty_repository.adapter";
+import IpsRepositoryAdapter from "./repositories/ips_repository.adapter";
+import EpsRepositoryAdapter from "./repositories/eps_repository.adapter";
+import SpecialtyRepositoryAdapter from "./repositories/specialty_repository.adapter";
 import IpsServiceAdapter from "./services/ips.service.adapter";
-import UserRepositoryAdapter from "./user_repository.adapter";
-import ReviewRepositoryAdapter from "./review_repository.adapter";
+import UserRepositoryAdapter from "./repositories/user_repository.adapter";
+import ReviewRepositoryAdapter from "./repositories/review_repository.adapter";
 import SpecialtyServiceAdapter from "./services/specialty.service.adapter";
 import EpsServiceAdapter from "./services/eps.service.adapter";
 import DBAdapter from "./db.adapter";

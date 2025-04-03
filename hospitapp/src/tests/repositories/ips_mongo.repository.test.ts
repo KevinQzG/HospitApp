@@ -1,5 +1,5 @@
 import DBAdapter from "@/adapters/db.adapter";
-import IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
+import IpsRepositoryAdapter from "@/adapters/repositories/ips_repository.adapter";
 import CONTAINER from "@/adapters/container";
 import { TYPES } from "@/adapters/types";
 import { Ips } from "@/models/ips";

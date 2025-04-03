@@ -1,7 +1,7 @@
 import { Container } from "inversify";
 import { TYPES } from "@/adapters/types";
 import { EpsMongoService } from "@/services/eps_mongo.service";
-import type EpsRepositoryAdapter from "@/adapters/eps_repository.adapter";
+import type EpsRepositoryAdapter from "@/adapters/repositories/eps_repository.adapter";
 import EpsServiceAdapter from "@/adapters/services/eps.service.adapter";
 
 describe("EpsMongoService Integration Test", () => {

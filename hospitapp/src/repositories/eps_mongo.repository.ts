@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { Db } from "mongodb";
-import EpsRepositoryAdapter from "@/adapters/eps_repository.adapter";
+import EpsRepositoryAdapter from "@/adapters/repositories/eps_repository.adapter";
 import { TYPES } from "@/adapters/types";
 import { EpsDocument } from "@/models/eps.interface";
 import { Eps } from "@/models/eps";

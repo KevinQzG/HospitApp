@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { Db } from "mongodb";
-import SpecialtyRepositoryAdapter from "@/adapters/specialty_repository.adapter";
+import SpecialtyRepositoryAdapter from "@/adapters/repositories/specialty_repository.adapter";
 import { TYPES } from "@/adapters/types";
 import { SpecialtyDocument } from "@/models/specialty.interface";
 import { Specialty } from "@/models/specialty";

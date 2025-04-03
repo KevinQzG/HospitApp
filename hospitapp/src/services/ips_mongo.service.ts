@@ -1,10 +1,10 @@
 import { injectable, inject } from "inversify";
 import IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import { TYPES } from "@/adapters/types";
-import type IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
+import type IpsRepositoryAdapter from "@/adapters/repositories/ips_repository.adapter";
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
-import type ReviewRepositoryAdapter from "@/adapters/review_repository.adapter";
+import type ReviewRepositoryAdapter from "@/adapters/repositories/review_repository.adapter";
 
 /**
  * @class
@@ -67,15 +67,14 @@ export class IpsMongoService implements IpsServiceAdapter {
 		epsNames: string[],
 		town: string | null
 	): Promise<IpsResponse[]> {
-		const RESULTS =
-			await this.ipsRepository.findAllByDistanceSpecialtyEps(
-				longitude,
-				latitude,
-				maxDistance,
-				specialties,
-				epsNames,
-				town
-			);
+		const RESULTS = await this.ipsRepository.findAllByDistanceSpecialtyEps(
+			longitude,
+			latitude,
+			maxDistance,
+			specialties,
+			epsNames,
+			town
+		);
 
 		return RESULTS.map((ips) => {
 			return ips.toResponse();

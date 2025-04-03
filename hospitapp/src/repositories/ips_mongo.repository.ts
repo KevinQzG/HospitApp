@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { Db } from "mongodb";
-import IpsRepositoryAdapter from "@/adapters/ips_repository.adapter";
+import IpsRepositoryAdapter from "@/adapters/repositories/ips_repository.adapter";
 import { TYPES } from "@/adapters/types";
 import { IpsDocument } from "@/models/ips.interface";
 import { Ips } from "@/models/ips";

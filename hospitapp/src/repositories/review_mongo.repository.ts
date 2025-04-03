@@ -7,7 +7,7 @@ import type DBAdapter from "@/adapters/db.adapter";
 import { ReviewMapper } from "@/utils/mappers/review_mapper";
 import { PipelineBuilder } from "./builders/pipeline.builder";
 import { AggregationResult } from "./review_mongo.repository.interfaces";
-import ReviewRepositoryAdapter from "@/adapters/review_repository.adapter";
+import ReviewRepositoryAdapter from "@/adapters/repositories/review_repository.adapter";
 
 /**
  * @class

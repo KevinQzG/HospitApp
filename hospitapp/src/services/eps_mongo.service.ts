@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/adapters/types";
-import type EPSRepositoryAdapter from "@/adapters/eps_repository.adapter";
+import type EPSRepositoryAdapter from "@/adapters/repositories/eps_repository.adapter";
 import { EpsResponse } from "@/models/eps.interface";
 import EpsServiceAdapter from "@/adapters/services/eps.service.adapter";
 
@@ -21,7 +21,7 @@ export class EpsMongoService implements EpsServiceAdapter {
 	 */
 	constructor(
 		@inject(TYPES.EpsRepositoryAdapter)
-		private epsRepository: EPSRepositoryAdapter,
+		private epsRepository: EPSRepositoryAdapter
 	) {}
 
 	async getAllEps(): Promise<EpsResponse[]> {
