@@ -26,11 +26,14 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 	 */
 	constructor(@inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>) {}
 
-	async findAllWithPagination(
-		page: number,
-		pageSize: number,
-		ipsId?: ObjectId
-	): Promise<{ results: Review[]; total: number }> {
+	/**
+	 * This method returns the base pipeline builder for the findAll method.
+	 * @method
+	 * @private
+	 * @param ipsId - The ID of the IPS to filter by.
+	 * @returns {PipelineBuilder} The pipeline builder instance.
+	 */
+	private baseFindAllPipelineBuilder(ipsId?: ObjectId): PipelineBuilder {
 		let pipelineBuilder = new PipelineBuilder();
 
 		if (ipsId) {
@@ -39,8 +42,8 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 				ips: new ObjectId(ipsId),
 			});
 		}
-		// Build the pipeline
-		const PIPELINE = pipelineBuilder
+
+		return pipelineBuilder
 			.addLookupStage("USERS", "user", "_id", "userObject")
 			.addFieldsStage({
 				userEmail: {
@@ -53,11 +56,20 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 			.addSortStage({
 				rating: -1,
 				userEmail: 1,
-			})
+			});
+	}
+
+	async findAllWithPagination(
+		page: number,
+		pageSize: number,
+		ipsId?: ObjectId
+	): Promise<{ results: Review[]; total: number }> {
+		// Build the pipeline
+		const PIPELINE = this.baseFindAllPipelineBuilder(ipsId)
 			.addPagination(page, pageSize)
 			.build();
 
-		// Get all the EPS Documents
+		// Get all the Reviews Documents
 		const DB = await this.dbHandler.connect();
 		const AGGREGATION_RESULT = await DB.collection<ReviewDocument>("Review")
 			.aggregate<AggregationResult>(PIPELINE)
@@ -76,5 +88,79 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 			results: RESULTS.map(ReviewMapper.fromDocumentToDomain),
 			total: TOTAL,
 		};
+	}
+
+	async findAll(ipsId?: ObjectId): Promise<Review[]> {
+		// Build the pipeline
+		const PIPELINE = this.baseFindAllPipelineBuilder(ipsId).build();
+
+		// Get all the Reviews Documents
+		const DB = await this.dbHandler.connect();
+		const REVIEWS = await DB.collection<ReviewDocument>("Review")
+			.aggregate<ReviewDocument>(PIPELINE)
+			.toArray();
+
+		if (!REVIEWS) {
+			return [];
+		}
+
+		return REVIEWS.map(ReviewMapper.fromDocumentToDomain);
+	}
+
+	async create(
+		review: Review
+	): Promise<ObjectId | null> {
+		const DB = await this.dbHandler.connect()
+
+		const INSERTED_REVIEW = await DB.collection<ReviewDocument>("Review").insertOne(
+			review.toObject()
+		);
+
+		if (!INSERTED_REVIEW) {
+			return null;
+		}
+
+		return INSERTED_REVIEW.insertedId;
+	}
+
+	async update(
+		review: Review
+	): Promise<Review | null> {
+		const DB = await this.dbHandler.connect()
+
+		const UPDATED_REVIEW = await DB.collection<ReviewDocument>("Review").findOneAndUpdate(
+			{ _id: review.getId() },
+			{
+				$set: {
+					rating: review.getRating(),
+					comments: review.getComments(),
+					ips: review.getIps(),
+					user: review.getUser(),
+				},
+			},
+			{ returnDocument: "after" }
+		);
+
+		if (!UPDATED_REVIEW) {
+			return null;
+		}
+
+		return ReviewMapper.fromDocumentToDomain(UPDATED_REVIEW);
+	}
+
+	async delete(
+		id: ObjectId
+	): Promise<boolean> {
+		const DB = await this.dbHandler.connect()
+
+		const DELETED_REVIEW = await DB.collection<ReviewDocument>("Review").deleteOne({
+			_id: id,
+		});
+
+		if (!DELETED_REVIEW) {
+			return false;
+		}
+
+		return DELETED_REVIEW.deletedCount === 1;
 	}
 }
