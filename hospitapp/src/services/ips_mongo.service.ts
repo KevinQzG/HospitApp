@@ -38,15 +38,17 @@ export class IpsMongoService implements IpsServiceAdapter {
 		page: number,
 		pageSize: number
 	): Promise<{ results: IpsResponse[]; total: number }> {
-		const RESULTS = await this.ipsRepository.findAllByDistanceSpecialtyEps(
-			longitude,
-			latitude,
-			maxDistance,
-			specialties,
-			epsNames,
-			page,
-			pageSize
-		);
+		const RESULTS =
+			await this.ipsRepository.findAllByDistanceSpecialtyEpsWithPagination(
+				longitude,
+				latitude,
+				maxDistance,
+				specialties,
+				epsNames,
+				page,
+				pageSize,
+				null
+			);
 
 		return {
 			results: RESULTS.results.map((ips) => {
@@ -77,12 +79,11 @@ export class IpsMongoService implements IpsServiceAdapter {
 			return { ips: null, reviewsResult: { reviews: [], total: 0 } };
 		}
 
-		const REVIEWS_RESULT =
-			await this.reviewRepository.findAllWithPagination(
-				page,
-				pageSize,
-				IPS.getId()
-			);
+		const REVIEWS_RESULT = await this.reviewRepository.findAllWithPagination(
+			page,
+			pageSize,
+			IPS.getId()
+		);
 		const REVIEWS = REVIEWS_RESULT.results.map((review) => {
 			return review.toResponse();
 		});

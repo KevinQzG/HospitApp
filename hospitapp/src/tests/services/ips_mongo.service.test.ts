@@ -57,15 +57,29 @@ describe("IpsMongoService Integration Test", () => {
 	beforeAll(() => {
 		// Create mock repository
 		mockIpsRepository = {
-			findAllByDistanceSpecialtyEps: jest.fn().mockResolvedValue({
-				results: [
-					{
-						toResponse: () => MOCK_IPS_RES,
-					},
-				],
-				total: 1,
-			}),
+			findAllByDistanceSpecialtyEpsWithPagination: jest
+				.fn()
+				.mockResolvedValue({
+					results: [
+						{
+							toResponse: () => MOCK_IPS_RES,
+						},
+					],
+					total: 1,
+				}),
 			findByName: jest.fn().mockResolvedValue(MOCK_IPS),
+			findAllByDistanceSpecialtyEps: jest
+				.fn()
+				.mockResolvedValue([MOCK_IPS]),
+			findAllWithPagination: jest
+				.fn()
+				.mockResolvedValue({
+					results: [MOCK_IPS],
+					total: 1,
+				}),
+			findAll: jest
+				.fn()
+				.mockResolvedValue([MOCK_IPS]),
 		};
 
 		mockReviewRepository = {
@@ -107,7 +121,7 @@ describe("IpsMongoService Integration Test", () => {
 
 			// Verify repository call
 			expect(
-				mockIpsRepository.findAllByDistanceSpecialtyEps
+				mockIpsRepository.findAllByDistanceSpecialtyEpsWithPagination
 			).toHaveBeenCalledWith(
 				TEST_COORDINATES[0],
 				TEST_COORDINATES[1],
@@ -115,7 +129,8 @@ describe("IpsMongoService Integration Test", () => {
 				["ENFERMERÍA"],
 				["SALUDCOOP EPS-C"],
 				1,
-				10
+				10,
+				null
 			);
 
 			// Verify output transformation
@@ -159,7 +174,7 @@ describe("IpsMongoService Integration Test", () => {
 			);
 
 			expect(
-				mockIpsRepository.findAllByDistanceSpecialtyEps
+				mockIpsRepository.findAllByDistanceSpecialtyEpsWithPagination
 			).toHaveBeenCalledWith(
 				expect.anything(),
 				expect.anything(),
@@ -167,13 +182,14 @@ describe("IpsMongoService Integration Test", () => {
 				expect.anything(),
 				expect.anything(),
 				2,
-				5
+				5,
+				null
 			);
 			expect(total).toBe(1);
 		});
 
 		it("should handle repository errors", async () => {
-			mockIpsRepository.findAllByDistanceSpecialtyEps.mockRejectedValueOnce(
+			mockIpsRepository.findAllByDistanceSpecialtyEpsWithPagination.mockRejectedValueOnce(
 				new Error("DB error")
 			);
 
@@ -229,9 +245,11 @@ describe("IpsMongoService Integration Test", () => {
 				await service.getIpsByNameWithReviews(name, page, pageSize);
 
 			expect(mockIpsRepository.findByName).toHaveBeenCalledWith(name);
-			expect(
-				mockReviewRepository.findAllWithPagination
-			).toHaveBeenCalledWith(page, pageSize, MOCK_IPS.getId());
+			expect(mockReviewRepository.findAllWithPagination).toHaveBeenCalledWith(
+				page,
+				pageSize,
+				MOCK_IPS.getId()
+			);
 			expect(ips).toEqual(MOCK_IPS_RES);
 			expect(reviewsResult).toEqual({
 				reviews: MOCK_REVIEW_RES,

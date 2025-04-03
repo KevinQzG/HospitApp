@@ -7,26 +7,46 @@ import { Ips } from "@/models/ips";
  */
 export default interface IpsRepositoryAdapter {
 	/**
+	 * Gets all IPSs that are within a certain distance from the user and at least one of the specified specialties and EPSs. With pagination.
+	 * @async
+	 * @param {number} latitude - Latitude of the user's location.
+	 * @param {number} longitude - Longitude of the user's location.
+	 * @param {number} maxDistance - Maximum distance from the user's location in meters.
+	 * @param {string[]} specialties - Specialties that the IPSs must have.
+	 * @param {string[]} epsNames - EPSs that the IPSs must have.
+	 * @param {number} page - The page number.
+	 * @param {number} pageSize - The number of results per page.
+	 * @returns {Promise<{ results: Ips[]; total: number }>} The IPSs that meet the specified criteria.
+	 */
+	findAllByDistanceSpecialtyEpsWithPagination(
+		longitude: number | null,
+		latitude: number | null,
+		maxDistance: number | null,
+		specialties: string[],
+		epsNames: string[],
+		page: number,
+		pageSize: number,
+		town: string | null
+	): Promise<{ results: Ips[]; total: number }>;
+
+	/**
 	 * Gets all IPSs that are within a certain distance from the user and at least one of the specified specialties and EPSs.
 	 * @async
 	 * @param {number} latitude - Latitude of the user's location.
 	 * @param {number} longitude - Longitude of the user's location.
-	 * @param {number} max_distance - Maximum distance from the user's location in meters.
+	 * @param {number} maxDistance - Maximum distance from the user's location in meters.
 	 * @param {string[]} specialties - Specialties that the IPSs must have.
-	 * @param {string[]} eps_names - EPSs that the IPSs must have.
-	 * @param {number} page - The page number.
-	 * @param {number} page_size - The number of results per page.
-	 * @returns {Promise<{ results: Ips[]; total: number }>} The IPSs that meet the specified criteria.
+	 * @param {string[]} epsNames - EPSs that the IPSs must have.
+	 * @returns {Promise<Ips[]>} The IPSs that meet the specified criteria.
 	 */
 	findAllByDistanceSpecialtyEps(
 		longitude: number | null,
 		latitude: number | null,
-		max_distance: number | null,
+		maxDistance: number | null,
 		specialties: string[],
-		eps_names: string[],
-		page: number,
-		page_size: number
-	): Promise<{ results: Ips[]; total: number }>;
+		epsNames: string[],
+		town: string | null
+	): Promise<Ips[]>;
 
 	/**
 	 * Gets the IPS with the specified name.
@@ -35,4 +55,23 @@ export default interface IpsRepositoryAdapter {
 	 * @returns {Promise<Ips | null>} The IPS with the specified name, or null if no IPS was found.
 	 */
 	findByName(name: string): Promise<Ips | null>;
+
+	/**
+	 * Gets all IPSs with pagination.
+	 * @async
+	 * @param {number} page - The page number.
+	 * @param {number} pageSize - The number of results per page.
+	 * @returns {Promise<{ results: Ips[]; total: number }>} The IPSs that meet the specified criteria.
+	 */
+	findAllWithPagination(
+		page: number,
+		pageSize: number
+	): Promise<{ results: Ips[]; total: number }>;
+
+	/**
+	 * Gets all IPSs.
+	 * @async
+	 * @returns {Promise<Ips[]>} The IPSs that meet the specified criteria.
+	 */
+	findAll(): Promise<Ips[]>;
 }

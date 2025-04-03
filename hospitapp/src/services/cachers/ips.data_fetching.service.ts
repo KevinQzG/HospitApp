@@ -12,12 +12,12 @@ export const getIpsProps = async (params: {
 	try {
 		// Inject the dependencies
 
-		const SEARCH_IPS_SERVICE = CONTAINER.get<IpsServiceAdapter>(
+		const IPS_SERVICE = CONTAINER.get<IpsServiceAdapter>(
 			TYPES.IpsServiceAdapter
 		);
 
 		// Fetch the data
-		const IPS = await SEARCH_IPS_SERVICE.getIpsByName(params.name);
+		const IPS = await IPS_SERVICE.getIpsByName(params.name);
 
 		return IPS;
 	} catch (error) {
@@ -43,12 +43,12 @@ export const getIpsPropsWithReviews = async (params: {
 	try {
 		// Inject the dependencies
 
-		const SEARCH_IPS_SERVICE = CONTAINER.get<IpsServiceAdapter>(
+		const IPS_SERVICE = CONTAINER.get<IpsServiceAdapter>(
 			TYPES.IpsServiceAdapter
 		);
 
 		// Fetch the data
-		const RESULT = await SEARCH_IPS_SERVICE.getIpsByNameWithReviews(
+		const RESULT = await IPS_SERVICE.getIpsByNameWithReviews(
 			params.name,
 			params.reviewsPage,
 			params.reviewsPageSize
