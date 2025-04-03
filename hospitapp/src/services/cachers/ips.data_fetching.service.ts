@@ -1,4 +1,3 @@
-import DBAdapter from "@/adapters/db.adapter";
 import CONTAINER from "@/adapters/container";
 import IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import { TYPES } from "@/adapters/types";
@@ -8,7 +7,6 @@ import { ReviewResponse } from "@/models/review.interface";
 export const getIpsProps = async (params: {
 	name: string;
 }): Promise<IpsResponse | null> => {
-	const DB_HANDLER = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
 	try {
 		// Inject the dependencies
 
@@ -26,8 +24,6 @@ export const getIpsProps = async (params: {
 		} else {
 			throw new Error("Error fetching page props");
 		}
-	} finally {
-		await DB_HANDLER.close();
 	}
 };
 
@@ -39,7 +35,6 @@ export const getIpsPropsWithReviews = async (params: {
 	ips: IpsResponse | null;
 	reviewsResult: { reviews: ReviewResponse[]; total: number };
 }> => {
-	const DB_HANDLER = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
 	try {
 		// Inject the dependencies
 
@@ -61,7 +56,5 @@ export const getIpsPropsWithReviews = async (params: {
 		} else {
 			throw new Error("Error fetching page props");
 		}
-	} finally {
-		await DB_HANDLER.close();
 	}
 };

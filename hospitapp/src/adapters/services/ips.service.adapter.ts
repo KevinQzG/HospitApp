@@ -17,6 +17,7 @@ export default interface IpsServiceAdapter {
 	 * @param {string[]} eps_names - EPSs that the IPSs must have.
 	 * @param {number} page - The page number.
 	 * @param {number} page_size - The number of results per page.
+	 * @param {string | null} town - The town of the IPSs.
 	 * @returns {Promise<{ results: IPS[]; total: number }>} The results is an array of IPSs that meet the specified criteria without surpassing the page size, and the total is the total number of IPSs that meet the specified criteria.
 	 */
 	filterIps(
@@ -26,7 +27,8 @@ export default interface IpsServiceAdapter {
 		specialties: string[],
 		eps_names: string[],
 		page: number,
-		page_size: number
+		page_size: number,
+		town: string | null
 	): Promise<{ results: IpsResponse[]; total: number }>;
 
 	/**

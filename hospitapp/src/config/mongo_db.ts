@@ -11,20 +11,40 @@ import { injectable } from "inversify";
 class MongoDB implements DBAdapter<Db> {
 	private client: MongoClient | null = null;
 	private db: Db | null = null;
+	private connectionPromise: Promise<Db> | null = null; // Track ongoing connection attempt
 
 	/**
-	 * Connects to the MongoDB database.
+	 * Connects to the MongoDB database with retry logic.
 	 * @async
 	 * @returns {Promise<Db>} The database instance.
-	 * @throws {Error} If the connection fails.
+	 * @throws {Error} If the connection fails after retries.
 	 */
 	async connect(): Promise<Db> {
-		if (this.client && this.db) {
-			return this.db; // Return existing connection if available
+		if (this.db && (await this.isConnected())) {
+			return this.db;
 		}
 
+		// If already connecting, return the ongoing promise
+		if (this.connectionPromise) {
+			return this.connectionPromise;
+		}
+
+		this.connectionPromise = this.connectWithRetry()
+			.then((db) => {
+				this.db = db;
+				this.connectionPromise = null; // Clear promise on success
+				return db;
+			})
+			.catch((error) => {
+				this.connectionPromise = null; // Clear promise on failure
+				throw error;
+			});
+
+		return this.connectionPromise;
+	}
+
+	private async connectWithRetry(retries = 3, delayMs = 2000): Promise<Db> {
 		try {
-			// Create a new MongoDB client
 			this.client = new MongoClient(ENV.DATABASE_URL, {
 				maxPoolSize: 10,
 				minPoolSize: 2,
@@ -34,16 +54,37 @@ class MongoDB implements DBAdapter<Db> {
 				heartbeatFrequencyMS: 10000,
 			});
 
-			// Connect to the database
 			await this.client.connect();
 			console.log("Connected to MongoDB");
 
-			// Get the database instance
 			this.db = this.client.db(ENV.DATABASE_NAME);
+
+			// Handle connection events (v4+ compatible)
+			this.client.on("serverHeartbeatFailed", (event) => {
+				console.error("MongoDB heartbeat failed:", event);
+				this.db = null; // Invalidate db reference
+			});
+
+			this.client.on("connectionPoolClosed", () => {
+				console.log("MongoDB connection pool closed unexpectedly");
+				this.db = null; // Invalidate db reference
+			});
+
 			return this.db;
 		} catch (error) {
 			console.error("Failed to connect to MongoDB:", error);
-			throw error;
+			if (retries > 0) {
+				console.log(
+					`Retrying connection (${retries} attempts left)...`
+				);
+				await new Promise((resolve) => setTimeout(resolve, delayMs));
+				return this.connectWithRetry(retries - 1, delayMs * 2);
+			}
+			throw new Error(
+				`MongoDB connection failed after retries: ${
+					(error as Error).message
+				}`
+			);
 		}
 	}
 
@@ -57,7 +98,23 @@ class MongoDB implements DBAdapter<Db> {
 			await this.client.close();
 			this.db = null;
 			this.client = null;
+			this.connectionPromise = null;
 			console.log("MongoDB connection closed");
+		}
+	}
+
+	/**
+	 * Checks if the connection is healthy by pinging the server.
+	 * @returns {Promise<boolean>}
+	 */
+	async isConnected(): Promise<boolean> {
+		if (!this.client || !this.db) return false;
+		try {
+			await this.db.admin().ping();
+			return true;
+		} catch (error) {
+			console.error("MongoDB ping failed:", error);
+			return false;
 		}
 	}
 }

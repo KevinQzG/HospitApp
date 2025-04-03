@@ -116,7 +116,8 @@ describe("IpsMongoService Integration Test", () => {
 				["ENFERMERÍA"],
 				["SALUDCOOP EPS-C"],
 				1,
-				10
+				10,
+				null
 			);
 
 			// Verify repository call
@@ -146,7 +147,8 @@ describe("IpsMongoService Integration Test", () => {
 				[],
 				[],
 				1,
-				10
+				10,
+				null
 			);
 
 			results.forEach((doc) => {
@@ -170,7 +172,8 @@ describe("IpsMongoService Integration Test", () => {
 				[],
 				[],
 				2,
-				5
+				5,
+				null
 			);
 
 			expect(
@@ -201,7 +204,8 @@ describe("IpsMongoService Integration Test", () => {
 					[],
 					[],
 					1,
-					10
+					10,
+					null
 				)
 			).rejects.toThrow("DB error");
 		});

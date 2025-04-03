@@ -1,5 +1,4 @@
 import { unstable_cache as cache } from "next/cache";
-import DBAdapter from "@/adapters/db.adapter";
 import CONTAINER from "@/adapters/container";
 import SpecialtyServiceAdapter from "@/adapters/services/specialty.service.adapter";
 import EpsServiceAdapter from "@/adapters/services/eps.service.adapter";
@@ -20,7 +19,6 @@ export const getSearchIpsCachedProps = cache(
 	async (): Promise<SearchFormClientProps> => {
 		try {
 			// Inject the dependencies
-			const DB_HANDLER = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
 			const EPS_SERVICE = CONTAINER.get<EpsServiceAdapter>(
 				TYPES.EpsServiceAdapter
 			);
@@ -34,8 +32,6 @@ export const getSearchIpsCachedProps = cache(
 				eps: await EPS_SERVICE.getAllEps(),
 			};
 
-			// Close the database connection and return the results
-			await DB_HANDLER.close();
 			return RESULTS;
 		} catch (error) {
 			if (error instanceof Error) {

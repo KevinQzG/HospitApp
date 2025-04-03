@@ -36,7 +36,8 @@ export class IpsMongoService implements IpsServiceAdapter {
 		specialties: string[],
 		epsNames: string[],
 		page: number,
-		pageSize: number
+		pageSize: number,
+		town: string | null
 	): Promise<{ results: IpsResponse[]; total: number }> {
 		const RESULTS =
 			await this.ipsRepository.findAllByDistanceSpecialtyEpsWithPagination(
@@ -47,7 +48,7 @@ export class IpsMongoService implements IpsServiceAdapter {
 				epsNames,
 				page,
 				pageSize,
-				null
+				town
 			);
 
 		return {

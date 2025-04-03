@@ -24,6 +24,7 @@ interface SearchRequest {
 	eps_names?: string[];
 	page?: number;
 	page_size?: number;
+	town?: string;
 }
 
 /**
@@ -84,6 +85,11 @@ const VALIDATE_REQUEST_BODY = (
 			success: false,
 			error: "Invalid request: page size must be a number.",
 		};
+	} else if (body.town && typeof body.town !== "string") {
+		return {
+			success: false,
+			error: "Invalid request: town must be a string.",
+		};
 	}
 
 	return { success: true, error: "" };
@@ -119,7 +125,6 @@ const VALIDATE_REQUEST_BODY = (
 export async function POST(
 	req: NextRequest
 ): Promise<NextResponse<SearchResponse>> {
-	const DB_HANDLER: DBAdapter = CONTAINER.get<DBAdapter>(TYPES.DBAdapter);
 	const SEARCH_SERVICE: IpsServiceAdapter = CONTAINER.get<IpsServiceAdapter>(
 		TYPES.IpsServiceAdapter
 	);
@@ -150,7 +155,8 @@ export async function POST(
 				BODY.specialties || [],
 				BODY.eps_names || [],
 				BODY.page || 1,
-				BODY.page_size || 10
+				BODY.page_size || 10,
+				BODY.town || null
 			);
 
 		// revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)
@@ -170,7 +176,5 @@ export async function POST(
 			{ success: false, error: "Internal server error" },
 			{ status: 500 }
 		);
-	} finally {
-		await DB_HANDLER.close();
 	}
 }
