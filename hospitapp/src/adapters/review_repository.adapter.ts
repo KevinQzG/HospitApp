@@ -51,7 +51,5 @@ export default interface ReviewRepositoryAdapter {
 	 * @param {Review} review - The Review to update.
 	 * @returns {Promise<Review | null>} The updated Review, or null if not found.
 	 */
-	update(
-		review: Review
-	): Promise<Review | null>
+	update(review: Review): Promise<Review | null>;
 }

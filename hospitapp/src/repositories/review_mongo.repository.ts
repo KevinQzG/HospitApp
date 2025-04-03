@@ -107,14 +107,16 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 		return REVIEWS.map(ReviewMapper.fromDocumentToDomain);
 	}
 
-	async create(
-		review: Review
-	): Promise<ObjectId | null> {
-		const DB = await this.dbHandler.connect()
+	async create(review: Review): Promise<ObjectId | null> {
+		const DB = await this.dbHandler.connect();
 
-		const INSERTED_REVIEW = await DB.collection<ReviewDocument>("Review").insertOne(
-			review.toObject()
-		);
+		const REVIEW_DOCUMENT = review.toObject();
+
+		delete REVIEW_DOCUMENT.userEmail;
+
+		const INSERTED_REVIEW = await DB.collection<ReviewDocument>(
+			"Review"
+		).insertOne(REVIEW_DOCUMENT);
 
 		if (!INSERTED_REVIEW) {
 			return null;
@@ -123,12 +125,12 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 		return INSERTED_REVIEW.insertedId;
 	}
 
-	async update(
-		review: Review
-	): Promise<Review | null> {
-		const DB = await this.dbHandler.connect()
+	async update(review: Review): Promise<Review | null> {
+		const DB = await this.dbHandler.connect();
 
-		const UPDATED_REVIEW = await DB.collection<ReviewDocument>("Review").findOneAndUpdate(
+		const UPDATED_REVIEW = await DB.collection<ReviewDocument>(
+			"Review"
+		).findOneAndUpdate(
 			{ _id: review.getId() },
 			{
 				$set: {
@@ -148,12 +150,12 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 		return ReviewMapper.fromDocumentToDomain(UPDATED_REVIEW);
 	}
 
-	async delete(
-		id: ObjectId
-	): Promise<boolean> {
-		const DB = await this.dbHandler.connect()
+	async delete(id: ObjectId): Promise<boolean> {
+		const DB = await this.dbHandler.connect();
 
-		const DELETED_REVIEW = await DB.collection<ReviewDocument>("Review").deleteOne({
+		const DELETED_REVIEW = await DB.collection<ReviewDocument>(
+			"Review"
+		).deleteOne({
 			_id: id,
 		});
 
