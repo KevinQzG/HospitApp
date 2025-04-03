@@ -29,7 +29,7 @@ export class IpsMongoService implements IpsServiceAdapter {
 		private reviewRepository: ReviewRepositoryAdapter
 	) {}
 
-	async filterIps(
+	async filterIpsWithPagination(
 		longitude: number | null,
 		latitude: number | null,
 		maxDistance: number | null,
@@ -59,6 +59,29 @@ export class IpsMongoService implements IpsServiceAdapter {
 		};
 	}
 
+	async filterIps(
+		longitude: number | null,
+		latitude: number | null,
+		maxDistance: number | null,
+		specialties: string[],
+		epsNames: string[],
+		town: string | null
+	): Promise<IpsResponse[]> {
+		const RESULTS =
+			await this.ipsRepository.findAllByDistanceSpecialtyEps(
+				longitude,
+				latitude,
+				maxDistance,
+				specialties,
+				epsNames,
+				town
+			);
+
+		return RESULTS.map((ips) => {
+			return ips.toResponse();
+		});
+	}
+
 	async getIpsByName(name: string): Promise<IpsResponse | null> {
 		const IPS = await this.ipsRepository.findByName(name);
 		if (!IPS) {
@@ -80,11 +103,12 @@ export class IpsMongoService implements IpsServiceAdapter {
 			return { ips: null, reviewsResult: { reviews: [], total: 0 } };
 		}
 
-		const REVIEWS_RESULT = await this.reviewRepository.findAllWithPagination(
-			page,
-			pageSize,
-			IPS.getId()
-		);
+		const REVIEWS_RESULT =
+			await this.reviewRepository.findAllWithPagination(
+				page,
+				pageSize,
+				IPS.getId()
+			);
 		const REVIEWS = REVIEWS_RESULT.results.map((review) => {
 			return review.toResponse();
 		});

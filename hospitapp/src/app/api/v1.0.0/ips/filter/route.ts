@@ -13,16 +13,13 @@ import { IpsResponse } from "@/models/ips.interface";
  * @property {number} maxDistance - Optional Maximum search distance in meters
  * @property {string[]} [specialties] - Optional array of medical specialties to filter by
  * @property {string[]} [eps_names] - Optional array of EPS names to filter by
- * @property {number} [page] - Optional page number for pagination (default: 1)
- * @property {number} [page_size] - Optional number of items per page (default: 10)
+ * @property {string} [town] - Optional town name to filter by
  */
 interface SearchRequest {
 	coordinates?: [number, number];
 	max_distance?: number;
 	specialties?: string[];
 	eps_names?: string[];
-	page?: number;
-	page_size?: number;
 	town?: string;
 }
 
@@ -38,12 +35,6 @@ export interface SearchResponse {
 	success: boolean;
 	error?: string;
 	data?: IpsResponse[];
-	pagination?: {
-		total: number;
-		totalPages: number;
-		page: number;
-		pageSize: number;
-	};
 }
 
 /**
@@ -74,16 +65,6 @@ const VALIDATE_REQUEST_BODY = (
 			success: false,
 			error: "Invalid request: EPS names must be an array of strings.",
 		};
-	} else if (body.page && typeof body.page !== "number") {
-		return {
-			success: false,
-			error: "Invalid request: page must be a number.",
-		};
-	} else if (body.page_size && typeof body.page_size !== "number") {
-		return {
-			success: false,
-			error: "Invalid request: page size must be a number.",
-		};
 	} else if (body.town && typeof body.town !== "string") {
 		return {
 			success: false,
@@ -106,12 +87,6 @@ const VALIDATE_REQUEST_BODY = (
  * {
  *   "success": true,
  *   "data": [...],
- *   "pagination": {
- *     "total": 25,
- *     "total_pages": 3,
- *     "page": 1,
- *     "page_size": 10
- *   }
  * }
  *
  * @example
@@ -146,28 +121,19 @@ export async function POST(
 			latitude = BODY.coordinates[1];
 		}
 
-		const { results: RESULTS, total: TOTAL } =
-			await SEARCH_SERVICE.filterIpsWithPagination(
-				longitude,
-				latitude,
-				BODY.max_distance || null,
-				BODY.specialties || [],
-				BODY.eps_names || [],
-				BODY.page || 1,
-				BODY.page_size || 10,
-				BODY.town || null
-			);
+		const RESULTS = await SEARCH_SERVICE.filterIps(
+			longitude,
+			latitude,
+			BODY.max_distance || null,
+			BODY.specialties || [],
+			BODY.eps_names || [],
+			BODY.town || null
+		);
 
 		// revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)
 		return NextResponse.json({
 			success: true,
 			data: RESULTS,
-			pagination: {
-				total: TOTAL,
-				totalPages: Math.ceil(TOTAL / (BODY.page_size || 10)),
-				page: BODY.page || 1,
-				pageSize: BODY.page_size || 10,
-			},
 		});
 	} catch (error) {
 		console.error("API Error:", error);

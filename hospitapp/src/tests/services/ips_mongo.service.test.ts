@@ -71,15 +71,11 @@ describe("IpsMongoService Integration Test", () => {
 			findAllByDistanceSpecialtyEps: jest
 				.fn()
 				.mockResolvedValue([MOCK_IPS]),
-			findAllWithPagination: jest
-				.fn()
-				.mockResolvedValue({
-					results: [MOCK_IPS],
-					total: 1,
-				}),
-			findAll: jest
-				.fn()
-				.mockResolvedValue([MOCK_IPS]),
+			findAllWithPagination: jest.fn().mockResolvedValue({
+				results: [MOCK_IPS],
+				total: 1,
+			}),
+			findAll: jest.fn().mockResolvedValue([MOCK_IPS]),
 		};
 
 		mockReviewRepository = {
@@ -109,7 +105,7 @@ describe("IpsMongoService Integration Test", () => {
 
 	describe("filterIps", () => {
 		it("should correctly delegate to repository and return documents", async () => {
-			const { results, total } = await service.filterIps(
+			const { results, total } = await service.filterIpsWithPagination(
 				TEST_COORDINATES[0],
 				TEST_COORDINATES[1],
 				5000,
@@ -140,7 +136,7 @@ describe("IpsMongoService Integration Test", () => {
 		});
 
 		it("should convert all results to IPSDocument format", async () => {
-			const { results } = await service.filterIps(
+			const { results } = await service.filterIpsWithPagination(
 				TEST_COORDINATES[0],
 				TEST_COORDINATES[1],
 				5000,
@@ -165,7 +161,7 @@ describe("IpsMongoService Integration Test", () => {
 		});
 
 		it("should handle pagination parameters correctly", async () => {
-			const { total } = await service.filterIps(
+			const { total } = await service.filterIpsWithPagination(
 				TEST_COORDINATES[0],
 				TEST_COORDINATES[1],
 				5000,
@@ -197,7 +193,7 @@ describe("IpsMongoService Integration Test", () => {
 			);
 
 			await expect(
-				service.filterIps(
+				service.filterIpsWithPagination(
 					TEST_COORDINATES[0],
 					TEST_COORDINATES[1],
 					5000,
@@ -249,11 +245,9 @@ describe("IpsMongoService Integration Test", () => {
 				await service.getIpsByNameWithReviews(name, page, pageSize);
 
 			expect(mockIpsRepository.findByName).toHaveBeenCalledWith(name);
-			expect(mockReviewRepository.findAllWithPagination).toHaveBeenCalledWith(
-				page,
-				pageSize,
-				MOCK_IPS.getId()
-			);
+			expect(
+				mockReviewRepository.findAllWithPagination
+			).toHaveBeenCalledWith(page, pageSize, MOCK_IPS.getId());
 			expect(ips).toEqual(MOCK_IPS_RES);
 			expect(reviewsResult).toEqual({
 				reviews: MOCK_REVIEW_RES,

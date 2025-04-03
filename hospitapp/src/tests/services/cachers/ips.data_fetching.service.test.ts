@@ -2,7 +2,10 @@ import { Container } from "inversify";
 import * as containerModule from "@/adapters/container"; // Import for mocking CONTAINER
 import { TYPES } from "@/adapters/types";
 import type IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
-import { getIpsProps, getIpsPropsWithReviews } from "@/services/cachers/ips.data_fetching.service";
+import {
+	getIpsProps,
+	getIpsPropsWithReviews,
+} from "@/services/cachers/ips.data_fetching.service";
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
 
@@ -50,7 +53,8 @@ describe("IPS Props Fetching Functions", () => {
 					total: 1,
 				},
 			}),
-			filterIps: jest.fn(), // Not used here but included for completeness
+			filterIpsWithPagination: jest.fn(), // Not used here but included for completeness
+			filterIps: jest.fn().mockResolvedValue([]), // Mock implementation for filterIps
 		};
 
 		// Bind mock to CONTAINER

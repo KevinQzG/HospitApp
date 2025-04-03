@@ -8,28 +8,49 @@ import { ReviewResponse } from "@/models/review.interface";
  */
 export default interface IpsServiceAdapter {
 	/**
-	 * Gets all IPSs that are within a certain distance from the user and at least one of the specified specialties and EPSs.
+	 * Gets all IPSs that are within a certain distance from the user and at least one of the specified specialties and EPSs. With pagination.
 	 * @async
 	 * @param {number} latitude - Latitude of the user's location.
 	 * @param {number} longitude - Longitude of the user's location.
-	 * @param {number} max_distance - Maximum distance from the user's location in meters.
+	 * @param {number} maxDistance - Maximum distance from the user's location in meters.
 	 * @param {string[]} specialties - Specialties that the IPSs must have.
-	 * @param {string[]} eps_names - EPSs that the IPSs must have.
+	 * @param {string[]} epsNames - EPSs that the IPSs must have.
 	 * @param {number} page - The page number.
-	 * @param {number} page_size - The number of results per page.
+	 * @param {number} pageSize - The number of results per page.
 	 * @param {string | null} town - The town of the IPSs.
 	 * @returns {Promise<{ results: IPS[]; total: number }>} The results is an array of IPSs that meet the specified criteria without surpassing the page size, and the total is the total number of IPSs that meet the specified criteria.
+	 */
+	filterIpsWithPagination(
+		longitude: number | null,
+		latitude: number | null,
+		maxDistance: number | null,
+		specialties: string[],
+		epsNames: string[],
+		page: number,
+		pageSize: number,
+		town: string | null
+	): Promise<{ results: IpsResponse[]; total: number }>;
+
+	/**
+	 * Gets all IPSs that are within a certain distance from the user and at least one of the specified specialties and EPSs. Without pagination.
+	 * @async
+	 * @param {number} latitude - Latitude of the user's location.
+	 * @param {number} longitude - Longitude of the user's location.
+	 * @param {number} maxDistance - Maximum distance from the user's location in meters.
+	 * @param {string[]} specialties - Specialties that the IPSs must have.
+	 * @param {string[]} epsNames - EPSs that the IPSs must have.
+	 * @returns {Promise<IpsResponse[]>} The results is an array of IPSs that meet the specified criteria.
+	 * @param {string | null} town - The town of the IPSs.
+	 * @returns {Promise<IpsResponse[]>} The results is an array of IPSs that meet the specified criteria.
 	 */
 	filterIps(
 		longitude: number | null,
 		latitude: number | null,
-		max_distance: number | null,
+		maxDistance: number | null,
 		specialties: string[],
-		eps_names: string[],
-		page: number,
-		page_size: number,
+		epsNames: string[],
 		town: string | null
-	): Promise<{ results: IpsResponse[]; total: number }>;
+	): Promise<IpsResponse[]>;
 
 	/**
 	 * Gets an IPS by its name.
