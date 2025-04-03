@@ -1,146 +1,199 @@
-// import { Container } from "inversify";
-// import * as cacheModule from "next/cache"; // Import for mocking unstable_cache
-// import { TYPES } from "@/adapters/types";
-// import DBAdapter from "@/adapters/db.adapter";
-// import SpecialtyServiceAdapter from "@/adapters/services/specialty.service.adapter";
-// import EpsServiceAdapter from "@/adapters/services/eps.service.adapter";
-// import { getSearchIpsCachedProps, SearchFormClientProps } from "@/services/cachers/data_caching.service";
-// import { ENV } from "@/config/env";
+import { Container } from "inversify";
+import * as containerModule from "@/adapters/container"; // Import for mocking CONTAINER
+import { TYPES } from "@/adapters/types";
+import type IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
+import { getIpsProps, getIpsPropsWithReviews } from "@/services/cachers/ips.data_fetching.service";
+import { IpsResponse } from "@/models/ips.interface";
+import { ReviewResponse } from "@/models/review.interface";
 
-// // Mock the CONTAINER (global export) since it's imported directly
-// jest.mock("@/adapters/container", () => {
-//   return new Container();
-// });
+// Mock the CONTAINER
+jest.mock("@/adapters/container", () => {
+	return new Container();
+});
 
-// describe("getSearchIpsCachedProps", () => {
-//   let mockDbAdapter: jest.Mocked<DBAdapter>;
-//   let mockEpsService: jest.Mocked<EpsServiceAdapter>;
-//   let mockSpecialtyService: jest.Mocked<SpecialtyServiceAdapter>;
-//   let mockCache: jest.Mock; // Mock for unstable_cache
+describe("IPS Props Fetching Functions", () => {
+	let mockIpsService: jest.Mocked<IpsServiceAdapter>;
+	const MOCK_IPS_RES: IpsResponse = {
+		_id: "67b3e98bb1ae5d9e47ae7a07",
+		name: "ESE HOSPITAL VENANCIO DIAZ DIAZ",
+		department: "ANTIOQUIA",
+		town: "SABANETA",
+		address: "KR 46B # 77 SUR 36",
+		phone: 2889701,
+		email: "GERENCIA@HOSPITALSABANETA.GOV.CO",
+		location: {
+			type: "Point",
+			coordinates: [-75.6221158, 6.1482081],
+		},
+		level: 1,
+		distance: 2415.089412549286,
+	};
 
-//   const MOCK_SPECIALTIES = [
-//     { _id: "67b3e98bb1ae5d9e47ae7a08", name: "ENFERMERÍA" },
-//   ];
-//   const MOCK_EPS = [
-//     { _id: "67b3e98bb1ae5d9e47ae7a09", name: "SALUD TOTAL" },
-//   ];
+	const MOCK_REVIEW_RES: ReviewResponse[] = [
+		{
+			_id: "67b3e98bb1ae5d9e47ae7a08",
+			user: "67b3e98bb1ae5d9e47ae7a07",
+			ips: "67b3e98bb1ae5d9e47ae7a06",
+			rating: 4,
+			comments: "Great service!",
+		},
+	];
 
-//   beforeAll(() => {
-//     // Mock unstable_cache
-//     mockCache = jest.fn().mockImplementation((fn) => fn); // Pass-through for simplicity
-//     jest.spyOn(cacheModule, "unstable_cache").mockImplementation(mockCache);
+	beforeAll(() => {
+		// Create mock IpsServiceAdapter
+		mockIpsService = {
+			getIpsByName: jest.fn().mockResolvedValue(MOCK_IPS_RES),
+			getIpsByNameWithReviews: jest.fn().mockResolvedValue({
+				ips: MOCK_IPS_RES,
+				reviewsResult: {
+					reviews: MOCK_REVIEW_RES,
+					total: 1,
+				},
+			}),
+			filterIps: jest.fn(), // Not used here but included for completeness
+		};
 
-//     // Create mock implementations
-//     mockDbAdapter = {
-//       connect: jest.fn().mockResolvedValue({}), // Mock implementation for connect
-//       close: jest.fn().mockResolvedValue(undefined),
-//     } as jest.Mocked<DBAdapter>;
+		// Bind mock to CONTAINER
+		const CONTAINER = containerModule.default as Container;
+		CONTAINER.bind<IpsServiceAdapter>(
+			TYPES.IpsServiceAdapter
+		).toConstantValue(mockIpsService);
+	});
 
-//     mockEpsService = {
-//       getAllEps: jest.fn().mockResolvedValue(MOCK_EPS),
-//     } as jest.Mocked<EpsServiceAdapter>;
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
 
-//     mockSpecialtyService = {
-//       getAllSpecialties: jest.fn().mockResolvedValue(MOCK_SPECIALTIES),
-//     } as jest.Mocked<SpecialtyServiceAdapter>;
+	afterAll(() => {
+		jest.restoreAllMocks(); // Restore original CONTAINER
+	});
 
-//     // Bind mocks to the CONTAINER
-//     const CONTAINER = require("@/adapters/container").default; // Access mocked CONTAINER
-//     CONTAINER.bind(TYPES.DBAdapter).toConstantValue(mockDbAdapter as DBAdapter);
-//     CONTAINER.bind(TYPES.EpsServiceAdapter).toConstantValue(mockEpsService);
-//     CONTAINER.bind(TYPES.SpecialtyServiceAdapter).toConstantValue(mockSpecialtyService);
-//   });
+	describe("getIpsProps", () => {
+		it("should retrieve IPS by name and return transformed response", async () => {
+			const name = "ESE HOSPITAL VENANCIO DIAZ DIAZ";
+			const result = await getIpsProps({ name });
 
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+			expect(mockIpsService.getIpsByName).toHaveBeenCalledWith(name);
+			expect(result).toEqual(MOCK_IPS_RES);
+		});
 
-//   afterAll(() => {
-//     jest.restoreAllMocks(); // Restore original implementations
-//   });
+		it("should return null if IPS is not found", async () => {
+			const name = "non_existent_name";
+			mockIpsService.getIpsByName.mockResolvedValueOnce(null);
 
-//   it("should fetch and return specialties and EPS with successful resolution", async () => {
-//     const result = await getSearchIpsCachedProps();
+			const result = await getIpsProps({ name });
 
-//     // Verify service calls
-//     expect(mockSpecialtyService.getAllSpecialties).toHaveBeenCalled();
-//     expect(mockEpsService.getAllEps).toHaveBeenCalled();
+			expect(mockIpsService.getIpsByName).toHaveBeenCalledWith(name);
+			expect(result).toBeNull();
+		});
 
-//     // Verify database connection closed
-//     expect(mockDbAdapter.close).toHaveBeenCalled();
+		it("should throw original error if service throws an Error", async () => {
+			const name = "error_name";
+			const error = new Error("DB error");
+			mockIpsService.getIpsByName.mockRejectedValueOnce(error);
 
-//     // Verify result
-//     expect(result).toEqual({
-//       specialties: MOCK_SPECIALTIES,
-//       eps: MOCK_EPS,
-//     });
+			await expect(getIpsProps({ name })).rejects.toThrow(error);
+			expect(mockIpsService.getIpsByName).toHaveBeenCalledWith(name);
+		});
 
-//     // Verify cache configuration
-//     expect(cacheModule.unstable_cache).toHaveBeenCalledWith(
-//       expect.any(Function),
-//       ["search-config"],
-//       { revalidate: ENV.CACHE_TTL, tags: ["search-config"] }
-//     );
-//   });
+		it("should throw generic error if service throws non-Error", async () => {
+			const name = "unknown_error_name";
+			mockIpsService.getIpsByName.mockRejectedValueOnce("unknown error");
 
-//   it("should handle empty specialties and EPS lists", async () => {
-//     mockSpecialtyService.getAllSpecialties.mockResolvedValueOnce([]);
-//     mockEpsService.getAllEps.mockResolvedValueOnce([]);
+			await expect(getIpsProps({ name })).rejects.toThrow(
+				"Error fetching page props"
+			);
+			expect(mockIpsService.getIpsByName).toHaveBeenCalledWith(name);
+		});
+	});
 
-//     const result = await getSearchIpsCachedProps();
+	describe("getIpsPropsWithReviews", () => {
+		it("should retrieve IPS and its reviews", async () => {
+			const name = "ESE HOSPITAL VENANCIO DIAZ DIAZ";
+			const reviewsPage = 1;
+			const reviewsPageSize = 10;
 
-//     expect(mockSpecialtyService.getAllSpecialties).toHaveBeenCalled();
-//     expect(mockEpsService.getAllEps).toHaveBeenCalled();
-//     expect(mockDbAdapter.close).toHaveBeenCalled();
-//     expect(result).toEqual({
-//       specialties: [],
-//       eps: [],
-//     });
-//   });
+			const result = await getIpsPropsWithReviews({
+				name,
+				reviewsPage,
+				reviewsPageSize,
+			});
 
-//   it("should throw an error with message if specialty service fails", async () => {
-//     const errorMessage = "Specialty fetch error";
-//     mockSpecialtyService.getAllSpecialties.mockRejectedValueOnce(new Error(errorMessage));
+			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
+				name,
+				reviewsPage,
+				reviewsPageSize
+			);
+			expect(result).toEqual({
+				ips: MOCK_IPS_RES,
+				reviewsResult: {
+					reviews: MOCK_REVIEW_RES,
+					total: 1,
+				},
+			});
+		});
 
-//     await expect(getSearchIpsCachedProps()).rejects.toThrow(`Error fetching page props: ${errorMessage}`);
-//     expect(mockDbAdapter.close).toHaveBeenCalled(); // Ensure cleanup happens even on error
-//   });
+		it("should return null IPS and empty reviews if IPS not found", async () => {
+			const name = "non_existent_name";
+			mockIpsService.getIpsByNameWithReviews.mockResolvedValueOnce({
+				ips: null,
+				reviewsResult: { reviews: [], total: 0 },
+			});
 
-//   it("should throw an error with message if EPS service fails", async () => {
-//     const errorMessage = "EPS fetch error";
-//     mockEpsService.getAllEps.mockRejectedValueOnce(new Error(errorMessage));
+			const result = await getIpsPropsWithReviews({
+				name,
+				reviewsPage: 1,
+				reviewsPageSize: 10,
+			});
 
-//     await expect(getSearchIpsCachedProps()).rejects.toThrow(`Error fetching page props: ${errorMessage}`);
-//     expect(mockDbAdapter.close).toHaveBeenCalled();
-//   });
+			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
+				name,
+				1,
+				10
+			);
+			expect(result).toEqual({
+				ips: null,
+				reviewsResult: { reviews: [], total: 0 },
+			});
+		});
 
-//   it("should throw a generic error if an unknown error occurs", async () => {
-//     mockSpecialtyService.getAllSpecialties.mockRejectedValueOnce("unknown error"); // Non-Error object
+		it("should throw original error if service throws an Error", async () => {
+			const name = "error_name";
+			const error = new Error("DB error");
+			mockIpsService.getIpsByNameWithReviews.mockRejectedValueOnce(error);
 
-//     await expect(getSearchIpsCachedProps()).rejects.toThrow("Error fetching page props");
-//     expect(mockDbAdapter.close).toHaveBeenCalled();
-//   });
+			await expect(
+				getIpsPropsWithReviews({
+					name,
+					reviewsPage: 1,
+					reviewsPageSize: 10,
+				})
+			).rejects.toThrow(error);
+			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
+				name,
+				1,
+				10
+			);
+		});
 
-//   it("should use cached result on subsequent calls if cache is hit", async () => {
-//     // Reset mocks to simulate fresh state
-//     jest.clearAllMocks();
+		it("should throw generic error if service throws non-Error", async () => {
+			const name = "unknown_error_name";
+			mockIpsService.getIpsByNameWithReviews.mockRejectedValueOnce(
+				"unknown error"
+			);
 
-//     // Mock cache to return a cached value instead of calling the function
-//     mockCache.mockResolvedValueOnce({
-//       specialties: [{ _id: "cached", name: "CACHED_SPECIALTY" }],
-//       eps: [{ _id: "cached", name: "CACHED_EPS" }],
-//     });
-
-//     const result = await getSearchIpsCachedProps();
-
-//     // Verify services were NOT called (cache hit)
-//     expect(mockSpecialtyService.getAllSpecialties).not.toHaveBeenCalled();
-//     expect(mockEpsService.getAllEps).not.toHaveBeenCalled();
-//     expect(mockDbAdapter.close).not.toHaveBeenCalled();
-
-//     expect(result).toEqual({
-//       specialties: [{ _id: "cached", name: "CACHED_SPECIALTY" }],
-//       eps: [{ _id: "cached", name: "CACHED_EPS" }],
-//     });
-//   });
-// });
+			await expect(
+				getIpsPropsWithReviews({
+					name,
+					reviewsPage: 1,
+					reviewsPageSize: 10,
+				})
+			).rejects.toThrow("Error fetching page props");
+			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
+				name,
+				1,
+				10
+			);
+		});
+	});
+});
