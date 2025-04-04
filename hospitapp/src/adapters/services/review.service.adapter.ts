@@ -69,4 +69,12 @@ export default interface ReviewServiceAdapter {
 	 * @returns {Promise<boolean>}
 	 */
 	delete(id: string): Promise<boolean>;
+
+	/**
+	 * Gets a review by ID from the database.
+	 * @param {string} id - The ID of the review to get.
+	 * @async
+	 * @returns {Promise<ReviewResponse | null>}
+	 */
+	findById(id: string): Promise<ReviewResponse | null>;
 }

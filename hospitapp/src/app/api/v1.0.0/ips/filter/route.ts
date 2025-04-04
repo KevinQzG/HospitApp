@@ -14,13 +14,15 @@ import { IpsResponse } from "@/models/ips.interface";
  * @property {string[]} [specialties] - Optional array of medical specialties to filter by
  * @property {string[]} [eps_names] - Optional array of EPS names to filter by
  * @property {string} [town] - Optional town name to filter by
+ * @property {boolean} [hasReviews] - Optional flag to filter by IPS with reviews (default: false)
  */
 interface SearchRequest {
 	coordinates?: [number, number];
-	max_distance?: number;
+	maxDistance?: number;
 	specialties?: string[];
-	eps_names?: string[];
+	epsNames?: string[];
 	town?: string;
+	hasReviews?: boolean;
 }
 
 /**
@@ -50,7 +52,7 @@ const VALIDATE_REQUEST_BODY = (
 			success: false,
 			error: "Invalid request: coordinates must be an array of two numbers [longitude, latitude].",
 		};
-	} else if (body.max_distance && typeof body.max_distance !== "number") {
+	} else if (body.maxDistance && typeof body.maxDistance !== "number") {
 		return {
 			success: false,
 			error: "Invalid request: maximum distance must be a number representing meters.",
@@ -60,7 +62,7 @@ const VALIDATE_REQUEST_BODY = (
 			success: false,
 			error: "Invalid request: specialties must be an array of strings.",
 		};
-	} else if (body.eps_names && !IS_TYPE_ARRAY(body.eps_names, "string")) {
+	} else if (body.epsNames && !IS_TYPE_ARRAY(body.epsNames, "string")) {
 		return {
 			success: false,
 			error: "Invalid request: EPS names must be an array of strings.",
@@ -69,6 +71,14 @@ const VALIDATE_REQUEST_BODY = (
 		return {
 			success: false,
 			error: "Invalid request: town must be a string.",
+		};
+	} else if (
+		body.hasReviews !== undefined &&
+		typeof body.hasReviews !== "boolean"
+	) {
+		return {
+			success: false,
+			error: "Invalid request: hasReviews must be a boolean.",
 		};
 	}
 
@@ -124,10 +134,11 @@ export async function POST(
 		const RESULTS = await SEARCH_SERVICE.filterIps(
 			longitude,
 			latitude,
-			BODY.max_distance || null,
+			BODY.maxDistance || null,
 			BODY.specialties || [],
-			BODY.eps_names || [],
-			BODY.town || null
+			BODY.epsNames || [],
+			BODY.town || null,
+			BODY.hasReviews || false
 		);
 
 		// revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)
