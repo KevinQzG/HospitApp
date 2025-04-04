@@ -63,6 +63,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 				comments:
 					"Muy buena atención, pero es un lugar demasiado caro y que te cobran por lo que sea.",
 				userEmail: "ADMIN@example.com",
+				ipsName: "INSTITUTO DEL CORAZON SEDE CENTRO"
 			};
 
 			expect(SAMPLE_EPS.toResponse()).toMatchObject(EXPECTED_DATA);
@@ -98,6 +99,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 				comments:
 					"Muy buena atención, pero es un lugar demasiado caro y que te cobran por lo que sea.",
 				userEmail: "ADMIN@example.com",
+				ipsName: "INSTITUTO DEL CORAZON SEDE CENTRO"
 			};
 
 			expect(SAMPLE_EPS.toResponse()).toMatchObject(EXPECTED_DATA);
@@ -148,6 +150,22 @@ describe("ReviewMongoRepository Integration Test", () => {
 			);
 
 			expect(DELETED_REVIEW_CHECK.length).toBe(0);
+		});
+	});
+
+	describe("findById", () => {
+		it("should retrieve a Review document by ID", async () => {
+			const SAMPLE_ID = new ObjectId("67ed23719c60d5e529e84b49");
+			const REVIEW = await repository.findById(SAMPLE_ID);
+
+			expect(REVIEW).toBeInstanceOf(Review);
+			expect(REVIEW?.getId()).toEqual(SAMPLE_ID);
+		});
+		it("should return null for non-existent ID", async () => {
+			const NON_EXISTENT_ID = new ObjectId("67e56e4f41a98261d95547d4");
+			const REVIEW = await repository.findById(NON_EXISTENT_ID);
+
+			expect(REVIEW).toBeNull();
 		});
 	});
 });

@@ -87,6 +87,7 @@ describe("IpsMongoService Integration Test", () => {
 			create: jest.fn().mockResolvedValue(MOCK_REVIEW[0].getId()),
 			delete: jest.fn().mockResolvedValue(true),
 			update: jest.fn().mockResolvedValue(MOCK_REVIEW[0]),
+			findById: jest.fn().mockResolvedValue(MOCK_REVIEW[0]),
 		};
 
 		// Rebind repository for testing

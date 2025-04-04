@@ -52,4 +52,12 @@ export default interface ReviewRepositoryAdapter {
 	 * @returns {Promise<Review | null>} The updated Review, or null if not found.
 	 */
 	update(review: Review): Promise<Review | null>;
+
+	/**
+	 * Finds a Review by ID.
+	 * @async
+	 * @param {ObjectId} id - The ID of the Review to find.
+	 * @returns {Promise<Review | null>} The found Review, or null if not found.
+	 */
+	findById(id: ObjectId): Promise<Review | null>;
 }

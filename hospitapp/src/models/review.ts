@@ -13,6 +13,7 @@ export class Review {
 	private rating: number;
 	private comments: string;
 	private userEmail?: string;
+	private ipsName?: string;
 
 	/**
 	 * Creates an instance of Review.
@@ -22,6 +23,7 @@ export class Review {
 	 * @param {number} rating - Rating given by the user.
 	 * @param {string} comments - Comments provided by the user.
 	 * @param {string} userEmail - Email of the user. (optional)
+	 * @param {string} ipsName - Name of the IPS. (optional)
 	 */
 	constructor(
 		_id: ObjectId = new ObjectId(),
@@ -29,7 +31,8 @@ export class Review {
 		ips: ObjectId,
 		rating: number,
 		comments: string,
-		userEmail?: string
+		userEmail?: string,
+		ipsName?: string
 	) {
 		this._id = _id;
 		this.user = user;
@@ -37,6 +40,7 @@ export class Review {
 		this.rating = rating;
 		this.comments = comments;
 		this.userEmail = userEmail;
+		this.ipsName = ipsName;
 	}
 
 	/**
@@ -124,6 +128,14 @@ export class Review {
 	}
 
 	/**
+	 * Gets the name of the IPS.
+	 * @returns {string} The name of the IPS.
+	 */
+	getIpsName(): string | undefined {
+		return this.ipsName;
+	}
+
+	/**
 	 * Sets the unique identifier of the user.
 	 * @param {ObjectId} user - The unique identifier of the user.
 	 */
@@ -165,6 +177,14 @@ export class Review {
 	 */
 	setUserEmail(userEmail?: string): void {
 		this.userEmail = userEmail ? userEmail : undefined;
+	}
+
+	/**
+	 * Sets the name of the IPS.
+	 * @param {string} ipsName - The name of the IPS.
+	 */
+	setIpsName(ipsName?: string): void {
+		this.ipsName = ipsName ? ipsName : undefined;
 	}
 
 	/**

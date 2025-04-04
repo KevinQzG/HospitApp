@@ -38,6 +38,7 @@ describe("ReviewMongoService Integration Test", () => {
 			create: jest.fn().mockResolvedValue(MOCK_REVIEW.getIps()),
 			update: jest.fn().mockResolvedValue(MOCK_UPDATED_REVIEW),
 			delete: jest.fn().mockResolvedValue(true),
+			findById: jest.fn().mockResolvedValue(MOCK_REVIEW),
 		};
 
 		// Bind mocks to container

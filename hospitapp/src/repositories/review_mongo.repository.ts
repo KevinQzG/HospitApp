@@ -27,13 +27,13 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 	constructor(@inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>) {}
 
 	/**
-	 * This method returns the base pipeline builder for the findAll method.
+	 * This method returns the base pipeline builder for the retrieving reviews method.
 	 * @method
 	 * @private
 	 * @param ipsId - The ID of the IPS to filter by.
 	 * @returns {PipelineBuilder} The pipeline builder instance.
 	 */
-	private baseFindAllPipelineBuilder(ipsId?: ObjectId): PipelineBuilder {
+	private basePipelineBuilder(ipsId?: ObjectId): PipelineBuilder {
 		let pipelineBuilder = new PipelineBuilder();
 
 		if (ipsId) {
@@ -45,16 +45,22 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 
 		return pipelineBuilder
 			.addLookupStage("USERS", "user", "_id", "userObject")
+			.addLookupStage("IPS", "ips", "_id", "ipsObject")
 			.addFieldsStage({
 				userEmail: {
 					$arrayElemAt: ["$userObject.email", 0],
 				},
+				ipsName: {
+					$arrayElemAt: ["$ipsObject.name", 0],
+				},
 			})
 			.addProjectStage({
 				userObject: 0,
+				ipsObject: 0,
 			})
 			.addSortStage({
 				rating: -1,
+				ipsName: 1,
 				userEmail: 1,
 			});
 	}
@@ -65,7 +71,7 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 		ipsId?: ObjectId
 	): Promise<{ results: Review[]; total: number }> {
 		// Build the pipeline
-		const PIPELINE = this.baseFindAllPipelineBuilder(ipsId)
+		const PIPELINE = this.basePipelineBuilder(ipsId)
 			.addPagination(page, pageSize)
 			.build();
 
@@ -92,7 +98,7 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 
 	async findAll(ipsId?: ObjectId): Promise<Review[]> {
 		// Build the pipeline
-		const PIPELINE = this.baseFindAllPipelineBuilder(ipsId).build();
+		const PIPELINE = this.basePipelineBuilder(ipsId).build();
 
 		// Get all the Reviews Documents
 		const DB = await this.dbHandler.connect();
@@ -164,5 +170,24 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 		}
 
 		return DELETED_REVIEW.deletedCount === 1;
+	}
+
+	async findById(id: ObjectId): Promise<Review | null> {
+		const PIPELINE = this.basePipelineBuilder()
+			.addMatchStage({
+				_id: new ObjectId(id),
+			})
+			.build();
+		const DB = await this.dbHandler.connect();
+
+		const REVIEW_DOCUMENT = await DB.collection<ReviewDocument>("Review")
+			.aggregate<ReviewDocument>(PIPELINE)
+			.next();
+
+		if (!REVIEW_DOCUMENT) {
+			return null;
+		}
+
+		return ReviewMapper.fromDocumentToDomain(REVIEW_DOCUMENT);
 	}
 }
