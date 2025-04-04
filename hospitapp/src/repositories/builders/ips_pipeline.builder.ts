@@ -133,7 +133,34 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 						sortBy: { rating: -1, userEmail: 1 },
 					},
 				},
+				totalReviews: 1,
 			},
+		});
+
+		return this;
+	}
+
+	/**
+	 * Adds a match stage to the pipeline to verify if the IPS has reviews.
+	 * 
+	 * @returns {PipelineBuilder} The builder instance.
+	 * @memberof IpsPipelineBuilder
+	 * @public
+	 * @method
+	 * @name has_reviews
+	 */
+	hasReviews(): this {
+		this.getPipeline().push({ $lookup: this.reviewsLookup });
+		this.addFieldsStage({
+			totalReviews: {
+				$size: "$reviews"
+			}
+		});
+		this.addMatchStage({
+			totalReviews: { $gt: 0 }
+		});
+		this.addProjectStage({
+			reviews: 0
 		});
 
 		return this;
@@ -232,6 +259,7 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 			location: 1,
 			level: 1,
 			distance: 1,
+			totalReviews: 1,
 		};
 	}
 

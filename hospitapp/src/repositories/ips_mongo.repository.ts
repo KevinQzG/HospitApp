@@ -26,6 +26,19 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 	 */
 	constructor(@inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>) {}
 
+	private getPipelineBuilder(hasReviews: boolean, latitude: number | null, longitude: number | null, maxDistance: number | null, town: string | null): IpsPipelineBuilder {
+		let pipelineBuilder = new IpsPipelineBuilder().addGeoStage(longitude, latitude, maxDistance);
+
+		if (hasReviews) {
+			pipelineBuilder = pipelineBuilder.hasReviews();
+		}
+		if (town) {
+			pipelineBuilder = pipelineBuilder.addMatchStage({ town: town });
+		}
+
+		return pipelineBuilder;
+	}
+
 	async findAllByDistanceSpecialtyEpsWithPagination(
 		longitude: number | null,
 		latitude: number | null,
@@ -34,22 +47,19 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		epsNames: string[],
 		page: number = 1,
 		pageSize: number = 10,
-		town: string | null
+		town: string | null,
+		hasReviews: boolean = false
 	): Promise<{ results: Ips[]; total: number }> {
-		let pipelineBuilder = new IpsPipelineBuilder();
-		if (town) {
-			pipelineBuilder = pipelineBuilder.addMatchStage({ town: town });
-		}
 		// Build the pipeline
-		const PIPELINE = pipelineBuilder.addGeoStage(longitude, latitude, maxDistance)
+		const PIPELINE = this.getPipelineBuilder(hasReviews, latitude, longitude, maxDistance, town)
 			.matchesSpecialties(specialties)
 			.matchesEps(epsNames)
-			.addPagination(page, pageSize)
 			.addSortStage({
 				distance: 1,
 				town: 1,
 				name: 1,
 			})
+			.addPagination(page, pageSize)
 			.build();
 
 		// Execute the pipeline
