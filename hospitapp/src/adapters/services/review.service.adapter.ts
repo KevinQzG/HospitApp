@@ -10,7 +10,7 @@ export default interface ReviewServiceAdapter {
 	 * Gets all reviews from the database, it returns an empty array there is not reviews.
 	 * @param {string} ipsId - The ID of the IPS to filter by (optional).
 	 * @async
-	 * @returns {Promise<Review[]>}
+	 * @returns {Promise<ReviewResponse[]>} The reviews.
 	 */
 	findAll(ipsId?: string): Promise<ReviewResponse[]>;
 
@@ -20,7 +20,7 @@ export default interface ReviewServiceAdapter {
 	 * @param {number} pageSize - The number of results per page.
 	 * @param {string} ipsId - The ID of the IPS to filter by (optional).
 	 * @async
-	 * @returns {Promise<Review[]>}
+	 * @returns {Promise<{ results: Review[]; total: number }>} The reviews and the total number of reviews.
 	 */
 	findAllWithPagination(
 		page: number,
@@ -35,7 +35,7 @@ export default interface ReviewServiceAdapter {
 	 * @param {number} rating - The rating of the review.
 	 * @param {string} comments - The comments of the review.
 	 * @async
-	 * @returns {Promise<string | null>}
+	 * @returns {Promise<string | null>} The ID of the created review or null if it failed.
 	 */
 	create(
 		ips: string,
@@ -52,7 +52,7 @@ export default interface ReviewServiceAdapter {
 	 * @param {number} rating - The rating of the review.
 	 * @param {string} comments - The comments of the review.
 	 * @async
-	 * @returns {Promise<ReviewResponse | null>}
+	 * @returns {Promise<ReviewResponse | null>} review updated response object or null if not found
 	 */
 	update(
 		id: string,
@@ -66,7 +66,7 @@ export default interface ReviewServiceAdapter {
 	 * Deletes a review in the database.
 	 * @param {string} id - The ID of the review to delete.
 	 * @async
-	 * @returns {Promise<boolean>}
+	 * @returns {Promise<boolean>} true if the review was deleted, false otherwise
 	 */
 	delete(id: string): Promise<boolean>;
 
@@ -74,7 +74,7 @@ export default interface ReviewServiceAdapter {
 	 * Gets a review by ID from the database.
 	 * @param {string} id - The ID of the review to get.
 	 * @async
-	 * @returns {Promise<ReviewResponse | null>}
+	 * @returns {Promise<ReviewResponse | null>} review response object or null if not found
 	 */
 	findById(id: string): Promise<ReviewResponse | null>;
 }
