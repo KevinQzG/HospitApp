@@ -8,6 +8,7 @@ import type DBAdapter from "@/adapters/db.adapter";
 import { PipelineBuilder } from "./builders/pipeline.builder";
 import { IpsMapper } from "@/utils/mappers/ips_mapper";
 import { AggregationResult } from "./ips_mongo.repository.interfaces";
+import results from "@/app/results/page";
 
 /**
  * @class
@@ -25,6 +26,47 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
    * @throws {Error} If the database connection fails.
    */
   constructor(@inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>) {}
+    /**
+   * Creates a new IPS.
+   * @async
+   * @param {Ips} ips - The IPS data to create.
+   * @returns {Promise<Ips>} The created IPS.
+   * @throws {Error} If the insertion fails.
+   */
+  
+
+      /**
+   * Creates a new IPS.
+   * @async
+   * @param {Ips} ips - The IPS data to create.
+   * @returns {Promise<Ips>} The created IPS.
+   * @throws {Error} If the insertion fails.
+   */
+  async create(ips: Ips): Promise<Ips> {
+    // Get database connection
+    const DB = await this.dbHandler.connect();
+
+    // Insert the IPS document
+    const INSERTION_RESULT = await DB.collection<IpsDocument>("IPS").insertOne(
+      IpsMapper.fromDomainToDocument(ips)
+    );
+
+    // Validate insertion result
+    if (!INSERTION_RESULT.insertedId) {
+      throw new Error("Failed to insert IPS into the database.");
+    }
+
+    // Retrieve the newly inserted document
+    const CREATED_IPS = await DB.collection<IpsDocument>("IPS").findOne({ _id: INSERTION_RESULT.insertedId });
+
+    // Ensure the inserted document exists
+    if (!CREATED_IPS) {
+      throw new Error("Failed to retrieve inserted IPS.");
+    }
+
+    // Convert the MongoDB document to a domain model and return it
+    return IpsMapper.fromDocumentToDomain(CREATED_IPS);
+  }  
 
   async findAllByDistanceSpecialtyEps(
     longitude: number | null,
