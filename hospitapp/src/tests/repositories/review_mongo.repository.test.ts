@@ -161,6 +161,31 @@ describe("ReviewMongoRepository Integration Test", () => {
 			expect(REVIEW).toBeInstanceOf(Review);
 			expect(REVIEW?.getId()).toEqual(SAMPLE_ID);
 		});
+
+		it("should return all the review structure", async () => {
+			const SAMPLE_ID = new ObjectId("67ed23719c60d5e529e84b49");
+			const REVIEW = await repository.findById(SAMPLE_ID);
+
+			expect(REVIEW).toBeInstanceOf(Review);
+			expect(REVIEW?.getId()).toEqual(SAMPLE_ID);
+			expect(REVIEW?.getIps()).toEqual(
+				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
+			);
+			expect(REVIEW?.getUser()).toEqual(
+				new ObjectId("67e56e4f41a98261d95547d4")
+			);
+			expect(REVIEW?.getRating()).toEqual(5);
+			expect(REVIEW?.getComments()).toEqual(
+				"Muy buena atención, pero es un lugar demasiado caro y que te cobran por lo que sea."
+			);
+			expect(REVIEW?.getIpsName()).toEqual(
+				"INSTITUTO DEL CORAZON SEDE CENTRO"
+			);
+			expect(REVIEW?.getUserEmail()).toEqual(
+				"ADMIN@example.com"
+			);
+		});
+		
 		it("should return null for non-existent ID", async () => {
 			const NON_EXISTENT_ID = new ObjectId("67e56e4f41a98261d95547d4");
 			const REVIEW = await repository.findById(NON_EXISTENT_ID);

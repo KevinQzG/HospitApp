@@ -93,4 +93,10 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 
 		return DELETED;
 	}
+
+	async findById(id: string): Promise<ReviewResponse | null> {
+		const REVIEW = await this.reviewRepository.findById(new ObjectId(id));
+		if (!REVIEW) return null;
+		return REVIEW.toResponse();
+	}
 }

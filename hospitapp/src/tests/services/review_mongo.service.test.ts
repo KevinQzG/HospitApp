@@ -243,4 +243,36 @@ describe("ReviewMongoService Integration Test", () => {
 			).rejects.toThrow(error);
 		});
 	});
+
+	// describe("findById", () => {
+	// 	it("should retrieve a review by ID and transform to response", async () => {
+	// 		const result = await service.findById(
+	// 			"67ed23719c60d5e529e84b49"
+	// 		);
+
+	// 		expect(mockReviewRepository.findById).toHaveBeenCalledWith(
+	// 			new ObjectId("67ed23719c60d5e529e84b49")
+	// 		);
+	// 		expect(result).toEqual(MOCK_REVIEW.toResponse());
+	// 	});
+
+	// 	it("should return null if review not found", async () => {
+	// 		mockReviewRepository.findById.mockResolvedValueOnce(null);
+
+	// 		const result = await service.findById(
+	// 			"67ed23719c60d5e529e84b49"
+	// 		);
+
+	// 		expect(result).toBeNull();
+	// 	});
+
+	// 	it("should throw repository errors", async () => {
+	// 		const error = new Error("DB error");
+	// 		mockReviewRepository.findById.mockRejectedValueOnce(error);
+
+	// 		await expect(
+	// 			service.findById("67ed23719c60d5e529e84b49")
+	// 		).rejects.toThrow(error);
+	// 	});
+	// });
 });
