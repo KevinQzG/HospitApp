@@ -20,6 +20,7 @@ export interface IpsDocument {
 	eps?: EpsDocument[];
 	specialties?: SpecialtyDocument[];
 	reviews?: ReviewDocument[];
+	totalReviews?: number;
 }
 
 export interface IpsResponse {
@@ -41,4 +42,5 @@ export interface IpsResponse {
 	maps?: string;
 	waze?: string;
 	reviews?: ReviewResponse[];
+	totalReviews?: number;
 }

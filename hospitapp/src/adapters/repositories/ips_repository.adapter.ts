@@ -16,6 +16,8 @@ export default interface IpsRepositoryAdapter {
 	 * @param {string[]} epsNames - EPSs that the IPSs must have.
 	 * @param {number} page - The page number.
 	 * @param {number} pageSize - The number of results per page.
+	 * @param {string} town - The town of the IPSs.
+	 * @param {boolean} hasReviews - Whether to filter the IPSs that have reviews or not applied.
 	 * @returns {Promise<{ results: Ips[]; total: number }>} The IPSs that meet the specified criteria.
 	 */
 	findAllByDistanceSpecialtyEpsWithPagination(
@@ -24,9 +26,10 @@ export default interface IpsRepositoryAdapter {
 		maxDistance: number | null,
 		specialties: string[],
 		epsNames: string[],
-		page: number,
-		pageSize: number,
-		town: string | null
+		town: string | null,
+		page?: number,
+		pageSize?: number,
+		hasReviews?: boolean
 	): Promise<{ results: Ips[]; total: number }>;
 
 	/**
@@ -37,6 +40,8 @@ export default interface IpsRepositoryAdapter {
 	 * @param {number} maxDistance - Maximum distance from the user's location in meters.
 	 * @param {string[]} specialties - Specialties that the IPSs must have.
 	 * @param {string[]} epsNames - EPSs that the IPSs must have.
+	 * @param {string} town - The town of the IPSs.
+	 * @param {boolean} hasReviews - Whether to filter the IPSs that have reviews or not applied.
 	 * @returns {Promise<Ips[]>} The IPSs that meet the specified criteria.
 	 */
 	findAllByDistanceSpecialtyEps(
@@ -45,7 +50,8 @@ export default interface IpsRepositoryAdapter {
 		maxDistance: number | null,
 		specialties: string[],
 		epsNames: string[],
-		town: string | null
+		town: string | null,
+		hasReviews?: boolean
 	): Promise<Ips[]>;
 
 	/**

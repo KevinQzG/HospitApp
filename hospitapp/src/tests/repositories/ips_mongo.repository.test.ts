@@ -38,9 +38,9 @@ describe("IpsMongoRepository Integration Test", () => {
 					null,
 					testSpecialties,
 					testEpsNames,
+					null,
 					1,
-					10,
-					null
+					10
 				);
 
 			expect(RESULTS).toHaveLength(10);
@@ -56,9 +56,9 @@ describe("IpsMongoRepository Integration Test", () => {
 					MAX_DISTANCE_METERS,
 					testSpecialties,
 					testEpsNames,
+					null,
 					1,
-					10,
-					null
+					10
 				);
 
 			expect(RESULTS).toHaveLength(1);
@@ -79,9 +79,9 @@ describe("IpsMongoRepository Integration Test", () => {
 					MAX_DISTANCE_METERS,
 					testSpecialties,
 					testEpsNames,
+					null,
 					1,
-					10,
-					null
+					10
 				);
 
 			const [IPS] = RESULTS;
@@ -115,9 +115,9 @@ describe("IpsMongoRepository Integration Test", () => {
 					MAX_DISTANCE_METERS,
 					testSpecialties,
 					testEpsNames,
+					null,
 					1,
-					10,
-					null
+					10
 				);
 
 			const [IPS] = RESULTS;
@@ -144,9 +144,9 @@ describe("IpsMongoRepository Integration Test", () => {
 					MAX_DISTANCE_METERS,
 					testSpecialties,
 					testEpsNames,
+					null,
 					1,
-					PAGE_SIZE,
-					null
+					PAGE_SIZE
 				);
 
 			expect(RESULTS).toHaveLength(PAGE_SIZE);
@@ -165,9 +165,9 @@ describe("IpsMongoRepository Integration Test", () => {
 					MAX_DISTANCE_METERS,
 					testSpecialties,
 					testEpsNames,
+					null,
 					1,
-					PAGE_SIZE,
-					null
+					PAGE_SIZE
 				);
 
 			const IPS = RESULTS[3];
@@ -194,6 +194,27 @@ describe("IpsMongoRepository Integration Test", () => {
 			expect(RESULTS).toHaveLength(PAGE_SIZE);
 			expect(TOTAL).toBeGreaterThan(0);
 			expect(TOTAL).toBe(24);
+		});
+
+		it("should retrieve all IPSs that have reviews in Medellín", async () => {
+			const { results: RESULTS } = await repository.findAllByDistanceSpecialtyEpsWithPagination(
+				null,
+				null,
+				null,
+				[],
+				[],
+				"MEDELLÍN",
+				undefined,
+				undefined,
+				true
+			);
+
+			expect(RESULTS[0].getName()).toBe(
+				"INSTITUTO DEL CORAZON SEDE CENTRO"
+			);
+			expect(RESULTS[0].getDepartment()).toBe("ANTIOQUIA");
+			expect(RESULTS[0].getTown()).toBe("MEDELLÍN");
+			expect(RESULTS[0].getTotalReviews()).toBe(12);
 		});
 	});
 
@@ -325,6 +346,25 @@ describe("IpsMongoRepository Integration Test", () => {
 				distance: expect.closeTo(EXPECTED_DATA.distance, 4),
 			});
 			expect(RESULTS).toHaveLength(24);
+		});
+
+		it("should retrieve all IPSs that have reviews in Medellín", async () => {
+			const RESULTS = await repository.findAllByDistanceSpecialtyEps(
+				null,
+				null,
+				null,
+				[],
+				[],
+				"MEDELLÍN",
+				true
+			);
+
+			expect(RESULTS[0].getName()).toBe(
+				"INSTITUTO DEL CORAZON SEDE CENTRO"
+			);
+			expect(RESULTS[0].getDepartment()).toBe("ANTIOQUIA");
+			expect(RESULTS[0].getTown()).toBe("MEDELLÍN");
+			expect(RESULTS[0].getTotalReviews()).toBe(12);
 		});
 	});
 

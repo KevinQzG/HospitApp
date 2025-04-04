@@ -26,6 +26,7 @@ export class Ips {
 	private eps?: Eps[];
 	private specialties?: Specialty[];
 	private reviews?: Review[];
+	private totalReviews?: number;
 
 	/**
 	 * Creates an instance of IPS.
@@ -44,6 +45,7 @@ export class Ips {
 	 * @param {Eps[]} [eps] - EPS entities associated with the IPS (optional).
 	 * @param {Specialty[]} [specialties] - Specialty entities associated with the IPS (optional).
 	 * @param {Review[]} [reviews] - Reviews associated with the IPS (optional).
+	 * @param {number} [totalReviews] - Total number of reviews associated with the IPS (optional).
 	 */
 	constructor(
 		_id: ObjectId = new ObjectId(),
@@ -61,7 +63,8 @@ export class Ips {
 		distance?: number,
 		eps?: Eps[],
 		specialties?: Specialty[],
-		reviews?: Review[]
+		reviews?: Review[],
+		totalReviews?: number,
 	) {
 		this._id = _id;
 		this.name = name;
@@ -76,6 +79,7 @@ export class Ips {
 		this.eps = eps;
 		this.specialties = specialties;
 		this.reviews = reviews;
+		this.totalReviews = totalReviews;
 	}
 
 	/**
@@ -228,6 +232,22 @@ export class Ips {
 	 */
 	getReviews(): Review[] | undefined {
 		return this.reviews;
+	}
+
+	/**
+	 * Gets the total number of reviews associated with the IPS.
+	 * @returns {number | undefined} The total number of reviews associated with the IPS.
+	 */
+	getTotalReviews(): number | undefined {
+		return this.totalReviews;
+	}
+
+	/**
+	 * Sets the total number of reviews associated with the IPS.
+	 * @param {number} totalReviews - The total number of reviews associated with the IPS.
+	 */
+	setTotalReviews(totalReviews: number): void {
+		this.totalReviews = totalReviews;
 	}
 
 	/**

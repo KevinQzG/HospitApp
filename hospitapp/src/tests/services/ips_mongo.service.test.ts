@@ -130,9 +130,10 @@ describe("IpsMongoService Integration Test", () => {
 				5000,
 				["ENFERMERÍA"],
 				["SALUDCOOP EPS-C"],
+				null,
 				1,
 				10,
-				null
+				false
 			);
 
 			// Verify output transformation
@@ -185,9 +186,10 @@ describe("IpsMongoService Integration Test", () => {
 				expect.anything(),
 				expect.anything(),
 				expect.anything(),
+				null,
 				2,
 				5,
-				null
+				false
 			);
 			expect(total).toBe(1);
 		});

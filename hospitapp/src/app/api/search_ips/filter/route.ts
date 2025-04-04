@@ -15,6 +15,8 @@ import { IpsResponse } from "@/models/ips.interface";
  * @property {string[]} [eps_names] - Optional array of EPS names to filter by
  * @property {number} [page] - Optional page number for pagination (default: 1)
  * @property {number} [page_size] - Optional number of items per page (default: 10)
+ * @property {string} [town] - Optional town name to filter by
+ * @property {boolean} [hasReviews] - Optional flag to filter by IPS with reviews (default: false)
  */
 interface SearchRequest {
 	coordinates?: [number, number];
@@ -24,6 +26,7 @@ interface SearchRequest {
 	page?: number;
 	page_size?: number;
 	town?: string;
+	hasReviews?: boolean;
 }
 
 /**
@@ -88,6 +91,14 @@ const VALIDATE_REQUEST_BODY = (
 		return {
 			success: false,
 			error: "Invalid request: town must be a string.",
+		};
+	} else if (
+		body.hasReviews !== undefined &&
+		typeof body.hasReviews !== "boolean"
+	) {
+		return {
+			success: false,
+			error: "Invalid request: hasReviews must be a boolean.",
 		};
 	}
 
@@ -155,7 +166,8 @@ export async function POST(
 				BODY.eps_names || [],
 				BODY.page || 1,
 				BODY.page_size || 10,
-				BODY.town || null
+				BODY.town || null,
+				BODY.hasReviews || false
 			);
 
 		// revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)

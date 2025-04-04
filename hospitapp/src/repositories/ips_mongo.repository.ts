@@ -45,9 +45,9 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		maxDistance: number | null,
 		specialties: string[],
 		epsNames: string[],
+		town: string | null,
 		page: number = 1,
 		pageSize: number = 10,
-		town: string | null,
 		hasReviews: boolean = false
 	): Promise<{ results: Ips[]; total: number }> {
 		// Build the pipeline
@@ -90,14 +90,11 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		maxDistance: number | null,
 		specialties: string[],
 		epsNames: string[],
-		town: string | null
+		town: string | null,
+		hasReviews: boolean = false
 	): Promise<Ips[]> {
-		let pipelineBuilder = new IpsPipelineBuilder();
-		if (town) {
-			pipelineBuilder = pipelineBuilder.addMatchStage({ town: town });
-		}
 		// Build the pipeline
-		const PIPELINE = pipelineBuilder.addGeoStage(longitude, latitude, maxDistance)
+		const PIPELINE = this.getPipelineBuilder(hasReviews, latitude, longitude, maxDistance, town)
 			.matchesSpecialties(specialties)
 			.matchesEps(epsNames)
 			.addSortStage({

@@ -37,7 +37,8 @@ export class IpsMongoService implements IpsServiceAdapter {
 		epsNames: string[],
 		page: number,
 		pageSize: number,
-		town: string | null
+		town: string | null,
+		hasReviews: boolean = false
 	): Promise<{ results: IpsResponse[]; total: number }> {
 		const RESULTS =
 			await this.ipsRepository.findAllByDistanceSpecialtyEpsWithPagination(
@@ -46,9 +47,10 @@ export class IpsMongoService implements IpsServiceAdapter {
 				maxDistance,
 				specialties,
 				epsNames,
+				town,
 				page,
 				pageSize,
-				town
+				hasReviews
 			);
 
 		return {
@@ -65,7 +67,8 @@ export class IpsMongoService implements IpsServiceAdapter {
 		maxDistance: number | null,
 		specialties: string[],
 		epsNames: string[],
-		town: string | null
+		town: string | null,
+		hasReviews: boolean = false
 	): Promise<IpsResponse[]> {
 		const RESULTS = await this.ipsRepository.findAllByDistanceSpecialtyEps(
 			longitude,
@@ -73,7 +76,8 @@ export class IpsMongoService implements IpsServiceAdapter {
 			maxDistance,
 			specialties,
 			epsNames,
-			town
+			town,
+			hasReviews
 		);
 
 		return RESULTS.map((ips) => {

@@ -30,7 +30,12 @@ export interface LookIpsResponse {
 	data?: IpsResponse;
 	reviewsResult?: {
 		reviews: ReviewResponse[];
-		total: number;
+		pagination?: {
+			total: number;
+			totalPages: number;
+			page: number;
+			pageSize: number;
+		};
 	};
 }
 
@@ -123,7 +128,12 @@ export async function POST(
 			data: RESULT.ips,
 			reviewsResult: {
 				reviews: RESULT.reviewsResult.reviews,
-				total: RESULT.reviewsResult.total,
+				pagination: {
+					total: RESULT.reviewsResult.total,
+					totalPages: Math.ceil(RESULT.reviewsResult.total / (BODY.reviewsPageSize || 10)),
+					page: BODY.reviewsPage || 1,
+					pageSize: BODY.reviewsPageSize || 10,
+				}
 			},
 		});
 	} catch (error) {
