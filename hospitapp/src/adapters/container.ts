@@ -13,6 +13,7 @@ import { EpsMongoRepository } from '@/repositories/eps_mongo.repository';
 import { SpecialtyMongoRepository } from '@/repositories/specialty_mongo.repository';
 import { SearchIpsMongoService } from '@/services/search_ips/search_ips_mongo.service';
 import { UserMongoRepository } from '@/repositories/user_mongo.repository';
+import { CreateIpsServiceAdapter } from '@/adapters/create_ips.service.adapter';
 
 
 
@@ -25,5 +26,6 @@ CONTAINER.bind<EpsRepositoryAdapter>(TYPES.EpsRepositoryAdapter).to(EpsMongoRepo
 CONTAINER.bind<SpecialtyRepositoryAdapter>(TYPES.SpecialtyRepositoryAdapter).to(SpecialtyMongoRepository)
 CONTAINER.bind<SearchIpsServiceAdapter>(TYPES.SearchIpsServiceAdapter).to(SearchIpsMongoService)
 CONTAINER.bind<UserRepositoryAdapter>(TYPES.UserRepositoryAdapter).to(UserMongoRepository);
+CONTAINER.bind<CreateIpsServiceAdapter>(TYPES.CreateIpsServiceAdapter).to(CreateIpsServiceAdapter)
 
 export default CONTAINER;

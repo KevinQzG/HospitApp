@@ -4,5 +4,6 @@ export const TYPES = {
     IpsRepositoryAdapter: Symbol.for('IpsRepositoryAdapter'),
     EpsRepositoryAdapter: Symbol.for('EpsRepositoryAdapter'),
     SpecialtyRepositoryAdapter: Symbol.for('SpecialtyRepositoryAdapter'),
-    SearchIpsServiceAdapter: Symbol.for('SearchIpsServiceAdapter')
+    SearchIpsServiceAdapter: Symbol.for('SearchIpsServiceAdapter'),
+    CreateIpsServiceAdapter: Symbol.for('CreateIpsServiceAdapter')
 };

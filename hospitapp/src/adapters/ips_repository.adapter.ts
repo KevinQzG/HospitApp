@@ -27,13 +27,5 @@ export default interface IpsRepositoryAdapter {
      * @returns {Promise<Ips | null>} The IPS with the specified name, or null if no IPS was found.
      */
     findByName(name: string): Promise<Ips | null>;
-
-    /**
-     * Creates a new IPS.
-     * @async
-     * @param {Ips} ips - The IPS data to create.
-     * @returns {Promise<Ips>} The created IPS.
-     */
-      create(ips: Ips): Promise<Ips | null>;
     
 }
