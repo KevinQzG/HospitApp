@@ -10,7 +10,7 @@ import { getSessionToken } from "@/utils/helpers/session";
 /**
  * Interface representing the structure of the get request body
  * @interface GetReviewRequest
- * @property {string} name - The id of the review to look up
+ * @property {string} id - The id of the review to look up
  */
 interface GetReviewRequest {
 	id: string;
