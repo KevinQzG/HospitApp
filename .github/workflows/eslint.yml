@@ -1,4 +1,4 @@
-name: ESLint
+name: Build, ESLint and Tests
 
 on:
   push:
@@ -7,12 +7,21 @@ on:
     branches: [ "main" ]
 
 jobs:
-  eslint:
+  build-eslint-and-tests:
     name: Run ESLint scanning
     runs-on: ubuntu-latest
     permissions:
       contents: read
       security-events: write
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+      CACHE_TTL: ${{ secrets.CACHE_TTL }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+      NEXT_PUBLIC_APP_NAME: ${{ secrets.NEXT_PUBLIC_APP_NAME }}
+      NEXT_PUBLIC_MAPBOX_API_KEY: ${{ secrets.NEXT_PUBLIC_MAPBOX_API_KEY }}
 
     steps:
       - name: Checkout code
@@ -30,3 +39,11 @@ jobs:
       - name: Run ESLint
         working-directory: hospitapp
         run: npm run lint
+
+      - name: Build Application
+        working-directory: hospitapp
+        run: npm run build
+
+      - name: Run Tests
+        working-directory: hospitapp
+        run: npm run test
