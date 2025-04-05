@@ -95,6 +95,7 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 	}
 
 	async findById(id: string): Promise<ReviewResponse | null> {
+		if (ObjectId.isValid(id) === false) return null;
 		const REVIEW = await this.reviewRepository.findById(new ObjectId(id));
 		if (!REVIEW) return null;
 		return REVIEW.toResponse();

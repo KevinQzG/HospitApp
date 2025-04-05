@@ -175,7 +175,7 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 	async findById(id: ObjectId): Promise<Review | null> {
 		const PIPELINE = this.basePipelineBuilder()
 			.addMatchStage({
-				_id: new ObjectId(id),
+				_id: id,
 			})
 			.build();
 		const DB = await this.dbHandler.connect();

@@ -34,8 +34,6 @@ export class UserMongoRepository implements UserRepositoryAdapter {
 					email: { $regex: email, $options: "i" },
 				}
 			);
-			console.log(USER_DOC);
-
 			return USER_DOC ? UserMapper.fromDocumentToDomain(USER_DOC) : null;
 		} catch (error) {
 			console.error("Error finding user by email:", error);
