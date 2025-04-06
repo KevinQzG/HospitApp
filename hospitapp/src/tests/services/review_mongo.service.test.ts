@@ -63,7 +63,11 @@ describe("ReviewMongoService Integration Test", () => {
 			const { results, total } = await service.findAllWithPagination(
 				1,
 				10,
-				"67b3e98bb1ae5d9e47ae72a8"
+				"67b3e98bb1ae5d9e47ae72a8",
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				]
 			);
 
 			expect(
@@ -71,6 +75,10 @@ describe("ReviewMongoService Integration Test", () => {
 			).toHaveBeenCalledWith(
 				1,
 				10,
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
 				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
 			);
 			expect(results).toEqual([MOCK_REVIEW.toResponse()]);
@@ -106,9 +114,18 @@ describe("ReviewMongoService Integration Test", () => {
 
 	describe("findAll", () => {
 		it("should retrieve all reviews and transform to response", async () => {
-			const results = await service.findAll("67b3e98bb1ae5d9e47ae72a8");
+			const results = await service.findAll("67b3e98bb1ae5d9e47ae72a8", 
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				]
+			);
 
 			expect(mockReviewRepository.findAll).toHaveBeenCalledWith(
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
 				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
 			);
 			expect(results).toEqual([MOCK_REVIEW.toResponse()]);

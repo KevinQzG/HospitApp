@@ -31,6 +31,10 @@ describe("ReviewMongoRepository Integration Test", () => {
 			results = await repository.findAllWithPagination(
 				1,
 				10,
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
 				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
 			);
 
@@ -44,6 +48,10 @@ describe("ReviewMongoRepository Integration Test", () => {
 			results = await repository.findAllWithPagination(
 				1,
 				10,
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
 				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
 			);
 			const SAMPLE_EPS = results.results[0];
@@ -65,6 +73,10 @@ describe("ReviewMongoRepository Integration Test", () => {
 	describe("findAll", () => {
 		it("should retrieve all Review documents", async () => {
 			results.results = await repository.findAll(
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
 				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
 			);
 
@@ -79,6 +91,10 @@ describe("ReviewMongoRepository Integration Test", () => {
 
 		it("should return correct Review document structure", async () => {
 			results.results = await repository.findAll(
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
 				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
 			);
 			const SAMPLE_EPS = results.results[0];
@@ -112,7 +128,13 @@ describe("ReviewMongoRepository Integration Test", () => {
 			expect(CREATED_REVIEW_ID).toBeInstanceOf(ObjectId);
 			expect(CREATED_REVIEW_ID).toEqual(REVIEW.getId());
 
-			const CREATED_REVIEW = await repository.findAll(REVIEW.getIps());
+			const CREATED_REVIEW = await repository.findAll(
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
+				REVIEW.getIps()
+			);
 
 			expect(CREATED_REVIEW.length).toBe(1);
 			expect(CREATED_REVIEW[0].getId()).toEqual(REVIEW.getId());
@@ -137,6 +159,10 @@ describe("ReviewMongoRepository Integration Test", () => {
 			expect(DELETED_REVIEW).toBe(true);
 
 			const DELETED_REVIEW_CHECK = await repository.findAll(
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
 				REVIEW.getIps()
 			);
 

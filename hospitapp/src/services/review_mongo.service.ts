@@ -5,6 +5,7 @@ import ReviewServiceAdapter from "@/adapters/services/review.service.adapter";
 import { ReviewResponse } from "@/models/review.interface";
 import { Review } from "@/models/review";
 import { ObjectId } from "mongodb";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 
 /**
  * @class
@@ -27,12 +28,14 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 	async findAllWithPagination(
 		page: number,
 		pageSize: number,
-		ipsId?: string
+		ipsId?: string,
+		sorts?: SortCriteria[]
 	): Promise<{ results: ReviewResponse[]; total: number }> {
 		const { results: RESULTS, total: TOTAL } =
 			await this.reviewRepository.findAllWithPagination(
 				page,
 				pageSize,
+				sorts ?? [{ field: "rating", direction: -1 }],
 				new ObjectId(ipsId)
 			);
 		return {
@@ -41,8 +44,12 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 		};
 	}
 
-	async findAll(ipsId?: string): Promise<ReviewResponse[]> {
+	async findAll(
+		ipsId?: string,
+		sorts?: SortCriteria[]
+	): Promise<ReviewResponse[]> {
 		const RESULTS = await this.reviewRepository.findAll(
+			sorts ?? [{ field: "rating", direction: -1 }],
 			new ObjectId(ipsId)
 		);
 		return RESULTS.map((review) => review.toResponse());

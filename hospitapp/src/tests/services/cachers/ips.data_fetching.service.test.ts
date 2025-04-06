@@ -128,7 +128,8 @@ describe("IPS Props Fetching Functions", () => {
 			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
 				name,
 				reviewsPage,
-				reviewsPageSize
+				reviewsPageSize,
+				undefined
 			);
 			expect(result).toEqual({
 				ips: MOCK_IPS_RES,
@@ -155,7 +156,8 @@ describe("IPS Props Fetching Functions", () => {
 			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
 				name,
 				1,
-				10
+				10,
+				undefined
 			);
 			expect(result).toEqual({
 				ips: null,
@@ -178,7 +180,8 @@ describe("IPS Props Fetching Functions", () => {
 			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
 				name,
 				1,
-				10
+				10,
+				undefined
 			);
 		});
 
@@ -198,7 +201,8 @@ describe("IPS Props Fetching Functions", () => {
 			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
 				name,
 				1,
-				10
+				10,
+				undefined
 			);
 		});
 	});

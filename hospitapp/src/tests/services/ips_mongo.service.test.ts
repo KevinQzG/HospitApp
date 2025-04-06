@@ -253,12 +253,23 @@ describe("IpsMongoService Integration Test", () => {
 			const pageSize = 10;
 
 			const { ips, reviewsResult } =
-				await service.getIpsByNameWithReviews(name, page, pageSize);
+				await service.getIpsByNameWithReviews(name, page, pageSize, [
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				]);
 
 			expect(mockIpsRepository.findByName).toHaveBeenCalledWith(name);
 			expect(
 				mockReviewRepository.findAllWithPagination
-			).toHaveBeenCalledWith(page, pageSize, MOCK_IPS.getId());
+			).toHaveBeenCalledWith(
+				page,
+				pageSize,
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
+				MOCK_IPS.getId()
+			);
 			expect(ips).toEqual(MOCK_IPS_RES);
 			expect(reviewsResult).toEqual({
 				reviews: MOCK_REVIEW_RES,

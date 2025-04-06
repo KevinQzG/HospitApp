@@ -1,4 +1,5 @@
 import { Review } from "@/models/review";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 import { ObjectId } from "mongodb";
 
 /**
@@ -12,22 +13,25 @@ export default interface ReviewRepositoryAdapter {
 	 * @async
 	 * @param {number} page - The page number.
 	 * @param {number} pageSize - The number of results per page.
+	 * @param {SortCriteria[]} sorts - The sorting criteria.
 	 * @param {ObjectId} ipsId - The ID of the IPS to filter by (optional).
 	 * @returns {Promise<{ results: Review[]; total: number }>} The Reviews that meet the specified criteria.
 	 */
 	findAllWithPagination(
 		page: number,
 		pageSize: number,
+		sorts: SortCriteria[],
 		ipsId?: ObjectId
 	): Promise<{ results: Review[]; total: number }>;
 
 	/**
 	 * Gets all Reviews.
 	 * @async
+	 * @param {SortCriteria} sorts - The sorting criteria.
 	 * @param {ObjectId} ipsId - The ID of the IPS to filter by (optional).
 	 * @returns {Promise<Review[]>} The Reviews that meet the specified criteria.
 	 */
-	findAll(ipsId?: ObjectId): Promise<Review[]>;
+	findAll(sorts: SortCriteria[], ipsId?: ObjectId): Promise<Review[]>;
 
 	/**
 	 * Creates a new Review.

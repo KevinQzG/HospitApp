@@ -5,6 +5,7 @@ import type IpsRepositoryAdapter from "@/adapters/repositories/ips_repository.ad
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
 import type ReviewRepositoryAdapter from "@/adapters/repositories/review_repository.adapter";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 
 /**
  * @class
@@ -96,7 +97,8 @@ export class IpsMongoService implements IpsServiceAdapter {
 	async getIpsByNameWithReviews(
 		name: string,
 		page: number,
-		pageSize: number
+		pageSize: number,
+		sort?: SortCriteria[]
 	): Promise<{
 		ips: IpsResponse | null;
 		reviewsResult: { reviews: ReviewResponse[]; total: number };
@@ -110,6 +112,9 @@ export class IpsMongoService implements IpsServiceAdapter {
 			await this.reviewRepository.findAllWithPagination(
 				page,
 				pageSize,
+				sort ?? [
+					{ field: "rating", direction: -1 }
+				],
 				IPS.getId()
 			);
 		const REVIEWS = REVIEWS_RESULT.results.map((review) => {

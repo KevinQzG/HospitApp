@@ -6,13 +6,16 @@ import { Review } from "@/models/review";
 import type DBAdapter from "@/adapters/db.adapter";
 import { ReviewMapper } from "@/utils/mappers/review_mapper";
 import { PipelineBuilder } from "./builders/pipeline.builder";
-import { AggregationResult } from "./review_mongo.repository.interfaces";
+import {
+	AggregationResult,
+	SortCriteria,
+} from "./review_mongo.repository.interfaces";
 import ReviewRepositoryAdapter from "@/adapters/repositories/review_repository.adapter";
 
 /**
  * @class
- * @name SpecialtyMongoRepository
- * @description This class allows me to interact with the Specialty collection in the database.
+ * @name ReviewMongoRepository
+ * @description This class allows me to interact with the Review collection in the database.
  */
 @injectable()
 export class ReviewMongoRepository implements ReviewRepositoryAdapter {
@@ -33,7 +36,10 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 	 * @param ipsId - The ID of the IPS to filter by.
 	 * @returns {PipelineBuilder} The pipeline builder instance.
 	 */
-	private basePipelineBuilder(ipsId?: ObjectId): PipelineBuilder {
+	private basePipelineBuilder(
+		sorts: SortCriteria[],
+		ipsId?: ObjectId
+	): PipelineBuilder {
 		let pipelineBuilder = new PipelineBuilder();
 
 		if (ipsId) {
@@ -43,7 +49,7 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 			});
 		}
 
-		return pipelineBuilder
+		pipelineBuilder = pipelineBuilder
 			.addLookupStage("USERS", "user", "_id", "userObject")
 			.addLookupStage("IPS", "ips", "_id", "ipsObject")
 			.addFieldsStage({
@@ -57,21 +63,28 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 			.addProjectStage({
 				userObject: 0,
 				ipsObject: 0,
-			})
-			.addSortStage({
-				rating: -1,
-				ipsName: 1,
-				userEmail: 1,
 			});
+
+		const SORT_OBJECT: { [key: string]: number } = {};
+
+		for (const SORT of sorts) {
+			SORT_OBJECT[SORT.field] = SORT.direction;
+		}
+
+		SORT_OBJECT["ipsName"] = 1;
+		SORT_OBJECT["userEmail"] = 1;
+
+		return pipelineBuilder.addSortStage(SORT_OBJECT);
 	}
 
 	async findAllWithPagination(
 		page: number,
 		pageSize: number,
+		sorts: SortCriteria[],
 		ipsId?: ObjectId
 	): Promise<{ results: Review[]; total: number }> {
 		// Build the pipeline
-		const PIPELINE = this.basePipelineBuilder(ipsId)
+		const PIPELINE = this.basePipelineBuilder(sorts, ipsId)
 			.addPagination(page, pageSize)
 			.build();
 
@@ -96,9 +109,9 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 		};
 	}
 
-	async findAll(ipsId?: ObjectId): Promise<Review[]> {
+	async findAll(sorts: SortCriteria[], ipsId?: ObjectId): Promise<Review[]> {
 		// Build the pipeline
-		const PIPELINE = this.basePipelineBuilder(ipsId).build();
+		const PIPELINE = this.basePipelineBuilder(sorts, ipsId).build();
 
 		// Get all the Reviews Documents
 		const DB = await this.dbHandler.connect();
@@ -176,7 +189,7 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 	}
 
 	async findById(id: ObjectId): Promise<Review | null> {
-		const PIPELINE = this.basePipelineBuilder()
+		const PIPELINE = this.basePipelineBuilder([])
 			.addMatchStage({
 				_id: id,
 			})

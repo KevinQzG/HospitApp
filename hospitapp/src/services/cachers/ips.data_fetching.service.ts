@@ -3,6 +3,7 @@ import IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import { TYPES } from "@/adapters/types";
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 
 export const getIpsProps = async (params: {
 	name: string;
@@ -31,6 +32,7 @@ export const getIpsPropsWithReviews = async (params: {
 	name: string;
 	reviewsPage: number;
 	reviewsPageSize: number;
+	sorts?: SortCriteria[];
 }): Promise<{
 	ips: IpsResponse | null;
 	reviewsResult: { reviews: ReviewResponse[]; total: number };
@@ -46,7 +48,8 @@ export const getIpsPropsWithReviews = async (params: {
 		const RESULT = await IPS_SERVICE.getIpsByNameWithReviews(
 			params.name,
 			params.reviewsPage,
-			params.reviewsPageSize
+			params.reviewsPageSize,
+			params.sorts
 		);
 
 		return RESULT;

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
 import { getIpsPropsWithReviews } from "@/services/cachers/ips.data_fetching.service";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
 /**
@@ -15,6 +16,7 @@ interface LookIpsRequest {
 	name: string;
 	reviewsPage?: number;
 	reviewsPageSize?: number;
+	sorts?: SortCriteria[];
 }
 
 /**
@@ -70,6 +72,13 @@ const VALIDATE_REQUEST_BODY = (
 		};
 	}
 
+	if (body.sorts && !Array.isArray(body.sorts)) {
+		return {
+			success: false,
+			error: "Invalid type for field: sorts, expected array",
+		};
+	}
+
 	return { success: true, error: "" };
 };
 
@@ -113,8 +122,10 @@ export async function POST(
 		const RESULT = await getIpsPropsWithReviews({
 			name: BODY.name,
 			reviewsPage: BODY.reviewsPage || 1,
-			reviewsPageSize: BODY.reviewsPageSize || 10
+			reviewsPageSize: BODY.reviewsPageSize || 10,
+			sorts: BODY.sorts
 		});
+		
 
 		if (!RESULT.ips) {
 			return NextResponse.json(

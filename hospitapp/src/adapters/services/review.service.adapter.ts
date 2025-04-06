@@ -1,4 +1,5 @@
 import { ReviewResponse } from "@/models/review.interface";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 
 /**
  * @interface
@@ -9,23 +10,29 @@ export default interface ReviewServiceAdapter {
 	/**
 	 * Gets all reviews from the database, it returns an empty array there is not reviews.
 	 * @param {string} ipsId - The ID of the IPS to filter by (optional).
+	 * @param {SortCriteria[]} sorts - The sorting criteria (optional).
 	 * @async
 	 * @returns {Promise<ReviewResponse[]>} The reviews.
 	 */
-	findAll(ipsId?: string): Promise<ReviewResponse[]>;
+	findAll(
+		ipsId?: string,
+		sorts?: SortCriteria[]
+	): Promise<ReviewResponse[]>;
 
 	/**
 	 * Gets all reviews from the database, it returns an empty array there is not reviews. It uses pagination.
 	 * @param {number} page - The page number.
 	 * @param {number} pageSize - The number of results per page.
 	 * @param {string} ipsId - The ID of the IPS to filter by (optional).
+	 * @param {SortCriteria[]} sorts - The sorting criteria (optional).
 	 * @async
 	 * @returns {Promise<{ results: Review[]; total: number }>} The reviews and the total number of reviews.
 	 */
 	findAllWithPagination(
 		page: number,
 		pageSize: number,
-		ipsId?: string
+		ipsId?: string,
+		sorts?: SortCriteria[]
 	): Promise<{ results: ReviewResponse[]; total: number }>;
 
 	/**

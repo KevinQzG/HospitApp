@@ -1,5 +1,6 @@
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 
 /**
  * @interface
@@ -72,12 +73,14 @@ export default interface IpsServiceAdapter {
 	 * @param {string} name - The name of the IPS.
 	 * @param {number} page - The page number.
 	 * @param {number} pageSize - The number of results per page.
+	 * @param {SortCriteria[]} [sort] - The sorting criteria (optional).
 	 * @returns {Promise<{ ips: IpsResponse | null; reviewsResult: { reviews: ReviewResponse[]; total: number } }>} The IPS with the specified name and its reviews, or null if it does not exist.
 	 */
 	getIpsByNameWithReviews(
 		name: string,
 		page: number,
-		pageSize: number
+		pageSize: number,
+		sort?: SortCriteria[]
 	): Promise<{
 		ips: IpsResponse | null;
 		reviewsResult: { reviews: ReviewResponse[]; total: number };
