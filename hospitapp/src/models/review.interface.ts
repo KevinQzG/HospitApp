@@ -6,6 +6,8 @@ export interface ReviewDocument {
 	ips: ObjectId;
 	rating: number;
 	comments: string;
+	createdAt: Date;
+	lastUpdated: Date;
 	userEmail?: string;
 	ipsName?: string;
 }
@@ -16,6 +18,8 @@ export interface ReviewResponse {
 	ips: string;
 	rating: number;
 	comments: string;
+	createdAt: string;
+	lastUpdated: string;
 	userEmail?: string;
 	ipsName?: string;
 }

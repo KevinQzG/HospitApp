@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ReviewResponse } from "@/models/review.interface";
 import ReviewServiceAdapter from "@/adapters/services/review.service.adapter";
-import UserServiceAdapter from "@/adapters/services/user.service.adapter";
 import CONTAINER from "@/adapters/container";
 import { TYPES } from "@/adapters/types";
 import { getSessionToken } from "@/utils/helpers/session";
@@ -99,9 +98,6 @@ export async function POST(
 	const REVIEW_SERVICE = CONTAINER.get<ReviewServiceAdapter>(
 		TYPES.ReviewServiceAdapter
 	);
-	const USER_SERVICE = CONTAINER.get<UserServiceAdapter>(
-		TYPES.UserServiceAdapter
-	);
 	try {
 		// Parse and validate request body
 		const BODY: EditReviewRequest = await req.json();
@@ -142,7 +138,8 @@ export async function POST(
 			review.ips,
 			review.user,
 			BODY.rating,
-			BODY.comments
+			BODY.comments,
+			review.createdAt
 		);
 
 		return NextResponse.json({

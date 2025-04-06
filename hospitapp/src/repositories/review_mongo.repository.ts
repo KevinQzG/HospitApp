@@ -119,6 +119,7 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 		const REVIEW_DOCUMENT = review.toObject();
 
 		delete REVIEW_DOCUMENT.userEmail;
+		delete REVIEW_DOCUMENT.ipsName;
 
 		const INSERTED_REVIEW = await DB.collection<ReviewDocument>(
 			"Review"
@@ -144,6 +145,8 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 					comments: review.getComments(),
 					ips: review.getIps(),
 					user: review.getUser(),
+					createdAt: review.getCreatedAt(),
+					lastUpdated: review.getLastUpdated(),
 				},
 			},
 			{ returnDocument: "after" }

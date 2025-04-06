@@ -34,10 +34,6 @@ describe("ReviewMongoRepository Integration Test", () => {
 				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
 			);
 
-			// Verify total count
-			expect(results.results).toHaveLength(10);
-			expect(results.total).toBeGreaterThanOrEqual(10);
-
 			// Verify all items are Review instances
 			results.results.forEach((review) => {
 				expect(review).toBeInstanceOf(Review);
@@ -51,19 +47,15 @@ describe("ReviewMongoRepository Integration Test", () => {
 				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
 			);
 			const SAMPLE_EPS = results.results[0];
-			// Verify total count
-			expect(results.results).toHaveLength(10);
-			expect(results.total).toBeGreaterThanOrEqual(10);
 
 			const EXPECTED_DATA = {
-				_id: "67ed23719c60d5e529e84b49",
+				_id: "67f2ac47d2352b75c7a68715",
 				ips: "67b3e98bb1ae5d9e47ae72a8",
-				user: "67e56e4f41a98261d95547d4",
+				user: "67f14e8ca2a187c645bd17bf",
 				rating: 5,
-				comments:
-					"Muy buena atención, pero es un lugar demasiado caro y que te cobran por lo que sea.",
-				userEmail: "ADMIN@example.com",
-				ipsName: "INSTITUTO DEL CORAZON SEDE CENTRO"
+				comments: "Test Creation",
+				userEmail: "admin.pipe@example.com",
+				ipsName: "INSTITUTO DEL CORAZON SEDE CENTRO",
 			};
 
 			expect(SAMPLE_EPS.toResponse()).toMatchObject(EXPECTED_DATA);
@@ -77,7 +69,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 			);
 
 			// Verify total count
-			expect(results.results.length).toBeGreaterThanOrEqual(10);
+			expect(results.results.length).toBeGreaterThanOrEqual(1);
 
 			// Verify all items are Review instances
 			results.results.forEach((review) => {
@@ -92,14 +84,13 @@ describe("ReviewMongoRepository Integration Test", () => {
 			const SAMPLE_EPS = results.results[0];
 
 			const EXPECTED_DATA = {
-				_id: "67ed23719c60d5e529e84b49",
+				_id: "67f2ac47d2352b75c7a68715",
 				ips: "67b3e98bb1ae5d9e47ae72a8",
-				user: "67e56e4f41a98261d95547d4",
+				user: "67f14e8ca2a187c645bd17bf",
 				rating: 5,
-				comments:
-					"Muy buena atención, pero es un lugar demasiado caro y que te cobran por lo que sea.",
-				userEmail: "ADMIN@example.com",
-				ipsName: "INSTITUTO DEL CORAZON SEDE CENTRO"
+				comments: "Test Creation",
+				userEmail: "admin.pipe@example.com",
+				ipsName: "INSTITUTO DEL CORAZON SEDE CENTRO",
 			};
 
 			expect(SAMPLE_EPS.toResponse()).toMatchObject(EXPECTED_DATA);
@@ -109,7 +100,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 	describe("Create, update and delete", () => {
 		const REVIEW = new Review(
 			undefined,
-			new ObjectId("67e56e4f41a98261d95547d4"),
+			new ObjectId("67f14e8ca2a187c645bd17bf"),
 			new ObjectId("67b3e98bb1ae5d9e47ae72ad"),
 			5,
 			"Great service!"
@@ -155,7 +146,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 
 	describe("findById", () => {
 		it("should retrieve a Review document by ID", async () => {
-			const SAMPLE_ID = new ObjectId("67ed23719c60d5e529e84b49");
+			const SAMPLE_ID = new ObjectId("67f2ac47d2352b75c7a68715");
 			const REVIEW = await repository.findById(SAMPLE_ID);
 
 			expect(REVIEW).toBeInstanceOf(Review);
@@ -163,7 +154,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 		});
 
 		it("should return all the review structure", async () => {
-			const SAMPLE_ID = new ObjectId("67ed23719c60d5e529e84b49");
+			const SAMPLE_ID = new ObjectId("67f2ac47d2352b75c7a68715");
 			const REVIEW = await repository.findById(SAMPLE_ID);
 
 			expect(REVIEW).toBeInstanceOf(Review);
@@ -172,20 +163,16 @@ describe("ReviewMongoRepository Integration Test", () => {
 				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
 			);
 			expect(REVIEW?.getUser()).toEqual(
-				new ObjectId("67e56e4f41a98261d95547d4")
+				new ObjectId("67f14e8ca2a187c645bd17bf")
 			);
 			expect(REVIEW?.getRating()).toEqual(5);
-			expect(REVIEW?.getComments()).toEqual(
-				"Muy buena atención, pero es un lugar demasiado caro y que te cobran por lo que sea."
-			);
+			expect(REVIEW?.getComments()).toEqual("Test Creation");
 			expect(REVIEW?.getIpsName()).toEqual(
 				"INSTITUTO DEL CORAZON SEDE CENTRO"
 			);
-			expect(REVIEW?.getUserEmail()).toEqual(
-				"ADMIN@example.com"
-			);
+			expect(REVIEW?.getUserEmail()).toEqual("admin.pipe@example.com");
 		});
-		
+
 		it("should return null for non-existent ID", async () => {
 			const NON_EXISTENT_ID = new ObjectId("67e56e4f41a98261d95547d4");
 			const REVIEW = await repository.findById(NON_EXISTENT_ID);

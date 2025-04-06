@@ -2,7 +2,6 @@ import { injectable, inject } from "inversify";
 import { TYPES } from "@/adapters/types";
 import type UserRepositoryAdapter from "@/adapters/repositories/user_repository.adapter";
 import UserServiceAdapter from "@/adapters/services/user.service.adapter";
-import { User } from "@/models/user";
 import { UserResponse } from "@/models/user.interface";
 
 /**
@@ -30,7 +29,7 @@ export class UserMongoService implements UserServiceAdapter {
 				return false;
 			}
 			return user.getRole() === role;
-		} catch (error) {
+		} catch {
 			return false;
 		}
 	}
@@ -43,7 +42,7 @@ export class UserMongoService implements UserServiceAdapter {
 				}
 				return user.toResponse();
 			});
-		} catch (error) {
+		} catch {
 			return null;
 		}
 	}

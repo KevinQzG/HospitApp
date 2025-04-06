@@ -51,6 +51,7 @@ export default interface ReviewServiceAdapter {
 	 * @param {string} user - The ID of the user to filter by.
 	 * @param {number} rating - The rating of the review.
 	 * @param {string} comments - The comments of the review.
+	 * @param {Date} createdAt - The date of the review.
 	 * @async
 	 * @returns {Promise<ReviewResponse | null>} review updated response object or null if not found
 	 */
@@ -59,7 +60,8 @@ export default interface ReviewServiceAdapter {
 		ips: string,
 		user: string,
 		rating: number,
-		comments: string
+		comments: string,
+		createdAt: Date
 	): Promise<ReviewResponse | null>;
 
 	/**

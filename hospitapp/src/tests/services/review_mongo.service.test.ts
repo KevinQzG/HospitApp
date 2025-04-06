@@ -16,7 +16,8 @@ describe("ReviewMongoService Integration Test", () => {
 		new ObjectId("67b3e98bb1ae5d9e47ae72a8"), // ips
 		new ObjectId("67e56e4f41a98261d95547d4"), // user
 		5,
-		"Great service!"
+		"Great service!",
+		new Date("2025-04-06T12:00:00Z"),
 	);
 
 	const MOCK_UPDATED_REVIEW = new Review(
@@ -24,7 +25,8 @@ describe("ReviewMongoService Integration Test", () => {
 		new ObjectId("67b3e98bb1ae5d9e47ae72a8"),
 		new ObjectId("67e56e4f41a98261d95547d4"),
 		4,
-		"Updated service!"
+		"Updated service!",
+		new Date()
 	);
 
 	beforeAll(() => {
@@ -177,7 +179,8 @@ describe("ReviewMongoService Integration Test", () => {
 				"67b3e98bb1ae5d9e47ae72a8",
 				"67e56e4f41a98261d95547d4",
 				4,
-				"Updated service!"
+				"Updated service!",
+				new Date()
 			);
 
 			expect(mockReviewRepository.update).toHaveBeenCalledWith(
@@ -194,7 +197,8 @@ describe("ReviewMongoService Integration Test", () => {
 				"67b3e98bb1ae5d9e47ae72a8",
 				"67e56e4f41a98261d95547d4",
 				4,
-				"Updated service!"
+				"Updated service!",
+				new Date()
 			);
 
 			expect(result).toBeNull();
@@ -210,7 +214,8 @@ describe("ReviewMongoService Integration Test", () => {
 					"67b3e98bb1ae5d9e47ae72a8",
 					"67e56e4f41a98261d95547d4",
 					4,
-					"Updated service!"
+					"Updated service!",
+					new Date()
 				)
 			).rejects.toThrow(error);
 		});

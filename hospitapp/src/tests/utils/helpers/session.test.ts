@@ -1,5 +1,4 @@
 import { createSession, getSessionToken } from "@/utils/helpers/session";
-import { create } from "domain";
 import jwt from "jsonwebtoken";
 
 // Mock process.env.JWT_SECRET_KEY
@@ -126,7 +125,9 @@ describe("Session Utilities", () => {
 
 		it("should return null if cookie is undefined or empty", () => {
 			const resultEmpty = getSessionToken("");
-			const resultUndefined = getSessionToken(undefined as any); // TypeScript workaround
+			const resultUndefined = getSessionToken(
+				undefined as unknown as string
+			);
 
 			expect(resultEmpty).toBeNull();
 			expect(resultUndefined).toBeNull();

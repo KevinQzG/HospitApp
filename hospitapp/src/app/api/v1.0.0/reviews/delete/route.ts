@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ReviewResponse } from "@/models/review.interface";
 import ReviewServiceAdapter from "@/adapters/services/review.service.adapter";
 import UserServiceAdapter from "@/adapters/services/user.service.adapter";
 import CONTAINER from "@/adapters/container";

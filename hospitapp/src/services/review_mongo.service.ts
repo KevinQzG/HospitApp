@@ -56,15 +56,14 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 	): Promise<string | null> {
 		const REVIEW = new Review(
 			undefined,
-			new ObjectId(ips),
 			new ObjectId(user),
+			new ObjectId(ips),
 			rating,
 			comments
 		);
 
 		const ID = await this.reviewRepository.create(REVIEW);
 		if (!ID) return null;
-		console.log(ID);
 		return ID.toHexString();
 	}
 
@@ -73,14 +72,16 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 		ips: string,
 		user: string,
 		rating: number,
-		comments: string
+		comments: string,
+		createdAt: Date
 	): Promise<ReviewResponse | null> {
 		const REVIEW = new Review(
 			new ObjectId(id),
-			new ObjectId(ips),
 			new ObjectId(user),
+			new ObjectId(ips),
 			rating,
-			comments
+			comments,
+			createdAt
 		);
 
 		const UPDATED_REVIEW = await this.reviewRepository.update(REVIEW);
@@ -89,6 +90,7 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 	}
 
 	async delete(id: string): Promise<boolean> {
+		if (ObjectId.isValid(id) === false) return false;
 		const DELETED = await this.reviewRepository.delete(new ObjectId(id));
 
 		return DELETED;

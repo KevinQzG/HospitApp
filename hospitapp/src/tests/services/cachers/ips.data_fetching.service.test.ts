@@ -39,6 +39,8 @@ describe("IPS Props Fetching Functions", () => {
 			ips: "67b3e98bb1ae5d9e47ae7a06",
 			rating: 4,
 			comments: "Great service!",
+			createdAt: "2025-04-06T12:00:00.000Z",
+			lastUpdated: "2025-04-06T12:05:00.000Z",
 		},
 	];
 
