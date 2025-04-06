@@ -1,3 +1,5 @@
+import { UserResponse } from "@/models/user.interface";
+
 /**
  * @interface
  * @name UserServiceAdapter
@@ -12,4 +14,12 @@ export default interface UserServiceAdapter {
 	 * @returns {Promise<boolean>} True if the user has the role, false otherwise.
 	 */
 	verifyUserRole(userEmail: string, role: string): Promise<boolean>;
+
+	/**
+	 * Gets the user by email.
+	 * @param userEmail The email of the user to get.
+	 * @async
+	 * @returns {Promise<User | null>} The user if found, null otherwise.
+	 */
+	getUserByEmail(userEmail: string): Promise<UserResponse | null>;
 }

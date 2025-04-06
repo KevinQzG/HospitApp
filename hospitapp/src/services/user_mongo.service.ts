@@ -2,6 +2,8 @@ import { injectable, inject } from "inversify";
 import { TYPES } from "@/adapters/types";
 import type UserRepositoryAdapter from "@/adapters/repositories/user_repository.adapter";
 import UserServiceAdapter from "@/adapters/services/user.service.adapter";
+import { User } from "@/models/user";
+import { UserResponse } from "@/models/user.interface";
 
 /**
  * @class
@@ -30,6 +32,19 @@ export class UserMongoService implements UserServiceAdapter {
 			return user.getRole() === role;
 		} catch (error) {
 			return false;
+		}
+	}
+
+	async getUserByEmail(userEmail: string): Promise<UserResponse | null> {
+		try {
+			return await this.userRepository.findUserByEmail(userEmail).then((user) => {
+				if (!user) {
+					return null;
+				}
+				return user.toResponse();
+			});
+		} catch (error) {
+			return null;
 		}
 	}
 }

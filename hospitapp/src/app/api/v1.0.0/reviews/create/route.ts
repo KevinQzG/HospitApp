@@ -1,72 +1,71 @@
 import { NextRequest, NextResponse } from "next/server";
-import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
-import { getIpsPropsWithReviews } from "@/services/cachers/ips.data_fetching.service";
+import ReviewServiceAdapter from "@/adapters/services/review.service.adapter";
+import UserServiceAdapter from "@/adapters/services/user.service.adapter";
+import CONTAINER from "@/adapters/container";
+import { TYPES } from "@/adapters/types";
+import { getSessionToken } from "@/utils/helpers/session";
+import { TokenExpiredError } from "jsonwebtoken";
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
 /**
- * Interface representing the structure of the search request body
- * @interface LookIpsRequest
- * @property {string} name - The name of the IPS document
- * @property {number} [reviewsPage] - Optional page number for reviews
- * @property {number} [reviewsPageSize] - Optional page size for reviews
+ * Interface representing the structure of the create request body
+ * @interface CreateReviewRequest
+ * @property {string} ips - The ips of the review
+ * @property {number} rating - The rating of the review
+ * @property {string} comments - The comments of the review
  */
-interface LookIpsRequest {
-	name: string;
-	reviewsPage?: number;
-	reviewsPageSize?: number;
+interface CreateReviewRequest {
+	ips: string;
+	rating: number;
+	comments: string;
 }
 
 /**
- * Interface representing the structure of the search response
- * @interface LookIpsResponse
+ * Interface representing the structure of the create response
+ * @interface CreateReviewResponse
  * @property {boolean} success - True if the request was successful, false otherwise
  * @property {string} [error] - Error message if success is false
- * @property {IpsResponse} [data] - IPS data if success is true
+ * @property {IpsResponse | null} [data] - The data returned from the request
  */
-export interface LookIpsResponse {
+export interface CreateReviewResponse {
 	success: boolean;
 	error?: string;
-	data?: IpsResponse;
-	reviewsResult?: {
-		reviews: ReviewResponse[];
-		pagination?: {
-			total: number;
-			totalPages: number;
-			page: number;
-			pageSize: number;
-		};
-	};
+	review?: string | null;
 }
 
 /**
  * Function to validate the body of the request
- * @param {LookIpsRequest} body - The request body to validate
+ * @param {CreateReviewRequest} body - The request body to validate
  * @returns {{ success: boolean; error: string }} True if the body is valid, false otherwise with an error message
  */
 const VALIDATE_REQUEST_BODY = (
-	body: LookIpsRequest
+	body: CreateReviewRequest
 ): { success: boolean; error: string } => {
-	if (!body.name) {
-		return { success: false, error: "Missing required field: name" };
-	} else if (typeof body.name !== "string") {
+	if (!body.ips) {
+		return { success: false, error: "Missing required field: ips" };
+	} else if (typeof body.ips !== "string") {
 		return {
 			success: false,
-			error: "Invalid type for field: name, expected string",
+			error: "Invalid type for field: ips, expected string",
 		};
 	}
 
-	if (body.reviewsPage && typeof body.reviewsPage !== "number") {
+	if (!body.rating) {
+		return { success: false, error: "Missing required field: rating" };
+	} else if (typeof body.rating !== "number") {
 		return {
 			success: false,
-			error: "Invalid type for field: reviewsPage, expected number",
+			error: "Invalid type for field: rating, expected number",
 		};
 	}
 
-	if (body.reviewsPageSize && typeof body.reviewsPageSize !== "number") {
+	if (!body.comments) {
+		return { success: false, error: "Missing required field: comments" };
+	} else if (typeof body.comments !== "string") {
 		return {
 			success: false,
-			error: "Invalid type for field: reviewsPageSize, expected number",
+			error: "Invalid type for field: comments, expected string",
 		};
 	}
 
@@ -74,7 +73,7 @@ const VALIDATE_REQUEST_BODY = (
 };
 
 /**
- * POST endpoint for retrieving an IPS with a given ID
+ * POST endpoint for fetching a review by ID
  * @async
  * @function POST
  * @param {NextRequest} req - Next.js request object
@@ -84,7 +83,7 @@ const VALIDATE_REQUEST_BODY = (
  * // Successful response
  * {
  *   "success": true,
- *   "data": ...
+ *   "review": ...
  * }
  *
  * @example
@@ -96,10 +95,34 @@ const VALIDATE_REQUEST_BODY = (
  */
 export async function POST(
 	req: NextRequest
-): Promise<NextResponse<LookIpsResponse>> {
+): Promise<NextResponse<CreateReviewResponse>> {
+	// Inject the dependencies
+	const REVIEW_SERVICE = CONTAINER.get<ReviewServiceAdapter>(
+		TYPES.ReviewServiceAdapter
+	);
+	const USER_SERVICE = CONTAINER.get<UserServiceAdapter>(
+		TYPES.UserServiceAdapter
+	);
 	try {
 		// Parse and validate request body
-		const BODY: LookIpsRequest = await req.json();
+		const BODY: CreateReviewRequest = await req.json();
+		const COOKIE = req.headers.get("cookie") ?? "";
+		const TOKEN_DATA = getSessionToken(COOKIE);
+		if (!TOKEN_DATA) {
+			return NextResponse.json(
+				{ success: false, error: "Unauthorized" },
+				{ status: 401 }
+			);
+		}
+
+		const USER = await USER_SERVICE.getUserByEmail(TOKEN_DATA.email);
+
+		if (!USER) {
+			return NextResponse.json(
+				{ success: false, error: "Unauthorized" },
+				{ status: 401 }
+			);
+		}
 
 		// Body validation
 		const { success: SUCCESS, error: ERROR } = VALIDATE_REQUEST_BODY(BODY);
@@ -110,33 +133,24 @@ export async function POST(
 			);
 		}
 
-		const RESULT = await getIpsPropsWithReviews({
-			name: BODY.name,
-			reviewsPage: BODY.reviewsPage || 1,
-			reviewsPageSize: BODY.reviewsPageSize || 10
-		});
-
-		if (!RESULT.ips) {
-			return NextResponse.json(
-				{ success: false, error: "IPS not found" },
-				{ status: 404 }
-			);
-		}
+		const REVIEW = await REVIEW_SERVICE.create(
+			BODY.ips,
+			USER._id,
+			BODY.rating,
+			BODY.comments,
+		);
 
 		return NextResponse.json({
 			success: true,
-			data: RESULT.ips,
-			reviewsResult: {
-				reviews: RESULT.reviewsResult.reviews,
-				pagination: {
-					total: RESULT.reviewsResult.total,
-					totalPages: Math.ceil(RESULT.reviewsResult.total / (BODY.reviewsPageSize || 10)),
-					page: BODY.reviewsPage || 1,
-					pageSize: BODY.reviewsPageSize || 10,
-				}
-			},
+			review: REVIEW,
 		});
 	} catch (error) {
+		if (error instanceof TokenExpiredError) {
+			return NextResponse.json(
+				{ success: false, error: "Session expired" },
+				{ status: 500 }
+			);
+		}
 		console.error("API Error:", error);
 		return NextResponse.json(
 			{ success: false, error: "Internal server error" },

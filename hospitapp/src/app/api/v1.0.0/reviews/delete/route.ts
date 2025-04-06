@@ -1,72 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
-import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
-import { getIpsPropsWithReviews } from "@/services/cachers/ips.data_fetching.service";
+import ReviewServiceAdapter from "@/adapters/services/review.service.adapter";
+import UserServiceAdapter from "@/adapters/services/user.service.adapter";
+import CONTAINER from "@/adapters/container";
+import { TYPES } from "@/adapters/types";
+import { getSessionToken } from "@/utils/helpers/session";
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
 /**
- * Interface representing the structure of the search request body
- * @interface LookIpsRequest
- * @property {string} name - The name of the IPS document
- * @property {number} [reviewsPage] - Optional page number for reviews
- * @property {number} [reviewsPageSize] - Optional page size for reviews
+ * Interface representing the structure of the delete request body
+ * @interface DeleteReviewRequest
+ * @property {string} id - The id of the review to delete
  */
-interface LookIpsRequest {
-	name: string;
-	reviewsPage?: number;
-	reviewsPageSize?: number;
+interface DeleteReviewRequest {
+	id: string;
 }
 
 /**
- * Interface representing the structure of the search response
- * @interface LookIpsResponse
+ * Interface representing the structure of the delete response
+ * @interface DeleteReviewResponse
  * @property {boolean} success - True if the request was successful, false otherwise
  * @property {string} [error] - Error message if success is false
- * @property {IpsResponse} [data] - IPS data if success is true
  */
-export interface LookIpsResponse {
+export interface DeleteReviewResponse {
 	success: boolean;
-	error?: string;
-	data?: IpsResponse;
-	reviewsResult?: {
-		reviews: ReviewResponse[];
-		pagination?: {
-			total: number;
-			totalPages: number;
-			page: number;
-			pageSize: number;
-		};
-	};
+	message: string;
 }
 
 /**
  * Function to validate the body of the request
- * @param {LookIpsRequest} body - The request body to validate
+ * @param {DeleteReviewRequest} body - The request body to validate
  * @returns {{ success: boolean; error: string }} True if the body is valid, false otherwise with an error message
  */
 const VALIDATE_REQUEST_BODY = (
-	body: LookIpsRequest
+	body: DeleteReviewRequest
 ): { success: boolean; error: string } => {
-	if (!body.name) {
-		return { success: false, error: "Missing required field: name" };
-	} else if (typeof body.name !== "string") {
+	if (!body.id) {
+		return { success: false, error: "Missing required field: id" };
+	} else if (typeof body.id !== "string") {
 		return {
 			success: false,
-			error: "Invalid type for field: name, expected string",
-		};
-	}
-
-	if (body.reviewsPage && typeof body.reviewsPage !== "number") {
-		return {
-			success: false,
-			error: "Invalid type for field: reviewsPage, expected number",
-		};
-	}
-
-	if (body.reviewsPageSize && typeof body.reviewsPageSize !== "number") {
-		return {
-			success: false,
-			error: "Invalid type for field: reviewsPageSize, expected number",
+			error: "Invalid type for field: id, expected string",
 		};
 	}
 
@@ -74,7 +48,7 @@ const VALIDATE_REQUEST_BODY = (
 };
 
 /**
- * POST endpoint for retrieving an IPS with a given ID
+ * POST endpoint for fetching a review by ID
  * @async
  * @function POST
  * @param {NextRequest} req - Next.js request object
@@ -84,62 +58,78 @@ const VALIDATE_REQUEST_BODY = (
  * // Successful response
  * {
  *   "success": true,
- *   "data": ...
+ *   "message": "Review deleted successfully"
  * }
  *
  * @example
  * // Error response
  * {
  *   "success": false,
- *   "error": "Internal server error"
+ *   "message": "Internal server error"
  * }
  */
 export async function POST(
 	req: NextRequest
-): Promise<NextResponse<LookIpsResponse>> {
+): Promise<NextResponse<DeleteReviewResponse>> {
+	// Inject the dependencies
+	const REVIEW_SERVICE = CONTAINER.get<ReviewServiceAdapter>(
+		TYPES.ReviewServiceAdapter
+	);
+	const USER_SERVICE = CONTAINER.get<UserServiceAdapter>(
+		TYPES.UserServiceAdapter
+	);
 	try {
 		// Parse and validate request body
-		const BODY: LookIpsRequest = await req.json();
+		const BODY: DeleteReviewRequest = await req.json();
+		const COOKIE = req.headers.get("cookie") ?? "";
+		const TOKEN_DATA = getSessionToken(COOKIE);
+		if (!TOKEN_DATA) {
+			return NextResponse.json(
+				{ success: false, message: "Unauthorized" },
+				{ status: 401 }
+			);
+		}
+		console.log("TOKEN_DATA", TOKEN_DATA);
 
 		// Body validation
 		const { success: SUCCESS, error: ERROR } = VALIDATE_REQUEST_BODY(BODY);
 		if (!SUCCESS) {
 			return NextResponse.json(
-				{ success: false, error: ERROR },
+				{ success: false, message: ERROR },
 				{ status: 400 }
 			);
 		}
 
-		const RESULT = await getIpsPropsWithReviews({
-			name: BODY.name,
-			reviewsPage: BODY.reviewsPage || 1,
-			reviewsPageSize: BODY.reviewsPageSize || 10
-		});
+		const review = await REVIEW_SERVICE.findById(BODY.id);
 
-		if (!RESULT.ips) {
+		if (!review) {
 			return NextResponse.json(
-				{ success: false, error: "IPS not found" },
+				{ success: false, message: "Review not found" },
 				{ status: 404 }
+			);
+		} else if (review.userEmail !== TOKEN_DATA.email && !USER_SERVICE.verifyUserRole(TOKEN_DATA.email, "ADMIN")) {
+			return NextResponse.json(
+				{ success: false, message: "Unauthorized" },
+				{ status: 401 }
 			);
 		}
 
-		return NextResponse.json({
-			success: true,
-			data: RESULT.ips,
-			reviewsResult: {
-				reviews: RESULT.reviewsResult.reviews,
-				pagination: {
-					total: RESULT.reviewsResult.total,
-					totalPages: Math.ceil(RESULT.reviewsResult.total / (BODY.reviewsPageSize || 10)),
-					page: BODY.reviewsPage || 1,
-					pageSize: BODY.reviewsPageSize || 10,
-				}
-			},
-		});
+		// Delete the review
+		if (await REVIEW_SERVICE.delete(BODY.id)) {
+			return NextResponse.json({
+				success: true,
+				message: "Review deleted successfully",
+			});
+		} else {
+			return NextResponse.json(
+				{ success: false, message: "Failed to delete review" },
+				{ status: 500 }
+			);
+		}
 	} catch (error) {
 		console.error("API Error:", error);
 		return NextResponse.json(
-			{ success: false, error: "Internal server error" },
+			{ success: false, message: "Internal server error" },
 			{ status: 500 }
 		);
 	}

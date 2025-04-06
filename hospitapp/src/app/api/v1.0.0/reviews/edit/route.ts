@@ -50,6 +50,24 @@ const VALIDATE_REQUEST_BODY = (
 		};
 	}
 
+	if (!body.rating) {
+		return { success: false, error: "Missing required field: rating" };
+	} else if (typeof body.rating !== "number") {
+		return {
+			success: false,
+			error: "Invalid type for field: rating, expected number",
+		};
+	}
+
+	if (!body.comments) {
+		return { success: false, error: "Missing required field: comments" };
+	} else if (typeof body.comments !== "string") {
+		return {
+			success: false,
+			error: "Invalid type for field: comments, expected string",
+		};
+	}
+
 	return { success: true, error: "" };
 };
 
