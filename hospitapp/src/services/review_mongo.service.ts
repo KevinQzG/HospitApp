@@ -36,7 +36,7 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 				page,
 				pageSize,
 				sorts ?? [{ field: "rating", direction: -1 }],
-				new ObjectId(ipsId)
+				ipsId ? new ObjectId(ipsId) : undefined
 			);
 		return {
 			results: RESULTS.map((review) => review.toResponse()),
@@ -50,7 +50,7 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 	): Promise<ReviewResponse[]> {
 		const RESULTS = await this.reviewRepository.findAll(
 			sorts ?? [{ field: "rating", direction: -1 }],
-			new ObjectId(ipsId)
+			ipsId ? new ObjectId(ipsId) : undefined
 		);
 		return RESULTS.map((review) => review.toResponse());
 	}

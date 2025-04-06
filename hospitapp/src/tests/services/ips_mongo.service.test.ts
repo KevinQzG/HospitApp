@@ -253,10 +253,15 @@ describe("IpsMongoService Integration Test", () => {
 			const pageSize = 10;
 
 			const { ips, reviewsResult } =
-				await service.getIpsByNameWithReviews(name, page, pageSize, [
-					{ field: "rating", direction: -1 },
-					{ field: "updatedAt", direction: 1 },
-				]);
+				await service.getIpsByNameWithReviewsPagination(
+					name,
+					page,
+					pageSize,
+					[
+						{ field: "rating", direction: -1 },
+						{ field: "updatedAt", direction: 1 },
+					]
+				);
 
 			expect(mockIpsRepository.findByName).toHaveBeenCalledWith(name);
 			expect(
@@ -282,7 +287,7 @@ describe("IpsMongoService Integration Test", () => {
 			mockIpsRepository.findByName.mockResolvedValueOnce(null);
 
 			const { ips, reviewsResult } =
-				await service.getIpsByNameWithReviews(name, 1, 10);
+				await service.getIpsByNameWithReviewsPagination(name, 1, 10);
 
 			expect(mockIpsRepository.findByName).toHaveBeenCalledWith(name);
 			expect(ips).toBeNull();
@@ -295,7 +300,7 @@ describe("IpsMongoService Integration Test", () => {
 			mockIpsRepository.findByName.mockRejectedValueOnce(error);
 
 			await expect(
-				service.getIpsByNameWithReviews(name, 1, 10)
+				service.getIpsByNameWithReviewsPagination(name, 1, 10)
 			).rejects.toThrow(error);
 		});
 	});

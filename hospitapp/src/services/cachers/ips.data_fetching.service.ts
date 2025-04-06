@@ -28,7 +28,7 @@ export const getIpsProps = async (params: {
 	}
 };
 
-export const getIpsPropsWithReviews = async (params: {
+export const getIpsPropsWithReviewsPagination = async (params: {
 	name: string;
 	reviewsPage: number;
 	reviewsPageSize: number;
@@ -45,7 +45,7 @@ export const getIpsPropsWithReviews = async (params: {
 		);
 
 		// Fetch the data
-		const RESULT = await IPS_SERVICE.getIpsByNameWithReviews(
+		const RESULT = await IPS_SERVICE.getIpsByNameWithReviewsPagination(
 			params.name,
 			params.reviewsPage,
 			params.reviewsPageSize,
@@ -53,6 +53,34 @@ export const getIpsPropsWithReviews = async (params: {
 		);
 
 		return RESULT;
+	} catch (error) {
+		if (error instanceof Error) {
+			throw error;
+		} else {
+			throw new Error("Error fetching page props");
+		}
+	}
+};
+
+export const getIpsPropsWithReviews = async (params: {
+	name: string;
+	sorts?: SortCriteria[];
+}): Promise<{
+	ips: IpsResponse | null;
+	reviewsResult: ReviewResponse[];
+}> => {
+	try {
+		// Inject the dependencies
+
+		const IPS_SERVICE = CONTAINER.get<IpsServiceAdapter>(
+			TYPES.IpsServiceAdapter
+		);
+
+		// Fetch the data
+		return await IPS_SERVICE.getIpsByNameWithReviews(
+			params.name,
+			params.sorts
+		);
 	} catch (error) {
 		if (error instanceof Error) {
 			throw error;

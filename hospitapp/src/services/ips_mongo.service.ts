@@ -94,7 +94,7 @@ export class IpsMongoService implements IpsServiceAdapter {
 		return IPS.toResponse();
 	}
 
-	async getIpsByNameWithReviews(
+	async getIpsByNameWithReviewsPagination(
 		name: string,
 		page: number,
 		pageSize: number,
@@ -112,9 +112,7 @@ export class IpsMongoService implements IpsServiceAdapter {
 			await this.reviewRepository.findAllWithPagination(
 				page,
 				pageSize,
-				sort ?? [
-					{ field: "rating", direction: -1 }
-				],
+				sort ?? [{ field: "rating", direction: -1 }],
 				IPS.getId()
 			);
 		const REVIEWS = REVIEWS_RESULT.results.map((review) => {
@@ -127,6 +125,32 @@ export class IpsMongoService implements IpsServiceAdapter {
 				reviews: REVIEWS,
 				total: REVIEWS_RESULT.total,
 			},
+		};
+	}
+
+	async getIpsByNameWithReviews(
+		name: string,
+		sort?: SortCriteria[]
+	): Promise<{
+		ips: IpsResponse | null;
+		reviewsResult: ReviewResponse[];
+	}> {
+		const IPS = await this.ipsRepository.findByName(name);
+		if (!IPS) {
+			return { ips: null, reviewsResult: [] };
+		}
+
+		const REVIEWS_RESULT = await this.reviewRepository.findAll(
+			sort ?? [{ field: "rating", direction: -1 }],
+			IPS.getId()
+		);
+		const REVIEWS = REVIEWS_RESULT.map((review) => {
+			return review.toResponse();
+		});
+
+		return {
+			ips: IPS.toResponse(),
+			reviewsResult: REVIEWS,
 		};
 	}
 }

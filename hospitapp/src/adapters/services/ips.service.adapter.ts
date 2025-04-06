@@ -67,7 +67,7 @@ export default interface IpsServiceAdapter {
 	getIpsByName(name: string): Promise<IpsResponse | null>;
 
 	/**
-	 * Gets an IPS by its name with reviews.
+	 * Gets an IPS by its name with reviews and pagination.
 	 *
 	 * @async
 	 * @param {string} name - The name of the IPS.
@@ -76,7 +76,7 @@ export default interface IpsServiceAdapter {
 	 * @param {SortCriteria[]} [sort] - The sorting criteria (optional).
 	 * @returns {Promise<{ ips: IpsResponse | null; reviewsResult: { reviews: ReviewResponse[]; total: number } }>} The IPS with the specified name and its reviews, or null if it does not exist.
 	 */
-	getIpsByNameWithReviews(
+	getIpsByNameWithReviewsPagination(
 		name: string,
 		page: number,
 		pageSize: number,
@@ -85,4 +85,20 @@ export default interface IpsServiceAdapter {
 		ips: IpsResponse | null;
 		reviewsResult: { reviews: ReviewResponse[]; total: number };
 	}>;
+
+	/**
+	 * Gets an IPS by its name with reviews.
+	 *
+	 * @async
+	 * @param {string} name - The name of the IPS.
+	 * @param {SortCriteria[]} [sort] - The sorting criteria (optional).
+	 * @returns {Promise<{ ips: IpsResponse | null; reviewsResult: ReviewResponse[] }>} The IPS with the specified name and its reviews, or null if it does not exist.
+	 */
+	getIpsByNameWithReviews(
+		name: string,
+		sort?: SortCriteria[]
+	): Promise<{
+		ips: IpsResponse | null;
+		reviewsResult: ReviewResponse[];
+	}>
 }

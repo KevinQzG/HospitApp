@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
-import { getIpsProps, getIpsPropsWithReviews } from "@/services/cachers/ips.data_fetching.service";
+import { getIpsPropsWithReviewsPagination } from "@/services/cachers/ips.data_fetching.service";
 import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
@@ -9,10 +9,14 @@ import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces"
  * Interface representing the structure of the search request body
  * @interface LookIpsRequest
  * @property {string} name - The name of the IPS document
+ * @property {number} [reviewsPage] - Optional page number for reviews
+ * @property {number} [reviewsPageSize] - Optional page size for reviews
  * @property {SortCriteria[]} [sorts] - Optional array of sorting criteria
  */
 interface LookIpsRequest {
 	name: string;
+	reviewsPage?: number;
+	reviewsPageSize?: number;
 	sorts?: SortCriteria[];
 }
 
@@ -27,7 +31,15 @@ export interface LookIpsResponse {
 	success: boolean;
 	error?: string;
 	data?: IpsResponse;
-	reviewsResult?: ReviewResponse[];
+	reviewsResult?: {
+		reviews: ReviewResponse[];
+		pagination?: {
+			total: number;
+			totalPages: number;
+			page: number;
+			pageSize: number;
+		};
+	};
 }
 
 /**
@@ -44,6 +56,20 @@ const VALIDATE_REQUEST_BODY = (
 		return {
 			success: false,
 			error: "Invalid type for field: name, expected string",
+		};
+	}
+
+	if (body.reviewsPage && typeof body.reviewsPage !== "number") {
+		return {
+			success: false,
+			error: "Invalid type for field: reviewsPage, expected number",
+		};
+	}
+
+	if (body.reviewsPageSize && typeof body.reviewsPageSize !== "number") {
+		return {
+			success: false,
+			error: "Invalid type for field: reviewsPageSize, expected number",
 		};
 	}
 
@@ -94,11 +120,12 @@ export async function POST(
 			);
 		}
 
-		const RESULT = await getIpsPropsWithReviews({
+		const RESULT = await getIpsPropsWithReviewsPagination({
 			name: BODY.name,
-			sorts: BODY.sorts
+			reviewsPage: BODY.reviewsPage || 1,
+			reviewsPageSize: BODY.reviewsPageSize || 10,
+			sorts: BODY.sorts,
 		});
-		
 
 		if (!RESULT.ips) {
 			return NextResponse.json(
@@ -110,7 +137,18 @@ export async function POST(
 		return NextResponse.json({
 			success: true,
 			data: RESULT.ips,
-			reviewsResult: RESULT.reviewsResult,
+			reviewsResult: {
+				reviews: RESULT.reviewsResult.reviews,
+				pagination: {
+					total: RESULT.reviewsResult.total,
+					totalPages: Math.ceil(
+						RESULT.reviewsResult.total /
+							(BODY.reviewsPageSize || 10)
+					),
+					page: BODY.reviewsPage || 1,
+					pageSize: BODY.reviewsPageSize || 10,
+				},
+			},
 		});
 	} catch (error) {
 		console.error("API Error:", error);

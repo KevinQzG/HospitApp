@@ -4,7 +4,7 @@ import { TYPES } from "@/adapters/types";
 import type IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import {
 	getIpsProps,
-	getIpsPropsWithReviews,
+	getIpsPropsWithReviewsPagination,
 } from "@/services/cachers/ips.data_fetching.service";
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
@@ -48,7 +48,7 @@ describe("IPS Props Fetching Functions", () => {
 		// Create mock IpsServiceAdapter
 		mockIpsService = {
 			getIpsByName: jest.fn().mockResolvedValue(MOCK_IPS_RES),
-			getIpsByNameWithReviews: jest.fn().mockResolvedValue({
+			getIpsByNameWithReviewsPagination: jest.fn().mockResolvedValue({
 				ips: MOCK_IPS_RES,
 				reviewsResult: {
 					reviews: MOCK_REVIEW_RES,
@@ -119,13 +119,15 @@ describe("IPS Props Fetching Functions", () => {
 			const reviewsPage = 1;
 			const reviewsPageSize = 10;
 
-			const result = await getIpsPropsWithReviews({
+			const result = await getIpsPropsWithReviewsPagination({
 				name,
 				reviewsPage,
 				reviewsPageSize,
 			});
 
-			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
+			expect(
+				mockIpsService.getIpsByNameWithReviewsPagination
+			).toHaveBeenCalledWith(
 				name,
 				reviewsPage,
 				reviewsPageSize,
@@ -142,23 +144,22 @@ describe("IPS Props Fetching Functions", () => {
 
 		it("should return null IPS and empty reviews if IPS not found", async () => {
 			const name = "non_existent_name";
-			mockIpsService.getIpsByNameWithReviews.mockResolvedValueOnce({
-				ips: null,
-				reviewsResult: { reviews: [], total: 0 },
-			});
+			mockIpsService.getIpsByNameWithReviewsPagination.mockResolvedValueOnce(
+				{
+					ips: null,
+					reviewsResult: { reviews: [], total: 0 },
+				}
+			);
 
-			const result = await getIpsPropsWithReviews({
+			const result = await getIpsPropsWithReviewsPagination({
 				name,
 				reviewsPage: 1,
 				reviewsPageSize: 10,
 			});
 
-			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
-				name,
-				1,
-				10,
-				undefined
-			);
+			expect(
+				mockIpsService.getIpsByNameWithReviewsPagination
+			).toHaveBeenCalledWith(name, 1, 10, undefined);
 			expect(result).toEqual({
 				ips: null,
 				reviewsResult: { reviews: [], total: 0 },
@@ -168,42 +169,38 @@ describe("IPS Props Fetching Functions", () => {
 		it("should throw original error if service throws an Error", async () => {
 			const name = "error_name";
 			const error = new Error("DB error");
-			mockIpsService.getIpsByNameWithReviews.mockRejectedValueOnce(error);
+			mockIpsService.getIpsByNameWithReviewsPagination.mockRejectedValueOnce(
+				error
+			);
 
 			await expect(
-				getIpsPropsWithReviews({
+				getIpsPropsWithReviewsPagination({
 					name,
 					reviewsPage: 1,
 					reviewsPageSize: 10,
 				})
 			).rejects.toThrow(error);
-			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
-				name,
-				1,
-				10,
-				undefined
-			);
+			expect(
+				mockIpsService.getIpsByNameWithReviewsPagination
+			).toHaveBeenCalledWith(name, 1, 10, undefined);
 		});
 
 		it("should throw generic error if service throws non-Error", async () => {
 			const name = "unknown_error_name";
-			mockIpsService.getIpsByNameWithReviews.mockRejectedValueOnce(
+			mockIpsService.getIpsByNameWithReviewsPagination.mockRejectedValueOnce(
 				"unknown error"
 			);
 
 			await expect(
-				getIpsPropsWithReviews({
+				getIpsPropsWithReviewsPagination({
 					name,
 					reviewsPage: 1,
 					reviewsPageSize: 10,
 				})
 			).rejects.toThrow("Error fetching page props");
-			expect(mockIpsService.getIpsByNameWithReviews).toHaveBeenCalledWith(
-				name,
-				1,
-				10,
-				undefined
-			);
+			expect(
+				mockIpsService.getIpsByNameWithReviewsPagination
+			).toHaveBeenCalledWith(name, 1, 10, undefined);
 		});
 	});
 });

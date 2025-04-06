@@ -1,52 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
-import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
-import { getIpsProps, getIpsPropsWithReviews } from "@/services/cachers/ips.data_fetching.service";
+import ReviewServiceAdapter from "@/adapters/services/review.service.adapter";
+import UserServiceAdapter from "@/adapters/services/user.service.adapter";
+import CONTAINER from "@/adapters/container";
+import { TYPES } from "@/adapters/types";
+import { getSessionToken } from "@/utils/helpers/session";
 import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
 /**
- * Interface representing the structure of the search request body
- * @interface LookIpsRequest
- * @property {string} name - The name of the IPS document
+ * Interface representing the structure of the get all request body
+ * @interface AllReviewsRequest
  * @property {SortCriteria[]} [sorts] - Optional array of sorting criteria
  */
-interface LookIpsRequest {
-	name: string;
+interface AllReviewsRequest {
 	sorts?: SortCriteria[];
 }
 
 /**
- * Interface representing the structure of the search response
- * @interface LookIpsResponse
+ * Interface representing the structure of the get all response
+ * @interface AllReviewsResponse
  * @property {boolean} success - True if the request was successful, false otherwise
  * @property {string} [error] - Error message if success is false
- * @property {IpsResponse} [data] - IPS data if success is true
+ * @property {object} [data] - Review data if success is true
+ *
  */
-export interface LookIpsResponse {
+export interface AllReviewsResponse {
 	success: boolean;
 	error?: string;
-	data?: IpsResponse;
-	reviewsResult?: ReviewResponse[];
+	data?: ReviewResponse[];
 }
 
 /**
  * Function to validate the body of the request
- * @param {LookIpsRequest} body - The request body to validate
+ * @param {AllReviewsRequest} body - The request body to validate
  * @returns {{ success: boolean; error: string }} True if the body is valid, false otherwise with an error message
  */
 const VALIDATE_REQUEST_BODY = (
-	body: LookIpsRequest
+	body: AllReviewsRequest
 ): { success: boolean; error: string } => {
-	if (!body.name) {
-		return { success: false, error: "Missing required field: name" };
-	} else if (typeof body.name !== "string") {
-		return {
-			success: false,
-			error: "Invalid type for field: name, expected string",
-		};
-	}
-
 	if (body.sorts && !Array.isArray(body.sorts)) {
 		return {
 			success: false,
@@ -58,7 +50,7 @@ const VALIDATE_REQUEST_BODY = (
 };
 
 /**
- * POST endpoint for retrieving an IPS with a given ID
+ * POST endpoint for retrieving all reviews with pagination and sorting
  * @async
  * @function POST
  * @param {NextRequest} req - Next.js request object
@@ -80,10 +72,28 @@ const VALIDATE_REQUEST_BODY = (
  */
 export async function POST(
 	req: NextRequest
-): Promise<NextResponse<LookIpsResponse>> {
+): Promise<NextResponse<AllReviewsResponse>> {
+	// Inject the dependencies
+	const REVIEW_SERVICE = CONTAINER.get<ReviewServiceAdapter>(
+		TYPES.ReviewServiceAdapter
+	);
+	const USER_SERVICE = CONTAINER.get<UserServiceAdapter>(
+		TYPES.UserServiceAdapter
+	);
 	try {
 		// Parse and validate request body
-		const BODY: LookIpsRequest = await req.json();
+		const BODY: AllReviewsRequest = await req.json();
+		const COOKIE = req.headers.get("cookie") ?? "";
+		const TOKEN_DATA = getSessionToken(COOKIE);
+		if (
+			!TOKEN_DATA ||
+			!USER_SERVICE.verifyUserRole(TOKEN_DATA.email, "ADMIN")
+		) {
+			return NextResponse.json(
+				{ success: false, error: "Unauthorized" },
+				{ status: 401 }
+			);
+		}
 
 		// Body validation
 		const { success: SUCCESS, error: ERROR } = VALIDATE_REQUEST_BODY(BODY);
@@ -94,23 +104,11 @@ export async function POST(
 			);
 		}
 
-		const RESULT = await getIpsPropsWithReviews({
-			name: BODY.name,
-			sorts: BODY.sorts
-		});
-		
-
-		if (!RESULT.ips) {
-			return NextResponse.json(
-				{ success: false, error: "IPS not found" },
-				{ status: 404 }
-			);
-		}
+		const RESULT = await REVIEW_SERVICE.findAll(undefined, BODY.sorts);
 
 		return NextResponse.json({
 			success: true,
-			data: RESULT.ips,
-			reviewsResult: RESULT.reviewsResult,
+			data: RESULT
 		});
 	} catch (error) {
 		console.error("API Error:", error);
