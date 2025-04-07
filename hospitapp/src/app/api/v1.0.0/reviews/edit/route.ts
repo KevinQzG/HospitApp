@@ -49,7 +49,7 @@ const VALIDATE_REQUEST_BODY = (
 		};
 	}
 
-	if (!body.rating) {
+	if (body.rating === undefined) {
 		return { success: false, error: "Missing required field: rating" };
 	} else if (typeof body.rating !== "number") {
 		return {
