@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
-import { getIpsProps, getIpsPropsWithReviews } from "@/services/cachers/ips.data_fetching.service";
+import { getIpsPropsWithReviews } from "@/services/cachers/ips.data_fetching.service";
 import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
