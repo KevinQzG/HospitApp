@@ -273,7 +273,8 @@ describe("IpsMongoService Integration Test", () => {
 					{ field: "rating", direction: -1 },
 					{ field: "updatedAt", direction: 1 },
 				],
-				MOCK_IPS.getId()
+				MOCK_IPS.getId(),
+				undefined
 			);
 			expect(ips).toEqual(MOCK_IPS_RES);
 			expect(reviewsResult).toEqual({

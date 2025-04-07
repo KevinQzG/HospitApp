@@ -79,7 +79,8 @@ describe("ReviewMongoService Integration Test", () => {
 					{ field: "rating", direction: -1 },
 					{ field: "updatedAt", direction: 1 },
 				],
-				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
+				new ObjectId("67b3e98bb1ae5d9e47ae72a8"),
+				undefined,
 			);
 			expect(results).toEqual([MOCK_REVIEW.toResponse()]);
 			expect(total).toBe(1);
@@ -126,7 +127,8 @@ describe("ReviewMongoService Integration Test", () => {
 					{ field: "rating", direction: -1 },
 					{ field: "updatedAt", direction: 1 },
 				],
-				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
+				new ObjectId("67b3e98bb1ae5d9e47ae72a8"),
+				undefined
 			);
 			expect(results).toEqual([MOCK_REVIEW.toResponse()]);
 		});

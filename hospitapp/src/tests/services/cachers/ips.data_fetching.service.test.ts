@@ -135,6 +135,7 @@ describe("IPS Props Fetching Functions", () => {
 				name,
 				reviewsPage,
 				reviewsPageSize,
+				undefined,
 				undefined
 			);
 			expect(result).toEqual({
@@ -163,10 +164,11 @@ describe("IPS Props Fetching Functions", () => {
 
 			expect(
 				mockIpsService.getIpsByNameWithReviewsPagination
-			).toHaveBeenCalledWith(name, 1, 10, undefined);
+			).toHaveBeenCalledWith(name, 1, 10, undefined, undefined);
 			expect(result).toEqual({
 				ips: null,
 				reviewsResult: { reviews: [], total: 0 },
+				undefined
 			});
 		});
 
@@ -186,7 +188,7 @@ describe("IPS Props Fetching Functions", () => {
 			).rejects.toThrow(error);
 			expect(
 				mockIpsService.getIpsByNameWithReviewsPagination
-			).toHaveBeenCalledWith(name, 1, 10, undefined);
+			).toHaveBeenCalledWith(name, 1, 10, undefined, undefined);
 		});
 
 		it("should throw generic error if service throws non-Error", async () => {
@@ -204,7 +206,7 @@ describe("IPS Props Fetching Functions", () => {
 			).rejects.toThrow("Error fetching page props");
 			expect(
 				mockIpsService.getIpsByNameWithReviewsPagination
-			).toHaveBeenCalledWith(name, 1, 10, undefined);
+			).toHaveBeenCalledWith(name, 1, 10, undefined, undefined);
 		});
 	});
 });
