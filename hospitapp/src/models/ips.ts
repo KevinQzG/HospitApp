@@ -27,6 +27,7 @@ export class Ips {
 	private specialties?: Specialty[];
 	private reviews?: Review[];
 	private totalReviews?: number;
+	private rating?: number;
 
 	/**
 	 * Creates an instance of IPS.
@@ -65,6 +66,7 @@ export class Ips {
 		specialties?: Specialty[],
 		reviews?: Review[],
 		totalReviews?: number,
+		rating?: number
 	) {
 		this._id = _id;
 		this.name = name;
@@ -80,6 +82,7 @@ export class Ips {
 		this.specialties = specialties;
 		this.reviews = reviews;
 		this.totalReviews = totalReviews;
+		this.rating = rating;
 	}
 
 	/**
@@ -240,6 +243,22 @@ export class Ips {
 	 */
 	getTotalReviews(): number | undefined {
 		return this.totalReviews;
+	}
+
+	/**
+	 * Gets the rating of the IPS.
+	 * @returns {number | undefined} The rating of the IPS.
+	 */
+	getRating(): number | undefined {
+		return this.rating;
+	}
+
+	/**
+	 * Sets the rating of the IPS.
+	 * @param {number} rating - The rating of the IPS.
+	 */
+	setRating(rating: number): void {
+		this.rating = rating;
 	}
 
 	/**
