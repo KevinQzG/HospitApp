@@ -139,7 +139,7 @@ export async function POST(
 			review.user,
 			BODY.rating,
 			BODY.comments,
-			review.createdAt
+			new Date(review.createdAt),
 		);
 
 		return NextResponse.json({
