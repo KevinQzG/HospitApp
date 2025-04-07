@@ -18,6 +18,7 @@
 14. [Get All Reviews (v1.0.0)](#get-all-reviews-v100)
 15. [Get All Reviews with Pagination (v1.0.0)](#get-all-reviews-with-pagination-v100)
 16. [Get Authentication Data from Session](#get-authentication-data-from-session)
+17. [Verify Authentication Data from Session](#verify-authentication-data-from-session)
 
 ---
 
@@ -879,28 +880,31 @@ Retrieve all reviews with pagination (requires admin role).
 }
 ```
 
-## Get Authentication Data from Session
+## Verify Authentication Data from Session
 
 ### **Endpoint**  
-`/api/v1.0.0/auth/session`
+`/api/v1.0.0/auth/verification`
 
 ### **Method**  
-`GET`
+`POST`
 
 ### **Description**  
-Retrieve the authentication data from the session cookie.
+Verifies the authentication data from the session. This endpoint checks if the user is authenticated and matches the required roles.
 
 ### **Request Data**
 
 #### Body Parameters (JSON):
 | Field    | Type           | Required | Description                                      |
 |----------|----------------|----------|--------------------------------------------------|
-| none     | none         | none       | none                         |
+| authenticationNeeded     | boolean         | Yes       | Boolean which says if authentication is needed or not                        |
+| authenticationRoles | boolean         | No       | Array with the roles allowed (Optional)                     |
 
 
 #### Example Request Body:
 ```typescript
 {
+    "authenticationNeeded": true,
+    "authenticationRoles": ["ADMIN"]
 }
 ```
 
@@ -910,13 +914,13 @@ Retrieve the authentication data from the session cookie.
 | Field            | Type            | Description                                              |
 |------------------|-----------------|----------------------------------------------------------|
 | success          | boolean         | Indicates if the request was successful                  |
-| error            | string          | Error message if success is false (optional)             |
-| email             | string          | Email of the Authenticated user if no user, then null (optional)                   |
+| message            | string          | message informing the operation             |
 
 #### Example Success Response:
 ```typescript
 {
     "success": true,
-    "email": "example@gmail.com"
+    "message": "User Authenticated"
 }
 ```
+
