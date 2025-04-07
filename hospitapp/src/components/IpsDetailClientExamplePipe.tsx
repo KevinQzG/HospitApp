@@ -284,20 +284,7 @@ function DetailsView({
 			}
 
 			// Update reviews state immediately after deletion
-			setReviewsResult((prev) => {
-				if (!prev) return null;
-				const updatedReviews = prev.reviews.filter(
-					(r) => r._id !== reviewId
-				);
-				return {
-					...prev,
-					reviews: updatedReviews,
-					pagination: {
-						...prev.pagination!,
-						total: prev.pagination!.total - 1,
-					},
-				};
-			});
+			window.alert("¡Reseña " + reviewId + " eliminada correctamente!");
 
 			fetchReviewsPage(reviewsResult?.pagination?.page || 1);
 		} catch (err) {
@@ -333,6 +320,7 @@ function DetailsView({
 				throw new Error(errorData.error || "Failed to update review");
 			}
 
+			window.alert("¡Reseña " + reviewId + " editada correctamente!");
 			setEditingReviewId(null);
 			await fetchReviewsPage(reviewsResult?.pagination?.page || 1);
 		} catch (err) {
@@ -370,6 +358,7 @@ function DetailsView({
 				throw new Error(errorData.error || "Failed to create review");
 			}
 
+			window.alert("¡Reseña creada correctamente!");
 			setNewRating(0);
 			setNewComments("");
 			setShowAddReviewForm(false);
@@ -526,259 +515,270 @@ function DetailsView({
 			)}
 
 			{/* Reviews Section */}
-			{reviewsResult && reviewsResult.reviews.length > 0 ? (
-				<section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
-					<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
-						Reseñas
-					</h2>
-					{loading ? (
-						<p className="text-gray-600 dark:text-gray-300">
-							Cargando reseñas...
-						</p>
-					) : error ? (
-						<p className="text-red-500">{error}</p>
-					) : (
-						<>
-							<p className="text-gray-600 dark:text-gray-300">
-								{reviewsResult.pagination?.total} reseñas
-							</p>
-							<button
-								onClick={() =>
-									setShowAddReviewForm(!showAddReviewForm)
-								}
-								className="mb-4 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-							>
-								<Plus className="w-4 h-4" />
-								Agregar Reseña
-							</button>
+			<section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 md:col-span-2 hover:shadow-xl transition-all duration-300">
+				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
+					Reseñas
+				</h2>
+				{loading ? (
+					<p className="text-gray-600 dark:text-gray-300">
+						Cargando reseñas...
+					</p>
+				) : error ? (
+					<p className="text-red-500">{error}</p>
+				) : (
+					<>
+						<button
+							onClick={() =>
+								setShowAddReviewForm(!showAddReviewForm)
+							}
+							className="mb-4 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+						>
+							<Plus className="w-4 h-4" />
+							Agregar Reseña
+						</button>
 
-							{showAddReviewForm && (
-								<div className="mb-6 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-									<h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
-										Nueva Reseña
-									</h3>
-									<div className="mb-2">
-										<label className="block text-gray-700 dark:text-gray-300 mb-1">
-											Calificación (1-5):
-										</label>
-										<input
-											type="number"
-											min="1"
-											max="5"
-											value={newRating}
-											onChange={(e) =>
-												setNewRating(
-													Number(e.target.value)
-												)
-											}
-											className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-										/>
-									</div>
-									<div className="mb-2">
-										<label className="block text-gray-700 dark:text-gray-300 mb-1">
-											Comentarios:
-										</label>
-										<textarea
-											value={newComments}
-											onChange={(e) =>
-												setNewComments(e.target.value)
-											}
-											className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-											rows={3}
-										/>
-									</div>
-									<button
-										onClick={handleAddReview}
-										className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-									>
-										Guardar
-									</button>
+						{showAddReviewForm && (
+							<div className="mb-6 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+								<h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
+									Nueva Reseña
+								</h3>
+								<div className="mb-2">
+									<label className="block text-gray-700 dark:text-gray-300 mb-1">
+										Calificación (1-5):
+									</label>
+									<input
+										type="number"
+										min="1"
+										max="5"
+										value={newRating}
+										onChange={(e) =>
+											setNewRating(Number(e.target.value))
+										}
+										className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+									/>
 								</div>
-							)}
-
-							{reviewsResult.reviews.map((review) => (
-								<div
-									key={review._id}
-									className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+								<div className="mb-2">
+									<label className="block text-gray-700 dark:text-gray-300 mb-1">
+										Comentarios:
+									</label>
+									<textarea
+										value={newComments}
+										onChange={(e) =>
+											setNewComments(e.target.value)
+										}
+										className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+										rows={3}
+									/>
+								</div>
+								<button
+									onClick={handleAddReview}
+									className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
 								>
-									{editingReviewId === review._id ? (
-										<div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-											<div className="mb-2">
-												<label className="block text-gray-700 dark:text-gray-300 mb-1">
-													Calificación (1-5):
-												</label>
-												<input
-													type="number"
-													min="1"
-													max="5"
-													value={editRating}
-													onChange={(e) =>
-														setEditRating(
-															Number(
+									Guardar
+								</button>
+							</div>
+						)}
+
+						{reviewsResult && reviewsResult.reviews.length > 0 ? (
+							<>
+								<p className="text-gray-600 dark:text-gray-300">
+									{reviewsResult.pagination?.total} reseñas
+								</p>
+								{reviewsResult.reviews.map((review) => (
+									<div
+										key={review._id}
+										className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+									>
+										{editingReviewId === review._id ? (
+											<div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+												<div className="mb-2">
+													<label className="block text-gray-700 dark:text-gray-300 mb-1">
+														Calificación (1-5):
+													</label>
+													<input
+														type="number"
+														min="1"
+														max="5"
+														value={editRating}
+														onChange={(e) =>
+															setEditRating(
+																Number(
+																	e.target
+																		.value
+																)
+															)
+														}
+														className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+													/>
+												</div>
+												<div className="mb-2">
+													<label className="block text-gray-700 dark:text-gray-300 mb-1">
+														Comentarios:
+													</label>
+													<textarea
+														value={editComments}
+														onChange={(e) =>
+															setEditComments(
 																e.target.value
 															)
+														}
+														className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+														rows={3}
+													/>
+												</div>
+												<button
+													onClick={() =>
+														handleEditReviewSave(
+															review._id
 														)
 													}
-													className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-												/>
-											</div>
-											<div className="mb-2">
-												<label className="block text-gray-700 dark:text-gray-300 mb-1">
-													Comentarios:
-												</label>
-												<textarea
-													value={editComments}
-													onChange={(e) =>
-														setEditComments(
-															e.target.value
-														)
+													className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+												>
+													Guardar
+												</button>
+												<button
+													onClick={() =>
+														setEditingReviewId(null)
 													}
-													className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-													rows={3}
-												/>
+													className="ml-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+												>
+													Cancelar
+												</button>
 											</div>
+										) : (
+											<>
+												<p className="text-gray-800 dark:text-gray-200 font-medium">
+													<strong>Usuario:</strong>{" "}
+													{review.userEmail ||
+														"Anónimo"}
+												</p>
+												<p className="text-gray-600 dark:text-gray-300">
+													<strong>
+														Última actualización:
+													</strong>{" "}
+													{new Date(
+														review.lastUpdated
+													).toLocaleDateString()}
+												</p>
+												<p className="text-gray-600 dark:text-gray-300">
+													<strong>
+														Calificación:
+													</strong>{" "}
+													{review.rating}/5
+												</p>
+												<p className="text-gray-600 dark:text-gray-300">
+													<strong>
+														Comentarios:
+													</strong>{" "}
+													{review.comments}
+												</p>
+												{userSession &&
+													userSession.email ===
+														review.userEmail && (
+														<div className="mt-2 flex gap-2">
+															<button
+																onClick={() =>
+																	handleEditReviewStart(
+																		review
+																	)
+																}
+																className="flex items-center gap-1 px-2 py-1 text-sm text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700 rounded"
+															>
+																<Pencil className="w-4 h-4" />
+																Editar
+															</button>
+															<button
+																onClick={() =>
+																	handleDeleteReview(
+																		review._id
+																	)
+																}
+																className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-gray-700 rounded"
+															>
+																<Trash2 className="w-4 h-4" />
+																Eliminar
+															</button>
+														</div>
+													)}
+											</>
+										)}
+									</div>
+								))}
+
+								{/* Pagination Controls */}
+								{reviewsResult.pagination &&
+									reviewsResult.pagination.totalPages > 1 && (
+										<div className="flex justify-between items-center mt-6">
 											<button
 												onClick={() =>
-													handleEditReviewSave(
-														review._id
+													handlePageChange(
+														(reviewsResult
+															.pagination?.page ||
+															1) - 1
 													)
 												}
-												className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+												disabled={
+													reviewsResult.pagination
+														.page === 1 || loading
+												}
+												className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${
+													reviewsResult.pagination
+														.page === 1 || loading
+														? "text-gray-400 cursor-not-allowed"
+														: "text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700"
+												}`}
 											>
-												Guardar
+												<ChevronLeft className="w-4 h-4" />
+												Anterior
 											</button>
+											<p className="text-gray-600 dark:text-gray-300">
+												Página{" "}
+												{reviewsResult.pagination.page}{" "}
+												de{" "}
+												{
+													reviewsResult.pagination
+														.totalPages
+												}
+											</p>
 											<button
 												onClick={() =>
-													setEditingReviewId(null)
+													handlePageChange(
+														(reviewsResult
+															.pagination?.page ||
+															1) + 1
+													)
 												}
-												className="ml-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+												disabled={
+													reviewsResult.pagination
+														.page ===
+														reviewsResult.pagination
+															.totalPages ||
+													loading
+												}
+												className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${
+													reviewsResult.pagination
+														.page ===
+														reviewsResult.pagination
+															.totalPages ||
+													loading
+														? "text-gray-400 cursor-not-allowed"
+														: "text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700"
+												}`}
 											>
-												Cancelar
+												Siguiente
+												<ChevronRight className="w-4 h-4" />
 											</button>
 										</div>
-									) : (
-										<>
-											<p className="text-gray-800 dark:text-gray-200 font-medium">
-												<strong>Usuario:</strong>{" "}
-												{review.userEmail || "Anónimo"}
-											</p>
-											<p className="text-gray-600 dark:text-gray-300">
-												<strong>
-													Última actualización:
-												</strong>{" "}
-												{new Date(
-													review.lastUpdated
-												).toLocaleDateString()}
-											</p>
-											<p className="text-gray-600 dark:text-gray-300">
-												<strong>Calificación:</strong>{" "}
-												{review.rating}/5
-											</p>
-											<p className="text-gray-600 dark:text-gray-300">
-												<strong>Comentarios:</strong>{" "}
-												{review.comments}
-											</p>
-											{userSession &&
-												userSession.email ===
-													review.userEmail && (
-													<div className="mt-2 flex gap-2">
-														<button
-															onClick={() =>
-																handleEditReviewStart(
-																	review
-																)
-															}
-															className="flex items-center gap-1 px-2 py-1 text-sm text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700 rounded"
-														>
-															<Pencil className="w-4 h-4" />
-															Editar
-														</button>
-														<button
-															onClick={() =>
-																handleDeleteReview(
-																	review._id
-																)
-															}
-															className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-gray-700 rounded"
-														>
-															<Trash2 className="w-4 h-4" />
-															Eliminar
-														</button>
-													</div>
-												)}
-										</>
 									)}
-								</div>
-							))}
-
-							{/* Pagination Controls */}
-							{reviewsResult.pagination &&
-								reviewsResult.pagination.totalPages > 1 && (
-									<div className="flex justify-between items-center mt-6">
-										<button
-											onClick={() =>
-												handlePageChange(
-													(reviewsResult.pagination
-														?.page || 1) - 1
-												)
-											}
-											disabled={
-												reviewsResult.pagination
-													.page === 1 || loading
-											}
-											className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${
-												reviewsResult.pagination
-													.page === 1 || loading
-													? "text-gray-400 cursor-not-allowed"
-													: "text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700"
-											}`}
-										>
-											<ChevronLeft className="w-4 h-4" />
-											Anterior
-										</button>
-										<p className="text-gray-600 dark:text-gray-300">
-											Página{" "}
-											{reviewsResult.pagination.page} de{" "}
-											{
-												reviewsResult.pagination
-													.totalPages
-											}
-										</p>
-										<button
-											onClick={() =>
-												handlePageChange(
-													(reviewsResult.pagination
-														?.page || 1) + 1
-												)
-											}
-											disabled={
-												reviewsResult.pagination
-													.page ===
-													reviewsResult.pagination
-														.totalPages || loading
-											}
-											className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${
-												reviewsResult.pagination
-													.page ===
-													reviewsResult.pagination
-														.totalPages || loading
-													? "text-gray-400 cursor-not-allowed"
-													: "text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700"
-											}`}
-										>
-											Siguiente
-											<ChevronRight className="w-4 h-4" />
-										</button>
-									</div>
-								)}
-						</>
-					)}
-				</section>
-			) : (
-				<div className="mt-8 text-gray-600 dark:text-gray-300">
-					No hay reseñas disponibles para esta IPS.
-				</div>
-			)}
+							</>
+						) : (
+							<p className="text-gray-600 dark:text-gray-300">
+								No hay reseñas disponibles para esta IPS.
+							</p>
+						)}
+					</>
+				)}
+			</section>
 		</div>
 	);
 }
