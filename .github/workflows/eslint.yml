@@ -13,6 +13,7 @@ jobs:
     permissions:
       contents: read
       security-events: write
+    environment: Preview
 
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
