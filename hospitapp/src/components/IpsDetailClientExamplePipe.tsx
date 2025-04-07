@@ -12,6 +12,8 @@ import {
 	Hospital,
 	Stethoscope,
 	UserCheck,
+	Pencil,
+	Trash2,
 } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import Image from "next/image";
@@ -49,12 +51,44 @@ type ReviewsResponse = {
 	};
 };
 
+type UserSession = {
+	email: string;
+} | null;
+
 export default function IpsDetailClient({
 	ipsData,
 	initialReviewsResult,
 }: IpsDetailClientProps) {
 	const router = useRouter();
 	const [viewMode, setViewMode] = useState<"details" | "map">("details");
+	const [userSession, setUserSession] = useState<UserSession>(null);
+
+	// Fetch user session on mount
+	useEffect(() => {
+		const fetchUserSession = async () => {
+			try {
+				const response = await fetch(`/api/v1.0.0/auth/session`, {
+					method: "GET",
+					credentials: "include", // Include cookies for session token
+				});
+				if (response.ok) {
+					const data = await response.json();
+					if (data.success) {
+						setUserSession({ email: data.email });
+					} else {
+						setUserSession(null); // Invalid session
+					}
+				} else {
+					setUserSession(null); // No valid session
+				}
+			} catch (err) {
+				console.error("Failed to fetch user session:", err);
+				setUserSession(null);
+			}
+		};
+
+		fetchUserSession();
+	}, []);
 
 	const formatEpsName = (name: string): string => {
 		console.log("Nombre EPS original:", name);
@@ -132,6 +166,7 @@ export default function IpsDetailClient({
 						ipsData={ipsData}
 						formatEpsName={formatEpsName}
 						initialReviewsResult={initialReviewsResult}
+						userSession={userSession}
 					/>
 				) : (
 					<MapView ipsData={ipsData} router={router} />
@@ -145,18 +180,20 @@ function DetailsView({
 	ipsData,
 	formatEpsName,
 	initialReviewsResult,
+	userSession,
 }: {
 	ipsData: NonNullable<LookIpsResponse["data"]>;
 	initialReviewsResult: IpsDetailClientProps["initialReviewsResult"];
+	userSession: UserSession;
 	formatEpsName: (name: string) => string;
 }) {
 	const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}`;
 	const WAZE_URL = `https://waze.com/ul?ll=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}&navigate=yes`;
 
-  const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-  const [reviewsResult, setReviewsResult] = useState(initialReviewsResult);
+	const [reviewsResult, setReviewsResult] = useState(initialReviewsResult);
 
 	const fetchReviewsPage = async (page: number) => {
 		// If requesting page 1 and we already have initial data, skip the fetch
@@ -219,6 +256,32 @@ function DetailsView({
 			return;
 		}
 		fetchReviewsPage(newPage);
+	};
+
+	const handleDeleteReview = async (reviewId: string) => {
+		if (!userSession) return;
+
+		try {
+			const response = await fetch(`/api/v1.0.0/reviews/delete`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+        credentials: "include",
+				body: JSON.stringify({
+					id: reviewId,
+				}),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || "Failed to delete review");
+			}
+
+			fetchReviewsPage(reviewsResult?.pagination?.page || 1);
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : "Failed to delete review"
+			);
+		}
 	};
 
 	return (
@@ -379,6 +442,9 @@ function DetailsView({
 						<p className="text-red-500">{error}</p>
 					) : (
 						<>
+							<p className="text-gray-600 dark:text-gray-300">
+								{reviewsResult.pagination?.total} reseñas
+							</p>
 							{reviewsResult.reviews.map((review) => (
 								<div
 									key={review._id}
@@ -402,6 +468,32 @@ function DetailsView({
 										<strong>Comentarios:</strong>{" "}
 										{review.comments}
 									</p>
+									{userSession &&
+										userSession.email ===
+											review.userEmail && (
+											<div className="mt-2 flex gap-2">
+												<button
+													// onClick={() =>
+													// 	handleEditReview(review)
+													// }
+													className="flex items-center gap-1 px-2 py-1 text-sm text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700 rounded"
+												>
+													<Pencil className="w-4 h-4" />
+													Editar
+												</button>
+												<button
+													onClick={() =>
+														handleDeleteReview(
+															review._id
+														)
+													}
+													className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-gray-700 rounded"
+												>
+													<Trash2 className="w-4 h-4" />
+													Eliminar
+												</button>
+											</div>
+										)}
 								</div>
 							))}
 
