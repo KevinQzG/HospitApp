@@ -33,12 +33,16 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 	 * This method returns the base pipeline builder for the retrieving reviews method.
 	 * @method
 	 * @private
+	 * @name basePipelineBuilder
+	 * @param sorts - The sorting criteria for the reviews.
 	 * @param ipsId - The ID of the IPS to filter by.
+	 * @param ratingFilter - The rating filter to apply.
 	 * @returns {PipelineBuilder} The pipeline builder instance.
 	 */
 	private basePipelineBuilder(
 		sorts: SortCriteria[],
-		ipsId?: ObjectId
+		ipsId?: ObjectId,
+		ratingFilter?: number
 	): PipelineBuilder {
 		let pipelineBuilder = new PipelineBuilder();
 
@@ -46,6 +50,13 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 			// Add a match stage to filter by userId
 			pipelineBuilder = pipelineBuilder.addMatchStage({
 				ips: new ObjectId(ipsId),
+			});
+		}
+
+		if (ratingFilter) {
+			// Add a match stage to filter by rating
+			pipelineBuilder = pipelineBuilder.addMatchStage({
+				rating: ratingFilter,
 			});
 		}
 
@@ -81,10 +92,11 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 		page: number,
 		pageSize: number,
 		sorts: SortCriteria[],
-		ipsId?: ObjectId
+		ipsId?: ObjectId,
+		ratingFilter?: number
 	): Promise<{ results: Review[]; total: number }> {
 		// Build the pipeline
-		const PIPELINE = this.basePipelineBuilder(sorts, ipsId)
+		const PIPELINE = this.basePipelineBuilder(sorts, ipsId, ratingFilter)
 			.addPagination(page, pageSize)
 			.build();
 
@@ -109,9 +121,17 @@ export class ReviewMongoRepository implements ReviewRepositoryAdapter {
 		};
 	}
 
-	async findAll(sorts: SortCriteria[], ipsId?: ObjectId): Promise<Review[]> {
+	async findAll(
+		sorts: SortCriteria[],
+		ipsId?: ObjectId,
+		ratingFilter?: number
+	): Promise<Review[]> {
 		// Build the pipeline
-		const PIPELINE = this.basePipelineBuilder(sorts, ipsId).build();
+		const PIPELINE = this.basePipelineBuilder(
+			sorts,
+			ipsId,
+			ratingFilter
+		).build();
 
 		// Get all the Reviews Documents
 		const DB = await this.dbHandler.connect();

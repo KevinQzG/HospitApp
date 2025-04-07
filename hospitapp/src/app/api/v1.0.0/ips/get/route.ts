@@ -10,10 +10,12 @@ import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces"
  * @interface LookIpsRequest
  * @property {string} name - The name of the IPS document
  * @property {SortCriteria[]} [sorts] - Optional array of sorting criteria
+ * @property {number} [ratingFilter] - Optional rating filter
  */
 interface LookIpsRequest {
 	name: string;
 	sorts?: SortCriteria[];
+	ratingFilter?: number;
 }
 
 /**
@@ -51,6 +53,13 @@ const VALIDATE_REQUEST_BODY = (
 		return {
 			success: false,
 			error: "Invalid type for field: sorts, expected array",
+		};
+	}
+
+	if (body.ratingFilter && typeof body.ratingFilter !== "number" && (body.ratingFilter < 1 || body.ratingFilter > 5)) {
+		return {
+			success: false,
+			error: "Invalid type for field: ratingFilter, expected number between 1 and 5",
 		};
 	}
 
@@ -96,7 +105,8 @@ export async function POST(
 
 		const RESULT = await getIpsPropsWithReviews({
 			name: BODY.name,
-			sorts: BODY.sorts
+			sorts: BODY.sorts,
+			ratingFilter: BODY.ratingFilter,
 		});
 		
 

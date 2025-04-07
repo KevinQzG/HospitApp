@@ -17,6 +17,7 @@
 13. [Get Review by ID (v1.0.0)](#get-review-by-id-v100)
 14. [Get All Reviews (v1.0.0)](#get-all-reviews-v100)
 15. [Get All Reviews with Pagination (v1.0.0)](#get-all-reviews-with-pagination-v100)
+16. [Get Authentication Data from Session](#get-authentication-data-from-session)
 
 ---
 
@@ -459,12 +460,14 @@ Retrieve an IPS by name with optional review sorting.
 |--------|----------------|----------|--------------------------------------------------|
 | name   | string         | Yes      | Name of the IPS                                  |
 | sorts  | SortCriteria[] | No       | Array of sorting criteria for reviews            |
+| ratingFilter | number | No       | Number which the rating field must match           |
 
 #### Example Request Body:
 ```typescript
 {
     "name": "IPS Name",
-    "sorts": [{"field": "rating", "direction": -1}]
+    "sorts": [{"field": "rating", "direction": -1}],
+    "ratingFilter": 5
 }
 ```
 
@@ -518,6 +521,7 @@ Retrieve an IPS by name with paginated reviews.
 | reviewsPage    | number         | No       | Page number for reviews (default: 1)             |
 | reviewsPageSize| number         | No       | Items per page for reviews (default: 10)         |
 | sorts          | SortCriteria[] | No       | Array of sorting criteria for reviews            |
+| ratingFilter | number | No       | Number which the rating field must match           |
 
 #### Example Request Body:
 ```typescript
@@ -525,7 +529,8 @@ Retrieve an IPS by name with paginated reviews.
     "name": "IPS Name",
     "reviewsPage": 1,
     "reviewsPageSize": 10,
-    "sorts": [{"field": "rating", "direction": -1}]
+    "sorts": [{"field": "rating", "direction": -1}],
+    "ratingFilter": 5
 }
 ```
 
@@ -775,11 +780,13 @@ Retrieve all reviews (requires admin role).
 | Field | Type           | Required | Description                                      |
 |-------|----------------|----------|--------------------------------------------------|
 | sorts | SortCriteria[] | No       | Array of sorting criteria for reviews            |
+| ratingFilter | number | No       | Number which the rating field must match           |
 
 #### Example Request Body:
 ```typescript
 {
-    "sorts": [{"field": "rating", "direction": -1}]
+    "sorts": [{"field": "rating", "direction": -1}],
+    "ratingFilter": 5
 }
 ```
 
@@ -827,13 +834,15 @@ Retrieve all reviews with pagination (requires admin role).
 | page     | number         | No       | Page number (default: 1)                         |
 | pageSize | number         | No       | Items per page (default: 10)                     |
 | sorts    | SortCriteria[] | No       | Array of sorting criteria for reviews            |
+| ratingFilter | number | No       | Number which the rating field must match           |
 
 #### Example Request Body:
 ```typescript
 {
     "page": 1,
     "pageSize": 10,
-    "sorts": [{"field": "rating", "direction": -1}]
+    "sorts": [{"field": "rating", "direction": -1}],
+    "ratingFilter": 5
 }
 ```
 
@@ -867,5 +876,47 @@ Retrieve all reviews with pagination (requires admin role).
             "pageSize": 10
         }
     }
+}
+```
+
+## Get Authentication Data from Session
+
+### **Endpoint**  
+`/api/v1.0.0/auth/session`
+
+### **Method**  
+`GET`
+
+### **Description**  
+Retrieve the authentication data from the session cookie.
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field    | Type           | Required | Description                                      |
+|----------|----------------|----------|--------------------------------------------------|
+| none     | none         | none       | none                         |
+
+
+#### Example Request Body:
+```typescript
+{
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field            | Type            | Description                                              |
+|------------------|-----------------|----------------------------------------------------------|
+| success          | boolean         | Indicates if the request was successful                  |
+| error            | string          | Error message if success is false (optional)             |
+| email             | string          | Email of the Authenticated user if no user, then null (optional)                   |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "email": "example@gmail.com"
 }
 ```

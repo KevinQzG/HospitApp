@@ -15,7 +15,7 @@ import {
 	Pencil,
 	Trash2,
 	Plus,
-  Star,
+	Star,
 } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import Image from "next/image";
@@ -413,13 +413,13 @@ function DetailsView({
 							<span>{ipsData.email}</span>
 						</li>
 					)}
-          {ipsData.rating && (
+					{ipsData.rating && (
 						<li className="flex items-center">
 							<Star
 								size={18}
 								className="mr-2 sm:mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0"
 							/>
-              <span>Calificación: </span>
+							<span>Calificación: </span>
 							<span>{ipsData.rating}</span>
 						</li>
 					)}

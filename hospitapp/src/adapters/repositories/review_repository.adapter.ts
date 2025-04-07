@@ -15,13 +15,15 @@ export default interface ReviewRepositoryAdapter {
 	 * @param {number} pageSize - The number of results per page.
 	 * @param {SortCriteria[]} sorts - The sorting criteria.
 	 * @param {ObjectId} ipsId - The ID of the IPS to filter by (optional).
+	 * @param {number} ratingFilter - The rating filter to apply (optional).
 	 * @returns {Promise<{ results: Review[]; total: number }>} The Reviews that meet the specified criteria.
 	 */
 	findAllWithPagination(
 		page: number,
 		pageSize: number,
 		sorts: SortCriteria[],
-		ipsId?: ObjectId
+		ipsId?: ObjectId,
+		ratingFilter?: number
 	): Promise<{ results: Review[]; total: number }>;
 
 	/**
@@ -29,9 +31,14 @@ export default interface ReviewRepositoryAdapter {
 	 * @async
 	 * @param {SortCriteria} sorts - The sorting criteria.
 	 * @param {ObjectId} ipsId - The ID of the IPS to filter by (optional).
+	 * @param {number} ratingFilter - The rating filter to apply (optional).
 	 * @returns {Promise<Review[]>} The Reviews that meet the specified criteria.
 	 */
-	findAll(sorts: SortCriteria[], ipsId?: ObjectId): Promise<Review[]>;
+	findAll(
+		sorts: SortCriteria[],
+		ipsId?: ObjectId,
+		ratingFilter?: number
+	): Promise<Review[]>;
 
 	/**
 	 * Creates a new Review.

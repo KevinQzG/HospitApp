@@ -74,13 +74,15 @@ export default interface IpsServiceAdapter {
 	 * @param {number} page - The page number.
 	 * @param {number} pageSize - The number of results per page.
 	 * @param {SortCriteria[]} [sort] - The sorting criteria (optional).
+	 * @param {number} [ratingFilter] - The rating filter to apply (optional).
 	 * @returns {Promise<{ ips: IpsResponse | null; reviewsResult: { reviews: ReviewResponse[]; total: number } }>} The IPS with the specified name and its reviews, or null if it does not exist.
 	 */
 	getIpsByNameWithReviewsPagination(
 		name: string,
 		page: number,
 		pageSize: number,
-		sort?: SortCriteria[]
+		sort?: SortCriteria[],
+		ratingFilter?: number
 	): Promise<{
 		ips: IpsResponse | null;
 		reviewsResult: { reviews: ReviewResponse[]; total: number };
@@ -92,11 +94,13 @@ export default interface IpsServiceAdapter {
 	 * @async
 	 * @param {string} name - The name of the IPS.
 	 * @param {SortCriteria[]} [sort] - The sorting criteria (optional).
+	 * @param {number} [ratingFilter] - The rating filter to apply (optional).
 	 * @returns {Promise<{ ips: IpsResponse | null; reviewsResult: ReviewResponse[] }>} The IPS with the specified name and its reviews, or null if it does not exist.
 	 */
 	getIpsByNameWithReviews(
 		name: string,
-		sort?: SortCriteria[]
+		sort?: SortCriteria[],
+		ratingFilter?: number
 	): Promise<{
 		ips: IpsResponse | null;
 		reviewsResult: ReviewResponse[];

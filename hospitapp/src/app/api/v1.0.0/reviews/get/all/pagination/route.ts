@@ -12,11 +12,13 @@ import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces"
  * @property {number} [page] - Optional page number for reviews
  * @property {number} [pageSize] - Optional page size for reviews
  * @property {SortCriteria[]} [sorts] - Optional array of sorting criteria
+ * @property {number} [ratingFilter] - Optional rating filter
  */
 interface AllReviewsRequest {
 	page?: number;
 	pageSize?: number;
 	sorts?: SortCriteria[];
+	ratingFilter?: number;
 }
 
 /**
@@ -70,6 +72,13 @@ const VALIDATE_REQUEST_BODY = (
 		};
 	}
 
+	if (body.ratingFilter && typeof body.ratingFilter !== "number" && (body.ratingFilter < 1 || body.ratingFilter > 5)) {
+		return {
+			success: false,
+			error: "Invalid type for field: ratingFilter, expected number between 1 and 5",
+		};
+	}
+
 	return { success: true, error: "" };
 };
 
@@ -118,7 +127,8 @@ export async function POST(
 			BODY.page || 1,
 			BODY.pageSize || 10,
 			undefined,
-			BODY.sorts
+			BODY.sorts,
+			BODY.ratingFilter
 		);
 
 		return NextResponse.json({

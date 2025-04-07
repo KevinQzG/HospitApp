@@ -33,6 +33,7 @@ export const getIpsPropsWithReviewsPagination = async (params: {
 	reviewsPage: number;
 	reviewsPageSize: number;
 	sorts?: SortCriteria[];
+	ratingFilter?: number;
 }): Promise<{
 	ips: IpsResponse | null;
 	reviewsResult: { reviews: ReviewResponse[]; total: number };
@@ -49,7 +50,8 @@ export const getIpsPropsWithReviewsPagination = async (params: {
 			params.name,
 			params.reviewsPage,
 			params.reviewsPageSize,
-			params.sorts
+			params.sorts,
+			params.ratingFilter
 		);
 
 		return RESULT;
@@ -65,6 +67,7 @@ export const getIpsPropsWithReviewsPagination = async (params: {
 export const getIpsPropsWithReviews = async (params: {
 	name: string;
 	sorts?: SortCriteria[];
+	ratingFilter?: number;
 }): Promise<{
 	ips: IpsResponse | null;
 	reviewsResult: ReviewResponse[];
@@ -79,7 +82,8 @@ export const getIpsPropsWithReviews = async (params: {
 		// Fetch the data
 		return await IPS_SERVICE.getIpsByNameWithReviews(
 			params.name,
-			params.sorts
+			params.sorts,
+			params.ratingFilter
 		);
 	} catch (error) {
 		if (error instanceof Error) {

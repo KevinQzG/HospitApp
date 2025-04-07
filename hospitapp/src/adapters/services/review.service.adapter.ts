@@ -11,12 +11,14 @@ export default interface ReviewServiceAdapter {
 	 * Gets all reviews from the database, it returns an empty array there is not reviews.
 	 * @param {string} ipsId - The ID of the IPS to filter by (optional).
 	 * @param {SortCriteria[]} sorts - The sorting criteria (optional).
+	 * @param {number} ratingFilter - The rating filter to apply (optional).
 	 * @async
 	 * @returns {Promise<ReviewResponse[]>} The reviews.
 	 */
 	findAll(
 		ipsId?: string,
-		sorts?: SortCriteria[]
+		sorts?: SortCriteria[],
+		ratingFilter?: number
 	): Promise<ReviewResponse[]>;
 
 	/**
@@ -32,7 +34,8 @@ export default interface ReviewServiceAdapter {
 		page: number,
 		pageSize: number,
 		ipsId?: string,
-		sorts?: SortCriteria[]
+		sorts?: SortCriteria[],
+		ratingFilter?: number
 	): Promise<{ results: ReviewResponse[]; total: number }>;
 
 	/**

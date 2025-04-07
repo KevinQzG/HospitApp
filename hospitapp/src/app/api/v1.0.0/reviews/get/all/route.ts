@@ -10,9 +10,11 @@ import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces"
  * Interface representing the structure of the get all request body
  * @interface AllReviewsRequest
  * @property {SortCriteria[]} [sorts] - Optional array of sorting criteria
+ * @property {number} [ratingFilter] - Optional rating filter
  */
 interface AllReviewsRequest {
 	sorts?: SortCriteria[];
+	ratingFilter?: number;
 }
 
 /**
@@ -41,6 +43,17 @@ const VALIDATE_REQUEST_BODY = (
 		return {
 			success: false,
 			error: "Invalid type for field: sorts, expected array",
+		};
+	}
+
+	if (
+		body.ratingFilter &&
+		typeof body.ratingFilter !== "number" &&
+		(body.ratingFilter < 1 || body.ratingFilter > 5)
+	) {
+		return {
+			success: false,
+			error: "Invalid type for field: ratingFilter, expected number between 1 and 5",
 		};
 	}
 
@@ -88,11 +101,15 @@ export async function POST(
 			);
 		}
 
-		const RESULT = await REVIEW_SERVICE.findAll(undefined, BODY.sorts);
+		const RESULT = await REVIEW_SERVICE.findAll(
+			undefined,
+			BODY.sorts,
+			BODY.ratingFilter
+		);
 
 		return NextResponse.json({
 			success: true,
-			data: RESULT
+			data: RESULT,
 		});
 	} catch (error) {
 		console.error("API Error:", error);

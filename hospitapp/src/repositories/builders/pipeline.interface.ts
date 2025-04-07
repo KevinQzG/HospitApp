@@ -27,7 +27,7 @@ export interface LookupStage {
 }
 
 export interface MatchStage {
-	[key: string]: { $gt: number } | { $in?: string[] } | ObjectId | string;
+	[key: string]: { $gt: number } | { $in?: string[] } | ObjectId | string | number;
 }
 
 export interface ProjectStage {

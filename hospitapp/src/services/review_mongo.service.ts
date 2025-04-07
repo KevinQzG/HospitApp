@@ -29,14 +29,16 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 		page: number,
 		pageSize: number,
 		ipsId?: string,
-		sorts?: SortCriteria[]
+		sorts?: SortCriteria[],
+		ratingFilter?: number
 	): Promise<{ results: ReviewResponse[]; total: number }> {
 		const { results: RESULTS, total: TOTAL } =
 			await this.reviewRepository.findAllWithPagination(
 				page,
 				pageSize,
 				sorts ?? [{ field: "rating", direction: -1 }],
-				ipsId ? new ObjectId(ipsId) : undefined
+				ipsId ? new ObjectId(ipsId) : undefined,
+				ratingFilter
 			);
 		return {
 			results: RESULTS.map((review) => review.toResponse()),
@@ -46,11 +48,13 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 
 	async findAll(
 		ipsId?: string,
-		sorts?: SortCriteria[]
+		sorts?: SortCriteria[],
+		ratingFilter?: number
 	): Promise<ReviewResponse[]> {
 		const RESULTS = await this.reviewRepository.findAll(
 			sorts ?? [{ field: "rating", direction: -1 }],
-			ipsId ? new ObjectId(ipsId) : undefined
+			ipsId ? new ObjectId(ipsId) : undefined,
+			ratingFilter
 		);
 		return RESULTS.map((review) => review.toResponse());
 	}
