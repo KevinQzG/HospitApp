@@ -57,6 +57,10 @@ describe("IPS Props Fetching Functions", () => {
 			}),
 			filterIpsWithPagination: jest.fn(), // Not used here but included for completeness
 			filterIps: jest.fn().mockResolvedValue([]), // Mock implementation for filterIps
+			getIpsByNameWithReviews: jest.fn().mockResolvedValue({
+				ips: MOCK_IPS_RES,
+				reviewsResult: MOCK_REVIEW_RES,
+			}), // Mock implementation for getIpsByNameWithReviews
 		};
 
 		// Bind mock to CONTAINER

@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ReviewResponse } from "@/models/review.interface";
 import ReviewServiceAdapter from "@/adapters/services/review.service.adapter";
-import UserServiceAdapter from "@/adapters/services/user.service.adapter";
 import CONTAINER from "@/adapters/container";
 import { TYPES } from "@/adapters/types";
-import { getSessionToken } from "@/utils/helpers/session";
 import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
@@ -77,23 +75,9 @@ export async function POST(
 	const REVIEW_SERVICE = CONTAINER.get<ReviewServiceAdapter>(
 		TYPES.ReviewServiceAdapter
 	);
-	const USER_SERVICE = CONTAINER.get<UserServiceAdapter>(
-		TYPES.UserServiceAdapter
-	);
 	try {
 		// Parse and validate request body
 		const BODY: AllReviewsRequest = await req.json();
-		const COOKIE = req.headers.get("cookie") ?? "";
-		const TOKEN_DATA = getSessionToken(COOKIE);
-		if (
-			!TOKEN_DATA ||
-			!USER_SERVICE.verifyUserRole(TOKEN_DATA.email, "ADMIN")
-		) {
-			return NextResponse.json(
-				{ success: false, error: "Unauthorized" },
-				{ status: 401 }
-			);
-		}
 
 		// Body validation
 		const { success: SUCCESS, error: ERROR } = VALIDATE_REQUEST_BODY(BODY);
