@@ -14,6 +14,7 @@ import {
 	UserCheck,
 	Pencil,
 	Trash2,
+	Plus,
 } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import Image from "next/image";
@@ -187,13 +188,19 @@ function DetailsView({
 	userSession: UserSession;
 	formatEpsName: (name: string) => string;
 }) {
+	const router = useRouter();
 	const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}`;
 	const WAZE_URL = `https://waze.com/ul?ll=${ipsData.location.coordinates[1]},${ipsData.location.coordinates[0]}&navigate=yes`;
 
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-
 	const [reviewsResult, setReviewsResult] = useState(initialReviewsResult);
+	const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+	const [editRating, setEditRating] = useState<number>(0);
+	const [editComments, setEditComments] = useState<string>("");
+	const [showAddReviewForm, setShowAddReviewForm] = useState(false);
+	const [newRating, setNewRating] = useState<number>(0);
+	const [newComments, setNewComments] = useState<string>("");
 
 	const fetchReviewsPage = async (page: number) => {
 		// If requesting page 1 and we already have initial data, skip the fetch
@@ -265,7 +272,7 @@ function DetailsView({
 			const response = await fetch(`/api/v1.0.0/reviews/delete`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-        credentials: "include",
+				credentials: "include",
 				body: JSON.stringify({
 					id: reviewId,
 				}),
@@ -276,10 +283,100 @@ function DetailsView({
 				throw new Error(errorData.error || "Failed to delete review");
 			}
 
+			// Update reviews state immediately after deletion
+			setReviewsResult((prev) => {
+				if (!prev) return null;
+				const updatedReviews = prev.reviews.filter(
+					(r) => r._id !== reviewId
+				);
+				return {
+					...prev,
+					reviews: updatedReviews,
+					pagination: {
+						...prev.pagination!,
+						total: prev.pagination!.total - 1,
+					},
+				};
+			});
+
 			fetchReviewsPage(reviewsResult?.pagination?.page || 1);
 		} catch (err) {
 			setError(
 				err instanceof Error ? err.message : "Failed to delete review"
+			);
+		}
+	};
+
+	const handleEditReviewStart = (review: ReviewResponse) => {
+		setEditingReviewId(review._id);
+		setEditRating(review.rating);
+		setEditComments(review.comments);
+	};
+
+	const handleEditReviewSave = async (reviewId: string) => {
+		if (!userSession) return;
+
+		try {
+			const response = await fetch(`/api/v1.0.0/reviews/edit`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+				body: JSON.stringify({
+					id: reviewId,
+					rating: editRating,
+					comments: editComments,
+				}),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || "Failed to update review");
+			}
+
+			setEditingReviewId(null);
+			await fetchReviewsPage(reviewsResult?.pagination?.page || 1);
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : "Failed to update review"
+			);
+		}
+	};
+
+	const handleAddReview = async () => {
+		if (!userSession) {
+			router.push("/login");
+			return;
+		}
+
+		if (!newRating || !newComments) {
+			setError("Rating and comments are required");
+			return;
+		}
+
+		try {
+			const response = await fetch(`/api/v1.0.0/reviews/create`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+				body: JSON.stringify({
+					ips: ipsData._id,
+					rating: newRating,
+					comments: newComments,
+				}),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || "Failed to create review");
+			}
+
+			setNewRating(0);
+			setNewComments("");
+			setShowAddReviewForm(false);
+			await fetchReviewsPage(reviewsResult?.pagination?.page || 1);
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : "Failed to create review"
 			);
 		}
 	};
@@ -445,55 +542,172 @@ function DetailsView({
 							<p className="text-gray-600 dark:text-gray-300">
 								{reviewsResult.pagination?.total} reseñas
 							</p>
+							<button
+								onClick={() =>
+									setShowAddReviewForm(!showAddReviewForm)
+								}
+								className="mb-4 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+							>
+								<Plus className="w-4 h-4" />
+								Agregar Reseña
+							</button>
+
+							{showAddReviewForm && (
+								<div className="mb-6 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+									<h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
+										Nueva Reseña
+									</h3>
+									<div className="mb-2">
+										<label className="block text-gray-700 dark:text-gray-300 mb-1">
+											Calificación (1-5):
+										</label>
+										<input
+											type="number"
+											min="1"
+											max="5"
+											value={newRating}
+											onChange={(e) =>
+												setNewRating(
+													Number(e.target.value)
+												)
+											}
+											className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+										/>
+									</div>
+									<div className="mb-2">
+										<label className="block text-gray-700 dark:text-gray-300 mb-1">
+											Comentarios:
+										</label>
+										<textarea
+											value={newComments}
+											onChange={(e) =>
+												setNewComments(e.target.value)
+											}
+											className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+											rows={3}
+										/>
+									</div>
+									<button
+										onClick={handleAddReview}
+										className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+									>
+										Guardar
+									</button>
+								</div>
+							)}
+
 							{reviewsResult.reviews.map((review) => (
 								<div
 									key={review._id}
 									className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
 								>
-									<p className="text-gray-800 dark:text-gray-200 font-medium">
-										<strong>Usuario:</strong>{" "}
-										{review.userEmail || "Anónimo"}
-									</p>
-									<p className="text-gray-600 dark:text-gray-300">
-										<strong>Última actualización:</strong>{" "}
-										{new Date(
-											review.lastUpdated
-										).toLocaleDateString()}
-									</p>
-									<p className="text-gray-600 dark:text-gray-300">
-										<strong>Calificación:</strong>{" "}
-										{review.rating}/5
-									</p>
-									<p className="text-gray-600 dark:text-gray-300">
-										<strong>Comentarios:</strong>{" "}
-										{review.comments}
-									</p>
-									{userSession &&
-										userSession.email ===
-											review.userEmail && (
-											<div className="mt-2 flex gap-2">
-												<button
-													// onClick={() =>
-													// 	handleEditReview(review)
-													// }
-													className="flex items-center gap-1 px-2 py-1 text-sm text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700 rounded"
-												>
-													<Pencil className="w-4 h-4" />
-													Editar
-												</button>
-												<button
-													onClick={() =>
-														handleDeleteReview(
-															review._id
+									{editingReviewId === review._id ? (
+										<div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+											<div className="mb-2">
+												<label className="block text-gray-700 dark:text-gray-300 mb-1">
+													Calificación (1-5):
+												</label>
+												<input
+													type="number"
+													min="1"
+													max="5"
+													value={editRating}
+													onChange={(e) =>
+														setEditRating(
+															Number(
+																e.target.value
+															)
 														)
 													}
-													className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-gray-700 rounded"
-												>
-													<Trash2 className="w-4 h-4" />
-													Eliminar
-												</button>
+													className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+												/>
 											</div>
-										)}
+											<div className="mb-2">
+												<label className="block text-gray-700 dark:text-gray-300 mb-1">
+													Comentarios:
+												</label>
+												<textarea
+													value={editComments}
+													onChange={(e) =>
+														setEditComments(
+															e.target.value
+														)
+													}
+													className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+													rows={3}
+												/>
+											</div>
+											<button
+												onClick={() =>
+													handleEditReviewSave(
+														review._id
+													)
+												}
+												className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+											>
+												Guardar
+											</button>
+											<button
+												onClick={() =>
+													setEditingReviewId(null)
+												}
+												className="ml-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+											>
+												Cancelar
+											</button>
+										</div>
+									) : (
+										<>
+											<p className="text-gray-800 dark:text-gray-200 font-medium">
+												<strong>Usuario:</strong>{" "}
+												{review.userEmail || "Anónimo"}
+											</p>
+											<p className="text-gray-600 dark:text-gray-300">
+												<strong>
+													Última actualización:
+												</strong>{" "}
+												{new Date(
+													review.lastUpdated
+												).toLocaleDateString()}
+											</p>
+											<p className="text-gray-600 dark:text-gray-300">
+												<strong>Calificación:</strong>{" "}
+												{review.rating}/5
+											</p>
+											<p className="text-gray-600 dark:text-gray-300">
+												<strong>Comentarios:</strong>{" "}
+												{review.comments}
+											</p>
+											{userSession &&
+												userSession.email ===
+													review.userEmail && (
+													<div className="mt-2 flex gap-2">
+														<button
+															onClick={() =>
+																handleEditReviewStart(
+																	review
+																)
+															}
+															className="flex items-center gap-1 px-2 py-1 text-sm text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-700 rounded"
+														>
+															<Pencil className="w-4 h-4" />
+															Editar
+														</button>
+														<button
+															onClick={() =>
+																handleDeleteReview(
+																	review._id
+																)
+															}
+															className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-gray-700 rounded"
+														>
+															<Trash2 className="w-4 h-4" />
+															Eliminar
+														</button>
+													</div>
+												)}
+										</>
+									)}
 								</div>
 							))}
 

@@ -31,7 +31,7 @@ export class UserMongoRepository implements UserRepositoryAdapter {
 
 			const USER_DOC = await DB.collection<UserDocument>("USERS").findOne(
 				{
-					email: { $regex: email, $options: "i" },
+					email: email,
 				}
 			);
 			return USER_DOC ? UserMapper.fromDocumentToDomain(USER_DOC) : null;
