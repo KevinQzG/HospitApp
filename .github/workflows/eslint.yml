@@ -31,6 +31,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.14.0
+      
+      - name: Verify environment variables
+        working-directory: hospitapp
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          CACHE_TTL: ${{ secrets.CACHE_TTL }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_APP_NAME: ${{ secrets.NEXT_PUBLIC_APP_NAME }}
+          NEXT_PUBLIC_MAPBOX_API_KEY: ${{ secrets.NEXT_PUBLIC_MAPBOX_API_KEY }}
+        run: |
+          echo "DATABASE_URL is set: ${DATABASE_URL:+yes}"
+          echo "DATABASE_NAME: $DATABASE_NAME"
+          echo "CACHE_TTL: $CACHE_TTL"
+          echo "JWT_SECRET_KEY is set: ${JWT_SECRET_KEY:+yes}"
+          echo "NEXT_PUBLIC_API_URL: $NEXT_PUBLIC_API_URL"
+          echo "NEXT_PUBLIC_APP_NAME: $NEXT_PUBLIC_APP_NAME"
+          echo "NEXT_PUBLIC_MAPBOX_API_KEY is set: ${NEXT_PUBLIC_MAPBOX_API_KEY:+yes}"
 
       - name: Install dependencies
         working-directory: hospitapp
