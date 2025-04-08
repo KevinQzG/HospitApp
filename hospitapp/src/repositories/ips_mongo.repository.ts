@@ -31,7 +31,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 	 async create(ips: Ips): Promise<ObjectId | null> {
 		const DB = await this.dbHandler.connect();
 		
-		// @ts-ignore
+		// @ts-expect-error because ips is not a IpsDocument and don't act like that act as an IPS
 		const INSERTED_REVIEW = await DB.collection<IpsDocument>("IPS").insertOne(ips);
 
 		if (!INSERTED_REVIEW) {

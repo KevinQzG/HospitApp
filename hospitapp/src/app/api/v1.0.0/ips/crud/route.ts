@@ -30,7 +30,6 @@ export interface Ips {
       address,
       name,
       phone,
-      eps,
       email,
     } = body.ips;
   
