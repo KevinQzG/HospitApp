@@ -1,78 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Edit, Star, Hospital } from "lucide-react";
 
-type AuthResponse = {
-  success: boolean;
-  user?: { role: string };
-  error?: string;
-};
-
-const AdminDashboard = () => {
+const adminDashboard = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/v1.0.0/auth/verification", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            authenticationNeeded: true,
-            authenticationRoles: ["ADMIN"],
-          }),
-        });
-
-        if (!response.ok || !response.headers.get("content-type")?.includes("application/json")) {
-          throw new Error("Authentication failed or invalid response");
-        }
-
-        const authData: AuthResponse = await response.json();
-        if (!authData.success) {
-          // Si no está autenticado o no es admin, redirigir
-          router.push(authData.error === "User Not Authenticated" ? "/login" : "/");
-          return;
-        }
-
-        // Si es admin, continuar
-        setLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An unknown error occurred");
-        setLoading(false);
-        router.push("/login");
-      }
-    };
-
-    checkAuth();
-  }, [router]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="flex items-center gap-2 text-gray-400">
-          <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z" />
-          </svg>
-          <span className="text-lg">Cargando...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <p className="text-red-400 text-lg font-medium">{error}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full min-h-screen bg-gray-900 text-gray-100 flex flex-col items-center justify-center px-6 py-12">
@@ -131,4 +63,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default adminDashboard;
