@@ -9,4 +9,5 @@ export const TYPES = {
 	EpsServiceAdapter: Symbol.for("EpsServiceAdapter"),
 	SpecialtyServiceAdapter: Symbol.for("SpecialtyServiceAdapter"),
 	ReviewServiceAdapter: Symbol.for("ReviewServiceAdapter"),
+	UserServiceAdapter: Symbol.for("UserServiceAdapter"),
 };

@@ -30,7 +30,8 @@ export class IpsMapper {
 			raw.eps?.map(EpsMapper.fromDocumentToDomain),
 			raw.specialties?.map(SpecialtyMapper.fromDocumentToDomain),
 			raw.reviews?.map(ReviewMapper.fromDocumentToDomain),
-			raw.totalReviews
+			raw.totalReviews,
+			raw.rating
 		);
 	}
 
@@ -57,6 +58,7 @@ export class IpsMapper {
 				?.map(SpecialtyMapper.fromDomainToDocument),
 			reviews: ips.getReviews()?.map(ReviewMapper.fromDomainToDocument),
 			totalReviews: ips.getTotalReviews(),
+			rating: ips.getRating(),
 		};
 	}
 
@@ -80,7 +82,8 @@ export class IpsMapper {
 			raw.eps?.map(EpsMapper.fromResponseToDomain),
 			raw.specialties?.map(SpecialtyMapper.fromResponseToDomain),
 			raw.reviews?.map(ReviewMapper.fromResponseToDomain),
-			raw.totalReviews
+			raw.totalReviews,
+			raw.rating,
 		);
 	}
 
@@ -107,6 +110,7 @@ export class IpsMapper {
 				?.map(SpecialtyMapper.fromDomainToResponse),
 			reviews: ips.getReviews()?.map(ReviewMapper.fromDomainToResponse),
 			totalReviews: ips.getTotalReviews(),
+			rating: ips.getRating(),
 		};
 	}
 }

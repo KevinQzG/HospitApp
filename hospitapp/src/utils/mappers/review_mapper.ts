@@ -19,6 +19,8 @@ export class ReviewMapper {
 			raw.ips,
 			raw.rating,
 			raw.comments,
+			raw.createdAt,
+			raw.lastUpdated,
 			raw.userEmail,
 			raw.ipsName
 		);
@@ -26,18 +28,20 @@ export class ReviewMapper {
 
 	/**
 	 * Maps an Review entity to an Review document.
-	 * @param {Review} Review - The Review entity.
+	 * @param {Review} review - The Review entity.
 	 * @returns {ReviewDocument} The Review document.
 	 */
-	static fromDomainToDocument(Review: Review): ReviewDocument {
+	static fromDomainToDocument(review: Review): ReviewDocument {
 		return {
-			_id: Review.getId(),
-			user: Review.getUser(),
-			ips: Review.getIps(),
-			rating: Review.getRating(),
-			comments: Review.getComments(),
-			userEmail: Review.getUserEmail(),
-			ipsName: Review.getIpsName(),
+			_id: review.getId(),
+			user: review.getUser(),
+			ips: review.getIps(),
+			rating: review.getRating(),
+			comments: review.getComments(),
+			createdAt: review.getCreatedAt(),
+			lastUpdated: review.getLastUpdated(),
+			userEmail: review.getUserEmail(),
+			ipsName: review.getIpsName(),
 		};
 	}
 
@@ -53,6 +57,8 @@ export class ReviewMapper {
 			new ObjectId(raw.ips),
 			raw.rating,
 			raw.comments,
+			new Date(raw.createdAt),
+			new Date(raw.lastUpdated),
 			raw.userEmail,
 			raw.ipsName
 		);
@@ -60,18 +66,20 @@ export class ReviewMapper {
 
 	/**
 	 * Maps an Review entity to an Review response.
-	 * @param {Review} Review - The Review entity.
+	 * @param {Review} review - The Review entity.
 	 * @returns {ReviewResponse} The Review response.
 	 */
-	static fromDomainToResponse(Review: Review): ReviewResponse {
+	static fromDomainToResponse(review: Review): ReviewResponse {
 		return {
-			_id: Review.getId().toHexString(),
-			user: Review.getUser().toHexString(),
-			ips: Review.getIps().toHexString(),
-			rating: Review.getRating(),
-			comments: Review.getComments(),
-			userEmail: Review.getUserEmail(),
-			ipsName: Review.getIpsName(),
+			_id: review.getId().toHexString(),
+			user: review.getUser().toHexString(),
+			ips: review.getIps().toHexString(),
+			rating: review.getRating(),
+			comments: review.getComments(),
+			createdAt: review.getCreatedAt().toISOString(),
+			lastUpdated: review.getLastUpdated().toISOString(),
+			userEmail: review.getUserEmail(),
+			ipsName: review.getIpsName(),
 		};
 	}
 }

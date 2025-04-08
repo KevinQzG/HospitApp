@@ -2,10 +2,27 @@
 
 ## Table of Contents
 
-1. [Search IPS by Distance, Specialties, and EPS](#search-ips-by-distance-specialties-and-eps)
-2. [Get IPS by ID](#get-ips-by-id)
+1. [Search IPS by Filter](#search-ips-by-filter)
+2. [Get IPS by Name](#get-ips-by-name)
+3. [Check Session](#check-session)
+4. [User Login](#user-login)
+5. [User Registration](#user-registration)
+6. [Search IPS by Filter (v1.0.0)](#search-ips-by-filter-v100)
+7. [Search IPS by Filter with Pagination (v1.0.0)](#search-ips-by-filter-with-pagination-v100)
+8. [Get IPS by Name (v1.0.0)](#get-ips-by-name-v100)
+9. [Get IPS by Name with Pagination (v1.0.0)](#get-ips-by-name-with-pagination-v100)
+10. [Create Review (v1.0.0)](#create-review-v100)
+11. [Delete Review (v1.0.0)](#delete-review-v100)
+12. [Edit Review (v1.0.0)](#edit-review-v100)
+13. [Get Review by ID (v1.0.0)](#get-review-by-id-v100)
+14. [Get All Reviews (v1.0.0)](#get-all-reviews-v100)
+15. [Get All Reviews with Pagination (v1.0.0)](#get-all-reviews-with-pagination-v100)
+16. [Get Authentication Data from Session](#get-authentication-data-from-session)
+17. [Verify Authentication Data from Session](#verify-authentication-data-from-session)
 
-## Search IPS by Distance, Specialties, and EPS
+---
+
+## Search IPS by Filter
 
 ### **Endpoint**  
 `/api/search_ips/filter`
@@ -13,83 +30,56 @@
 ### **Method**  
 `POST`
 
-### **Description**
-Search for IPS (Health Provider) based on geographic coordinates, maximum distance, medical specialties, and EPS (Health Provider) names.
-
----
+### **Description**  
+Search for IPS (Health Providers) based on geographic coordinates, maximum distance, specialties, EPS names, town, and review availability, with pagination support.
 
 ### **Request Data**
 
 #### Body Parameters (JSON):
 | Field          | Type              | Required | Description                                                                 |
 |----------------|-------------------|----------|-----------------------------------------------------------------------------|
-| coordinates    | [number, number]  | Yes      | Geographic coordinates as [longitude, latitude]                            |
-| max_distance   | number            | Yes      | Maximum search distance in meters                                          |
+| coordinates    | [number, number]  | No       | Geographic coordinates as [longitude, latitude]                            |
+| max_distance   | number            | No       | Maximum search distance in meters                                          |
 | specialties    | string[]          | No       | Array of medical specialties to filter by                                  |
 | eps_names      | string[]          | No       | Array of EPS (Health Provider) names to filter by                          |
 | page           | number            | No       | Page number for pagination (default: 1)                                    |
 | page_size      | number            | No       | Number of items per page (default: 10)                                     |
+| town           | string            | No       | Town name to filter by                                                     |
+| hasReviews     | boolean           | No       | Filter by IPS with reviews (default: false)                                |
 
 #### Example Request Body:
-```json
+```typescript
 {
     "coordinates": [-74.0833, 4.5833],
     "max_distance": 5000,
     "specialties": ["cardiology", "pediatrics"],
     "eps_names": ["Sanitas", "Sura"],
     "page": 1,
-    "page_size": 10
+    "page_size": 10,
+    "town": "Bogotá",
+    "hasReviews": true
 }
 ```
 
 ### **Response Data**
 
 #### Body Parameters (JSON):
-| Field          | Type              | Required | Description                                                                 |
-|----------------|-------------------|----------|-----------------------------------------------------------------------------|
-| success          | boolean          | Yes | Indicates if the request was successful or not                              |
-| error            | string           | No  | Error message in case of failure                                             |
-| data[]          | object[]            | No | Object containing the search results. (Default value [ ])                                        |
-| data._id      | string            | Yes |Unique identifier for the IP                                                 |
-| data.name     | string            | Yes |Name of the IPS                                                                |
-| data.address  | string            | Yes |Address of the IPS                                                             |
-| data.location | object            | Yes |Geographic coordinates of the IPS                     |
-| data.location.type | string        | Yes |Type of the location (Point)                                                  |
-| data.location.coordinates | [number, number] | Yes |Geographic coordinates as [longitude, latitude]                              |
-| data.phone    | string or number       | No |Phone number of the IPS                                                        |
-| data.email    | string            | No |Email of the IPS                                                               |
-| data.level    | number            | No |Level of the IPS (I, II, III)                                                  |
-| data.distance | number            | Yes |Distance in meters from the search coordinates                                |
-| data.specialties | object[]      | No |Array of medical specialties provided by the IPS                              |
-| data.specialties[]._id | string    | Yes |Unique identifier for the specialty                                            |
-| data.specialties[].name | string   | Yes |Name of the specialty                                                          |
-| data.specialties[].schedule_monday | string | No |Schedule for Monday                                                            |
-| data.specialties[].schedule_tuesday | string | No |Schedule for Tuesday                                                           |
-| data.specialties[].schedule_wednesday | string | No |Schedule for Wednesday                                                         |
-| data.specialties[].schedule_thursday | string | No |Schedule for Thursday                                                          |
-| data.specialties[].schedule_friday | string | No |Schedule for Friday                                                            |
-| data.specialties[].schedule_saturday | string | No |Schedule for Saturday                                                          |
-| data.specialties[].schedule_sunday | string | No |Schedule for Sunday                                                            |
-| data.eps | object[]            | No |Array of EPS (Health Provider) provided by the IPS                            |
-| data.eps[]._id | string        | Yes |Unique identifier for the EPS                                                  |
-| data.eps[].name | string       | Yes |Name of the EPS                                                                |
-| data.eps[].01_8000_phone | string    | Yes |01 8000 phone number of the EPS                                                |
-| data.eps[].fax | string         | Yes |Fax number of the EPS                                                          |
-| data.eps[].emails | string       | Yes |Email of the EPS                                                               |
-| data.maps | string          | No |Google Maps URL for the IPS location                                          |
-| data.waze | string          | No |Waze URL for the IPS location                                                 |
-| pagination    | object            | No |Object containing pagination information                                      |
-| pagination.page | number          | Yes |Current page number                                                            |
-| pagination.page_size | number     | Yes |Number of items per page                                                      |
-| pagination.total | number         | Yes |Total number of items in the search                                           |
-| pagination.total_pages | number   | Yes |Total number of pages in the search                                           |
+| Field            | Type              | Description                                                                 |
+|------------------|-------------------|-----------------------------------------------------------------------------|
+| success          | boolean          | Indicates if the request was successful                                     |
+| error            | string           | Error message if success is false (optional)                                |
+| data             | IpsResponse[]    | Array of IPS documents (optional)                                           |
+| pagination       | object           | Pagination information (optional)                                           |
+| pagination.total | number           | Total number of items in the search                                         |
+| pagination.totalPages | number      | Total number of pages in the search                                         |
+| pagination.page  | number           | Current page number                                                         |
+| pagination.pageSize | number        | Number of items per page                                                    |
 
-#### Example Response Body:
-##### Success Response
-```json
+#### Example Success Response:
+```typescript
 {
     "success": true,
-    "data": [ // Optional Field, will be [] if no results, null or undefined
+    "data": [
         {
             "_id": "5f8b3b3b4b3b3b3b3b3b3b3b",
             "name": "IPS Name",
@@ -98,202 +88,839 @@ Search for IPS (Health Provider) based on geographic coordinates, maximum distan
                 "type": "Point",
                 "coordinates": [-74.0833, 4.5833]
             },
-            "phone": "1234567890", // Optional Field
-            "email": "example@ips.com", // Optional Field
-            "level": 1, // Optional Field
-            "distance": 1234, // Optional Field
-            "specialties": [ // Optional Field, will be null or undefined if no specialties
-                {
-                    "_id": "5f8b3b3b4b3b3b3b3b3b3b3b",
-                    "name": "Cardiology",
-                    "schedule_monday": "08:00-12:00", // Optional Field
-                    "schedule_tuesday": "08:00-12:00", // Optional Field
-                    "schedule_wednesday": "08:00-12:00", // Optional Field
-                    "schedule_thursday": "08:00-12:00", // Optional Field
-                    "schedule_friday": "08:00-12:00", // Optional Field
-                    "schedule_saturday": "08:00-12:00", // Optional Field
-                    "schedule_sunday": "08:00-12:00" // Optional Field
-                }
-            ],
-            "eps": [ // Optional Field, will be null or undefined if no EPS
-                {
-                    "_id": "5f8b3b3b4b3b3b3b3b3b3b3b",
-                    "name": "EPS Name",
-                    "01_8000_phone": "1234567890",
-                    "fax": "1234567890",
-                    "emails": "exampleeps@example.com"
-                }
-            ],
-            "maps": "https://www.google.com/maps/place/4.5833,-74.0833", // Optional Field
-            "waze": "https://www.waze.com/ul?ll=4.5833,-74.0833" // Optional Field
+            "distance": 1234
         }
-    ], // Optional Field
+    ],
     "pagination": {
+        "total": 25,
+        "totalPages": 3,
         "page": 1,
-        "page_size": 10,
-        "total": 1,
-        "total_pages": 1
+        "pageSize": 10
     }
 }
 ```
 
-##### Success Response with no results
-```json
-{
-    "success": true,
-    "data": [], // Optional Field
-    "pagination": {
-        "page": 1,
-        "page_size": 10,
-        "total": 0,
-        "total_pages": 0
-    }
-}
-```
-
-##### Error Response (400 Bad Request)
-
-```json
+#### Example Error Response:
+```typescript
 {
     "success": false,
-    "error": "Error message"
+    "error": "Invalid request: coordinates must be an array of two numbers [longitude, latitude]."
 }
 ```
 
-##### Error Response (500 Internal Server Error)
+---
 
-```json
-{
-    "success": false,
-    "error": "Internal Server Error"
-}
-```
-
-## Get IPS by ID
+## Get IPS by Name
 
 ### **Endpoint**  
-`/api/ips/[id]`
+`/api/search_ips/ips`
 
 ### **Method**  
 `POST`
 
-### **Description**
-Retrieve detailed information about a specific IPS using its unique identifier.
-
----
+### **Description**  
+Retrieve an IPS (Health Provider) by its name.
 
 ### **Request Data**
 
 #### Body Parameters (JSON):
-| Field | Type   | Required | Description                |
-|-------|--------|----------|----------------------------|
-| _id   | string | Yes      | Unique identifier for IPS  |
+| Field | Type   | Required | Description                       |
+|-------|--------|----------|-----------------------------------|
+| name  | string | Yes      | Name of the IPS to retrieve       |
 
 #### Example Request Body:
-```json
+```typescript
 {
-    "_id": "5f8b3b3b4b3b3b3b3b3b3b3b"
+    "name": "IPS Name"
 }
 ```
 
 ### **Response Data**
 
 #### Body Parameters (JSON):
+| Field   | Type        | Description                                              |
+|---------|-------------|----------------------------------------------------------|
+| success | boolean     | Indicates if the request was successful                  |
+| error   | string      | Error message if success is false (optional)             |
+| data    | IpsResponse | IPS data if success is true (optional)                   |
 
-| Field          | Type              | Required | Description                                                                 |
-|----------------|-------------------|----------|-----------------------------------------------------------------------------|
-| success          | boolean          | Yes | Indicates if the request was successful or not                              |
-| error            | string           | No  | Error message in case of failure                                             |
-| data          | object           | No | Object containing the searched IPS.                                        |
-| data._id      | string            | Yes |Unique identifier for the IP                                                 |
-| data.name     | string            | Yes |Name of the IPS                                                                |
-| data.address  | string            | Yes |Address of the IPS                                                             |
-| data.location | object            | Yes |Geographic coordinates of the IPS                     |
-| data.location.type | string        | Yes |Type of the location (Point)                                                  |
-| data.location.coordinates | [number, number] | Yes |Geographic coordinates as [longitude, latitude]                              |
-| data.phone    | string or number       | No |Phone number of the IPS                                                        |
-| data.email    | string            | No |Email of the IPS                                                               |
-| data.level    | number            | No |Level of the IPS (I, II, III)                                                  |
-| data.distance | number            | Yes |Distance in meters from the search coordinates                                |
-| data.specialties | object[]      | No |Array of medical specialties provided by the IPS                              |
-| data.specialties[]._id | string    | Yes |Unique identifier for the specialty                                            |
-| data.specialties[].name | string   | Yes |Name of the specialty                                                          |
-| data.specialties[].schedule_monday | string | No |Schedule for Monday                                                            |
-| data.specialties[].schedule_tuesday | string | No |Schedule for Tuesday                                                           |
-| data.specialties[].schedule_wednesday | string | No |Schedule for Wednesday                                                         |
-| data.specialties[].schedule_thursday | string | No |Schedule for Thursday                                                          |
-| data.specialties[].schedule_friday | string | No |Schedule for Friday                                                            |
-| data.specialties[].schedule_saturday | string | No |Schedule for Saturday                                                          |
-| data.specialties[].schedule_sunday | string | No |Schedule for Sunday                                                            |
-| data.eps | object[]            | No |Array of EPS (Health Provider) provided by the IPS                            |
-| data.eps[]._id | string        | Yes |Unique identifier for the EPS                                                  |
-| data.eps[].name | string       | Yes |Name of the EPS                                                                |
-| data.eps[].01_8000_phone | string    | Yes |01 8000 phone number of the EPS                                                |
-| data.eps[].fax | string         | Yes |Fax number of the EPS                                                          |
-| data.eps[].emails | string       | Yes |Email of the EPS                                                               |
-| data.maps | string          | No |Google Maps URL for the IPS location                                          |
-| data.waze | string          | No |Waze URL for the IPS location                                                 |                                       |
-
-
-#### Example Response Body:
-##### Success Response
-```json
+#### Example Success Response:
+```typescript
 {
     "success": true,
     "data": {
         "_id": "5f8b3b3b4b3b3b3b3b3b3b3b",
         "name": "IPS Name",
-        "address": "IPS Address",
-        "location": {
-            "type": "Point",
-            "coordinates": [-74.0833, 4.5833]
-        },
-        "phone": "1234567890", // Optional Field
-        "email": "example@gmail.com", // Optional Field
-        "level": 1, // Optional Field
-        "distance": 1234, // Optional Field
-        "specialties": [ // Optional Field, will be null or undefined if no specialties
-            {
-                "_id": "5f8b3b3b4b3b3b3b3b3b3b3b",
-                "name": "Cardiology",
-                "schedule_monday": "08:00-12:00", // Optional Field
-                "schedule_tuesday": "08:00-12:00", // Optional Field
-                "schedule_wednesday": "08:00-12:00", // Optional Field
-                "schedule_thursday": "08:00-12:00", // Optional Field
-                "schedule_friday": "08:00-12:00", // Optional Field
-                "schedule_saturday": "08:00-12:00", // Optional Field
-                "schedule_sunday": "08:00-12:00" // Optional Field
-            }
-        ],
-        "eps": [ // Optional Field, will be null or undefined if no EPS
-            {
-                "_id": "5f8b3b3b4b3b3b3b3b3b3b3b",
-                "name": "EPS Name",
-                "01_8000_phone": "1234567890",
-                "fax": "1234567890",
-                "emails": "
-            }
-        ],
-        "maps": "https://www.google.com/maps/place/4.5833,-74.0833", // Optional Field
-        "waze": "https://www.waze.com/ul?ll=4.5833,-74.0833" // Optional Field
+        "address": "IPS Address"
     }
 }
 ```
 
-##### Error Response (400 Bad Request)
-
-```json
+#### Example Error Response:
+```typescript
 {
     "success": false,
-    "error": "Error message"
+    "error": "IPS not found"
 }
 ```
 
-##### Error Response (500 Internal Server Error)
+---
 
-```json
+## Check Session
+
+### **Endpoint**  
+`/api/session`
+
+### **Method**  
+`GET`
+
+### **Description**  
+Check if a user is logged in by verifying the session token in the cookie.
+
+### **Request Data**
+- No body required, uses cookies from headers.
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field    | Type   | Description                                              |
+|----------|--------|----------------------------------------------------------|
+| loggedIn | boolean| Indicates if the user is logged in                       |
+| user     | object | User data if logged in (optional)                        |
+
+#### Example Success Response (Logged In):
+```typescript
 {
-    "success": false,
-    "error": "Internal Server Error"
+    "loggedIn": true,
+    "user": {
+        "email": "user@example.com"
+    }
 }
 ```
+
+#### Example Response (Not Logged In):
+```typescript
+{
+    "loggedIn": false
+}
+```
+
+---
+
+## User Login
+
+### **Endpoint**  
+`/api/login`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Authenticate a user and create a session cookie.
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field    | Type   | Required | Description                       |
+|----------|--------|----------|-----------------------------------|
+| email    | string | Yes      | User's email                      |
+| password | string | Yes      | User's password                   |
+
+#### Example Request Body:
+```typescript
+{
+    "email": "user@example.com",
+    "password": "password123"
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field   | Type   | Description                                              |
+|---------|--------|----------------------------------------------------------|
+| success | boolean| Indicates if the request was successful                  |
+| error   | string | Error message if success is false (optional)             |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true
+}
+```
+
+- Sets a `session` cookie with a 1-hour expiration.
+
+#### Example Error Response:
+```typescript
+{
+    "success": false,
+    "error": "Invalid email or password."
+}
+```
+
+---
+
+## User Registration
+
+### **Endpoint**  
+`/api/create`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Register a new user with email, password, phone, and EPS.
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field    | Type   | Required | Description                       |
+|----------|--------|----------|-----------------------------------|
+| email    | string | Yes      | User's email                      |
+| password | string | Yes      | User's password                   |
+| phone    | string | Yes      | User's phone number               |
+| eps      | string | Yes      | User's EPS (Health Provider)      |
+
+#### Example Request Body:
+```typescript
+{
+    "email": "user@example.com",
+    "password": "password123",
+    "phone": "1234567890",
+    "eps": "Sanitas"
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field   | Type   | Description                                              |
+|---------|--------|----------------------------------------------------------|
+| success | boolean| Indicates if the request was successful                  |
+| error   | string | Error message if success is false (optional)             |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true
+}
+```
+
+#### Example Error Response:
+```typescript
+{
+    "success": false,
+    "error": "Invalid email or password."
+}
+```
+
+---
+
+## Search IPS by Filter (v1.0.0)
+
+### **Endpoint**  
+`/api/v1.0.0/ips/filter`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Search for IPS without pagination, based on coordinates, distance, specialties, EPS names, town, and review availability.
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field       | Type             | Required | Description                                      |
+|-------------|------------------|----------|--------------------------------------------------|
+| coordinates | [number, number] | No       | Geographic coordinates [longitude, latitude]     |
+| maxDistance | number           | No       | Maximum search distance in meters                |
+| specialties | string[]         | No       | Array of medical specialties                     |
+| epsNames    | string[]         | No       | Array of EPS names                               |
+| town        | string           | No       | Town name to filter by                           |
+| hasReviews  | boolean          | No       | Filter by IPS with reviews (default: false)      |
+
+#### Example Request Body:
+```typescript
+{
+    "coordinates": [-74.0833, 4.5833],
+    "maxDistance": 5000,
+    "specialties": ["cardiology"],
+    "epsNames": ["Sura"],
+    "town": "Bogotá",
+    "hasReviews": true
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field   | Type        | Description                                              |
+|---------|-------------|----------------------------------------------------------|
+| success | boolean     | Indicates if the request was successful                  |
+| error   | string      | Error message if success is false (optional)             |
+| data    | IpsResponse[] | Array of IPS documents (optional)                      |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "data": [
+        {
+            "_id": "5f8b3b3b4b3b3b3b3b3b3b3b",
+            "name": "IPS Name",
+            "address": "IPS Address"
+        }
+    ]
+}
+```
+
+---
+
+## Search IPS by Filter with Pagination (v1.0.0)
+
+### **Endpoint**  
+`/api/v1.0.0/ips/filter/pagination`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Search for IPS with pagination support, based on coordinates, distance, specialties, EPS names, town, and review availability.
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field       | Type             | Required | Description                                      |
+|-------------|------------------|----------|--------------------------------------------------|
+| coordinates | [number, number] | No       | Geographic coordinates [longitude, latitude]     |
+| maxDistance | number           | No       | Maximum search distance in meters                |
+| specialties | string[]         | No       | Array of medical specialties                     |
+| epsNames    | string[]         | No       | Array of EPS names                               |
+| page        | number           | No       | Page number (default: 1)                         |
+| pageSize    | number           | No       | Items per page (default: 10)                     |
+| town        | string           | No       | Town name to filter by                           |
+| hasReviews  | boolean          | No       | Filter by IPS with reviews (default: false)      |
+
+#### Example Request Body:
+```typescript
+{
+    "coordinates": [-74.0833, 4.5833],
+    "maxDistance": 5000,
+    "page": 1,
+    "pageSize": 10
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field            | Type        | Description                                              |
+|------------------|-------------|----------------------------------------------------------|
+| success          | boolean     | Indicates if the request was successful                  |
+| error            | string      | Error message if success is false (optional)             |
+| data             | IpsResponse[] | Array of IPS documents (optional)                      |
+| pagination       | object      | Pagination information (optional)                        |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "data": [
+        {
+            "_id": "5f8b3b3b4b3b3b3b3b3b3b3b",
+            "name": "IPS Name"
+        }
+    ],
+    "pagination": {
+        "total": 25,
+        "totalPages": 3,
+        "page": 1,
+        "pageSize": 10
+    }
+}
+```
+
+---
+
+## Get IPS by Name (v1.0.0)
+
+### **Endpoint**  
+`/api/v1.0.0/ips/get`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Retrieve an IPS by name with optional review sorting.
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field  | Type           | Required | Description                                      |
+|--------|----------------|----------|--------------------------------------------------|
+| name   | string         | Yes      | Name of the IPS                                  |
+| sorts  | SortCriteria[] | No       | Array of sorting criteria for reviews            |
+| ratingFilter | number | No       | Number which the rating field must match           |
+
+#### Example Request Body:
+```typescript
+{
+    "name": "IPS Name",
+    "sorts": [{"field": "rating", "direction": -1}],
+    "ratingFilter": 5
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field         | Type          | Description                                              |
+|---------------|---------------|----------------------------------------------------------|
+| success       | boolean       | Indicates if the request was successful                  |
+| error         | string        | Error message if success is false (optional)             |
+| data          | IpsResponse   | IPS data (optional)                                      |
+| reviewsResult | ReviewResponse[] | Array of reviews (optional)                           |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "data": {
+        "_id": "5f8b3b3b4b3b3b3b3b3b3b3b",
+        "name": "IPS Name"
+    },
+    "reviewsResult": [
+        {
+            "_id": "review123",
+            "rating": 5,
+            "comments": "Great service"
+        }
+    ]
+}
+```
+
+---
+
+## Get IPS by Name with Pagination (v1.0.0)
+
+### **Endpoint**  
+`/api/v1.0.0/ips/get/pagination`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Retrieve an IPS by name with paginated reviews.
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field          | Type           | Required | Description                                      |
+|----------------|----------------|----------|--------------------------------------------------|
+| name           | string         | Yes      | Name of the IPS                                  |
+| reviewsPage    | number         | No       | Page number for reviews (default: 1)             |
+| reviewsPageSize| number         | No       | Items per page for reviews (default: 10)         |
+| sorts          | SortCriteria[] | No       | Array of sorting criteria for reviews            |
+| ratingFilter | number | No       | Number which the rating field must match           |
+
+#### Example Request Body:
+```typescript
+{
+    "name": "IPS Name",
+    "reviewsPage": 1,
+    "reviewsPageSize": 10,
+    "sorts": [{"field": "rating", "direction": -1}],
+    "ratingFilter": 5
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field            | Type          | Description                                              |
+|------------------|---------------|----------------------------------------------------------|
+| success          | boolean       | Indicates if the request was successful                  |
+| error            | string        | Error message if success is false (optional)             |
+| data             | IpsResponse   | IPS data (optional)                                      |
+| reviewsResult    | object        | Paginated reviews (optional)                             |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "data": {
+        "_id": "5f8b3b3b4b3b3b3b3b3b3b3b",
+        "name": "IPS Name"
+    },
+    "reviewsResult": {
+        "reviews": [
+            {
+                "_id": "review123",
+                "rating": 5,
+                "comments": "Great service"
+            }
+        ],
+        "pagination": {
+            "total": 20,
+            "totalPages": 2,
+            "page": 1,
+            "pageSize": 10
+        }
+    }
+}
+```
+
+---
+
+## Create Review (v1.0.0)
+
+### **Endpoint**  
+`/api/v1.0.0/reviews/create`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Create a new review for an IPS (requires authentication).
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field    | Type   | Required | Description                       |
+|----------|--------|----------|-----------------------------------|
+| ips      | string | Yes      | ID of the IPS                     |
+| rating   | number | Yes      | Rating (e.g., 1-5)                |
+| comments | string | Yes      | Review comments                   |
+
+#### Example Request Body:
+```typescript
+{
+    "ips": "5f8b3b3b4b3b3b3b3b3b3b3b",
+    "rating": 5,
+    "comments": "Excellent service"
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field   | Type   | Description                                              |
+|---------|--------|----------------------------------------------------------|
+| success | boolean| Indicates if the request was successful                  |
+| error   | string | Error message if success is false (optional)             |
+| review  | string | ID of the created review (optional)                      |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "review": "review123"
+}
+```
+
+---
+
+## Delete Review (v1.0.0)
+
+### **Endpoint**  
+`/api/v1.0.0/reviews/delete`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Delete a review by ID (requires authentication and ownership or admin role).
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field | Type   | Required | Description                       |
+|-------|--------|----------|-----------------------------------|
+| id    | string | Yes      | ID of the review to delete        |
+
+#### Example Request Body:
+```typescript
+{
+    "id": "review123"
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field   | Type   | Description                                              |
+|---------|--------|----------------------------------------------------------|
+| success | boolean| Indicates if the request was successful                  |
+| message | string | Success or error message                                 |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "message": "Review deleted successfully"
+}
+```
+
+---
+
+## Edit Review (v1.0.0)
+
+### **Endpoint**  
+`/api/v1.0.0/reviews/edit`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Edit an existing review (requires authentication and ownership).
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field    | Type   | Required | Description                       |
+|----------|--------|----------|-----------------------------------|
+| id       | string | Yes      | ID of the review to edit          |
+| rating   | number | Yes      | New rating                        |
+| comments | string | Yes      | New comments                      |
+
+#### Example Request Body:
+```typescript
+{
+    "id": "review123",
+    "rating": 4,
+    "comments": "Updated review"
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field   | Type          | Description                                              |
+|---------|---------------|----------------------------------------------------------|
+| success | boolean       | Indicates if the request was successful                  |
+| error   | string        | Error message if success is false (optional)             |
+| data    | ReviewResponse| Updated review data (optional)                           |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "data": {
+        "_id": "review123",
+        "rating": 4,
+        "comments": "Updated review"
+    }
+}
+```
+
+---
+
+## Get Review by ID (v1.0.0)
+
+### **Endpoint**  
+`/api/v1.0.0/reviews/get`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Retrieve a review by ID (requires authentication and ownership or admin role).
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field | Type   | Required | Description                       |
+|-------|--------|----------|-----------------------------------|
+| id    | string | Yes      | ID of the review to retrieve      |
+
+#### Example Request Body:
+```typescript
+{
+    "id": "review123"
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field   | Type          | Description                                              |
+|---------|---------------|----------------------------------------------------------|
+| success | boolean       | Indicates if the request was successful                  |
+| error   | string        | Error message if success is false (optional)             |
+| data    | ReviewResponse| Review data (optional)                                   |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "data": {
+        "_id": "review123",
+        "rating": 5,
+        "comments": "Great service"
+    }
+}
+```
+
+---
+
+## Get All Reviews (v1.0.0)
+
+### **Endpoint**  
+`/api/v1.0.0/reviews/get/all`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Retrieve all reviews (requires admin role).
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field | Type           | Required | Description                                      |
+|-------|----------------|----------|--------------------------------------------------|
+| sorts | SortCriteria[] | No       | Array of sorting criteria for reviews            |
+| ratingFilter | number | No       | Number which the rating field must match           |
+
+#### Example Request Body:
+```typescript
+{
+    "sorts": [{"field": "rating", "direction": -1}],
+    "ratingFilter": 5
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field   | Type            | Description                                              |
+|---------|-----------------|----------------------------------------------------------|
+| success | boolean         | Indicates if the request was successful                  |
+| error   | string          | Error message if success is false (optional)             |
+| data    | ReviewResponse[]| Array of all reviews (optional)                          |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "data": [
+        {
+            "_id": "review123",
+            "rating": 5,
+            "comments": "Great service"
+        }
+    ]
+}
+```
+
+---
+
+## Get All Reviews with Pagination (v1.0.0)
+
+### **Endpoint**  
+`/api/v1.0.0/reviews/get/all/pagination`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Retrieve all reviews with pagination (requires admin role).
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field    | Type           | Required | Description                                      |
+|----------|----------------|----------|--------------------------------------------------|
+| page     | number         | No       | Page number (default: 1)                         |
+| pageSize | number         | No       | Items per page (default: 10)                     |
+| sorts    | SortCriteria[] | No       | Array of sorting criteria for reviews            |
+| ratingFilter | number | No       | Number which the rating field must match           |
+
+#### Example Request Body:
+```typescript
+{
+    "page": 1,
+    "pageSize": 10,
+    "sorts": [{"field": "rating", "direction": -1}],
+    "ratingFilter": 5
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field            | Type            | Description                                              |
+|------------------|-----------------|----------------------------------------------------------|
+| success          | boolean         | Indicates if the request was successful                  |
+| error            | string          | Error message if success is false (optional)             |
+| data             | object          | Review data with pagination (optional)                   |
+| data.result      | ReviewResponse[]| Array of reviews                                         |
+| data.pagination  | object          | Pagination information                                   |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "data": {
+        "result": [
+            {
+                "_id": "review123",
+                "rating": 5,
+                "comments": "Great service"
+            }
+        ],
+        "pagination": {
+            "total": 20,
+            "totalPages": 2,
+            "page": 1,
+            "pageSize": 10
+        }
+    }
+}
+```
+
+## Verify Authentication Data from Session
+
+### **Endpoint**  
+`/api/v1.0.0/auth/verification`
+
+### **Method**  
+`POST`
+
+### **Description**  
+Verifies the authentication data from the session. This endpoint checks if the user is authenticated and matches the required roles.
+
+### **Request Data**
+
+#### Body Parameters (JSON):
+| Field    | Type           | Required | Description                                      |
+|----------|----------------|----------|--------------------------------------------------|
+| authenticationNeeded     | boolean         | Yes       | Boolean which says if authentication is needed or not                        |
+| authenticationRoles | boolean         | No       | Array with the roles allowed (Optional)                     |
+
+
+#### Example Request Body:
+```typescript
+{
+    "authenticationNeeded": true,
+    "authenticationRoles": ["ADMIN"]
+}
+```
+
+### **Response Data**
+
+#### Body Parameters (JSON):
+| Field            | Type            | Description                                              |
+|------------------|-----------------|----------------------------------------------------------|
+| success          | boolean         | Indicates if the request was successful                  |
+| message            | string          | message informing the operation             |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "message": "User Authenticated"
+}
+```
+

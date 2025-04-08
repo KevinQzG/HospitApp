@@ -28,6 +28,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 
 	private getPipelineBuilder(hasReviews: boolean, latitude: number | null, longitude: number | null, maxDistance: number | null, town: string | null): IpsPipelineBuilder {
 		let pipelineBuilder = new IpsPipelineBuilder().addGeoStage(longitude, latitude, maxDistance);
+		pipelineBuilder = pipelineBuilder.addRating();
 
 		if (hasReviews) {
 			pipelineBuilder = pipelineBuilder.hasReviews();
@@ -123,6 +124,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		// Build the pipeline
 		const PIPELINE = new IpsPipelineBuilder()
 			.addMatchStage({ name: name })
+			.addRating()
 			.withEps()
 			.withSpecialties()
 			.addFinalProjection()

@@ -13,17 +13,20 @@ import { IpsResponse } from "@/models/ips.interface";
  * @property {number} maxDistance - Optional Maximum search distance in meters
  * @property {string[]} [specialties] - Optional array of medical specialties to filter by
  * @property {string[]} [eps_names] - Optional array of EPS names to filter by
- * @property {number} [page] - Optional page number for pagination (default: 1)
- * @property {number} [page_size] - Optional number of items per page (default: 10)
+ * @property {number} [page] - Optional page number for pagination
+ * @property {number} [page_size] - Optional number of items per page
+ * @property {string} [town] - Optional town name to filter by
+ * @property {boolean} [hasReviews] - Optional flag to filter by IPS with reviews (default: false)
  */
 interface SearchRequest {
 	coordinates?: [number, number];
-	max_distance?: number;
+	maxDistance?: number;
 	specialties?: string[];
-	eps_names?: string[];
+	epsNames?: string[];
 	page?: number;
-	page_size?: number;
+	pageSize?: number;
 	town?: string;
+	hasReviews?: boolean;
 }
 
 /**
@@ -59,7 +62,7 @@ const VALIDATE_REQUEST_BODY = (
 			success: false,
 			error: "Invalid request: coordinates must be an array of two numbers [longitude, latitude].",
 		};
-	} else if (body.max_distance && typeof body.max_distance !== "number") {
+	} else if (body.maxDistance && typeof body.maxDistance !== "number") {
 		return {
 			success: false,
 			error: "Invalid request: maximum distance must be a number representing meters.",
@@ -69,7 +72,7 @@ const VALIDATE_REQUEST_BODY = (
 			success: false,
 			error: "Invalid request: specialties must be an array of strings.",
 		};
-	} else if (body.eps_names && !IS_TYPE_ARRAY(body.eps_names, "string")) {
+	} else if (body.epsNames && !IS_TYPE_ARRAY(body.epsNames, "string")) {
 		return {
 			success: false,
 			error: "Invalid request: EPS names must be an array of strings.",
@@ -79,7 +82,7 @@ const VALIDATE_REQUEST_BODY = (
 			success: false,
 			error: "Invalid request: page must be a number.",
 		};
-	} else if (body.page_size && typeof body.page_size !== "number") {
+	} else if (body.pageSize && typeof body.pageSize !== "number") {
 		return {
 			success: false,
 			error: "Invalid request: page size must be a number.",
@@ -88,6 +91,14 @@ const VALIDATE_REQUEST_BODY = (
 		return {
 			success: false,
 			error: "Invalid request: town must be a string.",
+		};
+	} else if (
+		body.hasReviews !== undefined &&
+		typeof body.hasReviews !== "boolean"
+	) {
+		return {
+			success: false,
+			error: "Invalid request: hasReviews must be a boolean.",
 		};
 	}
 
@@ -150,12 +161,13 @@ export async function POST(
 			await SEARCH_SERVICE.filterIpsWithPagination(
 				longitude,
 				latitude,
-				BODY.max_distance || null,
+				BODY.maxDistance || null,
 				BODY.specialties || [],
-				BODY.eps_names || [],
+				BODY.epsNames || [],
 				BODY.page || 1,
-				BODY.page_size || 10,
-				BODY.town || null
+				BODY.pageSize || 10,
+				BODY.town || null,
+				BODY.hasReviews || false
 			);
 
 		// revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)
@@ -164,9 +176,9 @@ export async function POST(
 			data: RESULTS,
 			pagination: {
 				total: TOTAL,
-				totalPages: Math.ceil(TOTAL / (BODY.page_size || 10)),
+				totalPages: Math.ceil(TOTAL / (BODY.pageSize || 10)),
 				page: BODY.page || 1,
-				pageSize: BODY.page_size || 10,
+				pageSize: BODY.pageSize || 10,
 			},
 		});
 	} catch (error) {

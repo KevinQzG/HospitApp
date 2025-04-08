@@ -12,6 +12,8 @@ export class Review {
 	private ips: ObjectId;
 	private rating: number;
 	private comments: string;
+	private createdAt: Date;
+	private lastUpdated: Date;
 	private userEmail?: string;
 	private ipsName?: string;
 
@@ -22,6 +24,8 @@ export class Review {
 	 * @param {ObjectId} ips - Unique identifier of the IPS.
 	 * @param {number} rating - Rating given by the user.
 	 * @param {string} comments - Comments provided by the user.
+	 * @param {Date} createdAt - Date when the review was created.
+	 * @param {Date} lastUpdated - Date when the review was last updated.
 	 * @param {string} userEmail - Email of the user. (optional)
 	 * @param {string} ipsName - Name of the IPS. (optional)
 	 */
@@ -31,6 +35,8 @@ export class Review {
 		ips: ObjectId,
 		rating: number,
 		comments: string,
+		createdAt?: Date,
+		lastUpdated?: Date,
 		userEmail?: string,
 		ipsName?: string
 	) {
@@ -39,6 +45,8 @@ export class Review {
 		this.ips = ips;
 		this.rating = rating;
 		this.comments = comments;
+		this.createdAt = createdAt ? createdAt : new Date;
+		this.lastUpdated = lastUpdated ? lastUpdated : new Date();
 		this.userEmail = userEmail;
 		this.ipsName = ipsName;
 	}
@@ -53,7 +61,9 @@ export class Review {
 			!this.ips ||
 			!this.rating ||
 			!(typeof this.comments === "string") ||
-			this.comments.length < 0
+			this.comments.length < 0 ||
+			!this.createdAt ||
+			!this.lastUpdated
 		) {
 			throw new Error("Missing required fields");
 		}
@@ -120,6 +130,22 @@ export class Review {
 	}
 
 	/**
+	 * Gets the date when the review was created.
+	 * @returns {Date} The date when the review was created.
+	 */
+	getCreatedAt(): Date {
+		return this.createdAt;
+	}
+
+	/**
+	 * Gets the date when the review was last updated.
+	 * @returns {Date} The date when the review was last updated.
+	 */
+	getLastUpdated(): Date {
+		return this.lastUpdated;
+	}
+
+	/**
 	 * Gets the email of the user.
 	 * @returns {string} The email of the user.
 	 */
@@ -168,6 +194,24 @@ export class Review {
 	 */
 	setComments(comments: string): void {
 		this.comments = comments;
+		this.validate();
+	}
+
+	/**
+	 * Sets the date when the review was created.
+	 * @param {Date} createdAt - The date when the review was created.
+	 */
+	setCreatedAt(createdAt: Date): void {
+		this.createdAt = createdAt;
+		this.validate();
+	}
+
+	/**
+	 * Sets the date when the review was last updated.
+	 * @param {Date} lastUpdated - The date when the review was last updated.
+	 */
+	setLastUpdated(lastUpdated: Date): void {
+		this.lastUpdated = lastUpdated;
 		this.validate();
 	}
 
