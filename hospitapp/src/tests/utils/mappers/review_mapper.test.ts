@@ -10,6 +10,8 @@ describe("ReviewMapper", () => {
 		ips: new ObjectId(),
 		rating: 4,
 		comments: "Great service!",
+		createdAt: new Date("2025-04-06T12:00:00.000Z"),
+		lastUpdated: new Date("2025-04-06T12:05:00.000Z"),
 	};
 
 	const FULL_RESP: ReviewResponse = {
@@ -18,6 +20,8 @@ describe("ReviewMapper", () => {
 		ips: FULL_DOC.ips.toHexString(),
 		rating: FULL_DOC.rating,
 		comments: FULL_DOC.comments,
+		createdAt: "2025-04-06T12:00:00.000Z",
+		lastUpdated: "2025-04-06T12:05:00.000Z",
 	};
 
 	let review: Review;
@@ -33,6 +37,8 @@ describe("ReviewMapper", () => {
 			expect(review.getIps()).toEqual(FULL_DOC.ips);
 			expect(review.getRating()).toEqual(FULL_DOC.rating);
 			expect(review.getComments()).toEqual(FULL_DOC.comments);
+			expect(review.getCreatedAt()).toEqual(FULL_DOC.createdAt);
+			expect(review.getLastUpdated()).toEqual(FULL_DOC.lastUpdated);
 		});
 
 		it("should map complete domain to document", () => {
@@ -41,7 +47,9 @@ describe("ReviewMapper", () => {
 				FULL_DOC.user,
 				FULL_DOC.ips,
 				FULL_DOC.rating,
-				FULL_DOC.comments
+				FULL_DOC.comments,
+				FULL_DOC.createdAt,
+				FULL_DOC.lastUpdated
 			);
 
 			doc = ReviewMapper.fromDomainToDocument(review);
@@ -67,6 +75,8 @@ describe("ReviewMapper", () => {
 			expect(review.getIps().toHexString()).toEqual(FULL_RESP.ips);
 			expect(review.getRating()).toEqual(FULL_RESP.rating);
 			expect(review.getComments()).toEqual(FULL_RESP.comments);
+			expect(review.getCreatedAt()).toEqual(FULL_DOC.createdAt);
+			expect(review.getLastUpdated()).toEqual(FULL_DOC.lastUpdated);
 		});
 
 		it("should map complete domain to response", () => {
@@ -75,7 +85,9 @@ describe("ReviewMapper", () => {
 				FULL_DOC.user,
 				FULL_DOC.ips,
 				FULL_DOC.rating,
-				FULL_DOC.comments
+				FULL_DOC.comments,
+				FULL_DOC.createdAt,
+				FULL_DOC.lastUpdated
 			);
 
 			res = ReviewMapper.fromDomainToResponse(review);

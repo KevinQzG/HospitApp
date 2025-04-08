@@ -10,6 +10,8 @@ import ReviewRepositoryAdapter from "./repositories/review_repository.adapter";
 import SpecialtyServiceAdapter from "./services/specialty.service.adapter";
 import EpsServiceAdapter from "./services/eps.service.adapter";
 import DBAdapter from "./db.adapter";
+import ReviewServiceAdapter from "./services/review.service.adapter";
+import UserServiceAdapter from "./services/user.service.adapter";
 import MongoDB from "@/config/mongo_db";
 import { IpsMongoRepository } from "@/repositories/ips_mongo.repository";
 import { EpsMongoRepository } from "@/repositories/eps_mongo.repository";
@@ -19,6 +21,9 @@ import { UserMongoRepository } from "@/repositories/user_mongo.repository";
 import { ReviewMongoRepository } from "@/repositories/review_mongo.repository";
 import { SpecialtyMongoService } from "@/services/specialty_mongo.service";
 import { EpsMongoService } from "@/services/eps_mongo.service";
+import { ReviewMongoService } from "@/services/review_mongo.service";
+import { UserMongoService } from "@/services/user_mongo.service";
+
 const CONTAINER = new Container();
 
 // Bind the database implementation as singleton
@@ -43,5 +48,11 @@ CONTAINER.bind<SpecialtyServiceAdapter>(TYPES.SpecialtyServiceAdapter).to(
 	SpecialtyMongoService
 );
 CONTAINER.bind<EpsServiceAdapter>(TYPES.EpsServiceAdapter).to(EpsMongoService);
+CONTAINER.bind<ReviewServiceAdapter>(TYPES.ReviewServiceAdapter).to(
+	ReviewMongoService
+);
+CONTAINER.bind<UserServiceAdapter>(TYPES.UserServiceAdapter).to(
+	UserMongoService
+);
 
 export default CONTAINER;

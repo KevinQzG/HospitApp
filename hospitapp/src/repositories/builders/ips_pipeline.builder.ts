@@ -134,6 +134,7 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 					},
 				},
 				totalReviews: 1,
+				rating: 1
 			},
 		});
 
@@ -142,7 +143,7 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 
 	/**
 	 * Adds a match stage to the pipeline to verify if the IPS has reviews.
-	 * 
+	 *
 	 * @returns {PipelineBuilder} The builder instance.
 	 * @memberof IpsPipelineBuilder
 	 * @public
@@ -153,14 +154,43 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 		this.getPipeline().push({ $lookup: this.reviewsLookup });
 		this.addFieldsStage({
 			totalReviews: {
-				$size: "$reviews"
-			}
+				$size: "$reviews",
+			},
 		});
 		this.addMatchStage({
-			totalReviews: { $gt: 0 }
+			totalReviews: { $gt: 0 },
 		});
 		this.addProjectStage({
-			reviews: 0
+			reviews: 0,
+		});
+
+		return this;
+	}
+
+	/**
+	 * Adds a rating field to the ips.
+	 *
+	 * @returns {PipelineBuilder} The builder instance.
+	 * @memberof IpsPipelineBuilder
+	 * @public
+	 * @method
+	 * @name addRating
+	 * @description Adds a rating field to the ips.
+	 */
+	addRating(): this {
+		this.getPipeline().push({ $lookup: this.reviewsLookup });
+		this.addFieldsStage({
+			rating: {
+				$ifNull: [
+					{
+						$avg: "$reviews.rating",
+					},
+					5,
+				],
+			},
+		});
+		this.addProjectStage({
+			reviews: 0,
 		});
 
 		return this;
@@ -260,6 +290,7 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 			level: 1,
 			distance: 1,
 			totalReviews: 1,
+			rating: 1,
 		};
 	}
 

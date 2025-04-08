@@ -5,6 +5,7 @@ import ReviewServiceAdapter from "@/adapters/services/review.service.adapter";
 import { ReviewResponse } from "@/models/review.interface";
 import { Review } from "@/models/review";
 import { ObjectId } from "mongodb";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 
 /**
  * @class
@@ -27,13 +28,17 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 	async findAllWithPagination(
 		page: number,
 		pageSize: number,
-		ipsId?: string
+		ipsId?: string,
+		sorts?: SortCriteria[],
+		ratingFilter?: number
 	): Promise<{ results: ReviewResponse[]; total: number }> {
 		const { results: RESULTS, total: TOTAL } =
 			await this.reviewRepository.findAllWithPagination(
 				page,
 				pageSize,
-				new ObjectId(ipsId)
+				sorts ?? [{ field: "rating", direction: -1 }],
+				ipsId ? new ObjectId(ipsId) : undefined,
+				ratingFilter
 			);
 		return {
 			results: RESULTS.map((review) => review.toResponse()),
@@ -41,9 +46,15 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 		};
 	}
 
-	async findAll(ipsId?: string): Promise<ReviewResponse[]> {
+	async findAll(
+		ipsId?: string,
+		sorts?: SortCriteria[],
+		ratingFilter?: number
+	): Promise<ReviewResponse[]> {
 		const RESULTS = await this.reviewRepository.findAll(
-			new ObjectId(ipsId)
+			sorts ?? [{ field: "rating", direction: -1 }],
+			ipsId ? new ObjectId(ipsId) : undefined,
+			ratingFilter
 		);
 		return RESULTS.map((review) => review.toResponse());
 	}
@@ -56,15 +67,14 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 	): Promise<string | null> {
 		const REVIEW = new Review(
 			undefined,
-			new ObjectId(ips),
 			new ObjectId(user),
+			new ObjectId(ips),
 			rating,
 			comments
 		);
 
 		const ID = await this.reviewRepository.create(REVIEW);
 		if (!ID) return null;
-		console.log(ID);
 		return ID.toHexString();
 	}
 
@@ -73,14 +83,16 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 		ips: string,
 		user: string,
 		rating: number,
-		comments: string
+		comments: string,
+		createdAt: Date
 	): Promise<ReviewResponse | null> {
 		const REVIEW = new Review(
 			new ObjectId(id),
-			new ObjectId(ips),
 			new ObjectId(user),
+			new ObjectId(ips),
 			rating,
-			comments
+			comments,
+			createdAt
 		);
 
 		const UPDATED_REVIEW = await this.reviewRepository.update(REVIEW);
@@ -89,12 +101,14 @@ export class ReviewMongoService implements ReviewServiceAdapter {
 	}
 
 	async delete(id: string): Promise<boolean> {
+		if (ObjectId.isValid(id) === false) return false;
 		const DELETED = await this.reviewRepository.delete(new ObjectId(id));
 
 		return DELETED;
 	}
 
 	async findById(id: string): Promise<ReviewResponse | null> {
+		if (ObjectId.isValid(id) === false) return null;
 		const REVIEW = await this.reviewRepository.findById(new ObjectId(id));
 		if (!REVIEW) return null;
 		return REVIEW.toResponse();

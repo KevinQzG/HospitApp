@@ -7,6 +7,7 @@ import { ReviewResponse } from "@/models/review.interface";
 import type ReviewRepositoryAdapter from "@/adapters/repositories/review_repository.adapter";
 import { Ips } from "@/models/ips";
 import { ObjectId } from "mongodb";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 
 /**
  * @class
@@ -113,10 +114,12 @@ export class IpsMongoService implements IpsServiceAdapter {
 		return IPS.toResponse();
 	}
 
-	async getIpsByNameWithReviews(
+	async getIpsByNameWithReviewsPagination(
 		name: string,
 		page: number,
-		pageSize: number
+		pageSize: number,
+		sort?: SortCriteria[],
+		ratingFilter?: number
 	): Promise<{
 		ips: IpsResponse | null;
 		reviewsResult: { reviews: ReviewResponse[]; total: number };
@@ -130,7 +133,9 @@ export class IpsMongoService implements IpsServiceAdapter {
 			await this.reviewRepository.findAllWithPagination(
 				page,
 				pageSize,
-				IPS.getId()
+				sort ?? [{ field: "rating", direction: -1 }],
+				IPS.getId(),
+				ratingFilter
 			);
 		const REVIEWS = REVIEWS_RESULT.results.map((review) => {
 			return review.toResponse();
@@ -142,6 +147,34 @@ export class IpsMongoService implements IpsServiceAdapter {
 				reviews: REVIEWS,
 				total: REVIEWS_RESULT.total,
 			},
+		};
+	}
+
+	async getIpsByNameWithReviews(
+		name: string,
+		sort?: SortCriteria[],
+		ratingFilter?: number
+	): Promise<{
+		ips: IpsResponse | null;
+		reviewsResult: ReviewResponse[];
+	}> {
+		const IPS = await this.ipsRepository.findByName(name);
+		if (!IPS) {
+			return { ips: null, reviewsResult: [] };
+		}
+
+		const REVIEWS_RESULT = await this.reviewRepository.findAll(
+			sort ?? [{ field: "rating", direction: -1 }],
+			IPS.getId(),
+			ratingFilter
+		);
+		const REVIEWS = REVIEWS_RESULT.map((review) => {
+			return review.toResponse();
+		});
+
+		return {
+			ips: IPS.toResponse(),
+			reviewsResult: REVIEWS,
 		};
 	}
 }

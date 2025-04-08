@@ -16,7 +16,8 @@ describe("ReviewMongoService Integration Test", () => {
 		new ObjectId("67b3e98bb1ae5d9e47ae72a8"), // ips
 		new ObjectId("67e56e4f41a98261d95547d4"), // user
 		5,
-		"Great service!"
+		"Great service!",
+		new Date("2025-04-06T12:00:00Z"),
 	);
 
 	const MOCK_UPDATED_REVIEW = new Review(
@@ -24,7 +25,8 @@ describe("ReviewMongoService Integration Test", () => {
 		new ObjectId("67b3e98bb1ae5d9e47ae72a8"),
 		new ObjectId("67e56e4f41a98261d95547d4"),
 		4,
-		"Updated service!"
+		"Updated service!",
+		new Date()
 	);
 
 	beforeAll(() => {
@@ -61,7 +63,11 @@ describe("ReviewMongoService Integration Test", () => {
 			const { results, total } = await service.findAllWithPagination(
 				1,
 				10,
-				"67b3e98bb1ae5d9e47ae72a8"
+				"67b3e98bb1ae5d9e47ae72a8",
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				]
 			);
 
 			expect(
@@ -69,7 +75,12 @@ describe("ReviewMongoService Integration Test", () => {
 			).toHaveBeenCalledWith(
 				1,
 				10,
-				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
+				new ObjectId("67b3e98bb1ae5d9e47ae72a8"),
+				undefined,
 			);
 			expect(results).toEqual([MOCK_REVIEW.toResponse()]);
 			expect(total).toBe(1);
@@ -104,10 +115,20 @@ describe("ReviewMongoService Integration Test", () => {
 
 	describe("findAll", () => {
 		it("should retrieve all reviews and transform to response", async () => {
-			const results = await service.findAll("67b3e98bb1ae5d9e47ae72a8");
+			const results = await service.findAll("67b3e98bb1ae5d9e47ae72a8", 
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				]
+			);
 
 			expect(mockReviewRepository.findAll).toHaveBeenCalledWith(
-				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
+				new ObjectId("67b3e98bb1ae5d9e47ae72a8"),
+				undefined
 			);
 			expect(results).toEqual([MOCK_REVIEW.toResponse()]);
 		});
@@ -177,7 +198,8 @@ describe("ReviewMongoService Integration Test", () => {
 				"67b3e98bb1ae5d9e47ae72a8",
 				"67e56e4f41a98261d95547d4",
 				4,
-				"Updated service!"
+				"Updated service!",
+				new Date()
 			);
 
 			expect(mockReviewRepository.update).toHaveBeenCalledWith(
@@ -194,7 +216,8 @@ describe("ReviewMongoService Integration Test", () => {
 				"67b3e98bb1ae5d9e47ae72a8",
 				"67e56e4f41a98261d95547d4",
 				4,
-				"Updated service!"
+				"Updated service!",
+				new Date()
 			);
 
 			expect(result).toBeNull();
@@ -210,7 +233,8 @@ describe("ReviewMongoService Integration Test", () => {
 					"67b3e98bb1ae5d9e47ae72a8",
 					"67e56e4f41a98261d95547d4",
 					4,
-					"Updated service!"
+					"Updated service!",
+					new Date()
 				)
 			).rejects.toThrow(error);
 		});
@@ -244,35 +268,35 @@ describe("ReviewMongoService Integration Test", () => {
 		});
 	});
 
-	// describe("findById", () => {
-	// 	it("should retrieve a review by ID and transform to response", async () => {
-	// 		const result = await service.findById(
-	// 			"67ed23719c60d5e529e84b49"
-	// 		);
+	describe("findById", () => {
+		it("should retrieve a review by ID and transform to response", async () => {
+			const result = await service.findById(
+				"67ed23719c60d5e529e84b49"
+			);
 
-	// 		expect(mockReviewRepository.findById).toHaveBeenCalledWith(
-	// 			new ObjectId("67ed23719c60d5e529e84b49")
-	// 		);
-	// 		expect(result).toEqual(MOCK_REVIEW.toResponse());
-	// 	});
+			expect(mockReviewRepository.findById).toHaveBeenCalledWith(
+				new ObjectId("67ed23719c60d5e529e84b49")
+			);
+			expect(result).toEqual(MOCK_REVIEW.toResponse());
+		});
 
-	// 	it("should return null if review not found", async () => {
-	// 		mockReviewRepository.findById.mockResolvedValueOnce(null);
+		it("should return null if review not found", async () => {
+			mockReviewRepository.findById.mockResolvedValueOnce(null);
 
-	// 		const result = await service.findById(
-	// 			"67ed23719c60d5e529e84b49"
-	// 		);
+			const result = await service.findById(
+				"67ed23719c60d5e529e84b49"
+			);
 
-	// 		expect(result).toBeNull();
-	// 	});
+			expect(result).toBeNull();
+		});
 
-	// 	it("should throw repository errors", async () => {
-	// 		const error = new Error("DB error");
-	// 		mockReviewRepository.findById.mockRejectedValueOnce(error);
+		it("should throw repository errors", async () => {
+			const error = new Error("DB error");
+			mockReviewRepository.findById.mockRejectedValueOnce(error);
 
-	// 		await expect(
-	// 			service.findById("67ed23719c60d5e529e84b49")
-	// 		).rejects.toThrow(error);
-	// 	});
-	// });
+			await expect(
+				service.findById("67ed23719c60d5e529e84b49")
+			).rejects.toThrow(error);
+		});
+	});
 });

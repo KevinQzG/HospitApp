@@ -2,19 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
 import { getIpsPropsWithReviews } from "@/services/cachers/ips.data_fetching.service";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
 /**
  * Interface representing the structure of the search request body
  * @interface LookIpsRequest
  * @property {string} name - The name of the IPS document
- * @property {number} [reviewsPage] - Optional page number for reviews
- * @property {number} [reviewsPageSize] - Optional page size for reviews
+ * @property {SortCriteria[]} [sorts] - Optional array of sorting criteria
+ * @property {number} [ratingFilter] - Optional rating filter
  */
 interface LookIpsRequest {
 	name: string;
-	reviewsPage?: number;
-	reviewsPageSize?: number;
+	sorts?: SortCriteria[];
+	ratingFilter?: number;
 }
 
 /**
@@ -28,15 +29,7 @@ export interface LookIpsResponse {
 	success: boolean;
 	error?: string;
 	data?: IpsResponse;
-	reviewsResult?: {
-		reviews: ReviewResponse[];
-		pagination?: {
-			total: number;
-			totalPages: number;
-			page: number;
-			pageSize: number;
-		};
-	};
+	reviewsResult?: ReviewResponse[];
 }
 
 /**
@@ -56,17 +49,17 @@ const VALIDATE_REQUEST_BODY = (
 		};
 	}
 
-	if (body.reviewsPage && typeof body.reviewsPage !== "number") {
+	if (body.sorts && !Array.isArray(body.sorts)) {
 		return {
 			success: false,
-			error: "Invalid type for field: reviewsPage, expected number",
+			error: "Invalid type for field: sorts, expected array",
 		};
 	}
 
-	if (body.reviewsPageSize && typeof body.reviewsPageSize !== "number") {
+	if (body.ratingFilter && typeof body.ratingFilter !== "number" && (body.ratingFilter < 1 || body.ratingFilter > 5)) {
 		return {
 			success: false,
-			error: "Invalid type for field: reviewsPageSize, expected number",
+			error: "Invalid type for field: ratingFilter, expected number between 1 and 5",
 		};
 	}
 
@@ -112,9 +105,10 @@ export async function POST(
 
 		const RESULT = await getIpsPropsWithReviews({
 			name: BODY.name,
-			reviewsPage: BODY.reviewsPage || 1,
-			reviewsPageSize: BODY.reviewsPageSize || 10
+			sorts: BODY.sorts,
+			ratingFilter: BODY.ratingFilter,
 		});
+		
 
 		if (!RESULT.ips) {
 			return NextResponse.json(
@@ -126,15 +120,7 @@ export async function POST(
 		return NextResponse.json({
 			success: true,
 			data: RESULT.ips,
-			reviewsResult: {
-				reviews: RESULT.reviewsResult.reviews,
-				pagination: {
-					total: RESULT.reviewsResult.total,
-					totalPages: Math.ceil(RESULT.reviewsResult.total / (BODY.reviewsPageSize || 10)),
-					page: BODY.reviewsPage || 1,
-					pageSize: BODY.reviewsPageSize || 10,
-				}
-			},
+			reviewsResult: RESULT.reviewsResult,
 		});
 	} catch (error) {
 		console.error("API Error:", error);

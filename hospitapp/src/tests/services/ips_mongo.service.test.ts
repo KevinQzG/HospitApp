@@ -41,6 +41,8 @@ describe("IpsMongoService Integration Test", () => {
 			ips: "67b3e98bb1ae5d9e47ae7a06",
 			rating: 4,
 			comments: "Great service!",
+			createdAt: "2025-04-06T12:00:00.000Z",
+			lastUpdated: "2025-04-06T12:05:00.000Z",
 		}),
 	];
 
@@ -51,6 +53,8 @@ describe("IpsMongoService Integration Test", () => {
 			ips: "67b3e98bb1ae5d9e47ae7a06",
 			rating: 4,
 			comments: "Great service!",
+			createdAt: "2025-04-06T12:00:00.000Z",
+			lastUpdated: "2025-04-06T12:05:00.000Z",
 		},
 	];
 
@@ -249,12 +253,29 @@ describe("IpsMongoService Integration Test", () => {
 			const pageSize = 10;
 
 			const { ips, reviewsResult } =
-				await service.getIpsByNameWithReviews(name, page, pageSize);
+				await service.getIpsByNameWithReviewsPagination(
+					name,
+					page,
+					pageSize,
+					[
+						{ field: "rating", direction: -1 },
+						{ field: "updatedAt", direction: 1 },
+					]
+				);
 
 			expect(mockIpsRepository.findByName).toHaveBeenCalledWith(name);
 			expect(
 				mockReviewRepository.findAllWithPagination
-			).toHaveBeenCalledWith(page, pageSize, MOCK_IPS.getId());
+			).toHaveBeenCalledWith(
+				page,
+				pageSize,
+				[
+					{ field: "rating", direction: -1 },
+					{ field: "updatedAt", direction: 1 },
+				],
+				MOCK_IPS.getId(),
+				undefined
+			);
 			expect(ips).toEqual(MOCK_IPS_RES);
 			expect(reviewsResult).toEqual({
 				reviews: MOCK_REVIEW_RES,
@@ -267,7 +288,7 @@ describe("IpsMongoService Integration Test", () => {
 			mockIpsRepository.findByName.mockResolvedValueOnce(null);
 
 			const { ips, reviewsResult } =
-				await service.getIpsByNameWithReviews(name, 1, 10);
+				await service.getIpsByNameWithReviewsPagination(name, 1, 10);
 
 			expect(mockIpsRepository.findByName).toHaveBeenCalledWith(name);
 			expect(ips).toBeNull();
@@ -280,7 +301,7 @@ describe("IpsMongoService Integration Test", () => {
 			mockIpsRepository.findByName.mockRejectedValueOnce(error);
 
 			await expect(
-				service.getIpsByNameWithReviews(name, 1, 10)
+				service.getIpsByNameWithReviewsPagination(name, 1, 10)
 			).rejects.toThrow(error);
 		});
 	});

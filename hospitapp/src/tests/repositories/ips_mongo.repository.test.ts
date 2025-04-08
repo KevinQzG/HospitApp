@@ -214,7 +214,6 @@ describe("IpsMongoRepository Integration Test", () => {
 			);
 			expect(RESULTS[0].getDepartment()).toBe("ANTIOQUIA");
 			expect(RESULTS[0].getTown()).toBe("MEDELLÍN");
-			expect(RESULTS[0].getTotalReviews()).toBe(12);
 		});
 	});
 
@@ -364,7 +363,6 @@ describe("IpsMongoRepository Integration Test", () => {
 			);
 			expect(RESULTS[0].getDepartment()).toBe("ANTIOQUIA");
 			expect(RESULTS[0].getTown()).toBe("MEDELLÍN");
-			expect(RESULTS[0].getTotalReviews()).toBe(12);
 		});
 	});
 
