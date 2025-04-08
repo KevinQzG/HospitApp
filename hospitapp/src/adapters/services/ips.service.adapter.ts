@@ -1,5 +1,7 @@
+import { Ips } from "@/models/ips";
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
+import { ObjectId } from "mongodb";
 import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 
 /**
@@ -8,6 +10,34 @@ import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces"
  * @description This interface should be implemented by the class that will filter, get and sort the IPSs.
  */
 export default interface IpsServiceAdapter {
+
+
+	
+	/**
+	 * Creates a new IPS.
+	 * @async
+	 * @param {Ips} ips - The IPS data to create.
+	 * @returns {Promise<Ips>} The created IPS.
+	 */
+    create(ips: Ips): Promise<ObjectId | null>;
+	
+	/**
+	 * Updates an existing IPS.
+	 * @async
+	 * @param {ObjectId} id - The ID of the IPS to update.
+	 * @param {Ips} ips - The updated IPS data.
+	 * @returns {Promise<Ips>} The updated IPS.
+	 */
+	update(id: ObjectId, ips: Ips): Promise<ObjectId | null>;
+
+	/**
+	 * Deletes an IPS by ID.
+	 * @async
+	 * @param {string} id - The ID of the IPS to delete.
+	 * @returns {Promise<Ips>} The deleted IPS.
+	 */
+	delete(id: string): Promise<boolean>;
+
 	/**
 	 * Gets all IPSs that are within a certain distance from the user and at least one of the specified specialties and EPSs. With pagination.
 	 * @async

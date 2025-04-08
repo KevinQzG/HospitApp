@@ -1,4 +1,5 @@
 import { Ips } from "@/models/ips";
+import { ObjectId } from "mongodb";
 
 /**
  * @interface
@@ -80,4 +81,29 @@ export default interface IpsRepositoryAdapter {
 	 * @returns {Promise<Ips[]>} The IPSs that meet the specified criteria.
 	 */
 	findAll(): Promise<Ips[]>;
+
+	/**
+	 * Creates a new IPS.
+	 * @async
+	 * @param {Ips} ips - The IPS data to create.
+	 * @returns {Promise<Ips>} The created IPS.
+	 */
+	create(ips: Ips): Promise<ObjectId | null>;
+
+	/**
+	 * Updates an existing IPS.
+	 * @async
+	 * @param {ObjectId} id - The ID of the IPS to update.
+	 * @param {Ips} ips - The updated IPS data.
+	 * @returns {Promise<Ips>} The updated IPS.
+	 */
+	update(id: ObjectId, ips: Ips): Promise<ObjectId | null>;
+
+	/**
+	 * Deletes an IPS by ID.
+	 * @async
+	 * @param {string} id - The ID of the IPS to delete.
+	 * @returns {Promise<Ips>} The deleted IPS.
+	 */
+	delete(id: ObjectId): Promise<boolean>;
 }
