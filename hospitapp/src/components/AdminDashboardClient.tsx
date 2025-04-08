@@ -4,19 +4,15 @@ import { UserCircle } from "lucide-react";
 import SearchFormAdmin, { IpsFilter } from "@/components/SearchFormAdmin";
 import IpsListAdmin from "@/components/IpsListAdmin";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { SearchFormClientProps } from "@/services/search_ips/data_caching.service";
 
-interface IpsData {
-  id: string;
-  name: string;
-  town?: string;
-  // Add other properties you expect from your IPS data
-  [key: string]: unknown; // This allows for additional properties while maintaining type safety
-}
+// Importamos la interfaz IpsResponse desde IpsListAdmin
+import { IpsResponse } from "@/components/IpsListAdmin";
 
 interface Props extends SearchFormClientProps {
   towns: string[];
-  initialData: IpsData[];
+  initialData: IpsResponse[]; // Cambiamos any[] por IpsResponse[]
   totalResults: number;
   currentPage: number;
   pageSize: number;
@@ -37,6 +33,19 @@ export default function AdminDashboardClient({
     town: "",
     name: "",
   });
+  const router = useRouter();
+
+  const handleFilterChange = (newFilters: IpsFilter) => {
+    setFilters(newFilters);
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    if (newFilters.town) params.set("town", newFilters.town);
+    if (newFilters.eps.length > 0) params.set("eps", newFilters.eps.join(","));
+    if (newFilters.specialties.length > 0)
+      params.set("specialties", newFilters.specialties.join(","));
+    if (newFilters.name) params.set("name", newFilters.name);
+    router.push(`/admin/ips?${params.toString()}`);
+  };
 
   return (
     <div className="min-h-screen bg-[#ECF6FF] dark:bg-gray-900 transition-colors duration-300">
@@ -52,7 +61,7 @@ export default function AdminDashboardClient({
           eps={eps}
           specialties={specialties}
           towns={towns}
-          onFilterChange={setFilters}
+          onFilterChange={handleFilterChange}
         />
 
         <div className="max-w-7xl mx-auto mt-12">

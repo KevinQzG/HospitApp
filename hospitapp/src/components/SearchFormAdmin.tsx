@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { SearchableSelect } from "@/components/searchable_select";
 import { SearchFormClientProps } from "@/services/search_ips/data_caching.service";
+import { useRouter } from "next/navigation"; // Importar useRouter
 
 export interface IpsFilter {
   eps: string[];
@@ -24,8 +25,29 @@ export default function SearchFormAdmin({ eps, specialties, towns, onFilterChang
     name: "",
   });
 
+  const router = useRouter(); // Usar el router para actualizar la URL
+
   const handleApplyFilters = () => {
+    // Actualizar el estado en el componente padre
     onFilterChange(filters);
+
+    // Crear los parámetros de la URL con los filtros
+    const params = new URLSearchParams();
+    if (filters.eps.length > 0) {
+      params.set("eps", filters.eps.join(","));
+    }
+    if (filters.specialties.length > 0) {
+      params.set("specialties", filters.specialties.join(","));
+    }
+    if (filters.town) {
+      params.set("town", filters.town);
+    }
+    if (filters.name) {
+      params.set("name", filters.name);
+    }
+
+    // Actualizar la URL sin recargar la página
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   return (
