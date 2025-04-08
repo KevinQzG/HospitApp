@@ -4,15 +4,15 @@
  * @description Generic database interface for dependency inversion.
  */
 export default interface DBAdapter<T = object> {
-    /**
-     * Connects to the database and returns the database instance.
-     * @returns {Promise<T>} The database instance.
-     */
-    connect(): Promise<T>;
+	/**
+	 * Connects to the database and returns the database instance.
+	 * @returns {Promise<T>} The database instance.
+	 */
+	connect(): Promise<T>;
 
-    /**
-     * Closes the database connection.
-     * @returns {Promise<void>}
-     */
-    close(): Promise<void>;
+	/**
+	 * Closes the database connection.
+	 * @returns {Promise<void>}
+	 */
+	close(): Promise<void>;
 }
