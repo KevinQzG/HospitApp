@@ -30,10 +30,9 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 
 	 async create(ips: Ips): Promise<ObjectId | null> {
 		const DB = await this.dbHandler.connect();
-
-		const IPS_DOCUMENT = ips;
-		// CREATE A NEW IPS
-		const INSERTED_REVIEW = await DB.collection<IpsDocument>("IPS").insertOne(IPS_DOCUMENT);
+		
+		// @ts-ignore
+		const INSERTED_REVIEW = await DB.collection<IpsDocument>("IPS").insertOne(ips);
 
 		if (!INSERTED_REVIEW) {
 			return null;
@@ -45,9 +44,8 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 	async update(id: ObjectId, ips: Ips): Promise<ObjectId | null> {
 		const DB = await this.dbHandler.connect();
 
-		const IPS_DOCUMENT = ips.toObject();
 		// CREATE A NEW IPS
-		const INSERTED_DOCUMENT = await DB.collection<IpsDocument>("IPS").updateOne(id, IPS_DOCUMENT);
+		const INSERTED_DOCUMENT = await DB.collection<IpsDocument>("IPS").updateOne(id, ips);
 
 		if (!INSERTED_DOCUMENT) {
 			return null;

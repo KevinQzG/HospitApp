@@ -34,7 +34,7 @@ export interface Ips {
       email,
     } = body.ips;
   
-    if (!name || !address || !phone || !department || !town || !email || !eps) {
+    if (!name || !address || !phone || !department || !town || !email) {
       return NextResponse.json({ message: "Missing required fields." }, { status: 400 });
     }
   
