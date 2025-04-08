@@ -13,7 +13,7 @@ interface EpsSectionProps {
 }
 
 export default function EpsSection({ eps }: EpsSectionProps) {
-  const topEps = eps.slice(0, 9);
+  const topEps = eps.slice(-9);
 
   const icons = [Heart];
 
