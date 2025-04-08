@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import IpsRepositoryAdapter from "@/adapters/repositories/ips_repository.adapter";
 import { TYPES } from "@/adapters/types";
 import { IpsDocument } from "@/models/ips.interface";
@@ -25,6 +25,45 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 	 * @throws {Error} If the database connection fails.
 	 */
 	constructor(@inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>) {}
+
+
+
+	 async create(ips: Ips): Promise<ObjectId | null> {
+		const DB = await this.dbHandler.connect();
+
+		const IPS_DOCUMENT = ips;
+		// CREATE A NEW IPS
+		const INSERTED_REVIEW = await DB.collection<IpsDocument>("IPS").insertOne(IPS_DOCUMENT);
+
+		if (!INSERTED_REVIEW) {
+			return null;
+		}
+
+		return INSERTED_REVIEW.insertedId;
+	}
+
+	async update(id: ObjectId, ips: Ips): Promise<ObjectId | null> {
+		const DB = await this.dbHandler.connect();
+
+		const IPS_DOCUMENT = ips.toObject();
+		// CREATE A NEW IPS
+		const INSERTED_DOCUMENT = await DB.collection<IpsDocument>("IPS").updateOne(id, IPS_DOCUMENT);
+
+		if (!INSERTED_DOCUMENT) {
+			return null;
+		}
+
+		return INSERTED_DOCUMENT.upsertedId;
+	}
+	async delete(id: ObjectId): Promise<boolean> {
+		const DB = await this.dbHandler.connect();
+		const IPS_DOCUMENT = await DB.collection<IpsDocument>("IPS").deleteOne({ _id: id });
+		if (!IPS_DOCUMENT) {
+			return false;
+		}
+
+		return IPS_DOCUMENT.acknowledged;
+	}
 
 	private getPipelineBuilder(hasReviews: boolean, latitude: number | null, longitude: number | null, maxDistance: number | null, town: string | null): IpsPipelineBuilder {
 		let pipelineBuilder = new IpsPipelineBuilder().addGeoStage(longitude, latitude, maxDistance);

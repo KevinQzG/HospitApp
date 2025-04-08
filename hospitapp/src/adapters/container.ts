@@ -19,7 +19,6 @@ import { UserMongoRepository } from "@/repositories/user_mongo.repository";
 import { ReviewMongoRepository } from "@/repositories/review_mongo.repository";
 import { SpecialtyMongoService } from "@/services/specialty_mongo.service";
 import { EpsMongoService } from "@/services/eps_mongo.service";
-
 const CONTAINER = new Container();
 
 // Bind the database implementation as singleton

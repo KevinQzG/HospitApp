@@ -5,6 +5,8 @@ import type IpsRepositoryAdapter from "@/adapters/repositories/ips_repository.ad
 import { IpsResponse } from "@/models/ips.interface";
 import { ReviewResponse } from "@/models/review.interface";
 import type ReviewRepositoryAdapter from "@/adapters/repositories/review_repository.adapter";
+import { Ips } from "@/models/ips";
+import { ObjectId } from "mongodb";
 
 /**
  * @class
@@ -28,6 +30,24 @@ export class IpsMongoService implements IpsServiceAdapter {
 		@inject(TYPES.ReviewRepositoryAdapter)
 		private reviewRepository: ReviewRepositoryAdapter
 	) {}
+
+	async create(ips: Ips): Promise<ObjectId | null> {
+
+		const ID = await this.ipsRepository.create(ips);
+		if (!ID) return null;
+		return ID;
+	}
+
+	async update(id: ObjectId, ips: Ips): Promise<ObjectId | null> {
+		const OBJECT_ID = await this.ipsRepository.update(id, ips);
+		if (!OBJECT_ID) return null;
+		return OBJECT_ID;
+	}
+
+	async delete(id: string): Promise<boolean> {
+		const DELETED = await this.ipsRepository.delete(new ObjectId(id));
+		return DELETED;
+	}
 
 	async filterIpsWithPagination(
 		longitude: number | null,
