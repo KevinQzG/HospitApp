@@ -61,8 +61,6 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get("session")?.value;
 
-  console.log("Cookies disponibles en el servidor:", cookieStore.getAll());
-
   if (!sessionToken) {
     console.log("No session token found in cookies, redirecting to home");
     redirect("/");
