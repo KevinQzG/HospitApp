@@ -14,7 +14,6 @@ export interface Ips {
     phone: string;
     email: string;
     eps?: string;
-    specialties?: string[];
     location: {
       type: "Point";
       coordinates: [number, number]; // [lng, lat]
@@ -33,7 +32,6 @@ export interface Ips {
       phone,
       eps,
       email,
-      specialties
     } = body.ips;
   
     if (!name || !address || !phone || !department || !town || !email || !eps) {
