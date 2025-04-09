@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import Link from "next/link";
 
 type CreateFormProps = {
@@ -39,7 +39,9 @@ export default function CreateForm({ sessionToken }: CreateFormProps) {
     return errors;
   };
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     const errors = validateForm(formData);
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -139,7 +141,7 @@ export default function CreateForm({ sessionToken }: CreateFormProps) {
           </div>
         </div>
       )}
-      <form action={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-100 mb-1">
