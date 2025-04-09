@@ -48,6 +48,7 @@ export default function AdminIpsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true); // Nuevo estado para controlar la carga
   const [searchTerm, setSearchTerm] = useState(""); // Filtro por nombre
   const [selectedTown, setSelectedTown] = useState(""); // Filtro por municipio (selección)
   const [appliedTown, setAppliedTown] = useState(""); // Filtro por municipio (aplicado)
@@ -99,6 +100,7 @@ export default function AdminIpsPage() {
     if (isAuthorized === true) {
       const fetchAllIps = async () => {
         try {
+          setIsLoading(true); // Iniciar la carga
           const response = await fetch("/api/v1.0.0/ips/filter", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -128,6 +130,8 @@ export default function AdminIpsPage() {
         } catch (error) {
           console.error("Error fetching IPS:", error);
           setError(error instanceof Error ? error.message : "An unknown error occurred while fetching IPS");
+        } finally {
+          setIsLoading(false); // Finalizar la carga, haya éxito o error
         }
       };
 
@@ -304,7 +308,7 @@ export default function AdminIpsPage() {
             </div>
           </div>
 
-          {/* Botón Agregar IPS (debajo de los filtros, arriba de Eliminar Filtros) */}
+          {/* Botón Agregar IPS (debajo de los filtros) */}
           <div className="mt-4 flex justify-end">
             <Link
               href="/admin/ips/create"
@@ -316,7 +320,10 @@ export default function AdminIpsPage() {
           </div>
         </div>
 
-        {Object.keys(groupedIps).length > 0 ? (
+        {/* Mostrar un indicador de carga mientras se obtienen los datos */}
+        {isLoading ? (
+          <p className="text-gray-600 dark:text-gray-300 text-center text-lg">Cargando...</p>
+        ) : Object.keys(groupedIps).length > 0 ? (
           Object.keys(groupedIps)
             .sort()
             .map((town) => (
