@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import Link from "next/link";
 
 type EditFormProps = {
@@ -25,7 +25,9 @@ export default function EditForm({ ipsData, sessionToken }: EditFormProps) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [formDataToSubmit, setFormDataToSubmit] = useState<FormData | null>(null);
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevent default form submission
+    const formData = new FormData(e.currentTarget);
     setFormDataToSubmit(formData);
     setShowConfirm(true);
   };
@@ -112,7 +114,7 @@ export default function EditForm({ ipsData, sessionToken }: EditFormProps) {
           </div>
         </div>
       )}
-      <form action={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-100 mb-1">
