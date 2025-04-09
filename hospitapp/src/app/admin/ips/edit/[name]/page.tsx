@@ -98,7 +98,7 @@ export default async function IpsEditPage({ params }: IpsEditPageProps) {
         error = "La IPS no fue encontrada.";
       }
     }
-  } catch (err) {
+  } catch {
     error = "Ocurrió un error inesperado.";
   }
 

@@ -104,7 +104,7 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
       ipsData = data.data ?? null;
       if (!ipsData) error = "La IPS no fue encontrada.";
     }
-  } catch (err) {
+  } catch {
     error = "Ocurrió un error inesperado.";
   }
 
