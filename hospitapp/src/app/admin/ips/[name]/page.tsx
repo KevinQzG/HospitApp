@@ -4,7 +4,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { ENV } from "@/config/env";
-import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import IpsActions from "./IpsActions";
 
 type IpsResponse = {
   _id: string;
@@ -18,39 +19,10 @@ type IpsResponse = {
   level?: string;
   eps?: { _id: string; name: string }[];
   specialties?: { _id: string; name: string }[];
-};
-
-type Review = {
-  _id: string;
-  rating: number;
-  comment?: string;
-  createdAt: string;
-  updatedAt: string;
-  userId: string;
-};
-
-type ReviewsResult = {
-  reviews: Review[];
-  pagination: {
-    total: number;
-    totalPages: number;
-    page: number;
-    pageSize: number;
+  location?: {
+    type: "Point";
+    coordinates: [number, number];
   };
-};
-
-type LookIpsResponse = {
-  success: boolean;
-  error?: string;
-  data?: IpsResponse;
-  reviewsResult?: ReviewsResult;
-};
-
-type AuthResponse = {
-  success: boolean;
-  user?: { role: string };
-  error?: string;
-  message?: string;
 };
 
 type IpsDetailPageProps = {
@@ -62,11 +34,8 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
   const sessionToken = cookieStore.get("session")?.value;
 
   if (!sessionToken) {
-    console.log("No session token found in cookies, redirecting to home");
     redirect("/");
   }
-
-  console.log("Session token encontrado:", sessionToken);
 
   const authResponse = await fetch(`${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/auth/verification`, {
     method: "POST",
@@ -80,60 +49,36 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
     }),
   });
 
-  if (!authResponse.ok || !authResponse.headers.get("content-type")?.includes("application/json")) {
-    console.error("Authentication failed - Response not OK or not JSON:", {
-      status: authResponse.status,
-      contentType: authResponse.headers.get("content-type"),
-    });
-    redirect("/");
-  }
-
-  const authData: AuthResponse = await authResponse.json();
-  console.log("Auth response data:", authData);
-
-  if (!authData.success) {
-    console.log("Authentication failed - Success is false:", {
-      message: authData.message,
-      error: authData.error,
-    });
-    redirect("/");
-  }
-
-  const userRole = authData.user?.role?.toUpperCase();
-  if (userRole !== "ADMIN") {
-    console.log("User does not have ADMIN role:", { userRole });
+  const authData = await authResponse.json();
+  if (!authResponse.ok || !authData.success || authData.user?.role?.toUpperCase() !== "ADMIN") {
     redirect("/");
   }
 
   const resolvedParams = await params;
-  console.log("Resolved params:", resolvedParams);
-
   const name = resolvedParams?.name;
   if (!name) {
     return (
-      <section className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 transition-colors duration-300">
-        <div className="text-center max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8">
-          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2 tracking-tight">
-            Error: Nombre de IPS no proporcionado
+      <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center px-4">
+        <div className="text-center w-full max-w-md bg-gray-800 rounded-3xl shadow-lg p-8">
+          <h1 className="text-xl font-semibold text-gray-100 mb-3 tracking-tight">
+            Nombre de IPS no proporcionado
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
+          <p className="text-gray-400 mb-6 text-sm">
             No se proporcionó un nombre de IPS válido en la URL.
           </p>
           <Link
             href="/admin/ips"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow transition-all duration-300"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gray-700 text-gray-200 hover:bg-gray-600 text-sm font-medium transition-all duration-300"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver a la lista
           </Link>
         </div>
-      </section>
+      </div>
     );
   }
 
   const decodedName = decodeURIComponent(name);
-  console.log("Decoded name:", decodedName);
-
   let ipsData: IpsResponse | null = null;
   let error: string | null = null;
 
@@ -148,167 +93,154 @@ export default async function IpsDetailPage({ params }: IpsDetailPageProps) {
         name: decodedName,
         reviewsPage: 1,
         reviewsPageSize: 5,
-        sorts: [
-          { field: "rating", direction: -1 },
-          { field: "updatedAt", direction: 1 },
-        ],
+        sorts: [{ field: "rating", direction: -1 }, { field: "updatedAt", direction: 1 }],
       }),
     });
 
-    console.log("IPS fetch response status:", response.status);
-    console.log("IPS fetch response headers:", response.headers.get("content-type"));
-
+    const data = await response.json();
     if (!response.ok) {
-      const errorData: LookIpsResponse = await response.json();
-      console.log("IPS fetch error data:", errorData);
-      error = errorData.error || "No se pudo obtener información de la IPS.";
+      error = data.error || "No se pudo obtener información de la IPS.";
     } else {
-      const data: LookIpsResponse = await response.json();
-      console.log("IPS fetch response data:", data);
       ipsData = data.data ?? null;
-      if (!ipsData) {
-        error = "La IPS no fue encontrada.";
-      }
+      if (!ipsData) error = "La IPS no fue encontrada.";
     }
-  } catch (err) {
-    error = err instanceof Error ? err.message : "Ocurrió un error desconocido.";
-    console.error("Error in IpsDetailPage:", err);
+  } catch {
+    error = "Ocurrió un error inesperado.";
   }
 
   if (error || !ipsData) {
     return (
-      <section className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 transition-colors duration-300">
-        <div className="text-center max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8">
-          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2 tracking-tight">
+      <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center px-4">
+        <div className="text-center w-full max-w-md bg-gray-800 rounded-3xl shadow-lg p-8">
+          <h1 className="text-xl font-semibold text-gray-100 mb-3 tracking-tight">
             {error ? "Error al cargar la IPS" : "IPS no encontrada"}
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
+          <p className="text-gray-400 mb-6 text-sm">
             {error || "No hay datos disponibles para esta IPS."}
           </p>
           <Link
             href="/admin/ips"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow transition-all duration-300"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gray-700 text-gray-200 hover:bg-gray-600 text-sm font-medium transition-all duration-300"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver a la lista
           </Link>
         </div>
-      </section>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-gray-900 text-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Header with Name and Actions */}
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4 w-full sm:w-auto">
             <Link
               href="/admin/ips"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm font-medium shadow transition-all duration-300"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-700 text-gray-200 hover:bg-gray-600 text-sm font-medium transition-all duration-300"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4" />
               Volver
             </Link>
-            <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-semibold text-gray-100 tracking-tight break-words max-w-[calc(100%-120px)] sm:max-w-[calc(100%-200px)]">
               {ipsData.name}
             </h1>
           </div>
-          <div className="flex gap-3">
-            <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow transition-all duration-300">
-              <Pencil className="w-4 h-4" />
-              Editar
-            </button>
-            <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-sm font-medium shadow transition-all duration-300">
-              <Trash2 className="w-4 h-4" />
-              Eliminar
-            </button>
-          </div>
-        </div>
+          {/* Usa el componente IpsActions para los botones */}
+          <IpsActions id={ipsData._id} name={ipsData.name} />
+        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 transition-all duration-300 hover:shadow-xl">
-              <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
-                <span className="text-blue-600 dark:text-blue-400">📋</span> Información General
-              </h2>
-              <div className="space-y-4 text-gray-700 dark:text-gray-300">
-                <p>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">Nombre:</span> {ipsData.name}
-                </p>
-                <p>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">Ubicación:</span> {ipsData.department}, {ipsData.town}
-                </p>
-                <p>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">Dirección:</span> {ipsData.address}
-                </p>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {/* Información General */}
+          <section className="md:col-span-2">
+            <div className="bg-gray-800 rounded-3xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
+              <h2 className="text-lg font-medium text-gray-100 mb-4">Información General</h2>
+              <dl className="space-y-3 text-sm text-gray-400">
+                <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2">
+                  <dt className="font-medium text-gray-100">Nombre:</dt>
+                  <dd className="break-words">{ipsData.name}</dd>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2">
+                  <dt className="font-medium text-gray-100">Ubicación:</dt>
+                  <dd>{ipsData.department}, {ipsData.town}</dd>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2">
+                  <dt className="font-medium text-gray-100">Dirección:</dt>
+                  <dd>{ipsData.address}</dd>
+                </div>
                 {ipsData.phone && (
-                  <p>
-                    <span className="font-medium text-gray-900 dark:text-gray-100">Teléfono:</span>{" "}
-                    <a href={`tel:${ipsData.phone}`} className="text-blue-600 dark:text-blue-400 hover:underline">
-                      {ipsData.phone}
-                    </a>
-                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2">
+                    <dt className="font-medium text-gray-100">Teléfono:</dt>
+                    <dd>
+                      <a href={`tel:${ipsData.phone}`} className="text-blue-400 hover:underline">
+                        {ipsData.phone}
+                      </a>
+                    </dd>
+                  </div>
                 )}
                 {ipsData.email && (
-                  <p>
-                    <span className="font-medium text-gray-900 dark:text-gray-100">Correo:</span>{" "}
-                    <a href={`mailto:${ipsData.email}`} className="text-blue-600 dark:text-blue-400 hover:underline">
-                      {ipsData.email}
-                    </a>
-                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2">
+                    <dt className="font-medium text-gray-100">Correo:</dt>
+                    <dd>
+                      <a href={`mailto:${ipsData.email}`} className="text-blue-400 hover:underline">
+                        {ipsData.email}
+                      </a>
+                    </dd>
+                  </div>
                 )}
                 {ipsData.level && (
-                  <p>
-                    <span className="font-medium text-gray-900 dark:text-gray-100">Nivel:</span> {ipsData.level}
-                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2">
+                    <dt className="font-medium text-gray-100">Nivel:</dt>
+                    <dd>{ipsData.level}</dd>
+                  </div>
                 )}
-              </div>
+              </dl>
             </div>
-          </div>
+          </section>
 
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 transition-all duration-300 hover:shadow-xl">
-              <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
-                <span className="text-blue-600 dark:text-blue-400">👥</span> EPS Aceptadas
-              </h2>
+          {/* EPS Aceptadas */}
+          <section className="md:col-span-1">
+            <div className="bg-gray-800 rounded-3xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
+              <h2 className="text-lg font-medium text-gray-100 mb-4">EPS Aceptadas</h2>
               {ipsData.eps && ipsData.eps.length > 0 ? (
-                <div className="grid grid-cols-1 gap-3">
+                <ul className="space-y-2">
                   {ipsData.eps.map((eps) => (
-                    <div
+                    <li
                       key={eps._id}
-                      className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 text-center text-gray-800 dark:text-gray-200 font-medium transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      className="bg-gray-700 rounded-xl p-2 text-center text-sm text-gray-200 transition-all duration-200 hover:bg-gray-600"
                     >
                       {eps.name}
-                    </div>
+                    </li>
                   ))}
-                </div>
+                </ul>
               ) : (
-                <p className="text-gray-600 dark:text-gray-300">No hay EPS asociadas.</p>
+                <p className="text-sm text-gray-400">No hay EPS asociadas.</p>
               )}
             </div>
-          </div>
+          </section>
 
-          <div className="lg:col-span-3">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 transition-all duration-300 hover:shadow-xl">
-              <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
-                <span className="text-blue-600 dark:text-blue-400">🩺</span> Especialidades
-              </h2>
+          {/* Especialidades */}
+          <section className="md:col-span-3">
+            <div className="bg-gray-800 rounded-3xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
+              <h2 className="text-lg font-medium text-gray-100 mb-4">Especialidades</h2>
               {ipsData.specialties && ipsData.specialties.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                   {ipsData.specialties.map((specialty) => (
                     <div
                       key={specialty._id}
-                      className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 text-center text-gray-800 dark:text-gray-200 font-medium transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      className="bg-gray-700 rounded-xl p-3 text-center text-sm text-gray-200 transition-all duration-200 hover:bg-gray-600"
                     >
                       {specialty.name}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-600 dark:text-gray-300">No hay especialidades asociadas.</p>
+                <p className="text-sm text-gray-400">No hay especialidades asociadas.</p>
               )}
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </div>

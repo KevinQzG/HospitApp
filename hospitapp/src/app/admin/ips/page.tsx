@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Hospital, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, Hospital, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
 
 type IpsResponse = {
@@ -192,9 +192,23 @@ export default function AdminIpsPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-10 text-center tracking-tight">
-          Lista de IPS
-        </h1>
+        <div className="mb-10">
+          <div className="flex flex-col sm:flex-row justify-between items-center">
+            <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 text-center tracking-tight">
+              Lista de IPS
+            </h1>
+            {/* Contenedor para alinear el botón "Agregar IPS" con la columna "Acciones" */}
+            <div className="mt-4 sm:mt-0 w-1/3 flex justify-center">
+              <Link
+                href="/admin/ips/create"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-green-600 text-white hover:bg-green-500 text-sm font-medium transition-all duration-300 w-[120px]"
+              >
+                <Plus className="w-4 h-4" />
+                Agregar IPS
+              </Link>
+            </div>
+          </div>
+        </div>
 
         {Object.keys(groupedIps).length > 0 ? (
           Object.keys(groupedIps)
@@ -234,7 +248,7 @@ export default function AdminIpsPage() {
                             <div className="flex justify-center">
                               <Link
                                 href={`/admin/ips/${encodeURIComponent(ips.name)}`}
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-all duration-200 shadow"
+                                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-all duration-200 shadow w-[120px]"
                               >
                                 <Eye className="w-4 h-4" />
                                 Ver Detalles
