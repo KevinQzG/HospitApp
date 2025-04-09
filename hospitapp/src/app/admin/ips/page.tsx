@@ -243,6 +243,16 @@ export default function AdminIpsPage() {
           <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 text-center tracking-tight mb-6">
             Lista de IPS
           </h1>
+          {/* Botón de Regresar al Dashboard */}
+          <div className="flex justify-start mb-6">
+            <Link
+              href="/admin"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 text-sm font-medium border border-gray-600 transition-all duration-300 h-10"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Regresar al Dashboard
+            </Link>
+          </div>
 
           {/* Buscador y Filtros */}
           <div className="flex flex-col sm:flex-row gap-4 items-end">
