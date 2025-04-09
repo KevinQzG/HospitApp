@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Hospital, ChevronLeft, ChevronRight, Plus, Search, X } from "lucide-react";
 import Link from "next/link";
@@ -41,30 +41,17 @@ type AuthResponse = {
 export default function AdminIpsPage() {
   const router = useRouter();
   const [groupedIps, setGroupedIps] = useState<{ [key: string]: IpsResponse[] }>({});
-  const [allIps, setAllIps] = useState<IpsResponse[]>([]); // Todas las IPS para filtrado por nombre
+  const [allIps, setAllIps] = useState<IpsResponse[]>([]); // Todas las IPS para filtrado
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(21);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [searchTerm, setSearchTerm] = useState(""); // Filtro por nombre
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(""); // Filtro por nombre con debounce
   const [selectedTown, setSelectedTown] = useState(""); // Filtro por municipio (selección)
   const [appliedTown, setAppliedTown] = useState(""); // Filtro por municipio (aplicado)
   const [towns, setTowns] = useState<string[]>([]); // Lista de todos los municipios
-
-  // Debounce para el filtrado por nombre
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 1500); // 1.5 segundos de retraso
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchTerm]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -107,10 +94,10 @@ export default function AdminIpsPage() {
     checkAuth();
   }, [router]);
 
-  // Cargar todos los towns usando /api/v1.0.0/ips/filter
+  // Cargar todas las IPS usando /api/v1.0.0/ips/filter
   useEffect(() => {
     if (isAuthorized === true) {
-      const fetchAllIpsForTowns = async () => {
+      const fetchAllIps = async () => {
         try {
           const response = await fetch("/api/v1.0.0/ips/filter", {
             method: "POST",
@@ -122,7 +109,7 @@ export default function AdminIpsPage() {
           });
 
           if (!response.ok) {
-            throw new Error(`Failed to fetch IPS for towns: ${response.status} ${response.statusText}`);
+            throw new Error(`Failed to fetch IPS: ${response.status} ${response.statusText}`);
           }
 
           const contentType = response.headers.get("content-type");
@@ -132,99 +119,61 @@ export default function AdminIpsPage() {
 
           const data: IpsListResponse = await response.json();
           if (data.success && data.data) {
-            setAllIps(data.data); // Guardar todas las IPS para filtrado por nombre
+            setAllIps(data.data); // Guardar todas las IPS
             const uniqueTowns = Array.from(new Set(data.data.map((ips) => ips.town || "Sin municipio"))).sort();
             setTowns(uniqueTowns);
-          } else {
-            throw new Error(data.error || "No IPS data returned for towns");
-          }
-        } catch (error) {
-          console.error("Error fetching towns:", error);
-          setError(error instanceof Error ? error.message : "An unknown error occurred while fetching towns");
-        }
-      };
-
-      fetchAllIpsForTowns();
-    }
-  }, [isAuthorized]);
-
-  // Cargar las IPS paginadas usando /api/v1.0.0/ips/filter/pagination
-  useEffect(() => {
-    if (isAuthorized === true && allIps.length > 0) {
-      const fetchIps = async () => {
-        try {
-          setLoading(true);
-
-          // Filtrar todas las IPS por nombre en el cliente (usando el valor con debounce)
-          const filteredByName = debouncedSearchTerm
-            ? allIps.filter((ips) => ips.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
-            : allIps;
-
-          // Filtrar por municipio usando /api/v1.0.0/ips/filter/pagination
-          const response = await fetch("/api/v1.0.0/ips/filter/pagination", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({
-              page: currentPage,
-              pageSize: itemsPerPage,
-              town: appliedTown || undefined, // Usar el filtro aplicado
-              hasReviews: false,
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error(`Failed to fetch IPS: ${response.status} ${response.statusText}`);
-          }
-
-          const contentType = response.headers.get("content-type");
-          if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Response from /api/v1.0.0/ips/filter/pagination is not JSON");
-          }
-
-          const data: IpsListResponse = await response.json();
-          if (data.success && data.data && data.pagination) {
-            // Combinar el filtrado por nombre con los resultados paginados
-            const filteredIps = debouncedSearchTerm
-              ? data.data.filter((ips) => filteredByName.some((filteredIps) => filteredIps._id === ips._id))
-              : data.data;
-
-            // Agrupar las IPS filtradas por municipio
-            const grouped = filteredIps.reduce((acc, ips) => {
-              const town = ips.town || "Sin municipio";
-              acc[town] = acc[town] || [];
-              acc[town].push(ips);
-              return acc;
-            }, {} as { [key: string]: IpsResponse[] });
-
-            setGroupedIps(grouped);
-
-            // Calcular el total de ítems después de aplicar ambos filtros
-            const totalFilteredItems = filteredByName.filter((ips) =>
-              appliedTown ? (ips.town || "Sin municipio") === appliedTown : true
-            ).length;
-
-            setTotalItems(totalFilteredItems);
-            setTotalPages(Math.ceil(totalFilteredItems / itemsPerPage));
-
-            // Asegurarse de que la página actual no sea mayor que el total de páginas
-            if (currentPage > Math.ceil(totalFilteredItems / itemsPerPage)) {
-              setCurrentPage(1);
-            }
           } else {
             throw new Error(data.error || "No IPS data returned");
           }
         } catch (error) {
           console.error("Error fetching IPS:", error);
           setError(error instanceof Error ? error.message : "An unknown error occurred while fetching IPS");
-        } finally {
-          setLoading(false);
         }
       };
 
-      fetchIps();
+      fetchAllIps();
     }
-  }, [isAuthorized, allIps, currentPage, itemsPerPage, appliedTown, debouncedSearchTerm]);
+  }, [isAuthorized]);
+
+  // Filtrar y paginar manualmente en el cliente
+  useEffect(() => {
+    if (isAuthorized === true && allIps.length > 0) {
+      // Filtrar por nombre en tiempo real
+      const filteredByName = searchTerm
+        ? allIps.filter((ips) => ips.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        : allIps;
+
+      // Filtrar por municipio
+      const filteredIps = appliedTown
+        ? filteredByName.filter((ips) => (ips.town || "Sin municipio") === appliedTown)
+        : filteredByName;
+
+      // Calcular el total de ítems después de aplicar ambos filtros
+      const totalFilteredItems = filteredIps.length;
+      setTotalItems(totalFilteredItems);
+      setTotalPages(Math.ceil(totalFilteredItems / itemsPerPage));
+
+      // Asegurarse de que la página actual no sea mayor que el total de páginas
+      if (currentPage > Math.ceil(totalFilteredItems / itemsPerPage)) {
+        setCurrentPage(1);
+      }
+
+      // Aplicar paginación manualmente
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedIps = filteredIps.slice(startIndex, endIndex);
+
+      // Agrupar las IPS paginadas por municipio
+      const grouped = paginatedIps.reduce((acc, ips) => {
+        const town = ips.town || "Sin municipio";
+        acc[town] = acc[town] || [];
+        acc[town].push(ips);
+        return acc;
+      }, {} as { [key: string]: IpsResponse[] });
+
+      setGroupedIps(grouped);
+    }
+  }, [isAuthorized, allIps, currentPage, itemsPerPage, appliedTown, searchTerm]);
 
   const handleFilterByTown = () => {
     setAppliedTown(selectedTown); // Aplicar el filtro por municipio solo al hacer clic en "Filtrar"
@@ -233,7 +182,6 @@ export default function AdminIpsPage() {
 
   const handleClearFilters = () => {
     setSearchTerm(""); // Limpiar el filtro por nombre
-    setDebouncedSearchTerm(""); // Limpiar el filtro con debounce
     setSelectedTown(""); // Limpiar la selección de municipio
     setAppliedTown(""); // Limpiar el filtro aplicado por municipio
     setCurrentPage(1); // Resetear a la primera página
@@ -288,28 +236,17 @@ export default function AdminIpsPage() {
     <div className="min-h-screen bg-white dark:bg-gray-900 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-10">
-          <div className="flex flex-col sm:flex-row justify-between items-center">
-            <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 text-center tracking-tight">
-              Lista de IPS
-            </h1>
-            <div className="mt-4 sm:mt-0 w-1/3 flex justify-center">
-              <Link
-                href="/admin/ips/create"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-500 text-sm font-medium transition-all duration-300 w-[120px]"
-              >
-                <Plus className="w-4 h-4" />
-                Agregar IPS
-              </Link>
-            </div>
-          </div>
+          <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 text-center tracking-tight mb-6">
+            Lista de IPS
+          </h1>
 
           {/* Buscador y Filtros */}
-          <div className="mt-6 flex flex-col sm:flex-row gap-4 items-end">
+          <div className="flex flex-col sm:flex-row gap-4 items-end">
             {/* Buscador por nombre */}
             <div className="flex-1">
               <label
                 htmlFor="search"
-                className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 h-10 flex items-center"
               >
                 Buscar por nombre
               </label>
@@ -320,7 +257,7 @@ export default function AdminIpsPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Escribe el nombre de la IPS..."
-                  className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 pl-10"
+                  className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 pl-10 h-10"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
               </div>
@@ -330,7 +267,7 @@ export default function AdminIpsPage() {
             <div className="flex-1">
               <label
                 htmlFor="town"
-                className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 h-10 flex items-center"
               >
                 Filtrar por municipio
               </label>
@@ -338,7 +275,7 @@ export default function AdminIpsPage() {
                 id="town"
                 value={selectedTown}
                 onChange={(e) => setSelectedTown(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+                className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 h-10"
               >
                 <option value="">Todos los municipios</option>
                 {towns.map((town) => (
@@ -349,22 +286,33 @@ export default function AdminIpsPage() {
               </select>
             </div>
 
-            {/* Botones Filtrar y Eliminar Filtros */}
-            <div className="flex gap-2">
+            {/* Botones de filtrado */}
+            <div className="flex gap-2 items-end">
               <button
                 onClick={handleFilterByTown}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium border border-blue-600 transition-all duration-300"
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium border border-blue-600 transition-all duration-300 h-10 w-32"
               >
                 Filtrar
               </button>
               <button
                 onClick={handleClearFilters}
-                className="px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 text-sm font-medium border border-gray-500 transition-all duration-300"
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm font-medium border border-red-600 transition-all duration-300 h-10 w-32 flex items-center justify-center"
               >
-                <X className="w-4 h-4 inline-block mr-1" />
+                <X className="w-4 h-4 mr-1" />
                 Eliminar Filtros
               </button>
             </div>
+          </div>
+
+          {/* Botón Agregar IPS (debajo de los filtros, arriba de Eliminar Filtros) */}
+          <div className="mt-4 flex justify-end">
+            <Link
+              href="/admin/ips/create"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-500 text-sm font-medium border border-green-600 transition-all duration-300 h-10 w-32"
+            >
+              <Plus className="w-4 h-4" />
+              Agregar IPS
+            </Link>
           </div>
         </div>
 
@@ -393,8 +341,10 @@ export default function AdminIpsPage() {
                         >
                           <td className="w-1/3 p-4 align-middle">
                             <div className="flex items-center gap-3">
-                              <Hospital className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                              <span className="text-gray-900 dark:text-gray-100 font-medium truncate">
+                              <div className="flex-shrink-0 w-5 h-5">
+                                <Hospital className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                              </div>
+                              <span className="text-gray-900 dark:text-gray-100 font-medium truncate flex-1">
                                 {ips.name}
                               </span>
                             </div>
