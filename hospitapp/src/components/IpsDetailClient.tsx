@@ -68,7 +68,6 @@ export default function IpsDetailClient({
   const [viewMode, setViewMode] = useState<"details" | "map">("details");
   const [userSession, setUserSession] = useState<UserSession>(null);
 
-  // Fetch user session on mount
   useEffect(() => {
     const fetchUserSession = async () => {
       try {
@@ -201,7 +200,6 @@ function DetailsView({
   const [newComments, setNewComments] = useState<string>("");
   const [averageRating, setAverageRating] = useState<number>(0);
 
-  // Calculate average rating
   useEffect(() => {
     if (reviewsResult && reviewsResult.reviews.length > 0) {
       const avg =
@@ -242,7 +240,7 @@ function DetailsView({
 
       if (!response.ok) {
         const errorData: ReviewsResponse = await response.json();
-        throw new Error(errorData.error || "Failed to fetch reviews");
+        throw new Error(errorData.error || "No se pudieron obtener las reseñas");
       }
 
       const data: ReviewsResponse = await response.json();
@@ -263,7 +261,7 @@ function DetailsView({
         });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      setError(err instanceof Error ? err.message : "Ocurrió un error desconocido");
     } finally {
       setLoading(false);
     }
@@ -293,13 +291,13 @@ function DetailsView({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to delete review");
+        throw new Error(errorData.error || "No se pudo eliminar la reseña");
       }
 
       toast.success("¡Reseña eliminada correctamente!");
       fetchReviewsPage(reviewsResult?.pagination?.page || 1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete review");
+      setError(err instanceof Error ? err.message : "No se pudo eliminar la reseña");
     }
   };
 
@@ -331,14 +329,14 @@ function DetailsView({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update review");
+        throw new Error(errorData.error || "No se pudo actualizar la reseña");
       }
 
       toast.success("¡Reseña actualizada correctamente!");
       setEditingReviewId(null);
       await fetchReviewsPage(reviewsResult?.pagination?.page || 1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update review");
+      setError(err instanceof Error ? err.message : "No se pudo actualizar la reseña");
     }
   };
 
@@ -372,22 +370,57 @@ function DetailsView({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create review");
+        throw new Error(errorData.error || "No se pudo crear la reseña");
       }
 
-      toast.success("¡Reseña publicada correctamente!");
+      const newReview = await response.json();
+
+      // Crear un objeto provisional que cumpla con ReviewResponse
+      const newReviewData: ReviewResponse = {
+        _id: newReview.review || "temp-id", // Usamos el ID devuelto por el backend
+        user: userSession.email, // Usamos el email como identificador provisional
+        rating: newRating,
+        comments: newComments,
+        ips: ipsData._id,
+        lastUpdated: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        userEmail: userSession.email, // Mostramos el email del usuario
+      };
+
+      // Actualizar el estado inmediatamente con la nueva reseña
+      setReviewsResult(prev => ({
+        reviews: [newReviewData, ...(prev?.reviews || [])],
+        pagination: prev?.pagination
+          ? {
+              ...prev.pagination,
+              total: (prev.pagination.total || 0) + 1,
+              totalPages: Math.ceil(
+                ((prev.pagination.total || 0) + 1) / (prev.pagination.pageSize || 5)
+              ),
+            }
+          : {
+              total: 1,
+              totalPages: 1,
+              page: 1,
+              pageSize: 5,
+            },
+      }));
+
+      // Mostrar la confirmación
+      toast.success("¡Reseña publicada correctamente!", {
+            });
+
+      // Limpiar el formulario
       setNewRating(0);
       setNewComments("");
       setShowAddReviewForm(false);
-      await fetchReviewsPage(reviewsResult?.pagination?.page || 1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create review");
+      setError(err instanceof Error ? err.message : "No se pudo crear la reseña");
     }
   };
 
   return (
     <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-      {/* Información General */}
       <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 hover:shadow-md transition-all duration-300">
         <h2 className="text-3xl font-semibold text-gray-800 dark:text-white mb-6 flex items-center">
           <Hospital className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3 flex-shrink-0" />
@@ -423,7 +456,6 @@ function DetailsView({
         </ul>
       </section>
 
-      {/* Cómo Llegar */}
       <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 hover:shadow-md transition-all duration-300">
         <h2 className="text-3xl font-semibold text-gray-800 dark:text-white mb-6">Cómo llegar</h2>
         <nav aria-label="Opciones de navegación">
@@ -468,7 +500,6 @@ function DetailsView({
         </nav>
       </section>
 
-      {/* EPS Aceptadas */}
       {ipsData.eps && ipsData.eps.length > 0 && (
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 md:col-span-2 hover:shadow-md transition-all duration-300">
           <h2 className="text-3xl font-semibold text-gray-800 dark:text-white mb-6 flex items-center">
@@ -491,7 +522,6 @@ function DetailsView({
         </section>
       )}
 
-      {/* Especialidades */}
       {ipsData.specialties && ipsData.specialties.length > 0 && (
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 md:col-span-2 hover:shadow-md transition-all duration-300">
           <h2 className="text-3xl font-semibold text-gray-800 dark:text-white mb-6 flex items-center">
@@ -514,14 +544,12 @@ function DetailsView({
         </section>
       )}
 
-      {/* Reviews Section */}
       <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 md:col-span-2 hover:shadow-md transition-all duration-300">
         <h2 className="text-3xl font-semibold text-gray-800 dark:text-white mb-6 flex items-center">
           <Star className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3 flex-shrink-0" />
           Reseñas
         </h2>
 
-        {/* Average Rating */}
         <div className="mb-8">
           <div className="flex items-center space-x-3">
             <div className="flex">
@@ -548,7 +576,6 @@ function DetailsView({
           <p className="text-red-500">{error}</p>
         ) : null}
 
-        {/* Add Review Button */}
         <button
           onClick={() => setShowAddReviewForm(!showAddReviewForm)}
           className="mb-6 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
@@ -557,7 +584,6 @@ function DetailsView({
           Agregar Reseña
         </button>
 
-        {/* Add Review Form */}
         {showAddReviewForm && (
           <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-xl shadow-sm">
             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
@@ -617,7 +643,6 @@ function DetailsView({
           </div>
         )}
 
-        {/* Reviews List */}
         {reviewsResult && reviewsResult.reviews.length > 0 ? (
           <>
             {reviewsResult.reviews.map((review) => (
@@ -731,7 +756,6 @@ function DetailsView({
               </div>
             ))}
 
-            {/* Pagination Controls */}
             {reviewsResult?.pagination && (reviewsResult.pagination.totalPages || 0) > 1 && (
               <div className="mt-8 flex justify-center items-center space-x-2">
                 <button
@@ -760,9 +784,13 @@ function DetailsView({
                 ))}
                 <button
                   onClick={() => handlePageChange((reviewsResult.pagination?.page || 1) + 1)}
-                  disabled={(reviewsResult.pagination?.page || 1) === (reviewsResult.pagination?.totalPages || 1) || loading}
+                  disabled={
+                    (reviewsResult.pagination?.page || 1) ===
+                      (reviewsResult.pagination?.totalPages || 1) || loading
+                  }
                   className={`p-2 rounded-full transition-all duration-300 ${
-                    (reviewsResult.pagination?.page || 1) === (reviewsResult.pagination?.totalPages || 1) || loading
+                    (reviewsResult.pagination?.page || 1) ===
+                      (reviewsResult.pagination?.totalPages || 1) || loading
                       ? "text-gray-400 cursor-not-allowed"
                       : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                   }`}
