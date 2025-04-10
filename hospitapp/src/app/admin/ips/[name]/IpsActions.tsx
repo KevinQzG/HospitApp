@@ -45,37 +45,6 @@ export default function IpsActions({ id, name }: IpsActionsProps) {
         </div>
       )}
 
-      {/* Confirmation Dialog */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-3xl p-6 max-w-sm w-full">
-            <h3 className="text-lg font-medium text-gray-100 mb-4">
-              ¿Estás seguro de eliminar esta IPS?
-            </h3>
-            <p className="text-sm text-gray-400 mb-6">
-              Esta acción no se puede deshacer. ¿Deseas continuar?
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 rounded-full bg-gray-700 text-gray-200 hover:bg-gray-600 text-sm font-medium transition-all duration-300"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => {
-                  setShowDeleteConfirm(false);
-                  handleDelete();
-                }}
-                className="px-4 py-2 rounded-full bg-red-600 text-white hover:bg-red-500 text-sm font-medium transition-all duration-300"
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Action Buttons */}
       <div className="flex items-center gap-3 w-full sm:w-auto">
         <button
@@ -93,6 +62,37 @@ export default function IpsActions({ id, name }: IpsActionsProps) {
           Eliminar
         </button>
       </div>
+
+      {/* Overlay for Delete Confirmation */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-2xl p-6 shadow-xl max-w-sm w-full mx-4">
+            <h2 className="text-lg font-semibold text-gray-100 mb-4">
+              ¿Estás seguro de eliminar esta IPS?
+            </h2>
+            <p className="text-sm text-gray-400 mb-6">
+              Esta acción no se puede deshacer. ¿Deseas continuar?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-200 bg-gray-600 rounded-full hover:bg-gray-500 transition-all duration-200"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  handleDelete();
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-full hover:bg-red-600 transition-all duration-200"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
