@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Home,
   Search,
+  MapPin,
 } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import SearchFormClient, { SearchFormSubmitHandler } from "./SearchFormClient";
@@ -43,14 +44,15 @@ interface IpsResponse {
   maps?: string;
   waze?: string;
   averageRating?: number; // Added to store the average rating (1-5)
+  hasReviews?: boolean; // Added to track if the IPS has reviews
 }
 
 interface ReviewResponse {
   _id: string;
-  ips: string; // Updated to match the field name from AdminReviewsPage (was ipsId)
-  rating: number; // Rating field (1-5)
+  ips: string;
+  rating: number;
   userEmail?: string;
-  comments?: string; // Updated to match AdminReviewsPage (was comment)
+  comments?: string;
   createdAt?: string;
   lastUpdated?: string;
   user?: string;
@@ -103,14 +105,14 @@ function calculateDistance(
   return R * c;
 }
 
-// Star Rating Component
+// Star Rating Component with Tooltip
 const StarRating = ({ rating }: { rating: number }) => {
-  const roundedRating = Math.round(rating); // Round to the nearest integer (1-5)
-  const fullStars = roundedRating; // Number of full stars
-  const emptyStars = 5 - fullStars; // Remaining empty stars
+  const roundedRating = Math.round(rating);
+  const fullStars = roundedRating;
+  const emptyStars = 5 - fullStars;
 
   return (
-    <div className="flex items-center space-x-1">
+    <div className="group relative flex items-center space-x-1">
       {[...Array(fullStars)].map((_, i) => (
         <svg
           key={`full-${i}`}
@@ -124,16 +126,19 @@ const StarRating = ({ rating }: { rating: number }) => {
       {[...Array(emptyStars)].map((_, i) => (
         <svg
           key={`empty-${i}`}
-          className="w-4 h-4 text-gray-300"
+          className="w-4 h-4 text-gray-300 dark:text-gray-500"
           fill="currentColor"
           viewBox="0 0 24 24"
         >
           <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
         </svg>
       ))}
-      <span className="ml-1 text-gray-600 dark:text-gray-300 text-xs">
+      <span className="ml-1 text-gray-600 dark:text-gray-400 text-xs">
         ({roundedRating})
       </span>
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
+        {rating.toFixed(1)} de 5
+      </div>
     </div>
   );
 };
@@ -141,29 +146,40 @@ const StarRating = ({ rating }: { rating: number }) => {
 const RESULT_ITEM = memo(({ item }: { item: IpsResponse }) => (
   <Link
     href={`/ips-details/${encodeURIComponent(item.name)}`}
-    className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700 h-36 flex flex-col"
+    className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 border border-gray-200 dark:border-gray-700 h-36 flex flex-col"
   >
-    <div className="flex items-start space-x-3 flex-1">
+    <div className="flex items-start space-x-2 flex-1">
       <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-md flex-shrink-0">
-        <Hospital className="w-6 h-6 text-blue-700 dark:text-blue-400" />
+        <Hospital className="w-5 h-5 text-blue-700 dark:text-blue-400" />
       </div>
       <div className="flex-1 min-w-0">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
           {item.name}
         </h2>
-        <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
+        <div className="group flex items-center space-x-1 mt-0.5">
+          <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
+            {item.distance !== undefined
+              ? `${Math.round(item.distance)} metros`
+              : "N/A"}
+          </p>
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
+            Distancia desde tu ubicación actual
+          </div>
+        </div>
+        <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mt-0.5">
           {item.address}
           {item.town && `, ${item.town}`}
           {item.department && `, ${item.department}`}
         </p>
-        <p className="text-xs text-gray-800 dark:text-gray-200 mt-1">
-          Distancia:{" "}
-          {item.distance !== undefined
-            ? `${Math.round(item.distance)} metros`
-            : "N/A"}
-        </p>
-        <div className="mt-1">
-          <StarRating rating={item.averageRating || 0} />
+        <div className="mt-0.5">
+          {item.hasReviews ? (
+            <StarRating rating={item.averageRating || 0} />
+          ) : (
+            <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+              Sin reseñas
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -215,7 +231,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   useEffect(() => {
     const fetchFilteredResults = async () => {
       try {
-        // Obtener los parámetros de la URL
         const maxDistance = searchParams.get("maxDistance") ?? "20000";
         const specialtiesParam =
           searchParams.get("specialties")?.split(",").filter(Boolean) || [];
@@ -259,7 +274,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         const data: SearchResponse = await response.json();
         let filteredResults = data.data || [];
 
-        // Fetch all reviews to calculate average ratings for each IPS
         const reviewsResponse = await fetch("/api/v1.0.0/reviews/get/all", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -271,7 +285,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           const reviewsData: AllReviewsResponse = await reviewsResponse.json();
           if (reviewsData.success && reviewsData.data) {
             allReviews = reviewsData.data;
-            console.log("Reseñas obtenidas:", allReviews); // Debug: Log all reviews
+            console.log("Reseñas obtenidas:", allReviews);
           } else {
             console.error("Error al obtener reseñas:", reviewsData.error);
           }
@@ -279,12 +293,11 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           console.error("Error en la respuesta de la API de reseñas:", reviewsResponse.status);
         }
 
-        // Calculate average rating for each IPS
         filteredResults = filteredResults.map((item: IpsResponse) => {
           const ipsReviews = allReviews.filter(
-            (review) => review.ips === item._id // Updated to use review.ips instead of review.ipsId
+            (review) => review.ips === item._id
           );
-          console.log(`Reseñas para IPS ${item.name} (${item._id}):`, ipsReviews); // Debug: Log reviews for each IPS
+          console.log(`Reseñas para IPS ${item.name} (${item._id}):`, ipsReviews);
           const averageRating =
             ipsReviews.length > 0
               ? ipsReviews.reduce(
@@ -292,16 +305,15 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                   0
                 ) / ipsReviews.length
               : 0;
-          console.log(`Calificación promedio para ${item.name}: ${averageRating}`); // Debug: Log average rating
-          return { ...item, averageRating };
+          const hasReviews = ipsReviews.length > 0;
+          console.log(`Calificación promedio para ${item.name}: ${averageRating}`);
+          return { ...item, averageRating, hasReviews };
         });
 
-        // Log para depurar los resultados recibidos de la API
         console.log("Resultados recibidos de la API:", filteredResults.length);
         console.log("Paginación del servidor:", data.pagination);
         console.log("Primeros 5 resultados:", filteredResults.slice(0, 5));
 
-        // Filtrado adicional en el cliente para asegurarnos de que solo se muestren los IPS con la EPS seleccionada
         if (epsParam.length > 0) {
           filteredResults = filteredResults.filter((item: IpsResponse) => {
             if (!item.eps || item.eps.length === 0) return false;
@@ -318,15 +330,14 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           });
         }
 
-        // Calcular las distancias si tenemos las coordenadas del usuario
         if (userCoordinates) {
           filteredResults = filteredResults.map((item: IpsResponse) => ({
             ...item,
             distance: calculateDistance(
-              userCoordinates[1], // Latitud del usuario
-              userCoordinates[0], // Longitud del usuario
-              item.location.coordinates[1], // Latitud del IPS
-              item.location.coordinates[0] // Longitud del IPS
+              userCoordinates[1],
+              userCoordinates[0],
+              item.location.coordinates[1],
+              item.location.coordinates[0]
             ),
           }));
 
@@ -337,12 +348,12 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         }
 
         setAllResults(filteredResults);
-        setTotalResults(filteredResults.length); // Usar la longitud de los resultados filtrados
+        setTotalResults(filteredResults.length);
         setTotalPages(Math.ceil(filteredResults.length / pageSize));
 
         if (isNewSearch) {
-          setCurrentPage(1); // Reiniciar a la página 1 para una nueva búsqueda
-          setIsNewSearch(false); // Reiniciar la bandera
+          setCurrentPage(1);
+          setIsNewSearch(false);
         } else {
           const pageFromParams = parseInt(searchParams.get("page") ?? "1");
           setCurrentPage(pageFromParams);
@@ -365,7 +376,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
     }
   }, [searchParams, userCoordinates, isNewSearch]);
 
-  // Manejar los cambios en la búsqueda y la paginación
   useEffect(() => {
     const filtered = allResults.filter((item) =>
       `${item.name} ${item.address} ${item.town || ""} ${
@@ -377,7 +387,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
     setTotalResults(filtered.length);
     setTotalPages(Math.ceil(filtered.length / pageSize));
 
-    // Actualizar los resultados paginados instantáneamente sin transición
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
     setPaginatedResults(filtered.slice(start, end));
@@ -386,7 +395,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
     setCurrentPage(newPage);
-    // Actualizar la URL sin recargar la página
     const currentParams = new URLSearchParams(searchParams.toString());
     currentParams.set("page", newPage.toString());
     router.push(`/results?${currentParams.toString()}`, { scroll: false });
@@ -395,7 +403,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const handleSearchSubmit: SearchFormSubmitHandler = (isSubmitting) => {
     setSearchLoading(isSubmitting);
     if (isSubmitting) {
-      setIsNewSearch(true); // Marcar una nueva búsqueda para reiniciar la página
+      setIsNewSearch(true);
     }
   };
 
@@ -414,9 +422,12 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   if (loading || searchLoading) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-700 dark:text-gray-300 text-lg mt-4">
-          Cargando resultados...
+        <div className="relative w-12 h-12">
+          <div className="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-0 border-4 border-blue-300 border-t-transparent rounded-full animate-spin [animation-duration:1.5s]"></div>
+        </div>
+        <p className="text-gray-700 dark:text-gray-300 text-lg mt-4 font-medium">
+          Buscando los mejores resultados...
         </p>
       </div>
     );
@@ -425,7 +436,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   if (error) {
     return (
       <div className="h-screen flex items-center justify-center bg-white dark:bg-gray-900">
-        <p className="text-red-500 text-lg">{error}</p>
+        <p className="text-red-500 text-lg font-medium">{error}</p>
       </div>
     );
   }
@@ -438,16 +449,16 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto bg-[#ECF6FF] dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+    <div className="p-3 sm:p-5 max-w-7xl mx-auto bg-[#ECF6FF] dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen overflow-x-hidden">
       <Link
         href="/"
-        className="inline-flex items-center mb-4 sm:mb-6 text-blue-600 hover:text-blue-800 dark:hover:text-blue-400"
+        className="inline-flex items-center mb-4 sm:mb-6 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
       >
         <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
-        <span className="text-base sm:text-lg font-medium">Volver al Inicio</span>
+        <span className="text-sm sm:text-base font-semibold">Volver al Inicio</span>
       </Link>
 
-      <div className="mb-6 sm:mb-10">
+      <div className="mb-5 sm:mb-8">
         <SearchFormClient
           specialties={specialties}
           eps={eps}
@@ -455,25 +466,25 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold">Resultados de Búsqueda</h1>
-        <div className="mt-3 sm:mt-0 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 items-center">
-          <div className="relative w-full sm:w-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
+        <h1 className="text-xl sm:text-2xl font-bold">Resultados de Búsqueda</h1>
+        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 items-start sm:items-center w-full sm:w-auto">
+          <div className="relative w-full sm:w-64">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filtrar resultados..."
-              className="w-full sm:w-64 pl-8 sm:pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 dark:text-white text-gray-800 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none text-sm"
+              className="w-full pl-8 sm:pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 dark:text-white text-gray-800 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />
             <Search className="w-4 h-4 sm:w-5 sm:h-5 absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-300" />
           </div>
           <div className="flex space-x-2">
             <button
               onClick={() => setListView(true)}
-              className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
+              className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
                 listView
-                  ? "bg-blue-700 text-white"
+                  ? "bg-blue-600 text-white shadow-md"
                   : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
             >
@@ -481,9 +492,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
             </button>
             <button
               onClick={() => setListView(false)}
-              className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
+              className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
                 !listView
-                  ? "bg-blue-700 text-white"
+                  ? "bg-blue-600 text-white shadow-md"
                   : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
             >
@@ -493,24 +504,22 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         </div>
       </div>
 
-      {/* Lista de Resultados */}
       {listView ? (
         <div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {paginatedResults.map((item) => (
               <RESULT_ITEM key={item._id} item={item} />
             ))}
           </div>
 
-          {/* Paginación */}
           {totalPages > 1 && (
-            <div className="mt-8 sm:mt-10 flex flex-col items-center space-y-4">
-              <p className="text-xs sm:text-sm font-medium">
+            <div className="mt-6 sm:mt-8 flex flex-col items-center space-y-3">
+              <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                 Mostrando {(currentPage - 1) * pageSize + 1} –{" "}
                 {Math.min(currentPage * pageSize, totalResults)} de{" "}
                 {totalResults} resultados
               </p>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
@@ -545,7 +554,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                     onClick={() => handlePageChange(page)}
                     className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all text-sm ${
                       currentPage === page
-                        ? "bg-blue-700 text-white"
+                        ? "bg-blue-600 text-white shadow-md"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                     }`}
                   >
@@ -629,35 +638,44 @@ function MapComponent({
           </svg>
         `;
 
-        const roundedRating = Math.round(item.averageRating || 0); // Round to the nearest integer for the map popup
+        const roundedRating = Math.round(item.averageRating || 0);
         const popupContent = document.createElement("div");
         popupContent.innerHTML = `
           <div class="bg-white p-4 rounded-lg shadow-lg max-w-xs text-sm">
             <h3 class="text-blue-600 font-semibold mb-1 cursor-pointer hover:underline">${
               item.name
             }</h3>
+            <div class="flex items-center space-x-1 mb-1">
+              <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5 14.5 7.62 14.5 9 13.38 11.5 12 11.5z"/></svg>
+              <p class="text-blue-600 font-medium">${
+                item.distance !== undefined
+                  ? Math.round(item.distance) + " metros"
+                  : "N/A"
+              }</p>
+            </div>
             <p class="text-gray-700">${item.address}, ${item.town ?? ""}, ${
               item.department ?? ""
             }</p>
-            <p class="text-gray-700">Distancia: ${
-              item.distance !== undefined
-                ? Math.round(item.distance) + " metros"
-                : "N/A"
-            }</p>
             <div class="flex items-center space-x-1 mt-1">
-              ${[...Array(roundedRating)]
-                .map(
-                  () =>
-                    `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
-                )
-                .join("")}
-              ${[...Array(5 - roundedRating)]
-                .map(
-                  () =>
-                    `<svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
-                )
-                .join("")}
-              <span class="ml-1 text-gray-600">(${roundedRating})</span>
+              ${
+                item.hasReviews
+                  ? `
+                    ${[...Array(roundedRating)]
+                      .map(
+                        () =>
+                          `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
+                      )
+                      .join("")}
+                    ${[...Array(5 - roundedRating)]
+                      .map(
+                        () =>
+                          `<svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
+                      )
+                      .join("")}
+                    <span class="ml-1 text-gray-600">(${roundedRating})</span>
+                  `
+                  : `<span class="text-gray-600 italic">Sin reseñas</span>`
+              }
             </div>
           </div>
         `;
@@ -681,7 +699,7 @@ function MapComponent({
   return (
     <div
       id="map"
-      className="w-full h-[300px] sm:h-[400px] lg:h-[600px] rounded-xl shadow-lg overflow-hidden"
+      className="w-full h-[300px] sm:h-[400px] lg:h-[600px] rounded-xl shadow-lg overflow-hidden max-w-full"
     />
   );
 }
@@ -694,8 +712,11 @@ export default function ResultsPage({
     <Suspense
       fallback={
         <div className="h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-700 dark:text-gray-300 text-lg mt-4">
+          <div className="relative w-12 h-12">
+            <div className="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="absolute inset-0 border-4 border-blue-300 border-t-transparent rounded-full animate-spin [animation-duration:1.5s]"></div>
+          </div>
+          <p className="text-gray-700 dark:text-gray-300 text-lg mt-4 font-medium">
             Cargando datos iniciales...
           </p>
         </div>
