@@ -43,6 +43,7 @@ export default function Header() {
   const handleLogout = () => {
     document.cookie = "session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     setIsLoggedIn(false);
+    window.location.reload(); // Reload after logout to refresh the page
   };
 
   // Google Translate + Language + Theme
@@ -102,6 +103,7 @@ export default function Header() {
       select.dispatchEvent(new Event("change"));
     }
     localStorage.setItem("language", lang.toUpperCase());
+    window.location.reload(); // Reload after language change to ensure full update
   };
 
   const handleLanguageChangeMobile = (index: number) => {
@@ -255,7 +257,7 @@ export default function Header() {
           ) : (
             <button
               onClick={handleLogout}
-              className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-redoml-500"
+              className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-red-500"
             >
               <LogIn size={22} />
               <span className="text-xs">Salir</span>
