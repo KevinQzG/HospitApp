@@ -105,9 +105,11 @@ function calculateDistance(
   return R * c;
 }
 
-// Star Rating Component with Tooltip
+// Star Rating Component with Tooltip (Actualizado)
 const StarRating = ({ rating }: { rating: number }) => {
-  const roundedRating = Math.round(rating);
+  const roundedRating = Math.round(rating); // Para las estrellas
+  const formattedRating = Number.isInteger(rating) ? rating : rating.toFixed(1); // Para el texto
+
   const fullStars = roundedRating;
   const emptyStars = 5 - fullStars;
 
@@ -134,10 +136,10 @@ const StarRating = ({ rating }: { rating: number }) => {
         </svg>
       ))}
       <span className="ml-1 text-gray-600 dark:text-gray-400 text-xs">
-        ({roundedRating})
+        ({formattedRating})
       </span>
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
-        {rating.toFixed(1)} de 5
+        {formattedRating} de 5
       </div>
     </div>
   );
@@ -235,10 +237,11 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         const specialtiesParam =
           searchParams.get("specialties")?.split(",").filter(Boolean) || [];
         const epsParam =
-          searchParams.get("eps")?.split(",").filter(Boolean) || [];
+          searchParams.get("#pragma once")?.split(",").filter(Boolean) || [];
         const coordinatesStr = searchParams.get("coordinates");
         let coordinates: [number, number] = userCoordinates || [
-          -75.5849, 6.1816,
+          -75.5849,
+          6.1816,
         ];
         if (coordinatesStr) {
           const [lng, lat] = coordinatesStr.split(",").map(Number);
@@ -290,7 +293,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
             console.error("Error al obtener reseñas:", reviewsData.error);
           }
         } else {
-          console.error("Error en la respuesta de la API de reseñas:", reviewsResponse.status);
+          console.error(
+            "Error en la respuesta de la API de reseñas:",
+            reviewsResponse.status
+          );
         }
 
         filteredResults = filteredResults.map((item: IpsResponse) => {
@@ -455,7 +461,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         className="inline-flex items-center mb-4 sm:mb-6 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
       >
         <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
-        <span className="text-sm sm:text-base font-semibold">Volver al Inicio</span>
+        <span className="text-sm sm:text-base font-semibold">
+          Volver al Inicio
+        </span>
       </Link>
 
       <div className="mb-5 sm:mb-8">
@@ -594,7 +602,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           )}
         </div>
       ) : (
-        <MapComponent results={paginatedResults} coordinates={coordinates} />
+        <MapComponent results={allResults} coordinates={coordinates} />
       )}
     </div>
   );
@@ -610,9 +618,15 @@ function MapComponent({
   const router = useRouter();
 
   useEffect(() => {
+    // Determinar el estilo inicial según el modo del sistema
+    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const initialStyle = darkModeMediaQuery.matches
+      ? "mapbox://styles/mapbox/dark-v10"
+      : "mapbox://styles/mapbox/streets-v12";
+
     const map = new mapboxgl.Map({
       container: "map",
-      style: "mapbox://styles/mapbox/streets-v12",
+      style: initialStyle, // Estilo inicial basado en el modo del sistema
       center: coordinates,
       zoom: 12,
     });
@@ -641,7 +655,7 @@ function MapComponent({
         const roundedRating = Math.round(item.averageRating || 0);
         const popupContent = document.createElement("div");
         popupContent.innerHTML = `
-          <div class="bg-white p-4 rounded-lg shadow-lg max-w-xs text-sm">
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-xs text-sm">
             <h3 class="text-blue-600 font-semibold mb-1 cursor-pointer hover:underline">${
               item.name
             }</h3>
@@ -653,7 +667,7 @@ function MapComponent({
                   : "N/A"
               }</p>
             </div>
-            <p class="text-gray-700">${item.address}, ${item.town ?? ""}, ${
+            <p class="text-gray-700 dark:text-gray-300">${item.address}, ${item.town ?? ""}, ${
               item.department ?? ""
             }</p>
             <div class="flex items-center space-x-1 mt-1">
@@ -669,12 +683,12 @@ function MapComponent({
                     ${[...Array(5 - roundedRating)]
                       .map(
                         () =>
-                          `<svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
+                          `<svg class="w-4 h-4 text-gray-300 dark:text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
                       )
                       .join("")}
-                    <span class="ml-1 text-gray-600">(${roundedRating})</span>
+                    <span class="ml-1 text-gray-600 dark:text-gray-400">(${roundedRating})</span>
                   `
-                  : `<span class="text-gray-600 italic">Sin reseñas</span>`
+                  : `<span class="text-gray-600 dark:text-gray-400 italic">Sin reseñas</span>`
               }
             </div>
           </div>
@@ -692,14 +706,29 @@ function MapComponent({
       }
     });
 
+    // Listener para cambiar el estilo del mapa según el modo claro/oscuro
+    const handleDarkModeChange = (e: MediaQueryListEvent) => {
+      map.setStyle(
+        e.matches
+          ? "mapbox://styles/mapbox/dark-v10"
+          : "mapbox://styles/mapbox/streets-v12"
+      );
+    };
+    darkModeMediaQuery.addEventListener("change", handleDarkModeChange);
+
     map.on("load", () => map.resize());
-    return () => map.remove();
+
+    // Limpiar el listener al desmontar el componente
+    return () => {
+      map.remove();
+      darkModeMediaQuery.removeEventListener("change", handleDarkModeChange);
+    };
   }, [results, coordinates, router]);
 
   return (
     <div
       id="map"
-      className="w-full h-[300px] sm:h-[400px] lg:h-[600px] rounded-xl shadow-lg overflow-hidden max-w-full"
+      className="w-full h-[300px] sm:h-[400px] lg:h-[600px] rounded-xl shadow-lg overflow-hidden max-w-full border border-gray-200 dark:border-gray-700"
     />
   );
 }

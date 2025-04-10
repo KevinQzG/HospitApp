@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ENV } from "@/config/env";
 import { LookIpsResponse } from "@/app/api/v1.0.0/ips/get/pagination/route";
-import IpsDetailClient from "@/components/IpsDetailClientExamplePipe";
+import IpsDetailClient from "@/components/IpsDetailClient";
 import { ArrowLeft } from "lucide-react";
 
 type IpsDetailPageProps = {
