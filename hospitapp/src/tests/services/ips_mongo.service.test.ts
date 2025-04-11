@@ -80,6 +80,9 @@ describe("IpsMongoService Integration Test", () => {
 				total: 1,
 			}),
 			findAll: jest.fn().mockResolvedValue([MOCK_IPS]),
+			create: jest.fn().mockResolvedValue("mocked_id"),
+			update: jest.fn().mockResolvedValue(MOCK_IPS),
+			delete: jest.fn().mockResolvedValue(true),
 		};
 
 		mockReviewRepository = {

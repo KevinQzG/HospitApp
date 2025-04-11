@@ -209,9 +209,7 @@ describe("IpsMongoRepository Integration Test", () => {
 				true
 			);
 
-			expect(RESULTS[0].getName()).toBe(
-				"INSTITUTO DEL CORAZON SEDE CENTRO"
-			);
+			expect(RESULTS[0].getName()).toBe("AC QUIROFANOS");
 			expect(RESULTS[0].getDepartment()).toBe("ANTIOQUIA");
 			expect(RESULTS[0].getTown()).toBe("MEDELLÍN");
 		});
@@ -358,9 +356,7 @@ describe("IpsMongoRepository Integration Test", () => {
 				true
 			);
 
-			expect(RESULTS[0].getName()).toBe(
-				"INSTITUTO DEL CORAZON SEDE CENTRO"
-			);
+			expect(RESULTS[0].getName()).toBe("AC QUIROFANOS");
 			expect(RESULTS[0].getDepartment()).toBe("ANTIOQUIA");
 			expect(RESULTS[0].getTown()).toBe("MEDELLÍN");
 		});
