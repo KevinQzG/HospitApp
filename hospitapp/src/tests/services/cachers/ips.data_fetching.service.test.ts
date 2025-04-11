@@ -61,6 +61,9 @@ describe("IPS Props Fetching Functions", () => {
 				ips: MOCK_IPS_RES,
 				reviewsResult: MOCK_REVIEW_RES,
 			}), // Mock implementation for getIpsByNameWithReviews
+			create: jest.fn().mockResolvedValue(null), // Mock implementation for create
+			update: jest.fn().mockResolvedValue(null), // Mock implementation for update
+			delete: jest.fn().mockResolvedValue(null), // Mock implementation for delete
 		};
 
 		// Bind mock to CONTAINER
