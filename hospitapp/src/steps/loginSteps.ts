@@ -1,7 +1,7 @@
 import { Given, When, Then, After } from "@cucumber/cucumber";
 import { Builder, By, until } from "selenium-webdriver";
 import { expect } from "chai";
-import { Options } from "selenium-webdriver/chrome";
+import { Options } from "selenium-webdriver/chrome.js";
 
 let driver: any;
 
