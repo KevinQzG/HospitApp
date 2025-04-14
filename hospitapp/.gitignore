@@ -44,3 +44,6 @@ next-env.d.ts
 
 # NVM
 .nvmrc
+
+# Cucumber
+cucumber-report.html

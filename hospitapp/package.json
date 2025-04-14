@@ -9,7 +9,7 @@
     "lint": "next lint",
     "docs": "typedoc --out docs src",
     "test": "jest",
-    "test:functional": "ts-node ./src/testRunner.ts",
+    "test:functional": "ts-node --project tsconfig.test.json src/testRunner.ts",
     "test:watch": "jest --watch",
     "lint:fix": "eslint . --ext .ts,.mts --fix"
   },
@@ -80,8 +80,9 @@
     "react": "^19.0.0",
     "selenium-webdriver": "^4.31.0",
     "ts-jest": "^29.2.6",
+    "ts-node": "^10.9.2",
     "typedoc": "^0.27.9",
-    "typescript": "^5",
+    "typescript": "^5.8.3",
     "typescript-eslint": "^8.26.1"
   }
 }
