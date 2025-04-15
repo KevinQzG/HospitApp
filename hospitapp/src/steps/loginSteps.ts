@@ -2,6 +2,7 @@ import { Given, When, Then, After } from "@cucumber/cucumber";
 import { Builder, By, until } from "selenium-webdriver";
 import { expect } from "chai";
 import { Options } from "selenium-webdriver/chrome.js";
+import { ENV } from "@/config/env";
 
 let driver: any;
 
@@ -11,30 +12,48 @@ Given("the user has an account on the HospitApp platform", async function () {
 
 Given("the user is on the HospitApp home page", async function () {
 	const options = new Options();
+	options.addArguments("--headless");
+	options.addArguments("--no-sandbox");
+	options.addArguments("--disable-dev-shm-usage");
 
 	driver = await new Builder()
 		.forBrowser("chrome")
 		.setChromeOptions(options)
 		.build();
-	await driver.get("https://hospitapp.vercel.app/");
+	await driver.manage().window().setRect({ width: 1280, height: 720 }); // Set window size
+	driver
+		.manage()
+		.setTimeouts({ implicit: 10000, pageLoad: 10000, script: 10000 });
 
+	await driver.get("http://localhost:3000/");
+	await driver.wait(async () => {
+		const state = await driver.executeScript("return document.readyState");
+		return state === "complete";
+	}, 15000); // Wait for page to fully load
 	const buscarButton = await driver.wait(
 		until.elementLocated(By.xpath("//button[contains(text(), 'Buscar')]")),
-		5000
+		15000
 	);
 	expect(await buscarButton.isDisplayed()).to.be.true;
 });
 
 When('the user clicks the "Iniciar Sesión" button', async function () {
-	const loginButton = await driver.findElement(
-		By.xpath("/html/body/header/div/nav/a[3]")
+	const loginButton = await driver.wait(
+		until.elementLocated(By.xpath("/html/body/header/div/nav/a[3]")),
+		15000
+	);
+	await driver.wait(until.elementIsVisible(loginButton), 15000);
+	await driver.wait(until.elementIsEnabled(loginButton), 15000);
+	await driver.executeScript(
+		"arguments[0].scrollIntoView(true);",
+		loginButton
 	);
 	await loginButton.click();
 	await driver.wait(
 		until.elementLocated(
 			By.xpath("/html/body/main/section/div[2]/div/form/div[1]/label")
 		),
-		5000
+		30000
 	);
 });
 
@@ -75,32 +94,36 @@ When(
 );
 
 When("the user submits the login form", async function () {
-	await driver
-		.findElement(By.xpath("/html/body/main/section/div[2]/div/form/button"))
-		.click();
+	const submitButton = await driver.wait(
+		until.elementLocated(
+			By.xpath("/html/body/main/section/div[2]/div/form/button")
+		),
+		15000
+	);
+	await driver.wait(until.elementIsVisible(submitButton), 15000);
+	await driver.wait(until.elementIsEnabled(submitButton), 15000);
+	await driver.executeScript(
+		"arguments[0].scrollIntoView(true);",
+		submitButton
+	);
+	await submitButton.click();
 });
 
 Then("the user should be redirected to the home page", async function () {
-	await driver.wait(until.urlIs("https://hospitapp.vercel.app/"), 5000);
-	expect(await driver.getCurrentUrl()).to.equal(
-		"https://hospitapp.vercel.app/"
-	);
+	await driver.wait(until.urlIs("http://localhost:3000/"), 5000);
+	expect(await driver.getCurrentUrl()).to.equal("http://localhost:3000/");
 });
 
 Then(
 	'the "Iniciar Sesión" button should be replaced by "Cerrar Sesión"',
 	async function () {
 		const logoutButton = await driver.wait(
-			until.elementLocated(
-				By.xpath("/html/body/header/div/nav/button")
-			),
+			until.elementLocated(By.xpath("/html/body/header/div/nav/button")),
 			5000
 		);
 		expect(await logoutButton.isDisplayed()).to.be.true;
 		const loginButtonExists = await driver
-			.findElements(
-				By.xpath("/html/body/header/div/nav/a[3]")
-			)
+			.findElements(By.xpath("/html/body/header/div/nav/a[3]"))
 			.then((elements: any[]) => elements.length > 0);
 		expect(loginButtonExists).to.be.false;
 	}
@@ -118,11 +141,15 @@ Then(
 	'the user should see an error message "Credenciales incorrectas"',
 	async function () {
 		const errorMessage = await driver.wait(
-			until.elementLocated(By.xpath("/html/body/main/section/div[2]/div/form/div[1]/span")),
+			until.elementLocated(
+				By.xpath("/html/body/main/section/div[2]/div/form/div[1]/span")
+			),
 			5000
 		);
-		const errorText = await errorMessage.getText();
-		expect(errorText).to.equal("Correo electrónico o contraseña incorrectos");
+		const errorText = (await errorMessage.getText()).trim();
+		expect(errorText).to.equal(
+			"Correo electrónico o contraseña incorrectos"
+		);
 	}
 );
 

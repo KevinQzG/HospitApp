@@ -10,6 +10,7 @@
     "docs": "typedoc --out docs src",
     "test": "jest",
     "test:functional": "ts-node --project tsconfig.test.json src/testRunner.ts",
+    "test:local": "concurrently --kill-others \"npm run dev\" \"wait-on http://localhost:3000 && npm run test:functional\"",
     "test:watch": "jest --watch",
     "lint:fix": "eslint . --ext .ts,.mts --fix"
   },
@@ -66,6 +67,7 @@
     "biome": "^0.3.3",
     "chai": "^5.2.0",
     "chromedriver": "^135.0.1",
+    "concurrently": "^9.1.2",
     "cucumber": "^6.0.7",
     "dotenv": "^16.4.7",
     "eslint": "^9.22.0",
@@ -83,6 +85,7 @@
     "ts-node": "^10.9.2",
     "typedoc": "^0.27.9",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.26.1"
+    "typescript-eslint": "^8.26.1",
+    "wait-on": "^8.0.3"
   }
 }
