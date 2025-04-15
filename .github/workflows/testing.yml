@@ -38,33 +38,6 @@ jobs:
         working-directory: hospitapp
         run: npm install
 
-      - name: Install Google Chrome and ChromeDriver
-        run: |
-          # Install dependencies for Chrome
-          sudo apt-get update
-          sudo apt-get install -y wget unzip libxss1 libappindicator3-1 libindicator7 fonts-liberation xdg-utils || {
-            echo "Failed to install Chrome dependencies"
-            exit 1
-          }
-
-          # Download and install Chrome 135.0.7049.84
-          wget -q https://storage.googleapis.com/chrome-for-testing-public/135.0.7049.84/linux64/chrome-linux64.zip
-          unzip chrome-linux64.zip
-          sudo mv chrome-linux64/chrome /usr/bin/google-chrome
-          sudo chmod +x /usr/bin/google-chrome
-          google-chrome --version
-
-          # Download and install ChromeDriver 135.0.7049.84
-          wget -q https://storage.googleapis.com/chrome-for-testing-public/135.0.7049.84/linux64/chromedriver-linux64.zip
-          unzip chromedriver-linux64.zip
-          sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
-          sudo chmod +x /usr/bin/chromedriver
-          chromedriver --version
-
-      - name: Run Cucumber Tests
-        working-directory: hospitapp
-        run: npm run test:local
-
       - name: Run ESLint
         working-directory: hospitapp
         run: npm run lint
@@ -76,6 +49,19 @@ jobs:
       - name: Run Tests
         working-directory: hospitapp
         run: npm run test
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1.7.3
+        with:
+          chrome-version: 135.0.7049.84
+          install-chromedriver: true
+        run: |
+          google-chrome --version
+          chromedriver --version
+
+      - name: Run Cucumber Tests
+        working-directory: hospitapp
+        run: npm run test:local
 
       - name: Upload test artifacts
         if: failure()
