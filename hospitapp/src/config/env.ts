@@ -8,7 +8,6 @@
 interface EnvironmentVariables {
 	NEXT_PUBLIC_API_URL: string;
 	NEXT_PUBLIC_APP_NAME: string;
-	NEXT_PUBLIC_URL: string;
 	DATABASE_URL: string;
 	DATABASE_NAME: string;
 	CACHE_TTL: number;
@@ -25,7 +24,6 @@ const validateEnv = (): EnvironmentVariables => {
 	const ENV = {
 		NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
 		NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
-		NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
 		DATABASE_NAME: process.env.DATABASE_NAME,
 		CACHE_TTL: parseInt(process.env.CACHE_TTL || "86400", 10),

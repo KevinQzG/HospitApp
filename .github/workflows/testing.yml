@@ -1,0 +1,83 @@
+name: Build, ESLint and Tests
+
+on:
+  push:
+    branches: [ "main", "juan_felipe/dev" ]
+  pull_request:
+    branches: [ "main", "juan_felipe/dev" ]
+
+jobs:
+  build-eslint-and-tests:
+    name: Run ESLint scanning
+    runs-on: ubuntu-latest
+    environment: Preview
+    permissions:
+      contents: read
+      security-events: write
+
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+      CACHE_TTL: ${{ secrets.CACHE_TTL }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+      NEXT_PUBLIC_APP_NAME: ${{ secrets.NEXT_PUBLIC_APP_NAME }}
+      NEXT_PUBLIC_MAPBOX_API_KEY: ${{ secrets.NEXT_PUBLIC_MAPBOX_API_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+
+      - name: Install dependencies
+        working-directory: hospitapp
+        run: npm install
+
+      - name: Run ESLint
+        working-directory: hospitapp
+        run: npm run lint
+
+      - name: Build Application
+        working-directory: hospitapp
+        run: npm run build
+
+      - name: Run Tests
+        working-directory: hospitapp
+        run: npm run test
+
+      - name: Install Google Chrome and ChromeDriver
+        run: |
+          # Install dependencies for Chrome
+          sudo apt-get update
+          sudo apt-get install -y wget unzip libxss1 libappindicator1 libindicator7 fonts-liberation xdg-utils
+
+          # Download and install Chrome 135.0.7049.84
+          wget -q https://storage.googleapis.com/chrome-for-testing-public/135.0.7049.84/linux64/chrome-linux64.zip
+          unzip chrome-linux64.zip
+          sudo mv chrome-linux64/chrome /usr/bin/google-chrome
+          sudo chmod +x /usr/bin/google-chrome
+
+          # Download and install ChromeDriver 135.0.7049.84
+          wget -q https://storage.googleapis.com/chrome-for-testing-public/135.0.7049.84/linux64/chromedriver-linux64.zip
+          unzip chromedriver-linux64.zip
+          sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
+          sudo chmod +x /usr/bin/chromedriver
+
+      - name: Run Cucumber Tests
+        working-directory: hospitapp
+        run: npm run test:local
+
+      - name: Upload test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts
+          path: |
+            hospitapp/**/*.png
+            hospitapp/**/*.log
+            hospitapp/cucumber-report.html

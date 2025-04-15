@@ -10,8 +10,8 @@ Feature: Login to HospitApp platform
     And the user enters valid credentials "test@example.com" and "password1234"
     And the user submits the login form
     Then the user should be redirected to the home page
-    And the "Iniciar Sesión" button should be replaced by "Cerrar Sesión"
     And a user session should be created
+    And the "Iniciar Sesión" button should be replaced by "Cerrar Sesión"
 
   Scenario: Failed login with invalid credentials
     Given the user is on the HospitApp home page

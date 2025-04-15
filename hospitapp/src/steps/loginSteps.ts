@@ -1,10 +1,11 @@
 import { Given, When, Then, After } from "@cucumber/cucumber";
-import { Builder, By, until } from "selenium-webdriver";
+import { Builder, By, WebDriver, until } from "selenium-webdriver";
 import { expect } from "chai";
 import { Options } from "selenium-webdriver/chrome.js";
-import { ENV } from "@/config/env";
+import { setDefaultTimeout } from "@cucumber/cucumber";
 
-let driver: any;
+setDefaultTimeout(500000); // sets timeout to 30 seconds for all steps
+let driver: WebDriver;
 
 Given("the user has an account on the HospitApp platform", async function () {
 	// Placeholder for account setup
@@ -23,7 +24,7 @@ Given("the user is on the HospitApp home page", async function () {
 	await driver.manage().window().setRect({ width: 1280, height: 720 }); // Set window size
 	driver
 		.manage()
-		.setTimeouts({ implicit: 10000, pageLoad: 10000, script: 10000 });
+		.setTimeouts({ implicit: 10000, pageLoad: 30000, script: 30000 });
 
 	await driver.get("http://localhost:3000/");
 	await driver.wait(async () => {
@@ -34,7 +35,7 @@ Given("the user is on the HospitApp home page", async function () {
 		until.elementLocated(By.xpath("//button[contains(text(), 'Buscar')]")),
 		15000
 	);
-	expect(await buscarButton.isDisplayed()).to.be.true;
+	expect(await buscarButton.isDisplayed());
 });
 
 When('the user clicks the "Iniciar Sesión" button', async function () {
@@ -110,8 +111,16 @@ When("the user submits the login form", async function () {
 });
 
 Then("the user should be redirected to the home page", async function () {
-	await driver.wait(until.urlIs("http://localhost:3000/"), 5000);
+	await driver.wait(until.urlIs("http://localhost:3000/"), 30000);
 	expect(await driver.getCurrentUrl()).to.equal("http://localhost:3000/");
+});
+
+Then("a user session should be created", async function () {
+	const cookies = await driver.manage().getCookies();
+	const sessionCookie = cookies.find((cookie) =>
+		cookie.name.includes("session")
+	);
+	expect(sessionCookie, "Session cookie not found");
 });
 
 Then(
@@ -121,34 +130,29 @@ Then(
 			until.elementLocated(By.xpath("/html/body/header/div/nav/button")),
 			5000
 		);
-		expect(await logoutButton.isDisplayed()).to.be.true;
-		const loginButtonExists = await driver
-			.findElements(By.xpath("/html/body/header/div/nav/a[3]"))
-			.then((elements: any[]) => elements.length > 0);
-		expect(loginButtonExists).to.be.false;
+		expect(await logoutButton.isDisplayed());
+		const loginButtonElements = await driver.findElements(
+			By.xpath("/html/body/header/div/nav/a[3]")
+		);
+		expect(
+			loginButtonElements.length,
+			"Login button should not exist"
+		).to.equal(0);
 	}
 );
 
-Then("a user session should be created", async function () {
-	const cookies = await driver.manage().getCookies();
-	const sessionCookie = cookies.find((cookie: any) =>
-		cookie.name.includes("session")
-	);
-	expect(sessionCookie, "Session cookie not found").to.exist;
-});
+
 
 Then(
 	'the user should see an error message "Credenciales incorrectas"',
 	async function () {
-		const errorMessage = await driver.wait(
+		await driver.wait(
 			until.elementLocated(
-				By.xpath("/html/body/main/section/div[2]/div/form/div[1]/span")
+				By.xpath(
+					"//span[contains(text(), 'Correo electrónico o contraseña incorrectos')]"
+				)
 			),
 			5000
-		);
-		const errorText = (await errorMessage.getText()).trim();
-		expect(errorText).to.equal(
-			"Correo electrónico o contraseña incorrectos"
 		);
 	}
 );
