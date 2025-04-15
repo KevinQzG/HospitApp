@@ -3,19 +3,25 @@ import { Builder, By, WebDriver, until } from "selenium-webdriver";
 import { expect } from "chai";
 import { Options } from "selenium-webdriver/chrome.js";
 import { setDefaultTimeout } from "@cucumber/cucumber";
+import * as os from "os";
+import * as path from "path";
+import * as fs from "fs";
 
 setDefaultTimeout(500000); // sets timeout to 30 seconds for all steps
 let driver: WebDriver;
+let tempUserDataDir: string;
 
 Given("the user has an account on the HospitApp platform", async function () {
 	// Placeholder for account setup
 });
 
 Given("the user is on the HospitApp home page", async function () {
+	tempUserDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "chrome-profile-"));
 	const options = new Options();
 	options.addArguments("--headless");
 	options.addArguments("--no-sandbox");
 	options.addArguments("--disable-dev-shm-usage");
+	options.addArguments(`--user-data-dir=${tempUserDataDir}`);
 
 	driver = await new Builder()
 		.forBrowser("chrome")

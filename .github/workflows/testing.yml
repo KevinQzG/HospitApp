@@ -1,4 +1,4 @@
-name: Build, ESLint and Tests
+name: Build, ESLint and Tests with Functional Testing Included
 
 on:
   push:
