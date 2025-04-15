@@ -55,6 +55,8 @@ jobs:
         with:
           chrome-version: 135.0.7049.84
           install-chromedriver: true
+
+      - name: Verify Chrome and ChromeDriver versions
         run: |
           google-chrome --version
           chromedriver --version
