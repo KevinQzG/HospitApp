@@ -38,18 +38,6 @@ jobs:
         working-directory: hospitapp
         run: npm install
 
-      - name: Run ESLint
-        working-directory: hospitapp
-        run: npm run lint
-
-      - name: Build Application
-        working-directory: hospitapp
-        run: npm run build
-
-      - name: Run Tests
-        working-directory: hospitapp
-        run: npm run test
-
       - name: Install Google Chrome and ChromeDriver
         run: |
           # Install dependencies for Chrome
@@ -76,6 +64,18 @@ jobs:
       - name: Run Cucumber Tests
         working-directory: hospitapp
         run: npm run test:local
+
+      - name: Run ESLint
+        working-directory: hospitapp
+        run: npm run lint
+
+      - name: Build Application
+        working-directory: hospitapp
+        run: npm run build
+
+      - name: Run Tests
+        working-directory: hospitapp
+        run: npm run test
 
       - name: Upload test artifacts
         if: failure()
