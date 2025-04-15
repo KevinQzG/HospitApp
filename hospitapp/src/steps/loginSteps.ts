@@ -16,6 +16,7 @@ Given("the user is on the HospitApp home page", async function () {
 	options.addArguments("--headless");
 	options.addArguments("--no-sandbox");
 	options.addArguments("--disable-dev-shm-usage");
+	options.addArguments("--disable-gpu");
 
 	driver = await new Builder()
 		.forBrowser("chrome")
