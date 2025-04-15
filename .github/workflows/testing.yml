@@ -54,7 +54,10 @@ jobs:
         run: |
           # Install dependencies for Chrome
           sudo apt-get update
-          sudo apt-get install -y wget unzip libxss1 libappindicator1 libindicator7 fonts-liberation xdg-utils
+          sudo apt-get install -y wget unzip libxss1 libappindicator3-1 libindicator7 fonts-liberation xdg-utils || {
+            echo "Failed to install Chrome dependencies"
+            exit 1
+          }
 
           # Download and install Chrome 135.0.7049.84
           wget -q https://storage.googleapis.com/chrome-for-testing-public/135.0.7049.84/linux64/chrome-linux64.zip
