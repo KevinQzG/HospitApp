@@ -1,4 +1,4 @@
-import { Given, When, Then, After } from "@cucumber/cucumber";
+import { Given, When, Then } from "@cucumber/cucumber";
 import { By, until } from "selenium-webdriver";
 import { expect } from "chai";
 import { driver } from "./commonSteps.ts";

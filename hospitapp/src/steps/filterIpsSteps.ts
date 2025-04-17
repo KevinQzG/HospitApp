@@ -1,6 +1,6 @@
-import { When, Then, After } from "@cucumber/cucumber";
+import { When, Then } from "@cucumber/cucumber";
 import { expect } from "chai";
-import { By, Key, until } from "selenium-webdriver";
+import { By, until } from "selenium-webdriver";
 import { driver } from "./commonSteps.ts";
 
 When('the user clicks the "Buscar" button', async function () {
