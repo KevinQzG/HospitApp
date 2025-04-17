@@ -1,20 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Home, Info, LogIn, Globe, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
 
 export default function Header() {
   const [isMobile, setIsMobile] = useState(false);
   const [languageIndex, setLanguageIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
-  const [setIsLoggedIn] = useState(false);
-  const { isAuthenticated} = useAuth();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const pathname = usePathname();
   const LANGUAGES = ["ES", "EN", "FR", "IT", "PT", "DE"];
 
@@ -33,28 +31,25 @@ export default function Header() {
         const res = await fetch("/api/session");
         if (!res.ok) throw new Error("Session check failed");
         const data = await res.json();
+        setIsLoggedIn(data.loggedIn);
       } catch (error) {
         console.error("Error checking session:", error);
+        setIsLoggedIn(false);
       }
     };
     checkSession();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      const res = await fetch("/api/logout", { method: "POST" });
-      if (!res.ok) throw new Error("Logout failed");
-      location.reload();
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error instanceof Error ? error.message : String(error));
-    }
+  const handleLogout = () => {
+    document.cookie = "session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    setIsLoggedIn(false);
   };
 
   // Google Translate + Language + Theme
   useEffect(() => {
     const loadGoogleTranslate = () => {
-      if (!navigator.userAgent.includes("Chrome-Lighthouse") &&
-        !document.getElementById("google-translate-script")) {
+      if (!navigator.userAgent.includes("Chrome-Lighthouse") && 
+          !document.getElementById("google-translate-script")) {
         const script = document.createElement("script");
         script.id = "google-translate-script";
         script.src =
@@ -136,31 +131,34 @@ export default function Header() {
             <nav className="hidden md:flex md:items-center md:space-x-6">
               <Link
                 href="/"
-                className={`flex items-center gap-2 px-4 ${pathname === "/"
+                className={`flex items-center gap-2 px-4 ${
+                  pathname === "/"
                     ? "text-blue-500"
                     : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-                  }`}
+                }`}
               >
                 <Home size={18} /> Inicio
               </Link>
 
               <Link
                 href="/about"
-                className={`flex items-center gap-2 px-4 ${pathname === "/about"
+                className={`flex items-center gap-2 px-4 ${
+                  pathname === "/about"
                     ? "text-blue-500"
                     : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-                  }`}
+                }`}
               >
                 <Info size={18} /> Sobre Nosotros
               </Link>
 
-              {!isAuthenticated ? (
+              {!isLoggedIn ? (
                 <Link
                   href="/login"
-                  className={`flex items-center gap-2 px-4 ${pathname === "/login"
+                  className={`flex items-center gap-2 px-4 ${
+                    pathname === "/login"
                       ? "text-blue-500"
                       : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-                    }`}
+                  }`}
                 >
                   <LogIn size={18} /> Iniciar Sesión
                 </Link>
@@ -197,10 +195,11 @@ export default function Header() {
                             changeLanguage(lang.toLowerCase());
                             setIsDropdownOpen(false);
                           }}
-                          className={`block px-4 py-2 w-full text-center ${languageIndex === index
+                          className={`block px-4 py-2 w-full text-center ${
+                            languageIndex === index
                               ? "font-bold text-blue-500"
                               : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                            }`}
+                          }`}
                         >
                           <span className="notranslate">{lang}</span>
                         </button>
@@ -219,10 +218,11 @@ export default function Header() {
         <nav className="fixed bottom-0 left-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-t-lg flex justify-around py-3 border-t border-gray-200/50 dark:border-gray-700/50 z-50">
           <Link
             href="/"
-            className={`flex flex-col items-center ${pathname === "/"
+            className={`flex flex-col items-center ${
+              pathname === "/"
                 ? "text-blue-500"
                 : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-              }`}
+            }`}
           >
             <Home size={22} />
             <span className="text-xs">Inicio</span>
@@ -230,22 +230,24 @@ export default function Header() {
 
           <Link
             href="/about"
-            className={`flex flex-col items-center ${pathname === "/about"
+            className={`flex flex-col items-center ${
+              pathname === "/about"
                 ? "text-blue-500"
                 : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-              }`}
+            }`}
           >
             <Info size={22} />
             <span className="text-xs">Nosotros</span>
           </Link>
 
-          {!isAuthenticated ? (
+          {!isLoggedIn ? (
             <Link
               href="/login"
-              className={`flex flex-col items-center ${pathname === "/login"
+              className={`flex flex-col items-center ${
+                pathname === "/login"
                   ? "text-blue-500"
                   : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-                }`}
+              }`}
             >
               <LogIn size={22} />
               <span className="text-xs">Ingresar</span>
@@ -300,10 +302,11 @@ export default function Header() {
                     key={index}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleLanguageChangeMobile(index)}
-                    className={`py-3 px-4 rounded-xl text-center ${languageIndex === index
+                    className={`py-3 px-4 rounded-xl text-center ${
+                      languageIndex === index
                         ? "bg-blue-500 text-white"
                         : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
-                      }`}
+                    }`}
                   >
                     <span className="notranslate">{lang}</span>
                   </motion.button>
