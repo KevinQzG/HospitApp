@@ -9,7 +9,7 @@
     "lint": "next lint",
     "docs": "typedoc --out docs src",
     "test": "jest",
-    "test:functional": "cucumber-js src/features/**/*.feature --require tsconfig-paths/register --require-module ts-node/register --require src/steps/**/*.ts --format progress --format html:cucumber-report.html",
+    "test:functional": "cucumber-js src/features/**/*.feature --require-module tsconfig-paths/register --require-module ts-node/register --require src/steps/**/*.ts --format progress --format html:cucumber-report.html",
     "test:local": "concurrently --kill-others \"npm run dev\" \"wait-on http://localhost:3000 && npm run test:functional\"",
     "test:watch": "jest --watch",
     "lint:fix": "eslint . --ext .ts,.mts --fix"

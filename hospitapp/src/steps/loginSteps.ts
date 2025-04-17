@@ -1,42 +1,10 @@
 import { Given, When, Then, After } from "@cucumber/cucumber";
-import { Builder, By, WebDriver, until } from "selenium-webdriver";
+import { By, until } from "selenium-webdriver";
 import { expect } from "chai";
-import { Options } from "selenium-webdriver/chrome.js";
-import { setDefaultTimeout } from "@cucumber/cucumber";
-
-setDefaultTimeout(500000); // sets timeout to 30 seconds for all steps
-let driver: WebDriver;
+import { driver } from "./commonSteps.ts";
 
 Given("the user has an account on the HospitApp platform", async function () {
 	// Placeholder for account setup
-});
-
-Given("the user is on the HospitApp home page", async function () {
-	const options = new Options();
-	options.addArguments("--headless");
-	options.addArguments("--no-sandbox");
-	options.addArguments("--disable-dev-shm-usage");
-	options.addArguments("--disable-gpu");
-
-	driver = await new Builder()
-		.forBrowser("chrome")
-		.setChromeOptions(options)
-		.build();
-	await driver.manage().window().setRect({ width: 1280, height: 720 }); // Set window size
-	driver
-		.manage()
-		.setTimeouts({ implicit: 10000, pageLoad: 30000, script: 30000 });
-
-	await driver.get("http://localhost:3000/");
-	await driver.wait(async () => {
-		const state = await driver.executeScript("return document.readyState");
-		return state === "complete";
-	}, 15000); // Wait for page to fully load
-	const buscarButton = await driver.wait(
-		until.elementLocated(By.xpath("//button[contains(text(), 'Buscar')]")),
-		15000
-	);
-	expect(await buscarButton.isDisplayed());
 });
 
 When('the user clicks the "Iniciar Sesión" button', async function () {
@@ -108,6 +76,7 @@ When("the user submits the login form", async function () {
 		"arguments[0].scrollIntoView(true);",
 		submitButton
 	);
+	await driver.sleep(500);
 	await submitButton.click();
 });
 
@@ -157,9 +126,3 @@ Then(
 		);
 	}
 );
-
-After(async function () {
-	if (driver) {
-		await driver.quit();
-	}
-});

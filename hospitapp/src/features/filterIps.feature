@@ -6,6 +6,5 @@ Feature: Filter IPSs
     When the user clicks the "Buscar" button
     And the user select the "TRANSPORTE ASISTENCIAL MEDICALIZADO" specialism
     And the user submits the "Buscar" button
-    And the user rejects the location permission
     Then the user should be redirected to the IPS list page
     And the user should see the "UNITED EMS COLOMBIA S.A.S." IPS first in the List
