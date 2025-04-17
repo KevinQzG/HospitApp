@@ -95,7 +95,7 @@ Then("the user should be redirected to the IPS list page", async function () {
 		await driver.getCurrentUrl(),
 		"Should be on IPS list page"
 	).to.include("/result");
-    await driver.sleep(5000);
+    await driver.sleep(10000);
 });
 
 Then(
