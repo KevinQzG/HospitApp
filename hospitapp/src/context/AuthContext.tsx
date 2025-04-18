@@ -9,7 +9,7 @@ interface SessionType {
 interface AuthContextType {
   isAuthenticated: boolean;
   session: SessionType | undefined;
-  authenticate: (email: string, expiresIn: Date) => void;
+  authenticate: (email: string) => void;
   logout: () => void;
 }
 
