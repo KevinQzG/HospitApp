@@ -7,11 +7,18 @@ import Image from "next/image";
 import { Eye, EyeOff, X } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebook, faApple } from "@fortawesome/free-brands-svg-icons";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const authContext = useAuth(); // Asegúrate de que AuthProvider esté correctamente importado y utilizado
+  const authenticate = authContext?.authenticate;
+
+  if (!authenticate) {
+    throw new Error("AuthContext is not properly initialized. Ensure AuthProvider wraps this component.");
+  }
 
   // Efecto para cerrar el mensaje automáticamente después de 10 segundos
   useEffect(() => {
@@ -44,8 +51,14 @@ export default function LoginPage() {
       });
 
       const DATA = await response.json();
+      const res = await fetch("/api/session", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const COOKIE = await res.json();
 
       if (DATA.success) {
+        authenticate(COOKIE.email);
         router.push("/");
       } else {
         setErrorMessage("Correo electrónico o contraseña incorrectos");
@@ -205,5 +218,6 @@ export default function LoginPage() {
         </div>
       </div>
     </section>
+
   );
 }
