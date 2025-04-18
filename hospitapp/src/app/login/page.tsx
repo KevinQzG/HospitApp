@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -51,9 +51,14 @@ export default function LoginPage() {
       });
 
       const DATA = await response.json();
+      const res = await fetch("/api/session", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const COOKIE = await res.json();
 
       if (DATA.success) {
-        authenticate(DATA.token);
+        authenticate(COOKIE.email);
         router.push("/");
       } else {
         setErrorMessage("Correo electrónico o contraseña incorrectos");

@@ -1,43 +1,43 @@
 'use client';
 
-import { createContext, useContext, useState} from 'react';
-import jwt from 'jsonwebtoken';
+import { createContext, useContext, useState } from 'react';
 
 interface SessionType {
-    email: string;
-    expiresIn: Date;
+  email: string;
 }
 
 interface AuthContextType {
-    isAuthenticated: boolean;
-    session: SessionType | undefined;
-    authenticate: (token: string) => void;
+  isAuthenticated: boolean;
+  session: SessionType | undefined;
+  authenticate: (email: string, expiresIn: Date) => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [session, setSession] = useState<SessionType | undefined>(undefined);
 
-    const [session, setSession] = useState<SessionType | undefined>(undefined);
+  const authenticate = (email: string) => {
+      setSession({ email });
 
-    const authenticate = (token: string) => {
-        try {
-            const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET_KEY as string) as SessionType;
-            const expirationDate = new Date(decoded.expiresIn);
-            if (expirationDate > new Date()) {
-                setSession(decoded);
-            }
-        } catch (error) {
-            console.error("Error verifying token:", error);
-        }
+  };
 
-    }
+  const logout = () => {
+    setSession(undefined);
+  };
 
-    return (
-        <AuthContext.Provider value={{ isAuthenticated: !!session, session, authenticate }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider value={{ isAuthenticated: !!session, session, authenticate, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth debe usarse dentro de un AuthProvider');
+  }
+  return context;
+};

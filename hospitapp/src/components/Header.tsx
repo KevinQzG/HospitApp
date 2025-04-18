@@ -13,8 +13,9 @@ export default function Header() {
   const [languageIndex, setLanguageIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
-  const [setIsLoggedIn] = useState(false);
-  const { isAuthenticated} = useAuth();
+  
+  const authContext = useAuth();
+  const isAuthenticated = authContext?.isAuthenticated ?? false;
   const pathname = usePathname();
   const LANGUAGES = ["ES", "EN", "FR", "IT", "PT", "DE"];
 
@@ -32,7 +33,6 @@ export default function Header() {
       try {
         const res = await fetch("/api/session");
         if (!res.ok) throw new Error("Session check failed");
-        const data = await res.json();
       } catch (error) {
         console.error("Error checking session:", error);
       }
