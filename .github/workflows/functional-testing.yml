@@ -1,4 +1,4 @@
-name: Build, ESLint and Tests with Functional Testing Included
+name: Functional Testing
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ "main", "juan_felipe/dev" ]
 
 jobs:
-  build-eslint-and-tests:
+  install-and-tests:
     name: Run ESLint scanning
     runs-on: ubuntu-latest
     environment: Preview
@@ -37,18 +37,6 @@ jobs:
       - name: Install dependencies
         working-directory: hospitapp
         run: npm install
-
-      - name: Run ESLint
-        working-directory: hospitapp
-        run: npm run lint
-
-      - name: Build Application
-        working-directory: hospitapp
-        run: npm run build
-
-      - name: Run Tests
-        working-directory: hospitapp
-        run: npm run test
 
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1.7.3
