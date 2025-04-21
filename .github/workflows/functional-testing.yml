@@ -51,7 +51,7 @@ jobs:
 
       - name: Run Cucumber Tests
         working-directory: hospitapp
-        run: npm run test:local
+        run: npm run test:local > test-output.log 2>&1
 
       - name: Upload test artifacts
         if: failure()
@@ -80,6 +80,14 @@ jobs:
               console.error('Failed to read cucumber-report.html:', error);
               return;
             }
+
+            const outputPath = 'hospitapp/test-output.log';
+            let testOutput = 'No test output captured';
+            try {
+                testOutput = fs.readFileSync(outputPath, 'utf8');
+            } catch (error) {
+                console.error('Failed to read test-output.log:', error);
+            }
             
             // Create issue
             const issue = await github.rest.issues.create({
@@ -100,7 +108,7 @@ jobs:
                 
                 **Test Output:**
                 \`\`\`
-                ${process.env.TEST_OUTPUT || 'No test output captured'}
+                ${testOutput}
                 \`\`\`
               `,
               labels: ['bug', 'test-failure'],
