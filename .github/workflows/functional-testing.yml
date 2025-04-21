@@ -14,7 +14,8 @@ jobs:
     permissions:
       contents: read
       security-events: write
-      issues: write # Required for creating issues
+      issues: write
+      projects: write
 
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -88,31 +89,93 @@ jobs:
             } catch (error) {
                 console.error('Failed to read test-output.log:', error);
             }
+
+            const date = new Date().toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
             
             // Create issue
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Functional Test Failure - Run #${context.runId}`,
+              title: `Bug: Functional Test Failure - Run #${context.runId}`,
               body: `
-                Functional tests failed in workflow run #${context.runId}.
-                
-                **Details:**
-                - Workflow: ${context.workflow}
-                - Run ID: ${context.runId}
-                - Commit: ${context.sha}
-                - Branch: ${context.ref}
-                
-                The test report (cucumber-report.html) is attached as an artifact in the workflow run:
-                [View Artifacts](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
-                
-                **Test Output:**
-                \`\`\`
-                ${testOutput}
-                \`\`\`
+              ## Bug: Functional Test Failure - Run #${context.runId}
+              
+              ### Reporter:
+              GitHub CI
+
+              
+              ### Category:
+              Functional testing
+
+              ### User Story:
+              **FR00 Unknown**
+
+              ### Severity:
+              High        
+
+              ### Priority
+              High
+
+              ---
+
+              ### Summary:
+              One or many functional tests failed. 
+              
+              The test report (cucumber-report.html) is attached as an artifact in the workflow run:
+              [View Artifacts](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+
+              ### Description
+              The CI of GitHub ran the workflow for functional testing and it failed, please review details in the artifacts of the action: [Artifacts](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).
+
+              ### Steps to Reproduce
+              1. Download the report at [Artifacts](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).
+              2. Open the cucumber-report.html file.
+              3. Replicate the steps taken in the file output. 
+
+              ### Evidence
+              The test report (cucumber-report.html) is attached as an artifact in the workflow run:
+              [View Artifacts](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+
+              ### Expected Behavior
+              To Define by Juan Felipe Restrepo
+
+              ### Suggested Fix
+              To Define by Juan Felipe Restrepo
+
+              #### Additional Notes:
+              To Define by Juan Felipe Restrepo
+
+              ### Test Output
+              \`\`\`
+              ${testOutput}
+              \`\`\`
               `,
               labels: ['bug', 'test-failure'],
               assignees: ['JuanFelipeRestrepoBuitrago'] // Replace with your GitHub username or team
             });
             
             console.log(`Created issue #${issue.data.number}`);
+
+            const projectNodeId = `PVT_kwHOBjWbP84AxRWg`;
+
+            try {
+              await github.graphql(`
+                mutation($projectId: ID!, $contentId: ID!) {
+                  addProjectV2ItemById(input: { projectId: $projectId, contentId: $contentId }) {
+                    item {
+                      id
+                    }
+                  }
+                }
+              `, {
+                projectId: projectNodeId,
+                contentId: issue.data.node_id
+              });
+              console.log(`Added issue #${issue.data.number} to HospitApp Backlog project`);
+            } catch (error) {
+              console.error('Failed to add issue to project:', error);
+            }
