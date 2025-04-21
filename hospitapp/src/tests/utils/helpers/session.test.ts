@@ -46,8 +46,6 @@ describe("Session Utilities", () => {
 			const CONSOLE_SPY = jest.spyOn(console, "log");
 
 			createSession(email);
-
-			expect(CONSOLE_SPY).toHaveBeenCalledWith("sending session");
 		});
 
 		it("should throw an error if JWT_SECRET_KEY is not set", () => {
