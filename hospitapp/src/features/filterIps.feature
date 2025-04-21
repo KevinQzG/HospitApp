@@ -4,7 +4,8 @@ Feature: Filter IPSs
   Scenario: The user filters IPSs without location
     Given the user is on the HospitApp home page
     When the user clicks the "Buscar" button
-    And the user select the "TRANSPORTE ASISTENCIAL MEDICALIZADO" specialism
+    And the user selects the "ANESTESIA" specialism
+    And the user selects the "AIC EPS" EPS
     And the user submits the "Buscar" button
-    Then the user should be redirected to the IPS list page
-    And the user should see the "UNITED EMS COLOMBIA S.A.S." IPS first in the List
+    Then the user should be redirected to the IPS list page with "ANESTESIA" specialism and "AIC EPS" EPS selected
+    And the user should see the "CLINICA LAS AMÉRICAS AUNA - SEDE SUR" IPS first in the List

@@ -2,6 +2,7 @@ import { When, Then } from "@cucumber/cucumber";
 import { expect } from "chai";
 import { By, until } from "selenium-webdriver";
 import { driver } from "./commonSteps.ts";
+import { a } from "node_modules/framer-motion/dist/types.d-B50aGbjN";
 
 When('the user clicks the "Buscar" button', async function () {
 	const searchButton = await driver.wait(
@@ -39,7 +40,7 @@ When('the user clicks the "Buscar" button', async function () {
 });
 
 When(
-	"the user select the {string} specialism",
+	"the user selects the {string} specialism",
 	async function (specialism: string) {
 		const SPECIALISM_INPUT = await driver.wait(
 			until.elementLocated(
@@ -49,9 +50,7 @@ When(
 			),
 			15000
 		);
-        console.log("Specialism select element found");
 		await driver.wait(until.elementIsVisible(SPECIALISM_INPUT), 15000);
-        console.log("Specialism select element is visible");
         await driver.executeScript(
             "arguments[0].scrollIntoView(true);",
             SPECIALISM_INPUT
@@ -71,6 +70,54 @@ When(
 			15000
 		);
 		await option.click();
+
+		await driver.wait(
+			until.elementLocated(
+				By.xpath(`//span[contains(., "${specialism}")]`)
+			),
+			15000
+		);
+	}
+);
+
+When(
+	"the user selects the {string} EPS",
+	async function (eps: string) {
+		const EPS_INPUT = await driver.wait(
+			until.elementLocated(
+				By.xpath(
+					"/html/body/main/div/div[1]/div/form/div[1]/div[1]/div/div/input"
+				)
+			),
+			15000
+		);
+		await driver.wait(until.elementIsVisible(EPS_INPUT), 15000);
+        await driver.executeScript(
+            "arguments[0].scrollIntoView(true);",
+            EPS_INPUT
+        );
+        await EPS_INPUT.click();
+        await driver.sleep(500);
+        await EPS_INPUT.click();
+		await EPS_INPUT.sendKeys(eps);
+        await driver.sleep(500);
+
+		const option = await driver.wait(
+			until.elementLocated(
+				By.xpath(
+					"/html/body/main/div/div[1]/div/form/div[1]/div[1]/div/div[2]/label/input"
+				)
+			),
+			15000
+		);
+		await option.click();
+
+		await driver.wait(
+			until.elementLocated(
+				By.xpath(`//span[contains(., "${eps}")]`)
+			),
+			15000
+		);
 	}
 );
 
@@ -89,13 +136,41 @@ When('the user submits the "Buscar" button', async function () {
 	await submitButton.click();
 });
 
-Then("the user should be redirected to the IPS list page", async function () {
+Then("the user should be redirected to the IPS list page with {string} specialism and {string} EPS selected", async function (specialism: string, eps: string) {
 	await driver.wait(until.urlContains("/result"), 15000);
 	expect(
 		await driver.getCurrentUrl(),
 		"Should be on IPS list page"
 	).to.include("/result");
     await driver.sleep(10000);
+
+	await driver.wait(
+		until.elementLocated(
+			By.xpath(`//span[contains(., "${specialism}")]`)
+		),
+		15000
+	);
+	const specialismElement = await driver.findElement(
+		By.xpath(`//span[contains(., "${specialism}")]`)
+	);
+	const specialismText = await specialismElement.getText();
+	expect(
+		specialismText,
+		"Selected specialism should be " + specialism
+	).to.contain(specialism);
+
+	await driver.wait(
+		until.elementLocated(
+			By.xpath(`//span[contains(., "${eps}")]`)
+		),
+		15000
+	);
+
+	const epsElement = await driver.findElement(
+		By.xpath(`//span[contains(., "${eps}")]`)
+	);
+	const epsText = await epsElement.getText();
+	expect(epsText, "Selected EPS should be " + eps).to.contain(eps);
 });
 
 Then(
