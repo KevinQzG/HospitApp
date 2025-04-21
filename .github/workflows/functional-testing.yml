@@ -15,7 +15,6 @@ jobs:
       contents: read
       security-events: write
       issues: write
-      projects: write
 
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
