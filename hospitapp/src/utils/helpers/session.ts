@@ -9,7 +9,6 @@ const createSession = (email: string): string => {
     const SESSION = jwt.sign({ email: email }, process.env.JWT_SECRET_KEY as string, {
         expiresIn: '1h',
     });
-    console.log("sending session");
     return SESSION;
 
 }
@@ -39,4 +38,9 @@ const getSessionToken = (cookie: string): { email: string; iat: number; exp: num
     }
 }
 
-export { createSession, getSessionToken };
+const logOut = (document: { cookie: string; }) => {
+    document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
+export { createSession, getSessionToken, logOut };
+
