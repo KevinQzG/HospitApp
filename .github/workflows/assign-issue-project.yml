@@ -15,5 +15,5 @@ jobs:
         with:
           project-url: https://github.com/users/KevinQzG/projects/5
           github-token: ${{ secrets.PAT_TOKEN }}
-          labeled: bug, needs-triage
+          labeled: bug, test-failure
           label-operator: OR
