@@ -70,7 +70,6 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            const { Octokit } = require('@octokit/rest');
             
             // Read cucumber-report.html
             const reportPath = 'hospitapp/cucumber-report.html';
