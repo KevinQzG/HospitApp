@@ -1,4 +1,5 @@
 import { Ips } from "@/models/ips";
+import { SortCriteria } from "@/repositories/ips_mongo.repository.interfaces";
 import { ObjectId } from "mongodb";
 
 /**
@@ -18,6 +19,7 @@ export default interface IpsRepositoryAdapter {
 	 * @param {number} page - The page number.
 	 * @param {number} pageSize - The number of results per page.
 	 * @param {string} town - The town of the IPSs.
+	 * @param {SortCriteria[]} sorts - The sorting criteria.
 	 * @param {boolean} hasReviews - Whether to filter the IPSs that have reviews or not applied.
 	 * @returns {Promise<{ results: Ips[]; total: number }>} The IPSs that meet the specified criteria.
 	 */
@@ -28,6 +30,7 @@ export default interface IpsRepositoryAdapter {
 		specialties: string[],
 		epsNames: string[],
 		town: string | null,
+		sorts: SortCriteria[],
 		page?: number,
 		pageSize?: number,
 		hasReviews?: boolean
@@ -42,6 +45,7 @@ export default interface IpsRepositoryAdapter {
 	 * @param {string[]} specialties - Specialties that the IPSs must have.
 	 * @param {string[]} epsNames - EPSs that the IPSs must have.
 	 * @param {string} town - The town of the IPSs.
+	 * @param {SortCriteria[]} sorts - The sorting criteria.
 	 * @param {boolean} hasReviews - Whether to filter the IPSs that have reviews or not applied.
 	 * @returns {Promise<Ips[]>} The IPSs that meet the specified criteria.
 	 */
@@ -52,6 +56,7 @@ export default interface IpsRepositoryAdapter {
 		specialties: string[],
 		epsNames: string[],
 		town: string | null,
+		sorts: SortCriteria[],
 		hasReviews?: boolean
 	): Promise<Ips[]>;
 
@@ -66,11 +71,13 @@ export default interface IpsRepositoryAdapter {
 	/**
 	 * Gets all IPSs with pagination.
 	 * @async
+	 * @param {SortCriteria[]} sorts - The sorting criteria.
 	 * @param {number} page - The page number.
 	 * @param {number} pageSize - The number of results per page.
 	 * @returns {Promise<{ results: Ips[]; total: number }>} The IPSs that meet the specified criteria.
 	 */
 	findAllWithPagination(
+		sorts: SortCriteria[],
 		page: number,
 		pageSize: number
 	): Promise<{ results: Ips[]; total: number }>;
@@ -78,9 +85,10 @@ export default interface IpsRepositoryAdapter {
 	/**
 	 * Gets all IPSs.
 	 * @async
+	 * @param {SortCriteria[]} sorts - The sorting criteria.
 	 * @returns {Promise<Ips[]>} The IPSs that meet the specified criteria.
 	 */
-	findAll(): Promise<Ips[]>;
+	findAll(sorts: SortCriteria[]): Promise<Ips[]>;
 
 	/**
 	 * Creates a new IPS.

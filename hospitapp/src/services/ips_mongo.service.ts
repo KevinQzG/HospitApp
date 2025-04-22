@@ -69,6 +69,7 @@ export class IpsMongoService implements IpsServiceAdapter {
 				specialties,
 				epsNames,
 				town,
+				[],
 				page,
 				pageSize,
 				hasReviews
@@ -98,6 +99,7 @@ export class IpsMongoService implements IpsServiceAdapter {
 			specialties,
 			epsNames,
 			town,
+			[],
 			hasReviews
 		);
 

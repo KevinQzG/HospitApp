@@ -39,6 +39,7 @@ describe("IpsMongoRepository Integration Test", () => {
 					testSpecialties,
 					testEpsNames,
 					null,
+					[{field: "distance", direction: 1}],
 					1,
 					10
 				);
@@ -57,6 +58,7 @@ describe("IpsMongoRepository Integration Test", () => {
 					testSpecialties,
 					testEpsNames,
 					null,
+					[{field: "distance", direction: 1}],
 					1,
 					10
 				);
@@ -80,6 +82,7 @@ describe("IpsMongoRepository Integration Test", () => {
 					testSpecialties,
 					testEpsNames,
 					null,
+					[{field: "distance", direction: 1}],
 					1,
 					10
 				);
@@ -116,6 +119,7 @@ describe("IpsMongoRepository Integration Test", () => {
 					testSpecialties,
 					testEpsNames,
 					null,
+					[{field: "distance", direction: 1}],
 					1,
 					10
 				);
@@ -145,6 +149,7 @@ describe("IpsMongoRepository Integration Test", () => {
 					testSpecialties,
 					testEpsNames,
 					null,
+					[{field: "distance", direction: 1}],
 					1,
 					PAGE_SIZE
 				);
@@ -166,6 +171,7 @@ describe("IpsMongoRepository Integration Test", () => {
 					testSpecialties,
 					testEpsNames,
 					null,
+					[{field: "distance", direction: 1}],
 					1,
 					PAGE_SIZE
 				);
@@ -204,6 +210,7 @@ describe("IpsMongoRepository Integration Test", () => {
 				[],
 				[],
 				"MEDELLÍN",
+				[{field: "distance", direction: 1}],
 				undefined,
 				undefined,
 				true
@@ -229,7 +236,8 @@ describe("IpsMongoRepository Integration Test", () => {
 				null,
 				testSpecialties,
 				testEpsNames,
-				null
+				null,
+				[{field: "distance", direction: 1}]
 			);
 
 			expect(RESULTS).toHaveLength(110);
@@ -242,7 +250,8 @@ describe("IpsMongoRepository Integration Test", () => {
 				MAX_DISTANCE_METERS,
 				testSpecialties,
 				testEpsNames,
-				null
+				null,
+				[{field: "distance", direction: 1}]
 			);
 
 			expect(RESULTS).toHaveLength(1);
@@ -261,7 +270,8 @@ describe("IpsMongoRepository Integration Test", () => {
 				MAX_DISTANCE_METERS,
 				testSpecialties,
 				testEpsNames,
-				null
+				null,
+				[{field: "distance", direction: 1}]
 			);
 
 			const [IPS] = RESULTS;
@@ -294,7 +304,8 @@ describe("IpsMongoRepository Integration Test", () => {
 				MAX_DISTANCE_METERS,
 				testSpecialties,
 				testEpsNames,
-				null
+				null,
+				[{field: "distance", direction: 1}]
 			);
 
 			const [IPS] = RESULTS;
@@ -320,7 +331,8 @@ describe("IpsMongoRepository Integration Test", () => {
 				MAX_DISTANCE_METERS,
 				testSpecialties,
 				testEpsNames,
-				null
+				null,
+				[{field: "distance", direction: 1}]
 			);
 
 			const IPS = RESULTS[3];
@@ -353,6 +365,7 @@ describe("IpsMongoRepository Integration Test", () => {
 				[],
 				[],
 				"MEDELLÍN",
+				[{field: "distance", direction: 1}],
 				true
 			);
 
@@ -509,7 +522,11 @@ describe("IpsMongoRepository Integration Test", () => {
 
 		it("should retrieve all IPS with correct pagination", async () => {
 			const { results: RESULTS, total: TOTAL } =
-				await repository.findAllWithPagination(1, PAGE_SIZE);
+				await repository.findAllWithPagination(
+					[],
+					1,
+					PAGE_SIZE
+				);
 
 			expect(RESULTS).toHaveLength(PAGE_SIZE);
 			expect(TOTAL).toBeGreaterThan(0);
@@ -518,7 +535,11 @@ describe("IpsMongoRepository Integration Test", () => {
 
 		it("should retrieve exactly one matching IPS with correct data", async () => {
 			const { results: RESULTS } =
-				await repository.findAllWithPagination(1, PAGE_SIZE);
+				await repository.findAllWithPagination(
+					[],
+					1,
+					PAGE_SIZE
+				);
 
 			expect(RESULTS[0].getId().toString()).toEqual("67b3e98bb1ae5d9e47ae782e");
 			expect(RESULTS[0].getName()).toBe("EMPRESA SOCIAL DEL ESTADO HOSPITAL SAN JUAN DE DIOS DE ABEJORRAL");
@@ -529,12 +550,12 @@ describe("IpsMongoRepository Integration Test", () => {
 
 	describe("findAll", () => {
 		it("should retrieve all IPS", async () => {
-			const RESULTS = await repository.findAll();
+			const RESULTS = await repository.findAll([]);
 
 			expect(RESULTS).toHaveLength(2009);
 		});
 		it("should retrieve exactly one matching IPS with correct data", async () => {
-			const RESULTS = await repository.findAll();
+			const RESULTS = await repository.findAll([]);
 
 			expect(RESULTS[0].getId().toString()).toEqual("67b3e98bb1ae5d9e47ae782e");
 			expect(RESULTS[0].getName()).toBe("EMPRESA SOCIAL DEL ESTADO HOSPITAL SAN JUAN DE DIOS DE ABEJORRAL");

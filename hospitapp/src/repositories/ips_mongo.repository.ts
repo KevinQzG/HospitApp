@@ -8,6 +8,7 @@ import type DBAdapter from "@/adapters/db.adapter";
 import { IpsPipelineBuilder } from "./builders/ips_pipeline.builder";
 import { IpsMapper } from "@/utils/mappers/ips_mapper";
 import { AggregationResult } from "./ips_mongo.repository.interfaces";
+import { SortCriteria } from "./ips_mongo.repository.interfaces";
 
 /**
  * @class
@@ -63,7 +64,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		return IPS_DOCUMENT.acknowledged;
 	}
 
-	private getPipelineBuilder(hasReviews: boolean, latitude: number | null, longitude: number | null, maxDistance: number | null, town: string | null): IpsPipelineBuilder {
+	private getPipelineBuilder(sorts: SortCriteria[], hasReviews: boolean, latitude: number | null, longitude: number | null, maxDistance: number | null, town: string | null): IpsPipelineBuilder {
 		let pipelineBuilder = new IpsPipelineBuilder().addGeoStage(longitude, latitude, maxDistance);
 		pipelineBuilder = pipelineBuilder.addRating();
 
@@ -73,6 +74,17 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		if (town) {
 			pipelineBuilder = pipelineBuilder.addMatchStage({ town: town });
 		}
+
+		const SORT_OBJECT: { [key: string]: number } = {};
+
+		for (const SORT of sorts) {
+			SORT_OBJECT[SORT.field] = SORT.direction;
+		}
+
+		SORT_OBJECT["town"] = 1;
+		SORT_OBJECT["name"] = 1;
+
+		pipelineBuilder = pipelineBuilder.addSortStage(SORT_OBJECT);
 
 		return pipelineBuilder;
 	}
@@ -84,19 +96,15 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		specialties: string[],
 		epsNames: string[],
 		town: string | null,
+		sorts: SortCriteria[],
 		page: number = 1,
 		pageSize: number = 10,
-		hasReviews: boolean = false
+		hasReviews: boolean = false,
 	): Promise<{ results: Ips[]; total: number }> {
 		// Build the pipeline
-		const PIPELINE = this.getPipelineBuilder(hasReviews, latitude, longitude, maxDistance, town)
+		const PIPELINE = this.getPipelineBuilder(sorts, hasReviews, latitude, longitude, maxDistance, town)
 			.matchesSpecialties(specialties)
 			.matchesEps(epsNames)
-			.addSortStage({
-				distance: 1,
-				town: 1,
-				name: 1,
-			})
 			.addPagination(page, pageSize)
 			.build();
 
@@ -129,17 +137,13 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		specialties: string[],
 		epsNames: string[],
 		town: string | null,
+		sorts: SortCriteria[],
 		hasReviews: boolean = false
 	): Promise<Ips[]> {
 		// Build the pipeline
-		const PIPELINE = this.getPipelineBuilder(hasReviews, latitude, longitude, maxDistance, town)
+		const PIPELINE = this.getPipelineBuilder(sorts, hasReviews, latitude, longitude, maxDistance, town)
 			.matchesSpecialties(specialties)
 			.matchesEps(epsNames)
-			.addSortStage({
-				distance: 1,
-				town: 1,
-				name: 1,
-			})
 			.build();
 
 		// Execute the pipeline
@@ -183,15 +187,12 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 	}
 
 	async findAllWithPagination(
+		sorts: SortCriteria[],
 		page: number,
 		pageSize: number
 	): Promise<{ results: Ips[]; total: number }> {
 		// Build the pipeline
-		const PIPELINE = new IpsPipelineBuilder()
-			.addSortStage({
-				town: 1,
-				name: 1,
-			})
+		const PIPELINE = this.getPipelineBuilder(sorts, false, null, null, null, null)
 			.addPagination(page, pageSize)
 			.build();
 
@@ -216,12 +217,8 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		};
 	}
 
-	async findAll(): Promise<Ips[]> {
-		const PIPELINE = new IpsPipelineBuilder()
-			.addSortStage({
-				town: 1,
-				name: 1,
-			})
+	async findAll(sorts: SortCriteria[]): Promise<Ips[]> {
+		const PIPELINE = this.getPipelineBuilder(sorts, false, null, null, null, null)
 			.build();
 
 		const DB = await this.dbHandler.connect();

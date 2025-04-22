@@ -138,6 +138,7 @@ describe("IpsMongoService Integration Test", () => {
 				["ENFERMERÍA"],
 				["SALUDCOOP EPS-C"],
 				null,
+				[],
 				1,
 				10,
 				false
@@ -194,6 +195,7 @@ describe("IpsMongoService Integration Test", () => {
 				expect.anything(),
 				expect.anything(),
 				null,
+				[],
 				2,
 				5,
 				false
