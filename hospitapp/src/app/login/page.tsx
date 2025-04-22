@@ -56,7 +56,7 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
       });
       const COOKIE = await res.json();
-
+      
       if (DATA.success) {
         authenticate(COOKIE.email);
         router.push("/");
