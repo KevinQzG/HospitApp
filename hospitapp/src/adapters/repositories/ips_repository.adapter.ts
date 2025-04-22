@@ -1,5 +1,5 @@
 import { Ips } from "@/models/ips";
-import { SortCriteria } from "@/repositories/ips_mongo.repository.interfaces";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 import { ObjectId } from "mongodb";
 
 /**

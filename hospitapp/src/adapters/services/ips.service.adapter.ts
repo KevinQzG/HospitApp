@@ -50,6 +50,7 @@ export default interface IpsServiceAdapter {
 	 * @param {number} pageSize - The number of results per page.
 	 * @param {string | null} town - The town of the IPSs.
 	 * @param {boolean} hasReviews - Whether to filter the IPSs that have reviews or not applied. (default: false)
+	 * @param {SortCriteria[]} [sort] - The sorting criteria (optional).
 	 * @returns {Promise<{ results: IPS[]; total: number }>} The results is an array of IPSs that meet the specified criteria without surpassing the page size, and the total is the total number of IPSs that meet the specified criteria.
 	 */
 	filterIpsWithPagination(
@@ -61,7 +62,8 @@ export default interface IpsServiceAdapter {
 		page: number,
 		pageSize: number,
 		town: string | null,
-		hasReviews?: boolean
+		hasReviews?: boolean,
+		sort?: SortCriteria[]
 	): Promise<{ results: IpsResponse[]; total: number }>;
 
 	/**
@@ -75,6 +77,7 @@ export default interface IpsServiceAdapter {
 	 * @returns {Promise<IpsResponse[]>} The results is an array of IPSs that meet the specified criteria.
 	 * @param {string | null} town - The town of the IPSs.
 	 * @param {boolean} hasReviews - Whether to filter the IPSs that have reviews or not applied. (default: false)
+	 * @param {SortCriteria[]} [sort] - The sorting criteria (optional).
 	 * @returns {Promise<IpsResponse[]>} The results is an array of IPSs that meet the specified criteria.
 	 */
 	filterIps(
@@ -84,7 +87,8 @@ export default interface IpsServiceAdapter {
 		specialties: string[],
 		epsNames: string[],
 		town: string | null,
-		hasReviews?: boolean
+		hasReviews?: boolean,
+		sort?: SortCriteria[]
 	): Promise<IpsResponse[]>;
 
 	/**

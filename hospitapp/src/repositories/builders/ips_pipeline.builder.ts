@@ -134,7 +134,8 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 					},
 				},
 				totalReviews: 1,
-				rating: 1
+				rating: 1,
+				promotion: 1,
 			},
 		});
 
@@ -185,7 +186,7 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 					{
 						$avg: "$reviews.rating",
 					},
-					5,
+					0,
 				],
 			},
 		});
@@ -291,6 +292,7 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 			distance: 1,
 			totalReviews: 1,
 			rating: 1,
+			promotion: 1,
 		};
 	}
 

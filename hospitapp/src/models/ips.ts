@@ -28,6 +28,7 @@ export class Ips {
 	private reviews?: Review[];
 	private totalReviews?: number;
 	private rating?: number;
+	private promotion?: number;
 
 	/**
 	 * Creates an instance of IPS.
@@ -47,6 +48,8 @@ export class Ips {
 	 * @param {Specialty[]} [specialties] - Specialty entities associated with the IPS (optional).
 	 * @param {Review[]} [reviews] - Reviews associated with the IPS (optional).
 	 * @param {number} [totalReviews] - Total number of reviews associated with the IPS (optional).
+	 * @param {number} [rating] - Rating of the IPS (optional).
+	 * @param {number} [promotion] - Promotion of the IPS (optional).
 	 */
 	constructor(
 		_id: ObjectId = new ObjectId(),
@@ -66,7 +69,8 @@ export class Ips {
 		specialties?: Specialty[],
 		reviews?: Review[],
 		totalReviews?: number,
-		rating?: number
+		rating?: number,
+		promotion?: number
 	) {
 		this._id = _id;
 		this.name = name;
@@ -83,6 +87,7 @@ export class Ips {
 		this.reviews = reviews;
 		this.totalReviews = totalReviews;
 		this.rating = rating;
+		this.promotion = promotion;
 	}
 
 	/**
@@ -251,6 +256,22 @@ export class Ips {
 	 */
 	getRating(): number | undefined {
 		return this.rating;
+	}
+
+	/**
+	 * Gets the promotion of the IPS.
+	 * @returns {number | undefined} The promotion of the IPS.
+	 */
+	getPromotion(): number | undefined {
+		return this.promotion;
+	}
+
+	/**
+	 * Sets the promotion of the IPS.
+	 * @param {number} promotion - The promotion of the IPS.
+	 */
+	setPromotion(promotion: number): void {
+		this.promotion = promotion;
 	}
 
 	/**

@@ -8,7 +8,7 @@ import type DBAdapter from "@/adapters/db.adapter";
 import { IpsPipelineBuilder } from "./builders/ips_pipeline.builder";
 import { IpsMapper } from "@/utils/mappers/ips_mapper";
 import { AggregationResult } from "./ips_mongo.repository.interfaces";
-import { SortCriteria } from "./ips_mongo.repository.interfaces";
+import { SortCriteria } from "./review_mongo.repository.interfaces";
 
 /**
  * @class
