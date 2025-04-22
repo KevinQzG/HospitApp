@@ -2,9 +2,7 @@ name: Functional Testing
 
 on:
   push:
-    branches: ["main", "juan_felipe/dev"]
-  pull_request:
-    branches: ["main", "juan_felipe/dev"]
+    branches: ["main"]
 
 jobs:
   install-and-tests:
