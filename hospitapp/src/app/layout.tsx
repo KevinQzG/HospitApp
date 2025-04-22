@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import PwaHandler from "@/components/PwaHandler";
 import { AuthProvider } from "@/context/AuthContext";
 
+
 export const metadata: Metadata = {
   title: "HospitApp",
   description:
@@ -60,8 +61,9 @@ export default function rootLayout({
         <meta name="apple-mobile-web-app-title" content="HospitAPP" />
         <meta name="application-name" content="HospitAPP" />
       </head>
-      <AuthProvider>
+      
       <body className="min-h-screen bg-[#ECF6FF] text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
+      <AuthProvider>
       <Header />
         <main>{children}</main>
         <Footer />  
@@ -81,8 +83,9 @@ export default function rootLayout({
             `,
           }}
         />
+        </AuthProvider>
       </body>
-      </AuthProvider>
+      
     </html>
   );
 }
