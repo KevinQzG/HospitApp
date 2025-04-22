@@ -81,6 +81,7 @@
     "postcss-import": "^16.1.0",
     "react": "^19.0.0",
     "selenium-webdriver": "^4.31.0",
+    "tree-kill": "^1.2.2",
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
