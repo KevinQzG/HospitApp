@@ -2,7 +2,6 @@ import { When, Then } from "@cucumber/cucumber";
 import { expect } from "chai";
 import { By, until } from "selenium-webdriver";
 import { driver } from "./commonSteps.ts";
-import { a } from "node_modules/framer-motion/dist/types.d-B50aGbjN";
 
 When('the user clicks the "Buscar" button', async function () {
 	const searchButton = await driver.wait(
