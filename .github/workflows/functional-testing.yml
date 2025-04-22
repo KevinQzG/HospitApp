@@ -150,7 +150,7 @@ jobs:
               To Define by Juan Felipe Restrepo
 
               ### Test Output
-              \`\`\`
+              \`\`\`bash
               ${testOutput}
               \`\`\`
               `,
@@ -159,29 +159,3 @@ jobs:
             });
             
             console.log(`Created issue #${issue.data.number}`);
-
-            const projectNodeId = 'PVT_kwHOBjWbP84AxRWg';
-            if ('${{ secrets.PAT_TOKEN }}') {
-              const patOctokit = new Octokit({
-                auth: '${{ secrets.PAT_TOKEN }}'
-              });
-              try {
-                await patOctokit.graphql(`
-                  mutation($projectId: ID!, $contentId: ID!) {
-                    addProjectV2ItemById(input: { projectId: $projectId, contentId: $contentId }) {
-                      item {
-                        id
-                      }
-                    }
-                  }
-                `, {
-                  projectId: projectNodeId,
-                  contentId: issue.data.node_id
-                });
-                console.log(`Added issue #${issue.data.number} to HospitApp Backlog project`);
-              } catch (error) {
-                console.error('Failed to add issue to project (continuing without failure):', error);
-              }
-            } else {
-              console.log('PAT_TOKEN not available, skipping project assignment');
-            }
