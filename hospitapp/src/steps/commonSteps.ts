@@ -14,9 +14,9 @@ Before(async function () {
     options.setUserPreferences({
         "profile.default_content_setting_values.geolocation": 2,
     });
-    // options.addArguments("--headless");
-    // options.addArguments("--no-sandbox");
-    // options.addArguments("--disable-dev-shm-usage");
+    options.addArguments("--headless");
+    options.addArguments("--no-sandbox");
+    options.addArguments("--disable-dev-shm-usage");
 
     driver = await new Builder()
         .forBrowser("chrome")
