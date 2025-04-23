@@ -21,6 +21,7 @@
     "@next/font": "^14.2.15",
     "@tailwindcss/oxide": "^4.0.12",
     "@tailwindcss/postcss": "^4.0.12",
+    "bcrypt-ts": "^6.0.0",
     "bootstrap": "^5.3.3",
     "country-flag-icons": "^1.5.18",
     "country-telephone-data": "^0.6.3",
