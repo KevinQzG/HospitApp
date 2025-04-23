@@ -1,0 +1,19 @@
+name: Add bugs to project
+
+on:
+  issues:
+    types:
+      - opened
+
+jobs:
+  add-to-project:
+    name: Add issue to project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add To GitHub projects
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/users/KevinQzG/projects/5
+          github-token: ${{ secrets.PAT_TOKEN }}
+          labeled: bug, test-failure
+          label-operator: OR

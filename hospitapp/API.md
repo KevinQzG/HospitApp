@@ -1,5 +1,7 @@
 # API Endpoint Documentation
 
+This documentation was developed by Juan Felipe Restrepo with the help of Grook AI.
+
 ## Table of Contents
 
 1. [Search IPS by Filter](#search-ips-by-filter)

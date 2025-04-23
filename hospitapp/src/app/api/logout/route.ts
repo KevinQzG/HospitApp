@@ -6,9 +6,6 @@ export async function POST(request: Request) {
         if (!sessionToken) {
             return new Response(JSON.stringify({ success: false, error: "No session token found" }), { status: 400 });
         }
-
-        // Aquí podrías invalidar el token en DB si es necesario
-
         return new Response(JSON.stringify({ success: true }), {
             status: 200,
             headers: {
