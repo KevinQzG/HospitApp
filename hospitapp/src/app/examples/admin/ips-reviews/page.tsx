@@ -53,7 +53,7 @@ export default function AdminReviewsPage() {
 			try {
 				// Step 1: Verify ADMIN role
 				const authResponse = await fetch(
-					"http://localhost:3000/api/v1.0.0/auth/verification",
+					"/api/v1.0.0/auth/verification",
 					{
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
@@ -73,7 +73,7 @@ export default function AdminReviewsPage() {
 
 				// Step 2: Fetch reviews if ADMIN
 				const reviewsResponse = await fetch(
-					"http://localhost:3000/api/v1.0.0/reviews/get/all/pagination",
+					"/api/v1.0.0/reviews/get/all/pagination",
 					{
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
@@ -126,7 +126,7 @@ export default function AdminReviewsPage() {
 		}
 		try {
 			const response = await fetch(
-				"http://localhost:3000/api/v1.0.0/reviews/delete",
+				"/api/v1.0.0/reviews/delete",
 				{
 					method: "POST",
 					headers: { "Content-Type": "application/json" },

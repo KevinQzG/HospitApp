@@ -9,6 +9,8 @@
     "lint": "next lint",
     "docs": "typedoc --out docs src",
     "test": "jest",
+    "test:functional": "cucumber-js src/features/**/*.feature --require-module tsconfig-paths/register --require-module ts-node/register --require src/steps/**/*.ts --format progress --format html:cucumber-report.html",
+    "test:local": "node runTests.js",
     "test:watch": "jest --watch",
     "lint:fix": "eslint . --ext .ts,.mts --fix"
   },
@@ -47,8 +49,11 @@
     "tailwindcss": "^4.0.17"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^11.2.0",
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.22.0",
+    "@types/chai": "^5.2.1",
+    "@types/chromedriver": "^81.0.5",
     "@types/country-telephone-data": "^0.6.3",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.9",
@@ -56,10 +61,15 @@
     "@types/react": "^19.0.10",
     "@types/react-bootstrap": "^0.32.37",
     "@types/react-dom": "^19.0.4",
-    "@typescript-eslint/eslint-plugin": "^8.26.1",
-    "@typescript-eslint/parser": "^8.26.1",
+    "@types/selenium-webdriver": "^4.1.28",
+    "@typescript-eslint/eslint-plugin": "^8.30.1",
+    "@typescript-eslint/parser": "^8.30.1",
     "autoprefixer": "^10.4.21",
     "biome": "^0.3.3",
+    "chai": "^5.2.0",
+    "chromedriver": "^135.0.1",
+    "concurrently": "^9.1.2",
+    "cucumber": "^6.0.7",
     "dotenv": "^16.4.7",
     "eslint": "^9.22.0",
     "eslint-config-next": "^15.1.7",
@@ -71,9 +81,14 @@
     "postcss": "^8.5.3",
     "postcss-import": "^16.1.0",
     "react": "^19.0.0",
+    "selenium-webdriver": "^4.31.0",
+    "tree-kill": "^1.2.2",
     "ts-jest": "^29.2.6",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typedoc": "^0.27.9",
-    "typescript": "^5",
-    "typescript-eslint": "^8.26.1"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.26.1",
+    "wait-on": "^8.0.3"
   }
 }
