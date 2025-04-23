@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Hospital, ChevronLeft, ChevronRight, Plus, Search, X } from "lucide-react";
 import Link from "next/link";
+import { ENV } from "@/config/env";
 
 type IpsResponse = {
   _id: string;
@@ -41,31 +42,48 @@ type AuthResponse = {
 export default function AdminIpsPage() {
   const router = useRouter();
   const [groupedIps, setGroupedIps] = useState<{ [key: string]: IpsResponse[] }>({});
-  const [allIps, setAllIps] = useState<IpsResponse[]>([]); // Todas las IPS para filtrado
+  const [allIps, setAllIps] = useState<IpsResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(21);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Nuevo estado para controlar la carga
-  const [searchTerm, setSearchTerm] = useState(""); // Filtro por nombre
-  const [selectedTown, setSelectedTown] = useState(""); // Filtro por municipio (selección)
-  const [appliedTown, setAppliedTown] = useState(""); // Filtro por municipio (aplicado)
-  const [towns, setTowns] = useState<string[]>([]); // Lista de todos los municipios
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTown, setSelectedTown] = useState("");
+  const [appliedTown, setAppliedTown] = useState("");
+  const [towns, setTowns] = useState<string[]>([]);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const authResponse = await fetch("/api/v1.0.0/auth/verification", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            authenticationNeeded: true,
-            authenticationRoles: ["ADMIN"],
-          }),
-        });
+        const sessionToken = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("session="))
+          ?.split("=")[1];
+
+        if (!sessionToken) {
+          setIsAuthorized(false);
+          router.push("/");
+          return;
+        }
+
+        const authResponse = await fetch(
+          `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/auth/verification`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: `session=${sessionToken}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              authenticationNeeded: true,
+              authenticationRoles: ["ADMIN"],
+            }),
+          }
+        );
 
         if (!authResponse.ok) {
           throw new Error(`Authentication failed: ${authResponse.status} ${authResponse.statusText}`);
@@ -77,8 +95,10 @@ export default function AdminIpsPage() {
         }
 
         const authData: AuthResponse = await authResponse.json();
-        if (!authData.success) {
-          console.error("Authentication failed:", authData.error || authData.message);
+        if (
+          !authData.success ||
+          authData.user?.role?.toUpperCase() !== "ADMIN"
+        ) {
           setIsAuthorized(false);
           router.push("/");
           return;
@@ -95,20 +115,36 @@ export default function AdminIpsPage() {
     checkAuth();
   }, [router]);
 
-  // Cargar todas las IPS usando /api/v1.0.0/ips/filter
   useEffect(() => {
     if (isAuthorized === true) {
       const fetchAllIps = async () => {
         try {
-          setIsLoading(true); // Iniciar la carga
-          const response = await fetch("/api/v1.0.0/ips/filter", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({
-              hasReviews: false,
-            }),
-          });
+          setIsLoading(true);
+          const sessionToken = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("session="))
+            ?.split("=")[1];
+
+          if (!sessionToken) {
+            setIsAuthorized(false);
+            router.push("/");
+            return;
+          }
+
+          const response = await fetch(
+            `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/ips/filter`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Cookie: `session=${sessionToken}`,
+              },
+              credentials: "include",
+              body: JSON.stringify({
+                hasReviews: false,
+              }),
+            }
+          );
 
           if (!response.ok) {
             throw new Error(`Failed to fetch IPS: ${response.status} ${response.statusText}`);
@@ -121,17 +157,23 @@ export default function AdminIpsPage() {
 
           const data: IpsListResponse = await response.json();
           if (data.success && data.data) {
-            setAllIps(data.data); // Guardar todas las IPS
-            const uniqueTowns = Array.from(new Set(data.data.map((ips) => ips.town || "Sin municipio"))).sort();
+            setAllIps(data.data);
+            const uniqueTowns = Array.from(
+              new Set(data.data.map((ips) => ips.town || "Sin municipio"))
+            ).sort();
             setTowns(uniqueTowns);
           } else {
             throw new Error(data.error || "No IPS data returned");
           }
         } catch (error) {
           console.error("Error fetching IPS:", error);
-          setError(error instanceof Error ? error.message : "An unknown error occurred while fetching IPS");
+          setError(
+            error instanceof Error
+              ? error.message
+              : "An unknown error occurred while fetching IPS"
+          );
         } finally {
-          setIsLoading(false); // Finalizar la carga, haya éxito o error
+          setIsLoading(false);
         }
       };
 
@@ -139,35 +181,30 @@ export default function AdminIpsPage() {
     }
   }, [isAuthorized]);
 
-  // Filtrar y paginar manualmente en el cliente
   useEffect(() => {
     if (isAuthorized === true && allIps.length > 0) {
-      // Filtrar por nombre en tiempo real
       const filteredByName = searchTerm
-        ? allIps.filter((ips) => ips.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        ? allIps.filter((ips) =>
+            ips.name.toLowerCase().includes(searchTerm.toLowerCase())
+          )
         : allIps;
 
-      // Filtrar por municipio
       const filteredIps = appliedTown
         ? filteredByName.filter((ips) => (ips.town || "Sin municipio") === appliedTown)
         : filteredByName;
 
-      // Calcular el total de ítems después de aplicar ambos filtros
       const totalFilteredItems = filteredIps.length;
       setTotalItems(totalFilteredItems);
       setTotalPages(Math.ceil(totalFilteredItems / itemsPerPage));
 
-      // Asegurarse de que la página actual no sea mayor que el total de páginas
       if (currentPage > Math.ceil(totalFilteredItems / itemsPerPage)) {
         setCurrentPage(1);
       }
 
-      // Aplicar paginación manualmente
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
       const paginatedIps = filteredIps.slice(startIndex, endIndex);
 
-      // Agrupar las IPS paginadas por municipio
       const grouped = paginatedIps.reduce((acc, ips) => {
         const town = ips.town || "Sin municipio";
         acc[town] = acc[town] || [];
@@ -180,15 +217,15 @@ export default function AdminIpsPage() {
   }, [isAuthorized, allIps, currentPage, itemsPerPage, appliedTown, searchTerm]);
 
   const handleFilterByTown = () => {
-    setAppliedTown(selectedTown); // Aplicar el filtro por municipio solo al hacer clic en "Filtrar"
-    setCurrentPage(1); // Resetear a la primera página
+    setAppliedTown(selectedTown);
+    setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
-    setSearchTerm(""); // Limpiar el filtro por nombre
-    setSelectedTown(""); // Limpiar la selección de municipio
-    setAppliedTown(""); // Limpiar el filtro aplicado por municipio
-    setCurrentPage(1); // Resetear a la primera página
+    setSearchTerm("");
+    setSelectedTown("");
+    setAppliedTown("");
+    setCurrentPage(1);
   };
 
   if (isAuthorized === null) {
@@ -243,7 +280,6 @@ export default function AdminIpsPage() {
           <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 text-center tracking-tight mb-6">
             Lista de IPS
           </h1>
-          {/* Botón de Regresar al Dashboard */}
           <div className="flex justify-start mb-6">
             <Link
               href="/admin"
@@ -254,9 +290,7 @@ export default function AdminIpsPage() {
             </Link>
           </div>
 
-          {/* Buscador y Filtros */}
           <div className="flex flex-col sm:flex-row gap-4 items-end">
-            {/* Buscador por nombre */}
             <div className="flex-1">
               <label
                 htmlFor="search"
@@ -277,7 +311,6 @@ export default function AdminIpsPage() {
               </div>
             </div>
 
-            {/* Filtro por municipio */}
             <div className="flex-1">
               <label
                 htmlFor="town"
@@ -300,7 +333,6 @@ export default function AdminIpsPage() {
               </select>
             </div>
 
-            {/* Botones de filtrado */}
             <div className="flex gap-2 items-end">
               <button
                 onClick={handleFilterByTown}
@@ -318,7 +350,6 @@ export default function AdminIpsPage() {
             </div>
           </div>
 
-          {/* Botón Agregar IPS (debajo de los filtros) */}
           <div className="mt-4 flex justify-end">
             <Link
               href="/admin/ips/create"
@@ -330,7 +361,6 @@ export default function AdminIpsPage() {
           </div>
         </div>
 
-        {/* Mostrar un indicador de carga mientras se obtienen los datos */}
         {isLoading ? (
           <p className="text-gray-600 dark:text-gray-300 text-center text-lg">Cargando...</p>
         ) : Object.keys(groupedIps).length > 0 ? (
@@ -388,7 +418,9 @@ export default function AdminIpsPage() {
               </div>
             ))
         ) : (
-          <p className="text-gray-600 dark:text-gray-300 text-center text-lg">No se encontraron IPS.</p>
+          <p className="text-gray-600 dark:text-gray-300 text-center text-lg">
+            No se encontraron IPS.
+          </p>
         )}
 
         {totalPages > 1 && (
@@ -404,7 +436,10 @@ export default function AdminIpsPage() {
 
               {getPageNumbers().map((page, index) =>
                 typeof page === "string" ? (
-                  <span key={`ellipsis-${index}`} className="text-gray-500 dark:text-gray-400 px-2">
+                  <span
+                    key={`ellipsis-${index}`}
+                    className="text-gray-500 dark:text-gray-400 px-2"
+                  >
                     ...
                   </span>
                 ) : (

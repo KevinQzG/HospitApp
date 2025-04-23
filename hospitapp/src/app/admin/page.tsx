@@ -1,10 +1,79 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Edit, Star, Hospital } from "lucide-react";
+import { ENV } from "@/config/env";
 
 const adminDashboard = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // Obtener el token de la cookie
+        const sessionToken = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("session="))
+          ?.split("=")[1];
+
+        if (!sessionToken) {
+          router.push("/");
+          return;
+        }
+
+        // Verificar autenticación y rol de administrador
+        const authResponse = await fetch(
+          `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/auth/verification`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: `session=${sessionToken}`,
+            },
+            body: JSON.stringify({
+              authenticationNeeded: true,
+              authenticationRoles: ["ADMIN"],
+            }),
+            credentials: "include", // Incluir cookies en la solicitud
+          }
+        );
+
+        const authData = await authResponse.json();
+
+        if (
+          !authResponse.ok ||
+          !authData.success ||
+          authData.user?.role?.toUpperCase() !== "ADMIN"
+        ) {
+          router.push("/");
+        } else {
+          setIsAuthorized(true);
+        }
+      } catch (error) {
+        console.error("Error verificando autenticación:", error);
+        router.push("/");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full min-h-screen bg-gray-900 flex items-center justify-center">
+        <p className="text-gray-400">Cargando...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return null; // No renderiza nada si no está autorizado (la redirección ya está manejada)
+  }
 
   return (
     <div className="w-full min-h-screen bg-gray-900 text-gray-100 flex flex-col items-center justify-center px-6 py-12">
@@ -32,8 +101,7 @@ const adminDashboard = () => {
             <div className="flex-1">
               <h2 className="text-2xl font-medium text-gray-100">Editar IPS</h2>
               <p className="text-base text-gray-400 mt-2">
-                Gestiona la información de las instituciones prestadoras de
-                salud.
+                Gestiona la información de las instituciones prestadoras de salud.
               </p>
             </div>
             <Edit className="w-8 h-8 text-gray-500" />
