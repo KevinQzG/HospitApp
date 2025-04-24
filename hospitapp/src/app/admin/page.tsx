@@ -13,17 +13,6 @@ const adminDashboard = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Obtener el token de la cookie
-        const sessionToken = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("session="))
-          ?.split("=")[1];
-
-        if (!sessionToken) {
-          router.push("/");
-          return;
-        }
-
         // Verificar autenticación y rol de administrador
         const authResponse = await fetch(
           `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/auth/verification`,
@@ -31,7 +20,6 @@ const adminDashboard = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Cookie: `session=${sessionToken}`,
             },
             body: JSON.stringify({
               authenticationNeeded: true,
