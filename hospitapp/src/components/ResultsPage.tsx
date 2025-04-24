@@ -236,7 +236,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         const maxDistance = searchParams.get("maxDistance") ?? "20000";
         const specialtiesParam =
           searchParams.get("specialties")?.split(",").filter(Boolean) || [];
-        // Corrected: Changed "#pragma once" to "epsNames"
         const epsParam =
           searchParams.get("epsNames")?.split(",").filter(Boolean) || [];
         const coordinatesStr = searchParams.get("coordinates");
@@ -505,93 +504,107 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
       </div>
 
       {listView ? (
-        <div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {paginatedResults.map((item) => (
-              <RESULT_ITEM key={item._id} item={item} />
-            ))}
+        paginatedResults.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+              No hay resultados para esta búsqueda
+            </p>
           </div>
+        ) : (
+          <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {paginatedResults.map((item) => (
+                <RESULT_ITEM key={item._id} item={item} />
+              ))}
+            </div>
 
-          {totalPages > 1 && (
-            <div className="mt-6 sm:mt-8 flex flex-col items-center space-y-3">
-              <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
-                Mostrando {(currentPage - 1) * pageSize + 1} –{" "}
-                {Math.min(currentPage * pageSize, totalResults)} de{" "}
-                {totalResults} resultados
-              </p>
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className={`p-1 sm:p-2 rounded-full ${
-                    currentPage === 1
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-
-                {startPage > 1 && (
-                  <>
-                    <button
-                      onClick={() => handlePageChange(1)}
-                      className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
-                    >
-                      1
-                    </button>
-                    {startPage > 2 && (
-                      <span className="text-gray-600 dark:text-gray-300 px-2 text-sm">
-                        ...
-                      </span>
-                    )}
-                  </>
-                )}
-
-                {pageNumbers.map((page) => (
+            {totalPages > 1 && (
+              <div className="mt-6 sm:mt-8 flex flex-col items-center space-y-3">
+                <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Mostrando {(currentPage - 1) * pageSize + 1} –{" "}
+                  {Math.min(currentPage * pageSize, totalResults)} de{" "}
+                  {totalResults} resultados
+                </p>
+                <div className="flex items-center space-x-1 sm:space-x-2">
                   <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all text-sm ${
-                      currentPage === page
-                        ? "bg-blue-600 text-white shadow-md"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`p-1 sm:p-2 rounded-full ${
+                      currentPage === 1
+                        ? "text-gray-400 cursor-not-allowed"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                     }`}
                   >
-                    {page}
+                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
-                ))}
 
-                {endPage < totalPages && (
-                  <>
-                    {endPage < totalPages - 1 && (
-                      <span className="text-gray-600 dark:text-gray-300 px-2 text-sm">
-                        ...
-                      </span>
-                    )}
+                  {startPage > 1 && (
+                    <>
+                      <button
+                        onClick={() => handlePageChange(1)}
+                        className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
+                      >
+                        1
+                      </button>
+                      {startPage > 2 && (
+                        <span className="text-gray-600 dark:text-gray-300 px-2 text-sm">
+                          ...
+                        </span>
+                      )}
+                    </>
+                  )}
+
+                  {pageNumbers.map((page) => (
                     <button
-                      onClick={() => handlePageChange(totalPages)}
-                      className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all text-sm ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white shadow-md"
+                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      }`}
                     >
-                      {totalPages}
+                      {page}
                     </button>
-                  </>
-                )}
+                  ))}
 
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className={`p-1 sm:p-2 rounded-full ${
-                    currentPage === totalPages
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
+                  {endPage < totalPages && (
+                    <>
+                      {endPage < totalPages - 1 && (
+                        <span className="text-gray-600 dark:text-gray-300 px-2 text-sm">
+                          ...
+                        </span>
+                      )}
+                      <button
+                        onClick={() => handlePageChange(totalPages)}
+                        className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
+                      >
+                        {totalPages}
+                      </button>
+                    </>
+                  )}
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`p-1 sm:p-2 rounded-full ${
+                      currentPage === totalPages
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        )
+      ) : allResults.length === 0 ? (
+        <div className="text-center py-10">
+          <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+            No hay resultados para esta búsqueda
+          </p>
         </div>
       ) : (
         <MapComponent results={allResults} coordinates={coordinates} />
