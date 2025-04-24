@@ -3,6 +3,7 @@ import CONTAINER from "@/adapters/container";
 import UserRepositoryAdapter from "@/adapters/repositories/user_repository.adapter";
 import { TYPES } from "@/adapters/types";
 import { createSession } from "@/utils/helpers/session";
+import { compare } from "bcrypt-ts";
 
 export interface LoginRequest {
 	email: string;
@@ -41,8 +42,13 @@ export async function POST(request: Request) {
 		}
 
 		const user = await userRepo.findUserByEmail(body.email);
-		if (user && user.comparePassword(body.password)) {
-			console.log("creating something");
+		if( !user) {
+			return NextResponse.json(
+				{ success: false, error: validation.error },
+				{ status: 400 }
+			)
+		}
+		if ( await compare(body.password, user.getPassword()) ) {
 			const session = createSession(user.getEmail());
 
 			const response = NextResponse.json(
