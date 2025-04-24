@@ -180,6 +180,7 @@ export default function SearchFormClient({
     transition-colors duration-150 ease-in-out
     ${isSubmitting ? "cursor-wait" : "cursor-pointer"}`}
         >
+			
           {isSubmitting ? "Buscando..." : "Buscar"}
         </button>
       </form>
