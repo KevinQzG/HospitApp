@@ -23,7 +23,7 @@ export default function SearchFormClient({
     searchParams.get("specialties")?.split(",").filter(Boolean) || []
   );
   const [initialEps, setInitialEps] = useState<string[]>(
-    searchParams.get("eps")?.split(",").filter(Boolean) || [] // Cambiado de "eps_names" a "eps"
+    searchParams.get("epsNames")?.split(",").filter(Boolean) || [] // Cambiado a "epsNames"
   );
   const [selectedDistance, setSelectedDistance] = useState<string>("");
 
@@ -31,7 +31,7 @@ export default function SearchFormClient({
     const newSpecialties =
       searchParams.get("specialties")?.split(",").filter(Boolean) || [];
     const newEps =
-      searchParams.get("eps")?.split(",").filter(Boolean) || []; // Cambiado de "eps_names" a "eps"
+      searchParams.get("epsNames")?.split(",").filter(Boolean) || []; // Cambiado a "epsNames"
     setInitialSpecialties(newSpecialties);
     setInitialEps(newEps);
   }, [searchParams]);
@@ -95,7 +95,7 @@ export default function SearchFormClient({
         coordinates: coordinates.join(","),
         "max_distance": maxDistance,
         specialties: specialties.join(","),
-        eps: eps.join(","), // Cambiado de "eps_names" a "eps"
+        epsNames: eps.join(","), // Cambiado a "epsNames"
         page,
         "page_size": pageSize,
       });

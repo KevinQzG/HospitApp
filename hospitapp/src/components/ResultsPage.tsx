@@ -83,7 +83,7 @@ interface SearchRequestBody {
   page: number;
   page_size: number;
   specialties?: string[];
-  eps?: string[];
+  epsNames?: string[];
 }
 
 function calculateDistance(
@@ -260,7 +260,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         }
 
         if (epsParam.length > 0) {
-          requestBody["eps"] = epsParam;
+          requestBody["epsNames"] = epsParam;
         }
 
         console.log("Parámetros enviados a la API de búsqueda:", requestBody);
