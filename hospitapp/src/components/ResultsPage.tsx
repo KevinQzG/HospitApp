@@ -79,11 +79,11 @@ interface AllReviewsResponse {
 
 interface SearchRequestBody {
   coordinates: [number, number];
-  max_distance: number;
+  maxDistance: number;
   page: number;
-  page_size: number;
+  pageSize: number;
   specialties?: string[];
-  eps_names?: string[];
+  epsNames?: string[];
 }
 
 function calculateDistance(
@@ -105,7 +105,7 @@ function calculateDistance(
   return R * c;
 }
 
-// Star Rating Component with Tooltip (Actualizado)
+// Star Rating Component with Tooltip
 const StarRating = ({ rating }: { rating: number }) => {
   const roundedRating = Math.round(rating); // Para las estrellas
   const formattedRating = Number.isInteger(rating) ? rating : rating.toFixed(1); // Para el texto
@@ -237,11 +237,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         const specialtiesParam =
           searchParams.get("specialties")?.split(",").filter(Boolean) || [];
         const epsParam =
-          searchParams.get("#pragma once")?.split(",").filter(Boolean) || [];
+          searchParams.get("epsNames")?.split(",").filter(Boolean) || [];
         const coordinatesStr = searchParams.get("coordinates");
         let coordinates: [number, number] = userCoordinates || [
-          -75.5849,
-          6.1816,
+          -75.5849, 6.1816,
         ];
         if (coordinatesStr) {
           const [lng, lat] = coordinatesStr.split(",").map(Number);
@@ -250,9 +249,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
         const requestBody: SearchRequestBody = {
           coordinates,
-          "max_distance": parseInt(maxDistance),
+          maxDistance: parseInt(maxDistance),
           page: 1,
-          "page_size": 2890,
+          pageSize: 2890,
         };
 
         if (specialtiesParam.length > 0) {
@@ -260,12 +259,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         }
 
         if (epsParam.length > 0) {
-          requestBody["eps_names"] = epsParam;
+          requestBody.epsNames = epsParam;
         }
 
-        console.log("Parámetros enviados a la API de búsqueda:", requestBody);
-
-        const response = await fetch("/api/search_ips/filter", {
+        const response = await fetch("/api/v1.0.0/ips/filter/pagination", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(requestBody),
@@ -288,7 +285,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           const reviewsData: AllReviewsResponse = await reviewsResponse.json();
           if (reviewsData.success && reviewsData.data) {
             allReviews = reviewsData.data;
-            console.log("Reseñas obtenidas:", allReviews);
           } else {
             console.error("Error al obtener reseñas:", reviewsData.error);
           }
@@ -303,7 +299,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           const ipsReviews = allReviews.filter(
             (review) => review.ips === item._id
           );
-          console.log(`Reseñas para IPS ${item.name} (${item._id}):`, ipsReviews);
           const averageRating =
             ipsReviews.length > 0
               ? ipsReviews.reduce(
@@ -312,29 +307,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                 ) / ipsReviews.length
               : 0;
           const hasReviews = ipsReviews.length > 0;
-          console.log(`Calificación promedio para ${item.name}: ${averageRating}`);
           return { ...item, averageRating, hasReviews };
         });
-
-        console.log("Resultados recibidos de la API:", filteredResults.length);
-        console.log("Paginación del servidor:", data.pagination);
-        console.log("Primeros 5 resultados:", filteredResults.slice(0, 5));
-
-        if (epsParam.length > 0) {
-          filteredResults = filteredResults.filter((item: IpsResponse) => {
-            if (!item.eps || item.eps.length === 0) return false;
-            const hasMatchingEps = item.eps.some((epsItem) =>
-              epsParam.includes(epsItem._id)
-            );
-            if (!hasMatchingEps) {
-              console.log(
-                `IPS "${item.name}" no coincide con las EPS seleccionadas (${epsParam}):`,
-                item.eps
-              );
-            }
-            return hasMatchingEps;
-          });
-        }
+ 
 
         if (userCoordinates) {
           filteredResults = filteredResults.map((item: IpsResponse) => ({
@@ -384,9 +359,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
   useEffect(() => {
     const filtered = allResults.filter((item) =>
-      `${item.name} ${item.address} ${item.town || ""} ${
-        item.department || ""
-      }`
+      `${item.name} ${item.address} ${item.town || ""} ${item.department || ""}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase())
     );
@@ -475,7 +448,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
-        <h1 className="text-xl sm:text-2xl font-bold">Resultados de Búsqueda</h1>
+        <h1 className="text-xl sm:text-2xl font-bold">
+          Resultados de Búsqueda
+        </h1>
         <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 items-start sm:items-center w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
             <input
@@ -513,93 +488,107 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
       </div>
 
       {listView ? (
-        <div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {paginatedResults.map((item) => (
-              <RESULT_ITEM key={item._id} item={item} />
-            ))}
+        !loading && !searchLoading && paginatedResults.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+              No hay resultados para esta búsqueda
+            </p>
           </div>
+        ) : (
+          <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {paginatedResults.map((item) => (
+                <RESULT_ITEM key={item._id} item={item} />
+              ))}
+            </div>
 
-          {totalPages > 1 && (
-            <div className="mt-6 sm:mt-8 flex flex-col items-center space-y-3">
-              <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
-                Mostrando {(currentPage - 1) * pageSize + 1} –{" "}
-                {Math.min(currentPage * pageSize, totalResults)} de{" "}
-                {totalResults} resultados
-              </p>
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className={`p-1 sm:p-2 rounded-full ${
-                    currentPage === 1
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-
-                {startPage > 1 && (
-                  <>
-                    <button
-                      onClick={() => handlePageChange(1)}
-                      className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
-                    >
-                      1
-                    </button>
-                    {startPage > 2 && (
-                      <span className="text-gray-600 dark:text-gray-300 px-2 text-sm">
-                        ...
-                      </span>
-                    )}
-                  </>
-                )}
-
-                {pageNumbers.map((page) => (
+            {totalPages > 1 && (
+              <div className="mt-6 sm:mt-8 flex flex-col items-center space-y-3">
+                <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Mostrando {(currentPage - 1) * pageSize + 1} –{" "}
+                  {Math.min(currentPage * pageSize, totalResults)} de{" "}
+                  {totalResults} resultados
+                </p>
+                <div className="flex items-center space-x-1 sm:space-x-2">
                   <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all text-sm ${
-                      currentPage === page
-                        ? "bg-blue-600 text-white shadow-md"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`p-1 sm:p-2 rounded-full ${
+                      currentPage === 1
+                        ? "text-gray-400 cursor-not-allowed"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                     }`}
                   >
-                    {page}
+                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
-                ))}
 
-                {endPage < totalPages && (
-                  <>
-                    {endPage < totalPages - 1 && (
-                      <span className="text-gray-600 dark:text-gray-300 px-2 text-sm">
-                        ...
-                      </span>
-                    )}
+                  {startPage > 1 && (
+                    <>
+                      <button
+                        onClick={() => handlePageChange(1)}
+                        className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
+                      >
+                        1
+                      </button>
+                      {startPage > 2 && (
+                        <span className="text-gray-600 dark:text-gray-300 px-2 text-sm">
+                          ...
+                        </span>
+                      )}
+                    </>
+                  )}
+
+                  {pageNumbers.map((page) => (
                     <button
-                      onClick={() => handlePageChange(totalPages)}
-                      className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all text-sm ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white shadow-md"
+                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      }`}
                     >
-                      {totalPages}
+                      {page}
                     </button>
-                  </>
-                )}
+                  ))}
 
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className={`p-1 sm:p-2 rounded-full ${
-                    currentPage === totalPages
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
+                  {endPage < totalPages && (
+                    <>
+                      {endPage < totalPages - 1 && (
+                        <span className="text-gray-600 dark:text-gray-300 px-2 text-sm">
+                          ...
+                        </span>
+                      )}
+                      <button
+                        onClick={() => handlePageChange(totalPages)}
+                        className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
+                      >
+                        {totalPages}
+                      </button>
+                    </>
+                  )}
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`p-1 sm:p-2 rounded-full ${
+                      currentPage === totalPages
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        )
+      ) : !loading && !searchLoading && allResults.length === 0 ? (
+        <div className="text-center py-10">
+          <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+            No hay resultados para esta búsqueda
+          </p>
         </div>
       ) : (
         <MapComponent results={allResults} coordinates={coordinates} />
@@ -619,14 +608,16 @@ function MapComponent({
 
   useEffect(() => {
     // Determinar el estilo inicial según el modo del sistema
-    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const darkModeMediaQuery = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    );
     const initialStyle = darkModeMediaQuery.matches
       ? "mapbox://styles/mapbox/dark-v10"
       : "mapbox://styles/mapbox/streets-v12";
 
     const map = new mapboxgl.Map({
       container: "map",
-      style: initialStyle, // Estilo inicial basado en el modo del sistema
+      style: initialStyle,
       center: coordinates,
       zoom: 12,
     });
@@ -667,9 +658,9 @@ function MapComponent({
                   : "N/A"
               }</p>
             </div>
-            <p class="text-gray-700 dark:text-gray-300">${item.address}, ${item.town ?? ""}, ${
-              item.department ?? ""
-            }</p>
+            <p class="text-gray-700 dark:text-gray-300">${item.address}, ${
+          item.town ?? ""
+        }, ${item.department ?? ""}</p>
             <div class="flex items-center space-x-1 mt-1">
               ${
                 item.hasReviews
@@ -706,7 +697,6 @@ function MapComponent({
       }
     });
 
-    // Listener para cambiar el estilo del mapa según el modo claro/oscuro
     const handleDarkModeChange = (e: MediaQueryListEvent) => {
       map.setStyle(
         e.matches
@@ -718,7 +708,6 @@ function MapComponent({
 
     map.on("load", () => map.resize());
 
-    // Limpiar el listener al desmontar el componente
     return () => {
       map.remove();
       darkModeMediaQuery.removeEventListener("change", handleDarkModeChange);
