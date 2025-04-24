@@ -145,7 +145,7 @@ When(
 );
 
 Then("the user should see a success message {string}", async function (message: string) {
-	const successMessage = await driver.wait(
+	await driver.wait(
 		until.elementLocated(
 			By.xpath(
 				"//div[contains(text(), '" + message + "')]"
