@@ -105,7 +105,7 @@ function calculateDistance(
   return R * c;
 }
 
-// Star Rating Component with Tooltip (Actualizado)
+// Star Rating Component with Tooltip
 const StarRating = ({ rating }: { rating: number }) => {
   const roundedRating = Math.round(rating); // Para las estrellas
   const formattedRating = Number.isInteger(rating) ? rating : rating.toFixed(1); // Para el texto
@@ -236,8 +236,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         const maxDistance = searchParams.get("maxDistance") ?? "20000";
         const specialtiesParam =
           searchParams.get("specialties")?.split(",").filter(Boolean) || [];
+        // Corrected: Changed "#pragma once" to "epsNames"
         const epsParam =
-          searchParams.get("#pragma once")?.split(",").filter(Boolean) || [];
+          searchParams.get("epsNames")?.split(",").filter(Boolean) || [];
         const coordinatesStr = searchParams.get("coordinates");
         let coordinates: [number, number] = userCoordinates || [
           -75.5849,
@@ -250,9 +251,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
         const requestBody: SearchRequestBody = {
           coordinates,
-          "max_distance": parseInt(maxDistance),
+          max_distance: parseInt(maxDistance),
           page: 1,
-          "page_size": 2890,
+          page_size: 2890,
         };
 
         if (specialtiesParam.length > 0) {
@@ -260,10 +261,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         }
 
         if (epsParam.length > 0) {
-          requestBody["epsNames"] = epsParam;
+          requestBody.epsNames = epsParam;
         }
-
-        console.log("Parámetros enviados a la API de búsqueda:", requestBody);
 
         const response = await fetch("/api/search_ips/filter", {
           method: "POST",
@@ -288,7 +287,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           const reviewsData: AllReviewsResponse = await reviewsResponse.json();
           if (reviewsData.success && reviewsData.data) {
             allReviews = reviewsData.data;
-            console.log("Reseñas obtenidas:", allReviews);
           } else {
             console.error("Error al obtener reseñas:", reviewsData.error);
           }
@@ -303,7 +301,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           const ipsReviews = allReviews.filter(
             (review) => review.ips === item._id
           );
-          console.log(`Reseñas para IPS ${item.name} (${item._id}):`, ipsReviews);
           const averageRating =
             ipsReviews.length > 0
               ? ipsReviews.reduce(
@@ -312,13 +309,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                 ) / ipsReviews.length
               : 0;
           const hasReviews = ipsReviews.length > 0;
-          console.log(`Calificación promedio para ${item.name}: ${averageRating}`);
           return { ...item, averageRating, hasReviews };
         });
-
-        console.log("Resultados recibidos de la API:", filteredResults.length);
-        console.log("Paginación del servidor:", data.pagination);
-        console.log("Primeros 5 resultados:", filteredResults.slice(0, 5));
 
         if (epsParam.length > 0) {
           filteredResults = filteredResults.filter((item: IpsResponse) => {
@@ -626,7 +618,7 @@ function MapComponent({
 
     const map = new mapboxgl.Map({
       container: "map",
-      style: initialStyle, // Estilo inicial basado en el modo del sistema
+      style: initialStyle,
       center: coordinates,
       zoom: 12,
     });
@@ -706,7 +698,6 @@ function MapComponent({
       }
     });
 
-    // Listener para cambiar el estilo del mapa según el modo claro/oscuro
     const handleDarkModeChange = (e: MediaQueryListEvent) => {
       map.setStyle(
         e.matches
@@ -718,7 +709,6 @@ function MapComponent({
 
     map.on("load", () => map.resize());
 
-    // Limpiar el listener al desmontar el componente
     return () => {
       map.remove();
       darkModeMediaQuery.removeEventListener("change", handleDarkModeChange);
