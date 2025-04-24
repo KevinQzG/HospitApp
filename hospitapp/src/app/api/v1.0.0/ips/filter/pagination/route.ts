@@ -141,7 +141,6 @@ export async function POST(
 	try {
 		// Parse and validate request body
 		const BODY: SearchRequest = await req.json();
-		console.log("Request Body:", BODY);
 
 		// Body validation
 		const { success: SUCCESS, error: ERROR } = VALIDATE_REQUEST_BODY(BODY);
@@ -170,8 +169,6 @@ export async function POST(
 				BODY.town || null,
 				BODY.hasReviews || false
 			);
-
-			console.log("RESULTS:", RESULTS);
 
 		// revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)
 		return NextResponse.json({
