@@ -5,14 +5,7 @@ import { useEffect, useState } from "react";
 import { Edit, Star, Hospital } from "lucide-react";
 import { ENV } from "@/config/env";
 
-interface AuthResponse {
-  success: boolean;
-  user?: {
-    role: string;
-  };
-}
-
-const AdminDashboard = () => {
+const adminDashboard = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -20,51 +13,35 @@ const AdminDashboard = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Extract session token from cookies
-        const cookies = document.cookie.split("; ");
-        const sessionToken = cookies
-          .find((row) => row.startsWith("session="))
-          ?.split("=")[1];
-
-        if (!sessionToken) {
-          router.push("/");
-          return;
-        }
-
-        // Verify authentication and admin role
+        // Verificar autenticación y rol de administrador
         const authResponse = await fetch(
           `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/auth/verification`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Cookie: `session=${sessionToken}`,
             },
             body: JSON.stringify({
               authenticationNeeded: true,
               authenticationRoles: ["ADMIN"],
             }),
-            credentials: "include",
+            credentials: "include", // Incluir cookies en la solicitud
           }
         );
 
-        if (!authResponse.ok) {
-          throw new Error(`HTTP error: ${authResponse.status}`);
-        }
-
-        const authData: AuthResponse = await authResponse.json();
+        const authData = await authResponse.json();
 
         if (
+          !authResponse.ok ||
           !authData.success ||
-          !authData.user ||
-          authData.user.role.toUpperCase() !== "ADMIN"
+          authData.user?.role?.toUpperCase() !== "ADMIN"
         ) {
           router.push("/");
         } else {
           setIsAuthorized(true);
         }
       } catch (error) {
-        console.error("Authentication verification failed:", error);
+        console.error("Error verificando autenticación:", error);
         router.push("/");
       } finally {
         setIsLoading(false);
@@ -83,7 +60,7 @@ const AdminDashboard = () => {
   }
 
   if (!isAuthorized) {
-    return null; // Prevent rendering until redirect
+    return null; // No renderiza nada si no está autorizado (la redirección ya está manejada)
   }
 
   return (
@@ -142,4 +119,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default adminDashboard;
