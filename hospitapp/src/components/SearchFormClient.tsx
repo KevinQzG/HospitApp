@@ -93,11 +93,11 @@ export default function SearchFormClient({
 
       const queryParams = new URLSearchParams({
         coordinates: coordinates.join(","),
-        max_distance: maxDistance,
+        maxDistance: maxDistance,
         specialties: specialties.join(","),
         epsNames: eps.join(","), // Cambiado a "epsNames"
         page,
-        page_size: pageSize,
+        pageSize: pageSize,
       });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -180,7 +180,7 @@ export default function SearchFormClient({
     transition-colors duration-150 ease-in-out
     ${isSubmitting ? "cursor-wait" : "cursor-pointer"}`}
         >
-			
+
           {isSubmitting ? "Buscando..." : "Buscar"}
         </button>
       </form>
