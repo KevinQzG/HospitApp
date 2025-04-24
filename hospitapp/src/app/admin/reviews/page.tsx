@@ -55,26 +55,13 @@ export default function AdminReviewsPage() {
   useEffect(() => {
     const verifyAdminAndFetchReviews = async () => {
       try {
-        // Obtener el token de la cookie
-        const sessionToken = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("session="))
-          ?.split("=")[1];
-
-        if (!sessionToken) {
-          setIsAuthorized(false);
-          router.push("/");
-          return;
-        }
-
         // Verificar autenticación y rol de administrador
         const authResponse = await fetch(
           `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/auth/verification`,
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
-              Cookie: `session=${sessionToken}`,
+              "Content-Type": "application/json"
             },
             credentials: "include",
             body: JSON.stringify({
@@ -111,24 +98,12 @@ export default function AdminReviewsPage() {
 
   const fetchReviews = async (page: number) => {
     try {
-      const sessionToken = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("session="))
-        ?.split("=")[1];
-
-      if (!sessionToken) {
-        setIsAuthorized(false);
-        router.push("/");
-        return;
-      }
-
       const response = await fetch(
         `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/reviews/get/all/pagination`,
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            Cookie: `session=${sessionToken}`,
+            "Content-Type": "application/json"
           },
           credentials: "include",
           body: JSON.stringify({
@@ -156,24 +131,12 @@ export default function AdminReviewsPage() {
 
   const handleDeleteReview = async (reviewId: string) => {
     try {
-      const sessionToken = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("session="))
-        ?.split("=")[1];
-
-      if (!sessionToken) {
-        setIsAuthorized(false);
-        router.push("/");
-        return;
-      }
-
       const response = await fetch(
         `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/reviews/delete`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Cookie: `session=${sessionToken}`,
           },
           credentials: "include",
           body: JSON.stringify({ id: reviewId }),

@@ -23,7 +23,7 @@ const test = spawn(
         "wait-on",
         "http://localhost:3000",
         "--timeout",
-        "30000", // 30s timeout
+        "60000", // 60s timeout
         "&&",
         "npm",
         "run",

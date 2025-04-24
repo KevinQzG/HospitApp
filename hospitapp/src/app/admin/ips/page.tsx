@@ -58,24 +58,12 @@ export default function AdminIpsPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const sessionToken = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("session="))
-          ?.split("=")[1];
-
-        if (!sessionToken) {
-          setIsAuthorized(false);
-          router.push("/");
-          return;
-        }
-
         const authResponse = await fetch(
           `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/auth/verification`,
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
-              Cookie: `session=${sessionToken}`,
+              "Content-Type": "application/json"
             },
             credentials: "include",
             body: JSON.stringify({
@@ -119,25 +107,12 @@ export default function AdminIpsPage() {
     if (isAuthorized === true) {
       const fetchAllIps = async () => {
         try {
-          setIsLoading(true);
-          const sessionToken = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("session="))
-            ?.split("=")[1];
-
-          if (!sessionToken) {
-            setIsAuthorized(false);
-            router.push("/");
-            return;
-          }
-
           const response = await fetch(
             `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/ips/filter`,
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Cookie: `session=${sessionToken}`,
               },
               credentials: "include",
               body: JSON.stringify({
