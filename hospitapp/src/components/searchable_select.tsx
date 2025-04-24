@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 
 interface SearchableSelectProps {
-  options: Array<{ _id: string; name: string; displayName?: string }>; // Agregamos displayName como opcional
+  options: Array<{ _id: string; name: string; displayName?: string }>;
   placeholder: string;
   name: string;
   maxSelections?: number;
@@ -24,15 +24,17 @@ export function SearchableSelect({
   const inputRef = useRef<HTMLInputElement>(null);
   const [clickCount, setClickCount] = useState(0);
 
-  // Synchronize selectedOptions with initialValues when it changes
+  // Sincronizar selectedOptions con initialValues cuando cambie
   useEffect(() => {
     setSelectedOptions(initialValues);
   }, [initialValues]);
 
+  // Filtrar opciones basadas en el término de búsqueda
   const filteredOptions = options.filter((option) =>
     option.name && option.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Cerrar el menú al hacer clic fuera
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -48,6 +50,7 @@ export function SearchableSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Alternar selección de una opción
   const toggleOption = (name: string) => {
     setSelectedOptions((prev) =>
       prev.includes(name)
@@ -58,6 +61,7 @@ export function SearchableSelect({
     );
   };
 
+  // Manejar clics en el input
   const handleInputClick = () => {
     setClickCount((prev) => prev + 1);
 
@@ -65,7 +69,6 @@ export function SearchableSelect({
       setIsOpen(true);
     } else if (clickCount === 1) {
       inputRef.current?.removeAttribute("readOnly");
-
       setTimeout(() => {
         inputRef.current?.focus();
       }, 50);
@@ -82,7 +85,7 @@ export function SearchableSelect({
               key={name}
               className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm flex items-center"
             >
-              {option?.displayName || option?.name || name} {/* Mostramos displayName si existe, si no, name */}
+              {option?.displayName || option?.name || name}
               <button
                 type="button"
                 onClick={() => toggleOption(name)}
@@ -141,7 +144,7 @@ export function SearchableSelect({
       <input
         type="hidden"
         name={name}
-        value={JSON.stringify(selectedOptions)}
+        value={selectedOptions.length ? JSON.stringify(selectedOptions) : "[]"}
       />
     </div>
   );

@@ -5,7 +5,14 @@ import { useEffect, useState } from "react";
 import { Edit, Star, Hospital } from "lucide-react";
 import { ENV } from "@/config/env";
 
-const adminDashboard = () => {
+interface AuthResponse {
+  success: boolean;
+  user?: {
+    role: string;
+  };
+}
+
+const AdminDashboard = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -13,9 +20,9 @@ const adminDashboard = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Obtener el token de la cookie
-        const sessionToken = document.cookie
-          .split("; ")
+        // Extract session token from cookies
+        const cookies = document.cookie.split("; ");
+        const sessionToken = cookies
           .find((row) => row.startsWith("session="))
           ?.split("=")[1];
 
@@ -24,7 +31,7 @@ const adminDashboard = () => {
           return;
         }
 
-        // Verificar autenticación y rol de administrador
+        // Verify authentication and admin role
         const authResponse = await fetch(
           `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/auth/verification`,
           {
@@ -37,23 +44,27 @@ const adminDashboard = () => {
               authenticationNeeded: true,
               authenticationRoles: ["ADMIN"],
             }),
-            credentials: "include", // Incluir cookies en la solicitud
+            credentials: "include",
           }
         );
 
-        const authData = await authResponse.json();
+        if (!authResponse.ok) {
+          throw new Error(`HTTP error: ${authResponse.status}`);
+        }
+
+        const authData: AuthResponse = await authResponse.json();
 
         if (
-          !authResponse.ok ||
           !authData.success ||
-          authData.user?.role?.toUpperCase() !== "ADMIN"
+          !authData.user ||
+          authData.user.role.toUpperCase() !== "ADMIN"
         ) {
           router.push("/");
         } else {
           setIsAuthorized(true);
         }
       } catch (error) {
-        console.error("Error verificando autenticación:", error);
+        console.error("Authentication verification failed:", error);
         router.push("/");
       } finally {
         setIsLoading(false);
@@ -72,7 +83,7 @@ const adminDashboard = () => {
   }
 
   if (!isAuthorized) {
-    return null; // No renderiza nada si no está autorizado (la redirección ya está manejada)
+    return null; // Prevent rendering until redirect
   }
 
   return (
@@ -131,4 +142,4 @@ const adminDashboard = () => {
   );
 };
 
-export default adminDashboard;
+export default AdminDashboard;
