@@ -39,9 +39,7 @@ export default function SearchFormClient({
   const formatEpsName = (name: string): string => {
     let formattedName = name.replace(/\bCrus Blanca\b/i, "Cruz Blanca");
 
-    formattedName = formattedName
-      .replace(/-(S|C)$/i, "")
-      .trim();
+    formattedName = formattedName.replace(/-(S|C)$/i, "").trim();
 
     return formattedName.toUpperCase();
   };
@@ -81,7 +79,9 @@ export default function SearchFormClient({
       }
 
       const maxDistance =
-        pathname === "/results" && selectedDistance ? selectedDistance : "20000";
+        pathname === "/results" && selectedDistance
+          ? selectedDistance
+          : "20000";
 
       const specialties = JSON.parse(
         (formData.get("specialties") as string) || "[]"
@@ -93,11 +93,11 @@ export default function SearchFormClient({
 
       const queryParams = new URLSearchParams({
         coordinates: coordinates.join(","),
-        "max_distance": maxDistance,
+        max_distance: maxDistance,
         specialties: specialties.join(","),
         epsNames: eps.join(","), // Cambiado a "epsNames"
         page,
-        "page_size": pageSize,
+        page_size: pageSize,
       });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -174,9 +174,11 @@ export default function SearchFormClient({
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full bg-blue-600 text-white text-lg font-semibold py-3 rounded-2xl hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500 transition-all duration-100 ease-in-out ${
-            isSubmitting ? "cursor-wait opacity-75" : "cursor-pointer"
-          }`}
+          className={`w-full bg-blue-900 text-white text-lg font-semibold py-3 rounded-2xl
+    hover:bg-blue-800 
+    dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white
+    transition-colors duration-150 ease-in-out
+    ${isSubmitting ? "cursor-wait" : "cursor-pointer"}`}
         >
           {isSubmitting ? "Buscando..." : "Buscar"}
         </button>
