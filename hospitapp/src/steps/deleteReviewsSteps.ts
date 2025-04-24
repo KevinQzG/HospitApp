@@ -13,6 +13,149 @@ let updatedIps: string;
 let updatedComment: string;
 let updatedDate: string;
 
+When("the user should select the first ips in the list", async function () {
+	const firstIps = await driver.wait(
+		until.elementLocated(
+			By.xpath("/html/body/main/div/div[3]/div[1]/a[1]")
+		),
+		15000,
+		"First IPS not found"
+	);
+	await driver.wait(
+		until.elementIsVisible(firstIps),
+		15000,
+		"First IPS not visible"
+	);
+	await driver.wait(
+		until.elementIsEnabled(firstIps),
+		15000,
+		"First IPS not enabled"
+	);
+	await driver.executeScript("arguments[0].scrollIntoView(true);", firstIps);
+	await driver.sleep(500);
+	await firstIps.click();
+	await driver.sleep(10000);
+});
+
+When("the user clicks the add review button", async function () {
+	const addReviewButton = await driver.wait(
+		until.elementLocated(
+			By.xpath("/html/body/main/div/main/div[2]/section[4]/button")
+		),
+		15000,
+		"Add Review button not found"
+	);
+	await driver.wait(
+		until.elementIsVisible(addReviewButton),
+		15000,
+		"Add Review button not visible"
+	);
+	await driver.wait(
+		until.elementIsEnabled(addReviewButton),
+		15000,
+		"Add Review button not enabled"
+	);
+	await driver.executeScript(
+		"arguments[0].scrollIntoView(true);",
+		addReviewButton
+	);
+	await driver.sleep(500);
+	await addReviewButton.click();
+});
+
+When(
+	"the user fills in the review form with {string} and a rating of 5 and submits the form",
+	async function (comment: string) {
+		const commentInput = await driver.wait(
+			until.elementLocated(
+				By.xpath(
+					"/html/body/main/div/main/div[2]/section[4]/div[2]/div/div[2]/textarea"
+				)
+			),
+			15000,
+			"Comment input not found"
+		);
+		await driver.wait(
+			until.elementIsVisible(commentInput),
+			15000,
+			"Comment input not visible"
+		);
+		await driver.wait(
+			until.elementIsEnabled(commentInput),
+			15000,
+			"Comment input not enabled"
+		);
+		await driver.executeScript(
+			"arguments[0].scrollIntoView(true);",
+			commentInput
+		);
+		await driver.sleep(500);
+		await commentInput.sendKeys(comment);
+		
+		const ratingInput = await driver.wait(
+			until.elementLocated(
+				By.css("svg[aria-label='Calificar con 5 estrellas']")
+			),
+			15000,
+			"Rating input not found"
+		);
+		await driver.wait(
+			until.elementIsVisible(ratingInput),
+			15000,
+			"Rating input not visible"
+		);
+		await driver.wait(
+			until.elementIsEnabled(ratingInput),
+			15000,
+			"Rating input not enabled"
+		);
+		await driver.executeScript(
+			"arguments[0].scrollIntoView(true);",
+			ratingInput
+		);
+		await driver.sleep(500);
+		await ratingInput.click();
+
+		const submitButton = await driver.wait(
+			until.elementLocated(
+				By.xpath(
+					"/html/body/main/div/main/div[2]/section[4]/div[2]/div/div[3]/button[1]"
+				)
+			),
+			15000,
+			"Submit button not found"
+		);
+		await driver.wait(
+			until.elementIsVisible(submitButton),
+			15000,
+			"Submit button not visible"
+		);
+		await driver.wait(
+			until.elementIsEnabled(submitButton),
+			15000,
+			"Submit button not enabled"
+		);
+		await driver.executeScript(
+			"arguments[0].scrollIntoView(true);",
+			submitButton
+		);
+		await driver.sleep(500);
+		await submitButton.click();
+	}
+);
+
+Then("the user should see a success message {string}", async function (message: string) {
+	await driver.wait(
+		until.elementLocated(
+			By.xpath(
+				"//div[contains(text(), '" + message + "')]"
+			)
+		),
+		15000,
+		"Success message not found"
+	);
+});
+
 When('the admin clicks the "Editar Reviews" button', async function () {
 	const editReviews = await driver.wait(
 		until.elementLocated(By.xpath("/html/body/main/div/div/div[2]/div[2]")),
@@ -190,8 +333,12 @@ Then("the admin should see the updated list of reviews", async function () {
 			15000
 		)
 		.getText();
-	
+
 	// Verify that at least one of the values is different
-	const CONDITION = updatedUser !== user || updatedIps !== ips || updatedComment !== comment || updatedDate !== date;
+	const CONDITION =
+		updatedUser !== user ||
+		updatedIps !== ips ||
+		updatedComment !== comment ||
+		updatedDate !== date;
 	expect(CONDITION, "The review was not deleted");
 });

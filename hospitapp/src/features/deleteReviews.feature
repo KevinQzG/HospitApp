@@ -9,6 +9,12 @@ Feature: Delete Reviews by Admin
     Then the user should be redirected to the home page
     And a user session should be created
     And the "Iniciar Sesión" button should be replaced by "Cerrar Sesión"
+    And the user should be redirected to the home page
+    When the user clicks the "Buscar" button
+    And the user should select the first ips in the list
+    And the user clicks the add review button
+    And the user fills in the review form with "Test from Functional Testing" and a rating of 5 and submits the form
+    Then the user should see a success message "¡Reseña publicada correctamente!"
 
   Scenario: Successful deletion of a review
     Given the admin is on the HospitApp admin page

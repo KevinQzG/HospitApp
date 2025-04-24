@@ -52,18 +52,18 @@ describe("ReviewMongoRepository Integration Test", () => {
 					{ field: "rating", direction: -1 },
 					{ field: "updatedAt", direction: 1 },
 				],
-				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
+				new ObjectId("67b3e98bb1ae5d9e47ae78e8")
 			);
 			const SAMPLE_EPS = results.results[0];
 
 			const EXPECTED_DATA = {
-				_id: "67f2ac47d2352b75c7a68715",
-				ips: "67b3e98bb1ae5d9e47ae72a8",
-				user: "67f14e8ca2a187c645bd17bf",
+				_id: "680a8b132c7db505d8e049d1",
+				ips: "67b3e98bb1ae5d9e47ae78e8",
+				user: "68084f1d157be2f18f17996a",
 				rating: 5,
-				comments: "Test Creation",
-				userEmail: "admin.pipe@example.com",
-				ipsName: "INSTITUTO DEL CORAZON SEDE CENTRO",
+				comments: "Testing Reviews Repo",
+				userEmail: "admin.test@example.com",
+				ipsName: "CORPORACION PARA EL AVANCE EN SALUD AVANSALUD",
 			};
 
 			expect(SAMPLE_EPS.toResponse()).toMatchObject(EXPECTED_DATA);
@@ -77,7 +77,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 					{ field: "rating", direction: -1 },
 					{ field: "updatedAt", direction: 1 },
 				],
-				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
+				new ObjectId("67b3e98bb1ae5d9e47ae78e8")
 			);
 
 			// Verify total count
@@ -95,18 +95,18 @@ describe("ReviewMongoRepository Integration Test", () => {
 					{ field: "rating", direction: -1 },
 					{ field: "updatedAt", direction: 1 },
 				],
-				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
+				new ObjectId("67b3e98bb1ae5d9e47ae78e8")
 			);
 			const SAMPLE_EPS = results.results[0];
 
 			const EXPECTED_DATA = {
-				_id: "67f2ac47d2352b75c7a68715",
-				ips: "67b3e98bb1ae5d9e47ae72a8",
-				user: "67f14e8ca2a187c645bd17bf",
+				_id: "680a8b132c7db505d8e049d1",
+				ips: "67b3e98bb1ae5d9e47ae78e8",
+				user: "68084f1d157be2f18f17996a",
 				rating: 5,
-				comments: "Test Creation",
-				userEmail: "admin.pipe@example.com",
-				ipsName: "INSTITUTO DEL CORAZON SEDE CENTRO",
+				comments: "Testing Reviews Repo",
+				userEmail: "admin.test@example.com",
+				ipsName: "CORPORACION PARA EL AVANCE EN SALUD AVANSALUD",
 			};
 
 			expect(SAMPLE_EPS.toResponse()).toMatchObject(EXPECTED_DATA);
@@ -116,7 +116,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 	describe("Create, update and delete", () => {
 		const REVIEW = new Review(
 			undefined,
-			new ObjectId("67f14e8ca2a187c645bd17bf"),
+			new ObjectId("68084f1d157be2f18f17996a"),
 			new ObjectId("67b3e98bb1ae5d9e47ae72ad"),
 			5,
 			"Great service!"
@@ -172,7 +172,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 
 	describe("findById", () => {
 		it("should retrieve a Review document by ID", async () => {
-			const SAMPLE_ID = new ObjectId("67f2ac47d2352b75c7a68715");
+			const SAMPLE_ID = new ObjectId("680a8b132c7db505d8e049d1");
 			const REVIEW = await repository.findById(SAMPLE_ID);
 
 			expect(REVIEW).toBeInstanceOf(Review);
@@ -180,23 +180,23 @@ describe("ReviewMongoRepository Integration Test", () => {
 		});
 
 		it("should return all the review structure", async () => {
-			const SAMPLE_ID = new ObjectId("67f2ac47d2352b75c7a68715");
+			const SAMPLE_ID = new ObjectId("680a8b132c7db505d8e049d1");
 			const REVIEW = await repository.findById(SAMPLE_ID);
 
 			expect(REVIEW).toBeInstanceOf(Review);
 			expect(REVIEW?.getId()).toEqual(SAMPLE_ID);
 			expect(REVIEW?.getIps()).toEqual(
-				new ObjectId("67b3e98bb1ae5d9e47ae72a8")
+				new ObjectId("67b3e98bb1ae5d9e47ae78e8")
 			);
 			expect(REVIEW?.getUser()).toEqual(
-				new ObjectId("67f14e8ca2a187c645bd17bf")
+				new ObjectId("68084f1d157be2f18f17996a")
 			);
 			expect(REVIEW?.getRating()).toEqual(5);
-			expect(REVIEW?.getComments()).toEqual("Test Creation");
+			expect(REVIEW?.getComments()).toEqual("Testing Reviews Repo");
 			expect(REVIEW?.getIpsName()).toEqual(
-				"INSTITUTO DEL CORAZON SEDE CENTRO"
+				"CORPORACION PARA EL AVANCE EN SALUD AVANSALUD"
 			);
-			expect(REVIEW?.getUserEmail()).toEqual("admin.pipe@example.com");
+			expect(REVIEW?.getUserEmail()).toEqual("admin.test@example.com");
 		});
 
 		it("should return null for non-existent ID", async () => {
