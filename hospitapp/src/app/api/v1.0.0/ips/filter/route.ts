@@ -115,6 +115,7 @@ export async function POST(
 	try {
 		// Parse and validate request body
 		const BODY: SearchRequest = await req.json();
+		console.log("Request Body:", BODY);
 
 		// Body validation
 		const { success: SUCCESS, error: ERROR } = VALIDATE_REQUEST_BODY(BODY);

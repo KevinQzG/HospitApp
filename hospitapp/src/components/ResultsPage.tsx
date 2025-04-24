@@ -79,9 +79,9 @@ interface AllReviewsResponse {
 
 interface SearchRequestBody {
   coordinates: [number, number];
-  max_distance: number;
+  maxDistance: number;
   page: number;
-  page_size: number;
+  pageSize: number;
   specialties?: string[];
   epsNames?: string[];
 }
@@ -240,8 +240,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           searchParams.get("epsNames")?.split(",").filter(Boolean) || [];
         const coordinatesStr = searchParams.get("coordinates");
         let coordinates: [number, number] = userCoordinates || [
-          -75.5849,
-          6.1816,
+          -75.5849, 6.1816,
         ];
         if (coordinatesStr) {
           const [lng, lat] = coordinatesStr.split(",").map(Number);
@@ -250,9 +249,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
         const requestBody: SearchRequestBody = {
           coordinates,
-          max_distance: parseInt(maxDistance),
+          maxDistance: parseInt(maxDistance),
           page: 1,
-          page_size: 2890,
+          pageSize: 2890,
         };
 
         if (specialtiesParam.length > 0) {
@@ -263,7 +262,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           requestBody.epsNames = epsParam;
         }
 
-        const response = await fetch("/api/search_ips/filter", {
+        const response = await fetch("/api/v1.0.0/ips/filter/pagination", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(requestBody),
@@ -310,22 +309,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           const hasReviews = ipsReviews.length > 0;
           return { ...item, averageRating, hasReviews };
         });
-
-        if (epsParam.length > 0) {
-          filteredResults = filteredResults.filter((item: IpsResponse) => {
-            if (!item.eps || item.eps.length === 0) return false;
-            const hasMatchingEps = item.eps.some((epsItem) =>
-              epsParam.includes(epsItem._id)
-            );
-            if (!hasMatchingEps) {
-              console.log(
-                `IPS "${item.name}" no coincide con las EPS seleccionadas (${epsParam}):`,
-                item.eps
-              );
-            }
-            return hasMatchingEps;
-          });
-        }
+ 
 
         if (userCoordinates) {
           filteredResults = filteredResults.map((item: IpsResponse) => ({
@@ -375,9 +359,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
   useEffect(() => {
     const filtered = allResults.filter((item) =>
-      `${item.name} ${item.address} ${item.town || ""} ${
-        item.department || ""
-      }`
+      `${item.name} ${item.address} ${item.town || ""} ${item.department || ""}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase())
     );
@@ -466,7 +448,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
-        <h1 className="text-xl sm:text-2xl font-bold">Resultados de Búsqueda</h1>
+        <h1 className="text-xl sm:text-2xl font-bold">
+          Resultados de Búsqueda
+        </h1>
         <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 items-start sm:items-center w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
             <input
@@ -504,7 +488,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
       </div>
 
       {listView ? (
-        paginatedResults.length === 0 ? (
+        !loading && !searchLoading && paginatedResults.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
               No hay resultados para esta búsqueda
@@ -600,7 +584,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
             )}
           </div>
         )
-      ) : allResults.length === 0 ? (
+      ) : !loading && !searchLoading && allResults.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
             No hay resultados para esta búsqueda
@@ -624,7 +608,9 @@ function MapComponent({
 
   useEffect(() => {
     // Determinar el estilo inicial según el modo del sistema
-    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const darkModeMediaQuery = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    );
     const initialStyle = darkModeMediaQuery.matches
       ? "mapbox://styles/mapbox/dark-v10"
       : "mapbox://styles/mapbox/streets-v12";
@@ -672,9 +658,9 @@ function MapComponent({
                   : "N/A"
               }</p>
             </div>
-            <p class="text-gray-700 dark:text-gray-300">${item.address}, ${item.town ?? ""}, ${
-              item.department ?? ""
-            }</p>
+            <p class="text-gray-700 dark:text-gray-300">${item.address}, ${
+          item.town ?? ""
+        }, ${item.department ?? ""}</p>
             <div class="flex items-center space-x-1 mt-1">
               ${
                 item.hasReviews
