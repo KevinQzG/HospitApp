@@ -67,6 +67,7 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 	private getPipelineBuilder(sorts: SortCriteria[], hasReviews: boolean, latitude: number | null, longitude: number | null, maxDistance: number | null, town: string | null): IpsPipelineBuilder {
 		let pipelineBuilder = new IpsPipelineBuilder().addGeoStage(longitude, latitude, maxDistance);
 		pipelineBuilder = pipelineBuilder.addRating();
+		pipelineBuilder = pipelineBuilder.addTotalReviews();
 
 		if (hasReviews) {
 			pipelineBuilder = pipelineBuilder.hasReviews();

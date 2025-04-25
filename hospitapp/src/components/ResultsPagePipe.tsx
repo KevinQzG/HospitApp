@@ -43,8 +43,8 @@ interface IpsResponse {
   eps?: Eps[];
   maps?: string;
   waze?: string;
-  averageRating?: number; // Added to store the average rating (1-5)
-  hasReviews?: boolean; // Added to track if the IPS has reviews
+  rating?: number; // Added to store the average rating (1-5), 0 if no reviews
+  totalReviews: number; // Total number of reviews
 }
 
 interface ReviewResponse {
@@ -175,8 +175,8 @@ const RESULT_ITEM = memo(({ item }: { item: IpsResponse }) => (
 		  {item.department && `, ${item.department}`}
 		</p>
 		<div className="mt-0.5">
-		  {item.hasReviews ? (
-			<StarRating rating={item.averageRating || 0} />
+		  {item.totalReviews > 0 ? (
+			<StarRating rating={item.rating || 0} />
 		  ) : (
 			<p className="text-xs text-gray-500 dark:text-gray-400 italic">
 			  Sin reseñas
@@ -273,43 +273,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
 		const data: SearchResponse = await response.json();
 		let filteredResults = data.data || [];
-
-		const reviewsResponse = await fetch("/api/v1.0.0/reviews/get/all", {
-		  method: "POST",
-		  headers: { "Content-Type": "application/json" },
-		  body: JSON.stringify({}),
-		});
-
-		let allReviews: ReviewResponse[] = [];
-		if (reviewsResponse.ok) {
-		  const reviewsData: AllReviewsResponse = await reviewsResponse.json();
-		  if (reviewsData.success && reviewsData.data) {
-			allReviews = reviewsData.data;
-		  } else {
-			console.error("Error al obtener reseñas:", reviewsData.error);
-		  }
-		} else {
-		  console.error(
-			"Error en la respuesta de la API de reseñas:",
-			reviewsResponse.status
-		  );
-		}
-
-		filteredResults = filteredResults.map((item: IpsResponse) => {
-		  const ipsReviews = allReviews.filter(
-			(review) => review.ips === item._id
-		  );
-		  const averageRating =
-			ipsReviews.length > 0
-			  ? ipsReviews.reduce(
-				  (sum, review) => sum + (review.rating || 0),
-				  0
-				) / ipsReviews.length
-			  : 0;
-		  const hasReviews = ipsReviews.length > 0;
-		  return { ...item, averageRating, hasReviews };
-		});
- 
 
 		if (userCoordinates) {
 		  filteredResults = filteredResults.map((item: IpsResponse) => ({
@@ -643,7 +606,7 @@ function MapComponent({
 		  </svg>
 		`;
 
-		const roundedRating = Math.round(item.averageRating || 0);
+		const roundedRating = Math.round(item.rating || 0);
 		const popupContent = document.createElement("div");
 		popupContent.innerHTML = `
 		  <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-xs text-sm">
@@ -663,7 +626,7 @@ function MapComponent({
 		}, ${item.department ?? ""}</p>
 			<div class="flex items-center space-x-1 mt-1">
 			  ${
-				item.hasReviews
+				item.totalReviews > 0
 				  ? `
 					${[...Array(roundedRating)]
 					  .map(

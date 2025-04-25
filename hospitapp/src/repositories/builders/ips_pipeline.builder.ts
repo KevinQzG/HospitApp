@@ -143,7 +143,7 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 	}
 
 	/**
-	 * Adds a match stage to the pipeline to verify if the IPS has reviews.
+	 * Adds a field to the pipeline
 	 *
 	 * @returns {PipelineBuilder} The builder instance.
 	 * @memberof IpsPipelineBuilder
@@ -151,18 +151,32 @@ export class IpsPipelineBuilder extends PipelineBuilder {
 	 * @method
 	 * @name has_reviews
 	 */
-	hasReviews(): this {
+	addTotalReviews(): this {
 		this.getPipeline().push({ $lookup: this.reviewsLookup });
 		this.addFieldsStage({
 			totalReviews: {
 				$size: "$reviews",
 			},
 		});
-		this.addMatchStage({
-			totalReviews: { $gt: 0 },
-		});
 		this.addProjectStage({
 			reviews: 0,
+		});
+
+		return this;
+	}
+
+		/**
+	 * Adds a match stage to the pipeline to verify if the IPS has reviews.
+	 *
+	 * @returns {PipelineBuilder} The builder instance.
+	 * @memberof IpsPipelineBuilder
+	 * @public
+	 * @method
+	 * @name hasReviews
+	 */
+	hasReviews(): this {
+		this.addMatchStage({
+			totalReviews: { $gt: 0 },
 		});
 
 		return this;
