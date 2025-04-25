@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import CONTAINER from "@/adapters/container";
 import UserRepositoryAdapter from "@/adapters/repositories/user_repository.adapter";
 import { TYPES } from "@/adapters/types";
+import {genSalt, hash,  } from "bcrypt-ts";
 
 export interface RegisterRequest {
 	email: string;
@@ -56,11 +57,12 @@ export async function POST(request: Request) {
 				{ status: 400 }
 			);
 		}
-
+		const salt = await genSalt(1);
+		const hashedPassword = await hash(body.password, salt);
 		const res = await USER_REPO.createUser(
 			body.eps,
 			body.email,
-			body.password,
+			hashedPassword,
 			"USER",
 			body.phone
 		);

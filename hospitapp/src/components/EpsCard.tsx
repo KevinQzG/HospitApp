@@ -35,7 +35,7 @@ export default function EpsCard({ name, displayName, icon: Icon, active = false 
     }
 
     const queryParams = new URLSearchParams({
-      "eps_names": name,
+      epsNames: name,
       coordinates: coordinates.join(","),
       "max_distance": "20000",
       page: "1",

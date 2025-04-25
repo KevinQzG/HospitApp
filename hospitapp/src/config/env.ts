@@ -1,47 +1,81 @@
 /**
- * Interface representing the required environment variables for the application.
- * @interface EnvironmentVariables
- * @property {string} NEXT_PUBLIC_API_URL - The base URL for the API (exposed to the client).
- * @property {string} DATABASE_URL - The connection string for the database (server-side only).
- * @property {string} APP_NAME - The name of the application.
+ * Interface for client-side environment variables (always required).
+ * @interface ClientEnvironmentVariables
  */
-interface EnvironmentVariables {
+interface ClientEnvironmentVariables {
 	NEXT_PUBLIC_API_URL: string;
 	NEXT_PUBLIC_APP_NAME: string;
+	NEXT_PUBLIC_MAPBOX_API_KEY: string;
+ }
+ 
+ /**
+  * Interface for server-side environment variables (required only on the server).
+  * @interface ServerEnvironmentVariables
+  */
+ interface ServerEnvironmentVariables {
 	DATABASE_URL: string;
 	DATABASE_NAME: string;
 	CACHE_TTL: number;
-}
-
-/**
- * Validates and retrieves environment variables.
- * Throws an error if any required environment variable is missing.
- * @function validate_env
- * @returns {EnvironmentVariables} An object containing all validated environment variables.
- * @throws {Error} If any required environment variable is missing.
- */
-const validateEnv = (): EnvironmentVariables => {
-	const ENV = {
-		NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-		NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
-		DATABASE_URL: process.env.DATABASE_URL,
-		DATABASE_NAME: process.env.DATABASE_NAME,
-		CACHE_TTL: parseInt(process.env.CACHE_TTL || "86400", 10),
+	JWT_SECRET_KEY: string;
+ }
+ 
+ /**
+  * Combined environment variables type.
+  * Client variables are always required; server variables are optional on the client.
+  * @interface EnvironmentVariables
+  */
+ type EnvironmentVariables = ClientEnvironmentVariables & Partial<ServerEnvironmentVariables>;
+ 
+ /**
+  * Validates and retrieves environment variables.
+  * Throws an error if any required environment variable is missing.
+  * In the client, only validates variables with NEXT_PUBLIC_ prefix.
+  * @function validateEnv
+  * @returns {EnvironmentVariables} An object containing validated environment variables.
+  * @throws {Error} If any required environment variable is missing.
+  */
+ const validateEnv = (): EnvironmentVariables => {
+	const isServer = typeof window === "undefined";
+ 
+	// Initialize environment variables with defaults
+	const ENV: EnvironmentVariables = {
+	  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "",
+	  NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || "",
+	  NEXT_PUBLIC_MAPBOX_API_KEY: process.env.NEXT_PUBLIC_MAPBOX_API_KEY || "",
+	  ...(isServer && {
+		 DATABASE_URL: process.env.DATABASE_URL || "",
+		 DATABASE_NAME: process.env.DATABASE_NAME || "",
+		 CACHE_TTL: parseInt(process.env.CACHE_TTL || "86400", 10),
+		 JWT_SECRET_KEY: process.env.JWT_SECRET_KEY || "",
+	  }),
 	};
-
-	// Check for missing required variables
-	for (const [KEY, VALUE] of Object.entries(ENV)) {
-		if (!VALUE) {
-			throw new Error(`Missing environment variable: ${KEY}`);
-		}
+ 
+	// Define required variables
+	const requiredVars = [
+	  "NEXT_PUBLIC_API_URL",
+	  "NEXT_PUBLIC_APP_NAME",
+	  "NEXT_PUBLIC_MAPBOX_API_KEY",
+	  ...(isServer ? ["DATABASE_URL", "DATABASE_NAME", "JWT_SECRET_KEY"] : []),
+	];
+ 
+	// Validate required variables
+	for (const key of requiredVars) {
+	  if (!ENV[key as keyof EnvironmentVariables]) {
+		 throw new Error(`Missing environment variable: ${key}`);
+	  }
 	}
-
-	return ENV as EnvironmentVariables;
-};
-
-/**
- * Exports validated environment variables.
- * @constant _ENV
- * @type {EnvironmentVariables}
- */
-export const ENV = validateEnv();
+ 
+	// Ensure CACHE_TTL is a valid number on the server
+	if (isServer && (!ENV.CACHE_TTL || isNaN(ENV.CACHE_TTL))) {
+	  ENV.CACHE_TTL = 86400; // Default value
+	}
+ 
+	return ENV;
+ };
+ 
+ /**
+  * Exports validated environment variables.
+  * @constant ENV
+  * @type {EnvironmentVariables}
+  */
+ export const ENV = validateEnv();

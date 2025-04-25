@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, Star, ArrowLeft, Hospital, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { ENV } from "@/config/env";
 
 type Review = {
   _id: string;
@@ -33,13 +34,15 @@ type ReviewsResponse = {
 
 type AuthResponse = {
   success: boolean;
+  user?: { role: string };
   error?: string;
+  message?: string;
 };
 
 export default function AdminReviewsPage() {
   const router = useRouter();
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState({
     total: 0,
@@ -52,11 +55,14 @@ export default function AdminReviewsPage() {
   useEffect(() => {
     const verifyAdminAndFetchReviews = async () => {
       try {
+        // Verificar autenticación y rol de administrador
         const authResponse = await fetch(
-          "http://localhost:3000/api/v1.0.0/auth/verification",
+          `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/auth/verification`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json"
+            },
             credentials: "include",
             body: JSON.stringify({
               authenticationNeeded: true,
@@ -66,16 +72,24 @@ export default function AdminReviewsPage() {
         );
 
         const authData: AuthResponse = await authResponse.json();
-        if (!authResponse.ok || !authData.success) {
-          router.push("/login");
+        if (
+          !authResponse.ok ||
+          !authData.success ||
+          authData.user?.role?.toUpperCase() !== "ADMIN"
+        ) {
+          setIsAuthorized(false);
+          router.push("/");
           return;
         }
 
+        setIsAuthorized(true);
+
+        // Obtener reseñas
         await fetchReviews(pagination.page);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error desconocido");
-      } finally {
-        setLoading(false);
+        setIsAuthorized(false);
+        router.push("/");
       }
     };
 
@@ -85,10 +99,12 @@ export default function AdminReviewsPage() {
   const fetchReviews = async (page: number) => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1.0.0/reviews/get/all/pagination",
+        `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/reviews/get/all/pagination`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           credentials: "include",
           body: JSON.stringify({
             page,
@@ -116,10 +132,12 @@ export default function AdminReviewsPage() {
   const handleDeleteReview = async (reviewId: string) => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1.0.0/reviews/delete",
+        `${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/reviews/delete`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           credentials: "include",
           body: JSON.stringify({ id: reviewId }),
         }
@@ -144,7 +162,6 @@ export default function AdminReviewsPage() {
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
-      setLoading(true);
       fetchReviews(newPage);
     }
   };
@@ -169,12 +186,12 @@ export default function AdminReviewsPage() {
     return pageNumbers;
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-100"></div>
-      </div>
-    );
+  if (isAuthorized === null) {
+    return null; // No renderizar nada mientras se verifica la autenticación
+  }
+
+  if (isAuthorized === false) {
+    return null; // No renderizar nada si no está autorizado
   }
 
   if (error) {
