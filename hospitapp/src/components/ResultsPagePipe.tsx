@@ -10,7 +10,6 @@ import {
 	Home,
 	Search,
 	MapPin,
-	SortAsc,
 } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import SearchFormClient, {
@@ -51,18 +50,6 @@ interface IpsResponse {
 	waze?: string;
 	rating?: number; // Added to store the average rating (1-5), 0 if no reviews
 	totalReviews: number; // Total number of reviews
-}
-
-interface ReviewResponse {
-	_id: string;
-	ips: string;
-	rating: number;
-	userEmail?: string;
-	comments?: string;
-	createdAt?: string;
-	lastUpdated?: string;
-	user?: string;
-	ipsName?: string;
 }
 
 interface SearchResponse {
@@ -192,7 +179,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 		[number, number] | null
 	>(null);
 	const [isNewSearch, setIsNewSearch] = useState(false);
-	const [sortLoading, setSortLoading] = useState(false);
 	const [sortFields, setSortFields] = useState<SortField[]>([]);
 
 	const sortOptions = [
@@ -251,7 +237,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
 	// Update URL with new sort fields
 	const updateSortQuery = (newSortFields: SortField[]) => {
-		setSortLoading(true);
 		const currentParams = new URLSearchParams(searchParams.toString());
 		if (newSortFields.length > 0) {
 			const sorts = newSortFields
@@ -369,11 +354,11 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 					);
 
 				const data: SearchResponse = await response.json();
-				let filteredResults = data.data || [];
+				const FILTERED_RESULTS = data.data || [];
 
-				setAllResults(filteredResults);
-				setTotalResults(filteredResults.length);
-				setTotalPages(Math.ceil(filteredResults.length / pageSize));
+				setAllResults(FILTERED_RESULTS);
+				setTotalResults(FILTERED_RESULTS.length);
+				setTotalPages(Math.ceil(FILTERED_RESULTS.length / pageSize));
 
 				if (isNewSearch) {
 					setCurrentPage(1);
@@ -387,7 +372,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
 				const start = (currentPage - 1) * pageSize;
 				const end = start + pageSize;
-				setPaginatedResults(filteredResults.slice(start, end));
+				setPaginatedResults(FILTERED_RESULTS.slice(start, end));
 			} catch (err) {
 				setError(
 					err instanceof Error
@@ -396,7 +381,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 				);
 			} finally {
 				setTimeout(() => setLoading(false), 500);
-				setSortLoading(false);
 			}
 		};
 
