@@ -84,6 +84,7 @@ interface SearchRequestBody {
   pageSize: number;
   specialties?: string[];
   epsNames?: string[];
+  sorts?: { field: string; direction: number }[];
 }
 
 function calculateDistance(
@@ -247,12 +248,25 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 		  if (!isNaN(lng) && !isNaN(lat)) coordinates = [lng, lat];
 		}
 
+		const sortsParam = searchParams.get("sorts");
+        let sorts: { field: string; direction: number }[] = [];
+        if (sortsParam) {
+          sorts = sortsParam.split(",").map((pair) => {
+            const [field, direction] = pair.split(":");
+            return { field, direction: parseInt(direction) };
+          });
+        }
+
 		const requestBody: SearchRequestBody = {
 		  coordinates,
 		  maxDistance: parseInt(maxDistance),
 		  page: 1,
 		  pageSize: 2890,
 		};
+
+		if (sorts.length > 0) {
+		  requestBody.sorts = sorts;
+		}
 
 		if (specialtiesParam.length > 0) {
 		  requestBody.specialties = specialtiesParam;
@@ -261,6 +275,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 		if (epsParam.length > 0) {
 		  requestBody.epsNames = epsParam;
 		}
+
+		console.log("Request Body:", requestBody); // Depuración
 
 		const response = await fetch("/api/v1.0.0/ips/filter/pagination", {
 		  method: "POST",
@@ -273,23 +289,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
 		const data: SearchResponse = await response.json();
 		let filteredResults = data.data || [];
-
-		if (userCoordinates) {
-		  filteredResults = filteredResults.map((item: IpsResponse) => ({
-			...item,
-			distance: calculateDistance(
-			  userCoordinates[1],
-			  userCoordinates[0],
-			  item.location.coordinates[1],
-			  item.location.coordinates[0]
-			),
-		  }));
-
-		  filteredResults.sort(
-			(a: IpsResponse, b: IpsResponse) =>
-			  (a.distance || 0) - (b.distance || 0)
-		  );
-		}
 
 		setAllResults(filteredResults);
 		setTotalResults(filteredResults.length);
@@ -339,7 +338,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 	setCurrentPage(newPage);
 	const currentParams = new URLSearchParams(searchParams.toString());
 	currentParams.set("page", newPage.toString());
-	router.push(`/results?${currentParams.toString()}`, { scroll: false });
+	router.push(`/examples/ips-details/filter?${currentParams.toString()}`, { scroll: false });
   };
 
   const handleSearchSubmit: SearchFormSubmitHandler = (isSubmitting) => {
@@ -415,15 +414,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 		  Resultados de Búsqueda
 		</h1>
 		<div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 items-start sm:items-center w-full sm:w-auto">
-		<div className="relative w-full sm:w-64">
-			<input
-			  type="text"
-			  value={searchQuery}
-			  onChange={(e) => setSearchQuery(e.target.value)}
-			  placeholder="Filtrar resultados..."
-			  className="w-full pl-8 sm:pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 dark:text-white text-gray-800 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-			/>
-			<Search className="w-4 h-4 sm:w-5 sm:h-5 absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-300" />
+		  <div className="relative w-full sm:w-64">
+
 		  </div>
 		  <div className="relative w-full sm:w-64">
 			<input
