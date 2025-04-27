@@ -187,11 +187,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 		{ value: "rating", label: "Calificación" },
 	];
 
-	// Debug sortFields changes
-	useEffect(() => {
-		console.log("Updated sortFields:", sortFields);
-	}, [sortFields]);
-
 	// Handlers for sort fields
 	const addSortField = () => {
 		const availableFields = sortOptions
@@ -208,7 +203,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 	};
 
 	const removeSortField = (index: number) => {
-		console.log("Removing sort field at index:", index);
 		const newSortFields = sortFields.filter((_, i) => i !== index);
 		setSortFields(newSortFields);
 		updateSortQuery(newSortFields);
@@ -223,12 +217,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 	};
 
 	const handleDirectionChange = (index: number, direction: number) => {
-		console.log(
-			"Changing sort direction at index:",
-			index,
-			"to:",
-			direction
-		);
 		const newSortFields = [...sortFields];
 		newSortFields[index].direction = direction;
 		setSortFields(newSortFields);
@@ -243,10 +231,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 				.filter((sf) => sf.field)
 				.map((sf) => `${sf.field}:${sf.direction}`)
 				.join(",");
-			console.log("Updating URL with sorts:", sorts);
 			currentParams.set("sorts", sorts);
 		} else {
-			console.log("Removing sorts from URL");
 			currentParams.delete("sorts");
 		}
 		currentParams.set("page", "1"); // Reset to page 1
