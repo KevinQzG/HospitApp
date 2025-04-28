@@ -4,7 +4,7 @@ import { ENV } from "@/config/env";
 interface SendEmailResponse {
 	status: boolean;
 	message: string;
-	response: any;
+	response: string;
 }
 
 async function sendEmail(
@@ -24,7 +24,7 @@ async function sendEmail(
 		};
 
 		const missingVars = Object.entries(requiredEnvVars)
-			.filter(([_, value]) => !value)
+			.filter(([, value]) => !value)
 			.map(([key]) => key);
 
 		if (missingVars.length > 0) {
@@ -73,12 +73,12 @@ async function sendEmail(
 			),
 		];
 
-    let ccParameter: Recipient[] = [];
+    const CC_PARAMETER: Recipient[] = [];
 		if (
 			ENV.MAILERSEND_ADMIN_RECIPIENT_EMAIL2 &&
 			ENV.MAILERSEND_ADMIN_RECIPIENT_NAME2
 		) {
-			ccParameter.push(
+			CC_PARAMETER.push(
         new Recipient(
 					ENV.MAILERSEND_ADMIN_RECIPIENT_EMAIL2,
 					ENV.MAILERSEND_ADMIN_RECIPIENT_NAME2
@@ -90,7 +90,7 @@ async function sendEmail(
 
 		const emailParams = new EmailParams()
 			.setFrom(sentFrom)
-      .setCc(ccParameter)
+      .setCc(CC_PARAMETER)
 			.setTo(recipients)
 			.setReplyTo(recipientReplyto)
 			.setSubject(subject)

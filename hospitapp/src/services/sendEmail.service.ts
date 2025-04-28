@@ -1,4 +1,4 @@
-import { injectable, inject } from "inversify";
+import { injectable } from "inversify";
 import { SendEmailResponse } from "@/utils/helpers/sendEmail";
 import { sendEmail } from "@/utils/helpers/sendEmail";
 import EmailServiceAdapter from "@/adapters/services/sendEmail.service.adapter";

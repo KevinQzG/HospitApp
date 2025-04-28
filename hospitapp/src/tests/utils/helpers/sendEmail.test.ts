@@ -1,4 +1,6 @@
 import { sendEmail } from "@/utils/helpers/sendEmail";
+import { MailerSend } from "mailersend";
+
 
 // Mock MailerSend SDK
 jest.mock("mailersend", () => ({
@@ -60,8 +62,7 @@ describe("sendEmail", () => {
 		expect(RESPONSE.response).toBe("{\"statusCode\":202,\"message\":\"Email sent\"}");
 	});
 	it("should return an error if sending fails", async () => {
-		const mockMailerSend = require("mailersend").MailerSend;
-		mockMailerSend.mockImplementation(() => ({
+		(MailerSend as jest.Mock).mockImplementation(() => ({
 			email: {
 				send: jest.fn().mockRejectedValue(new Error("Test error")),
 			},
