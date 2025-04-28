@@ -33,7 +33,7 @@ async function sendEmail(
 			)}`;
 			return {
 				status: false,
-				message: "Error enviando el email",
+				message: "Error enviando el correo",
 				response: errorMessage,
 			};
 		}
@@ -41,7 +41,7 @@ async function sendEmail(
     if (!message || !email || !name || !subject) {
       return {
         status: false,
-        message: "Error enviando el email",
+        message: "Error enviando el correo",
         response: "All parameters are required",
       };
     }
@@ -97,9 +97,9 @@ async function sendEmail(
 			.setHtml(
 				`
         <h2>${subject}</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Message:</strong> ${message}</p>
+        <p><strong>Nombre:</strong> ${name}</p>
+        <p><strong>Correo:</strong> ${email}</p>
+        <p><strong>Mensaje:</strong> ${message}</p>
       `
 			)
 			.setText(`${subject}, from ${name} (${email}): ${message}`);
@@ -108,14 +108,14 @@ async function sendEmail(
 
 		return {
 			status: true,
-			message: "¡Email Enviado Exitosamente!",
+			message: "¡Correo Enviado Exitosamente!",
 			response: JSON.stringify(response),
 		};
 	} catch (error) {
 		if (error instanceof Error) {
 			return {
 				status: false,
-				message: "Error enviando el email",
+				message: "Error enviando el correo",
 				response: error.message,
 			};
 		} else {
@@ -123,14 +123,14 @@ async function sendEmail(
       try {
         return {
           status: false,
-          message: "Error enviando el email",
+          message: "Error enviando el correo",
           response: "Unknown error: " + JSON.stringify(error)
         };
         
       } catch {
         return {
           status: false,
-          message: "Error enviando el email",
+          message: "Error enviando el correo",
           response: "Unknown error: " + String(error)
         };
       }
@@ -140,3 +140,4 @@ async function sendEmail(
 }
 
 export { sendEmail };
+export type { SendEmailResponse };

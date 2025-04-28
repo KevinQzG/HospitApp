@@ -10,4 +10,5 @@ export const TYPES = {
 	SpecialtyServiceAdapter: Symbol.for("SpecialtyServiceAdapter"),
 	ReviewServiceAdapter: Symbol.for("ReviewServiceAdapter"),
 	UserServiceAdapter: Symbol.for("UserServiceAdapter"),
+	EmailServiceAdapter: Symbol.for("EmailServiceAdapter"),
 };

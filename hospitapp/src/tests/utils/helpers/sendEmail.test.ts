@@ -36,7 +36,7 @@ describe("sendEmail", () => {
 
 		process.env.MAILERSEND_API_KEY = "mock-api-key";
 		process.env.MAILERSEND_API_EMAIL =
-			"MS_UcjSyq@test-yxj6lj992m74do2r.mlsender.net";
+			"email@example.com";
 		process.env.MAILERSEND_ADMIN_RECIPIENT_EMAIL1 =
 			"jfrestrepb@eafit.edu.co";
 		process.env.MAILERSEND_ADMIN_RECIPIENT_NAME1 = "Juan Felipe";
@@ -56,7 +56,7 @@ describe("sendEmail", () => {
 	it("should send an email successfully", async () => {
 		const RESPONSE = await sendEmail(message, email, name, subject);
 		expect(RESPONSE.status).toBe(true);
-		expect(RESPONSE.message).toBe("¡Email Enviado Exitosamente!");
+		expect(RESPONSE.message).toBe("¡Correo Enviado Exitosamente!");
 		expect(RESPONSE.response).toBe("{\"statusCode\":202,\"message\":\"Email sent\"}");
 	});
 	it("should return an error if sending fails", async () => {
@@ -69,13 +69,13 @@ describe("sendEmail", () => {
 
 		const RESPONSE = await sendEmail(message, email, name, subject);
 		expect(RESPONSE.status).toBe(false);
-		expect(RESPONSE.message).toBe("Error enviando el email");
+		expect(RESPONSE.message).toBe("Error enviando el correo");
 		expect(RESPONSE.response).toBe("Test error");
 	});
 	it("should throw an error if email is not provided", async () => {
 		const RESPONSE = await sendEmail(message, "", name, subject);
 		expect(RESPONSE.status).toBe(false);
-		expect(RESPONSE.message).toBe("Error enviando el email");
+		expect(RESPONSE.message).toBe("Error enviando el correo");
 		expect(RESPONSE.response).toBe("All parameters are required");
 	});
 });
