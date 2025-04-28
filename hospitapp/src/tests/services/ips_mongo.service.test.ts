@@ -138,6 +138,11 @@ describe("IpsMongoService Integration Test", () => {
 				["ENFERMERÍA"],
 				["SALUDCOOP EPS-C"],
 				null,
+				[
+					{ field: "promotion", direction: -1 },
+					{ field: "distance", direction: 1 },
+					{ field: "rating", direction: -1 }
+				],
 				1,
 				10,
 				false
@@ -194,6 +199,11 @@ describe("IpsMongoService Integration Test", () => {
 				expect.anything(),
 				expect.anything(),
 				null,
+				[
+					{ field: "promotion", direction: -1 },
+					{ field: "distance", direction: 1 },
+					{ field: "rating", direction: -1 }
+				],
 				2,
 				5,
 				false

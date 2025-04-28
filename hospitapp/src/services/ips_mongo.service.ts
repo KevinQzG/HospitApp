@@ -33,7 +33,6 @@ export class IpsMongoService implements IpsServiceAdapter {
 	) {}
 
 	async create(ips: Ips): Promise<ObjectId | null> {
-
 		const ID = await this.ipsRepository.create(ips);
 		if (!ID) return null;
 		return ID;
@@ -59,7 +58,8 @@ export class IpsMongoService implements IpsServiceAdapter {
 		page: number,
 		pageSize: number,
 		town: string | null,
-		hasReviews: boolean = false
+		hasReviews: boolean = false,
+		sort?: SortCriteria[]
 	): Promise<{ results: IpsResponse[]; total: number }> {
 		const RESULTS =
 			await this.ipsRepository.findAllByDistanceSpecialtyEpsWithPagination(
@@ -69,6 +69,11 @@ export class IpsMongoService implements IpsServiceAdapter {
 				specialties,
 				epsNames,
 				town,
+				sort ?? [
+					{ field: "promotion", direction: -1 },
+					{ field: "distance", direction: 1 },
+					{ field: "rating", direction: -1 },
+				],
 				page,
 				pageSize,
 				hasReviews
@@ -89,7 +94,8 @@ export class IpsMongoService implements IpsServiceAdapter {
 		specialties: string[],
 		epsNames: string[],
 		town: string | null,
-		hasReviews: boolean = false
+		hasReviews: boolean = false,
+		sort?: SortCriteria[]
 	): Promise<IpsResponse[]> {
 		const RESULTS = await this.ipsRepository.findAllByDistanceSpecialtyEps(
 			longitude,
@@ -98,6 +104,11 @@ export class IpsMongoService implements IpsServiceAdapter {
 			specialties,
 			epsNames,
 			town,
+			sort ?? [
+				{ field: "promotion", direction: -1 },
+				{ field: "distance", direction: 1 },
+				{ field: "rating", direction: -1 },
+			],
 			hasReviews
 		);
 

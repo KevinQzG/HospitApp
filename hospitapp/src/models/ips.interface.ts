@@ -22,6 +22,7 @@ export interface IpsDocument {
 	reviews?: ReviewDocument[];
 	totalReviews?: number;
 	rating?: number;
+	promotion?: number;
 }
 
 export interface IpsResponse {
@@ -45,4 +46,5 @@ export interface IpsResponse {
 	reviews?: ReviewResponse[];
 	totalReviews?: number;
 	rating?: number;
+	promotion?: number;
 }

@@ -4,6 +4,7 @@ import IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import { TYPES } from "@/adapters/types";
 import { IS_TYPE_ARRAY } from "@/utils/helpers/validation";
 import { IpsResponse } from "@/models/ips.interface";
+import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
 // import { revalidateTag } from 'next/cache'; // For revalidation of the data caching page (Not needed in this file)
 
 /**
@@ -23,6 +24,7 @@ interface SearchRequest {
 	epsNames?: string[];
 	town?: string;
 	hasReviews?: boolean;
+	sorts?: SortCriteria[];
 }
 
 /**
@@ -79,6 +81,23 @@ const VALIDATE_REQUEST_BODY = (
 		return {
 			success: false,
 			error: "Invalid request: hasReviews must be a boolean.",
+		};
+	} else if (
+		body.sorts &&
+		Array.isArray(body.sorts) &&
+		!body.sorts.every((sort) => {
+			return (
+				typeof (sort as SortCriteria) === "object" &&
+				"field" in (sort as SortCriteria) &&
+				"direction" in (sort as SortCriteria) &&
+				typeof (sort as SortCriteria).field === "string" &&
+				typeof (sort as SortCriteria).direction === "number"
+			);
+		})
+	) {
+		return {
+			success: false,
+			error: "Invalid request: sorts must be an array of objects with field and direction properties.",
 		};
 	}
 
@@ -138,7 +157,8 @@ export async function POST(
 			BODY.specialties || [],
 			BODY.epsNames || [],
 			BODY.town || null,
-			BODY.hasReviews || false
+			BODY.hasReviews || false,
+			BODY.sorts
 		);
 
 		// revalidateTag('search-config'); // For revalidation of the data caching page (Not needed in this file)

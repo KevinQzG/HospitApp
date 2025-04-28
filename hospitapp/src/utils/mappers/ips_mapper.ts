@@ -31,7 +31,8 @@ export class IpsMapper {
 			raw.specialties?.map(SpecialtyMapper.fromDocumentToDomain),
 			raw.reviews?.map(ReviewMapper.fromDocumentToDomain),
 			raw.totalReviews,
-			raw.rating
+			raw.rating,
+			raw.promotion
 		);
 	}
 
@@ -59,6 +60,7 @@ export class IpsMapper {
 			reviews: ips.getReviews()?.map(ReviewMapper.fromDomainToDocument),
 			totalReviews: ips.getTotalReviews(),
 			rating: ips.getRating(),
+			promotion: ips.getPromotion(),
 		};
 	}
 
@@ -84,6 +86,7 @@ export class IpsMapper {
 			raw.reviews?.map(ReviewMapper.fromResponseToDomain),
 			raw.totalReviews,
 			raw.rating,
+			raw.promotion,
 		);
 	}
 
@@ -111,6 +114,7 @@ export class IpsMapper {
 			reviews: ips.getReviews()?.map(ReviewMapper.fromDomainToResponse),
 			totalReviews: ips.getTotalReviews(),
 			rating: ips.getRating(),
+			promotion: ips.getPromotion(),
 		};
 	}
 }

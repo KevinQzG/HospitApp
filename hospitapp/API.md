@@ -341,6 +341,7 @@ Search for IPS without pagination, based on coordinates, distance, specialties, 
 | epsNames    | string[]         | No       | Array of EPS names                               |
 | town        | string           | No       | Town name to filter by                           |
 | hasReviews  | boolean          | No       | Filter by IPS with reviews (default: false)      |
+| sorts       | SortCriteria[]   | No       | Array of sorting criteria for reviews            |
 
 #### Example Request Body:
 ```typescript
@@ -350,7 +351,8 @@ Search for IPS without pagination, based on coordinates, distance, specialties, 
     "specialties": ["cardiology"],
     "epsNames": ["Sura"],
     "town": "Bogotá",
-    "hasReviews": true
+    "hasReviews": true,
+    "sorts": [{"field": "rating", "direction": -1}]
 }
 ```
 
@@ -403,6 +405,7 @@ Search for IPS with pagination support, based on coordinates, distance, specialt
 | pageSize    | number           | No       | Items per page (default: 10)                     |
 | town        | string           | No       | Town name to filter by                           |
 | hasReviews  | boolean          | No       | Filter by IPS with reviews (default: false)      |
+| sorts       | SortCriteria[]   | No       | Array of sorting criteria for reviews            |
 
 #### Example Request Body:
 ```typescript
@@ -410,7 +413,8 @@ Search for IPS with pagination support, based on coordinates, distance, specialt
     "coordinates": [-74.0833, 4.5833],
     "maxDistance": 5000,
     "page": 1,
-    "pageSize": 10
+    "pageSize": 10,
+    "sorts": [{"field": "rating", "direction": -1}],
 }
 ```
 
