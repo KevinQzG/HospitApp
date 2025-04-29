@@ -352,7 +352,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   }, [searchParams, userCoordinates, isNewSearch]);
 
   useEffect(() => {
-    let filtered = allResults.filter((item) =>
+    const filtered = allResults.filter((item) =>
       `${item.name} ${item.address} ${item.town || ""} ${item.department || ""}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase())
