@@ -10,6 +10,7 @@ import {
   Home,
   Search,
   MapPin,
+  ChevronDown,
 } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import SearchFormClient, { SearchFormSubmitHandler } from "./SearchFormClient";
@@ -17,6 +18,9 @@ import { SearchFormClientProps } from "@/services/cachers/data_caching.service";
 import { Suspense } from "react";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string;
+
+// Define SortField type
+type SortField = { field: string; direction: number };
 
 interface Specialty {
   _id: string;
@@ -38,25 +42,13 @@ interface IpsResponse {
   phone?: string | number;
   email?: string;
   level?: number;
-  distance?: number; // Distancia en metros
+  distance?: number; // Distance in meters, provided by API
   specialties?: Specialty[];
   eps?: Eps[];
   maps?: string;
   waze?: string;
-  averageRating?: number; // Added to store the average rating (1-5)
-  hasReviews?: boolean; // Added to track if the IPS has reviews
-}
-
-interface ReviewResponse {
-  _id: string;
-  ips: string;
-  rating: number;
-  userEmail?: string;
-  comments?: string;
-  createdAt?: string;
-  lastUpdated?: string;
-  user?: string;
-  ipsName?: string;
+  rating?: number; // Average rating (1-5), 0 if no reviews
+  totalReviews: number; // Total number of reviews
 }
 
 interface SearchResponse {
@@ -71,12 +63,6 @@ interface SearchResponse {
   };
 }
 
-interface AllReviewsResponse {
-  success: boolean;
-  error?: string;
-  data?: ReviewResponse[];
-}
-
 interface SearchRequestBody {
   coordinates: [number, number];
   maxDistance: number;
@@ -84,31 +70,13 @@ interface SearchRequestBody {
   pageSize: number;
   specialties?: string[];
   epsNames?: string[];
-}
-
-function calculateDistance(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-): number {
-  const R = 6371000;
-  const dLat = (lat2 - lat1) * (Math.PI / 180);
-  const dLon = (lon2 - lon1) * (Math.PI / 180);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * (Math.PI / 180)) *
-      Math.cos(lat2 * (Math.PI / 180)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+  sorts?: SortField[];
 }
 
 // Star Rating Component with Tooltip
 const StarRating = ({ rating }: { rating: number }) => {
-  const roundedRating = Math.round(rating); // Para las estrellas
-  const formattedRating = Number.isInteger(rating) ? rating : rating.toFixed(1); // Para el texto
+  const roundedRating = Math.round(rating);
+  const formattedRating = Number.isInteger(rating) ? rating : rating.toFixed(1);
 
   const fullStars = roundedRating;
   const emptyStars = 5 - fullStars;
@@ -138,7 +106,7 @@ const StarRating = ({ rating }: { rating: number }) => {
       <span className="ml-1 text-gray-600 dark:text-gray-400 text-xs">
         ({formattedRating})
       </span>
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 shadow-lg">
         {formattedRating} de 5
       </div>
     </div>
@@ -148,35 +116,35 @@ const StarRating = ({ rating }: { rating: number }) => {
 const RESULT_ITEM = memo(({ item }: { item: IpsResponse }) => (
   <Link
     href={`/ips-details/${encodeURIComponent(item.name)}`}
-    className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 border border-gray-200 dark:border-gray-700 h-36 flex flex-col"
+    className="block p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-700 h-40 flex flex-col"
   >
-    <div className="flex items-start space-x-2 flex-1">
-      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-md flex-shrink-0">
-        <Hospital className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+    <div className="flex items-start space-x-3 flex-1">
+      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg flex-shrink-0">
+        <Hospital className="w-6 h-6 text-blue-700 dark:text-blue-400" />
       </div>
       <div className="flex-1 min-w-0">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
           {item.name}
         </h2>
-        <div className="group flex items-center space-x-1 mt-0.5">
+        <div className="group flex items-center space-x-1 mt-1">
           <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
             {item.distance !== undefined
               ? `${Math.round(item.distance)} metros`
               : "N/A"}
           </p>
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 shadow-lg">
             Distancia desde tu ubicación actual
           </div>
         </div>
-        <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mt-0.5">
+        <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
           {item.address}
           {item.town && `, ${item.town}`}
           {item.department && `, ${item.department}`}
         </p>
-        <div className="mt-0.5">
-          {item.hasReviews ? (
-            <StarRating rating={item.averageRating || 0} />
+        <div className="mt-1">
+          {item.totalReviews > 0 ? (
+            <StarRating rating={item.rating || 0} />
           ) : (
             <p className="text-xs text-gray-500 dark:text-gray-400 italic">
               Sin reseñas
@@ -201,6 +169,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const [listView, setListView] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState<
+    "distance" | "rating-desc" | "name-asc" | "name-desc"
+  >("distance");
   const pageSize = 21;
   const [totalResults, setTotalResults] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -208,6 +179,13 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
     [number, number] | null
   >(null);
   const [isNewSearch, setIsNewSearch] = useState(false);
+
+  const sortOptions = [
+    { value: "distance", label: "Distancia (Más cerca)", field: "distance", direction: 1 },
+    { value: "rating-desc", label: "Calificación (Mayor)", field: "rating", direction: -1 },
+    { value: "name-asc", label: "Nombre (A-Z)", field: "name", direction: 1 },
+    { value: "name-desc", label: "Nombre (Z-A)", field: "name", direction: -1 },
+  ];
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -220,7 +198,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         },
         (err) => {
           console.warn("No se pudo obtener la ubicación del usuario:", err);
-          setUserCoordinates([-75.5849, 6.1816]); // Coordenadas por defecto
+          setUserCoordinates([-75.5849, 6.1816]);
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
@@ -247,11 +225,18 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           if (!isNaN(lng) && !isNaN(lat)) coordinates = [lng, lat];
         }
 
+        // Map sortOption to API sort field
+        const selectedSort = sortOptions.find(opt => opt.value === sortOption);
+        const sorts: SortField[] = selectedSort
+          ? [{ field: selectedSort.field, direction: selectedSort.direction }]
+          : [];
+
         const requestBody: SearchRequestBody = {
           coordinates,
           maxDistance: parseInt(maxDistance),
           page: 1,
-          pageSize: 2890,
+          pageSize: 2890, // Fetch all results
+          sorts,
         };
 
         if (specialtiesParam.length > 0) {
@@ -261,6 +246,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         if (epsParam.length > 0) {
           requestBody.epsNames = epsParam;
         }
+
+        console.log("Request Body:", requestBody); // Debugging
 
         const response = await fetch("/api/v1.0.0/ips/filter/pagination", {
           method: "POST",
@@ -272,61 +259,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           throw new Error("No se pudieron obtener los resultados filtrados");
 
         const data: SearchResponse = await response.json();
-        let filteredResults = data.data || [];
-
-        const reviewsResponse = await fetch("/api/v1.0.0/reviews/get/all", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({}),
-        });
-
-        let allReviews: ReviewResponse[] = [];
-        if (reviewsResponse.ok) {
-          const reviewsData: AllReviewsResponse = await reviewsResponse.json();
-          if (reviewsData.success && reviewsData.data) {
-            allReviews = reviewsData.data;
-          } else {
-            console.error("Error al obtener reseñas:", reviewsData.error);
-          }
-        } else {
-          console.error(
-            "Error en la respuesta de la API de reseñas:",
-            reviewsResponse.status
-          );
-        }
-
-        filteredResults = filteredResults.map((item: IpsResponse) => {
-          const ipsReviews = allReviews.filter(
-            (review) => review.ips === item._id
-          );
-          const averageRating =
-            ipsReviews.length > 0
-              ? ipsReviews.reduce(
-                  (sum, review) => sum + (review.rating || 0),
-                  0
-                ) / ipsReviews.length
-              : 0;
-          const hasReviews = ipsReviews.length > 0;
-          return { ...item, averageRating, hasReviews };
-        });
- 
-
-        if (userCoordinates) {
-          filteredResults = filteredResults.map((item: IpsResponse) => ({
-            ...item,
-            distance: calculateDistance(
-              userCoordinates[1],
-              userCoordinates[0],
-              item.location.coordinates[1],
-              item.location.coordinates[0]
-            ),
-          }));
-
-          filteredResults.sort(
-            (a: IpsResponse, b: IpsResponse) =>
-              (a.distance || 0) - (b.distance || 0)
-          );
-        }
+        const filteredResults = data.data || [];
 
         setAllResults(filteredResults);
         setTotalResults(filteredResults.length);
@@ -355,7 +288,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
     if (userCoordinates !== null) {
       fetchFilteredResults();
     }
-  }, [searchParams, userCoordinates, isNewSearch]);
+  }, [searchParams, userCoordinates, isNewSearch, sortOption]);
 
   useEffect(() => {
     const filtered = allResults.filter((item) =>
@@ -363,6 +296,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         .toLowerCase()
         .includes(searchQuery.toLowerCase())
     );
+
     setTotalResults(filtered.length);
     setTotalPages(Math.ceil(filtered.length / pageSize));
 
@@ -428,18 +362,16 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   }
 
   return (
-    <div className="p-3 sm:p-5 max-w-7xl mx-auto bg-[#ECF6FF] dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen overflow-x-hidden">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen overflow-x-hidden">
       <Link
         href="/"
-        className="inline-flex items-center mb-4 sm:mb-6 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
+        className="inline-flex items-center mb-6 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
       >
-        <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
-        <span className="text-sm sm:text-base font-semibold">
-          Volver al Inicio
-        </span>
+        <Home className="w-5 h-5 mr-2" />
+        <span className="text-sm font-semibold">Volver al Inicio</span>
       </Link>
 
-      <div className="mb-5 sm:mb-8">
+      <div className="mb-8">
         <SearchFormClient
           specialties={specialties}
           eps={eps}
@@ -447,38 +379,59 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
-        <h1 className="text-xl sm:text-2xl font-bold">
-          Resultados de Búsqueda
-        </h1>
-        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 items-start sm:items-center w-full sm:w-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h1 className="text-2xl font-bold tracking-tight">Resultados de Búsqueda</h1>
+        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-start sm:items-center w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filtrar resultados..."
-              className="w-full pl-8 sm:pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 dark:text-white text-gray-800 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-gray-800 dark:text-white text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-sm transition-all duration-200"
             />
-            <Search className="w-4 h-4 sm:w-5 sm:h-5 absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-300" />
+            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" />
+          </div>
+          <div className="relative w-full sm:w-56">
+            <select
+              value={sortOption}
+              onChange={(e) =>
+                setSortOption(
+                  e.target.value as
+                    | "distance"
+                    | "rating-desc"
+                    | "name-asc"
+                    | "name-desc"
+                )
+              }
+              className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-white dark:bg-gray-800 dark:text-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm appearance-none transition-all duration-200"
+              aria-label="Ordenar resultados"
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none" />
           </div>
           <div className="flex space-x-2">
             <button
               onClick={() => setListView(true)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
+              className={`px-4 py-2 rounded-xl font-medium text-sm transition-all shadow-sm ${
                 listView
                   ? "bg-blue-600 text-white shadow-md"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
             >
               Lista
             </button>
             <button
               onClick={() => setListView(false)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
+              className={`px-4 py-2 rounded-xl font-medium text-sm transition-all shadow-sm ${
                 !listView
                   ? "bg-blue-600 text-white shadow-md"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
             >
               Mapa
@@ -487,46 +440,79 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         </div>
       </div>
 
+      <div className="mb-8">
+        <Link
+          href="/promotion-form"
+          className="block col-span-1 sm:col-span-2 lg:col-span-3 bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:scale-[1.01]"
+        >
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-semibold text-white mb-3 tracking-tight">
+              ¿Eres una IPS y quieres destacar?
+            </h2>
+            <p className="text-sm text-blue-100 dark:text-blue-200 mb-5 leading-relaxed">
+              Aparece en los primeros resultados y atrae más pacientes con una promoción destacada.
+            </p>
+            <span className="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-medium rounded-full hover:bg-blue-50 transition-colors duration-200 shadow-md">
+              ¡Promocionate aquí!
+              <svg
+                className="w-5 h-5 ml-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </span>
+          </div>
+        </Link>
+      </div>
+
       {listView ? (
         !loading && !searchLoading && paginatedResults.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+            <p className="text-lg font-medium text-gray-600 dark:text-gray-300">
               No hay resultados para esta búsqueda
             </p>
           </div>
         ) : (
           <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {paginatedResults.map((item) => (
                 <RESULT_ITEM key={item._id} item={item} />
               ))}
             </div>
 
             {totalPages > 1 && (
-              <div className="mt-6 sm:mt-8 flex flex-col items-center space-y-3">
-                <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className="mt-8 flex flex-col items-center space-y-4">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                   Mostrando {(currentPage - 1) * pageSize + 1} –{" "}
                   {Math.min(currentPage * pageSize, totalResults)} de{" "}
                   {totalResults} resultados
                 </p>
-                <div className="flex items-center space-x-1 sm:space-x-2">
+                <div className="flex items-center space-x-2">
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`p-1 sm:p-2 rounded-full ${
+                    className={`p-2 rounded-full ${
                       currentPage === 1
-                        ? "text-gray-400 cursor-not-allowed"
+                        ? "text-gray-300 cursor-not-allowed"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
+                    } transition-all`}
                   >
-                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <ChevronLeft className="w-5 h-5" />
                   </button>
 
                   {startPage > 1 && (
                     <>
                       <button
                         onClick={() => handlePageChange(1)}
-                        className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
+                        className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-sm"
                       >
                         1
                       </button>
@@ -542,10 +528,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                     <button
                       key={page}
                       onClick={() => handlePageChange(page)}
-                      className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all text-sm ${
+                      className={`w-10 h-10 flex items-center justify-center rounded-full transition-all text-sm ${
                         currentPage === page
                           ? "bg-blue-600 text-white shadow-md"
-                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                       }`}
                     >
                       {page}
@@ -561,7 +547,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                       )}
                       <button
                         onClick={() => handlePageChange(totalPages)}
-                        className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
+                        className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-sm"
                       >
                         {totalPages}
                       </button>
@@ -571,13 +557,13 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`p-1 sm:p-2 rounded-full ${
+                    className={`p-2 rounded-full ${
                       currentPage === totalPages
-                        ? "text-gray-400 cursor-not-allowed"
+                        ? "text-gray-300 cursor-not-allowed"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
+                    } transition-all`}
                   >
-                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <ChevronRight className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -586,7 +572,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         )
       ) : !loading && !searchLoading && allResults.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+          <p className="text-lg font-medium text-gray-600 dark:text-gray-300">
             No hay resultados para esta búsqueda
           </p>
         </div>
@@ -607,7 +593,6 @@ function MapComponent({
   const router = useRouter();
 
   useEffect(() => {
-    // Determinar el estilo inicial según el modo del sistema
     const darkModeMediaQuery = window.matchMedia(
       "(prefers-color-scheme: dark)"
     );
@@ -643,7 +628,7 @@ function MapComponent({
           </svg>
         `;
 
-        const roundedRating = Math.round(item.averageRating || 0);
+        const roundedRating = Math.round(item.rating || 0);
         const popupContent = document.createElement("div");
         popupContent.innerHTML = `
           <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-xs text-sm">
@@ -663,7 +648,7 @@ function MapComponent({
         }, ${item.department ?? ""}</p>
             <div class="flex items-center space-x-1 mt-1">
               ${
-                item.hasReviews
+                item.totalReviews > 0
                   ? `
                     ${[...Array(roundedRating)]
                       .map(
@@ -717,7 +702,7 @@ function MapComponent({
   return (
     <div
       id="map"
-      className="w-full h-[300px] sm:h-[400px] lg:h-[600px] rounded-xl shadow-lg overflow-hidden max-w-full border border-gray-200 dark:border-gray-700"
+      className="w-full h-[400px] sm:h-[500px] lg:h-[600px] rounded-xl shadow-lg overflow-hidden max-w-full border border-gray-200 dark:border-gray-700"
     />
   );
 }

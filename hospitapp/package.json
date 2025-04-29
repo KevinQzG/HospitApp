@@ -27,7 +27,7 @@
     "bootstrap": "^5.3.3",
     "country-flag-icons": "^1.5.18",
     "country-telephone-data": "^0.6.3",
-    "framer-motion": "^12.5.0",
+    "framer-motion": "^12.9.2",
     "inversify": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "leaflet": "^1.9.4",
