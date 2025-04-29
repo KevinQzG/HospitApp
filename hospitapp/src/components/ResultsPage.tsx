@@ -522,6 +522,39 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         </div>
       </div>
 
+      <div className="mb-8">
+        <Link
+          href="/promotion-form"
+          className="block col-span-1 sm:col-span-2 lg:col-span-3 bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:scale-[1.01]"
+        >
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-semibold text-white mb-3 tracking-tight">
+              ¿Eres una IPS y quieres destacar?
+            </h2>
+            <p className="text-sm text-blue-100 dark:text-blue-200 mb-5 leading-relaxed">
+              Aparece en los primeros resultados y atrae más pacientes con una promoción destacada.
+            </p>
+            <span className="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-medium rounded-full hover:bg-blue-50 transition-colors duration-200 shadow-md">
+              ¡Promocionate aquí!
+              <svg
+                className="w-5 h-5 ml-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </span>
+          </div>
+        </Link>
+      </div>
+
       {listView ? (
         !loading && !searchLoading && paginatedResults.length === 0 ? (
           <div className="text-center py-10">
@@ -673,7 +706,7 @@ function MapComponent({
         markerElement.innerHTML = `
           <svg width="32" height="32" viewBox="0 0 24 24" fill="#2563EB" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/>
-            <circle cx="12" cy="12" r="5" fill="white"/>
+            <circle cx="12" cy="12" r="5" fill "white"/>
           </svg>
         `;
 
