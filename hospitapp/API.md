@@ -21,6 +21,7 @@ This documentation was developed by Juan Felipe Restrepo with the help of Grook 
 15. [Get All Reviews with Pagination (v1.0.0)](#get-all-reviews-with-pagination-v100)
 16. [Get Authentication Data from Session](#get-authentication-data-from-session)
 17. [Verify Authentication Data from Session](#verify-authentication-data-from-session)
+15. [Send Promotion Form (v1.0.0)](#send-promotion-form-v100)
 
 ---
 
@@ -927,6 +928,50 @@ Verifies the authentication data from the session. This endpoint checks if the u
 {
     "success": true,
     "message": "User Authenticated"
+}
+```
+
+## Send Promotion Form (v1.0.0)
+### **Endpoint**  
+`/api/v1.0.0/ips/promotion-form`
+
+### **Method**
+`POST`
+
+### **Description**
+Send a promotion form for an IPS (Health Provider) with the provided data.
+
+### **Request Data**
+#### Body Parameters (JSON):
+| Field          | Type   | Required | Description                       |
+|----------------|--------|----------|-----------------------------------|
+| email            | string | Yes      |  Email of the person sending the form |
+| name           | string | Yes      | Name of the person sending the form |
+| message          | string | Yes      | Promotion message |
+
+#### Example Request Body:
+```typescript
+{
+    "email": "example@example.com",
+    "name": "Juan Felipe Restrepo",
+    "message": "I would like to promote my IPS"
+}
+```
+
+### **Response Data**
+#### Body Parameters (JSON):
+| Field   | Type   | Description                                              |
+|---------|--------|----------------------------------------------------------|
+| success | boolean| Indicates if the request was successful                  |
+| message   | string | Message informing the operation             |
+| response | string | Response from the email service               |
+
+#### Example Success Response:
+```typescript
+{
+    "success": true,
+    "message": "Promotion form sent successfully",
+    "response": "Email sent to the IPS: {response_data}"
 }
 ```
 
