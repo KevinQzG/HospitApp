@@ -19,6 +19,9 @@ import { Suspense } from "react";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string;
 
+// Define SortField type
+type SortField = { field: string; direction: number };
+
 interface Specialty {
   _id: string;
   name: string;
@@ -39,25 +42,13 @@ interface IpsResponse {
   phone?: string | number;
   email?: string;
   level?: number;
-  distance?: number;
+  distance?: number; // Distance in meters, provided by API
   specialties?: Specialty[];
   eps?: Eps[];
   maps?: string;
   waze?: string;
-  averageRating?: number;
-  hasReviews?: boolean;
-}
-
-interface ReviewResponse {
-  _id: string;
-  ips: string;
-  rating: number;
-  userEmail?: string;
-  comments?: string;
-  createdAt?: string;
-  lastUpdated?: string;
-  user?: string;
-  ipsName?: string;
+  rating?: number; // Average rating (1-5), 0 if no reviews
+  totalReviews: number; // Total number of reviews
 }
 
 interface SearchResponse {
@@ -72,12 +63,6 @@ interface SearchResponse {
   };
 }
 
-interface AllReviewsResponse {
-  success: boolean;
-  error?: string;
-  data?: ReviewResponse[];
-}
-
 interface SearchRequestBody {
   coordinates: [number, number];
   maxDistance: number;
@@ -85,25 +70,7 @@ interface SearchRequestBody {
   pageSize: number;
   specialties?: string[];
   epsNames?: string[];
-}
-
-function calculateDistance(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-): number {
-  const R = 6371000;
-  const dLat = (lat2 - lat1) * (Math.PI / 180);
-  const dLon = (lon2 - lon1) * (Math.PI / 180);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * (Math.PI / 180)) *
-      Math.cos(lat2 * (Math.PI / 180)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+  sorts?: SortField[];
 }
 
 // Star Rating Component with Tooltip
@@ -176,8 +143,8 @@ const RESULT_ITEM = memo(({ item }: { item: IpsResponse }) => (
           {item.department && `, ${item.department}`}
         </p>
         <div className="mt-1">
-          {item.hasReviews ? (
-            <StarRating rating={item.averageRating || 0} />
+          {item.totalReviews > 0 ? (
+            <StarRating rating={item.rating || 0} />
           ) : (
             <p className="text-xs text-gray-500 dark:text-gray-400 italic">
               Sin reseñas
@@ -212,6 +179,13 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
     [number, number] | null
   >(null);
   const [isNewSearch, setIsNewSearch] = useState(false);
+
+  const sortOptions = [
+    { value: "distance", label: "Distancia (Más cerca)", field: "distance", direction: 1 },
+    { value: "rating-desc", label: "Calificación (Mayor)", field: "rating", direction: -1 },
+    { value: "name-asc", label: "Nombre (A-Z)", field: "name", direction: 1 },
+    { value: "name-desc", label: "Nombre (Z-A)", field: "name", direction: -1 },
+  ];
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -251,11 +225,18 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           if (!isNaN(lng) && !isNaN(lat)) coordinates = [lng, lat];
         }
 
+        // Map sortOption to API sort field
+        const selectedSort = sortOptions.find(opt => opt.value === sortOption);
+        const sorts: SortField[] = selectedSort
+          ? [{ field: selectedSort.field, direction: selectedSort.direction }]
+          : [];
+
         const requestBody: SearchRequestBody = {
           coordinates,
           maxDistance: parseInt(maxDistance),
           page: 1,
-          pageSize: 2890,
+          pageSize: 2890, // Fetch all results
+          sorts,
         };
 
         if (specialtiesParam.length > 0) {
@@ -265,6 +246,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         if (epsParam.length > 0) {
           requestBody.epsNames = epsParam;
         }
+
+        console.log("Request Body:", requestBody); // Debugging
 
         const response = await fetch("/api/v1.0.0/ips/filter/pagination", {
           method: "POST",
@@ -276,55 +259,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           throw new Error("No se pudieron obtener los resultados filtrados");
 
         const data: SearchResponse = await response.json();
-        let filteredResults = data.data || [];
-
-        const reviewsResponse = await fetch("/api/v1.0.0/reviews/get/all", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({}),
-        });
-
-        let allReviews: ReviewResponse[] = [];
-        if (reviewsResponse.ok) {
-          const reviewsData: AllReviewsResponse = await reviewsResponse.json();
-          if (reviewsData.success && reviewsData.data) {
-            allReviews = reviewsData.data;
-          } else {
-            console.error("Error al obtener reseñas:", reviewsData.error);
-          }
-        } else {
-          console.error(
-            "Error en la respuesta de la API de reseñas:",
-            reviewsResponse.status
-          );
-        }
-
-        filteredResults = filteredResults.map((item: IpsResponse) => {
-          const ipsReviews = allReviews.filter(
-            (review) => review.ips === item._id
-          );
-          const averageRating =
-            ipsReviews.length > 0
-              ? ipsReviews.reduce(
-                  (sum, review) => sum + (review.rating || 0),
-                  0
-                ) / ipsReviews.length
-              : 0;
-          const hasReviews = ipsReviews.length > 0;
-          return { ...item, averageRating, hasReviews };
-        });
-
-        if (userCoordinates) {
-          filteredResults = filteredResults.map((item: IpsResponse) => ({
-            ...item,
-            distance: calculateDistance(
-              userCoordinates[1],
-              userCoordinates[0],
-              item.location.coordinates[1],
-              item.location.coordinates[0]
-            ),
-          }));
-        }
+        const filteredResults = data.data || [];
 
         setAllResults(filteredResults);
         setTotalResults(filteredResults.length);
@@ -337,6 +272,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           const pageFromParams = parseInt(searchParams.get("page") ?? "1");
           setCurrentPage(pageFromParams);
         }
+
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        setPaginatedResults(filteredResults.slice(start, end));
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Ocurrió un error desconocido"
@@ -349,7 +288,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
     if (userCoordinates !== null) {
       fetchFilteredResults();
     }
-  }, [searchParams, userCoordinates, isNewSearch]);
+  }, [searchParams, userCoordinates, isNewSearch, sortOption]);
 
   useEffect(() => {
     const filtered = allResults.filter((item) =>
@@ -358,27 +297,13 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         .includes(searchQuery.toLowerCase())
     );
 
-    // Apply sorting
-    filtered.sort((a, b) => {
-      if (sortOption === "distance") {
-        return (a.distance || 0) - (b.distance || 0);
-      } else if (sortOption === "rating-desc") {
-        return (b.averageRating || 0) - (a.averageRating || 0);
-      } else if (sortOption === "name-asc") {
-        return a.name.localeCompare(b.name);
-      } else if (sortOption === "name-desc") {
-        return b.name.localeCompare(a.name);
-      }
-      return 0;
-    });
-
     setTotalResults(filtered.length);
     setTotalPages(Math.ceil(filtered.length / pageSize));
 
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
     setPaginatedResults(filtered.slice(start, end));
-  }, [searchQuery, allResults, currentPage, sortOption]);
+  }, [searchQuery, allResults, currentPage]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
@@ -394,13 +319,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
       setIsNewSearch(true);
     }
   };
-
-  const sortOptions = [
-    { value: "distance", label: "Distancia (Más cerca)" },
-    { value: "rating-desc", label: "Calificación (Mayor)" },
-    { value: "name-asc", label: "Nombre (A-Z)" },
-    { value: "name-desc", label: "Nombre (Z-A)" },
-  ];
 
   const maxVisiblePages = 5;
   const pageRange = Math.floor(maxVisiblePages / 2);
@@ -706,11 +624,11 @@ function MapComponent({
         markerElement.innerHTML = `
           <svg width="32" height="32" viewBox="0 0 24 24" fill="#2563EB" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/>
-            <circle cx="12" cy="12" r="5" fill "white"/>
+            <circle cx="12" cy="12" r="5" fill="white"/>
           </svg>
         `;
 
-        const roundedRating = Math.round(item.averageRating || 0);
+        const roundedRating = Math.round(item.rating || 0);
         const popupContent = document.createElement("div");
         popupContent.innerHTML = `
           <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-xs text-sm">
@@ -730,7 +648,7 @@ function MapComponent({
         }, ${item.department ?? ""}</p>
             <div class="flex items-center space-x-1 mt-1">
               ${
-                item.hasReviews
+                item.totalReviews > 0
                   ? `
                     ${[...Array(roundedRating)]
                       .map(
