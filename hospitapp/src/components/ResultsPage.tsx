@@ -10,6 +10,7 @@ import {
   Home,
   Search,
   MapPin,
+  ChevronDown,
 } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import SearchFormClient, { SearchFormSubmitHandler } from "./SearchFormClient";
@@ -38,13 +39,13 @@ interface IpsResponse {
   phone?: string | number;
   email?: string;
   level?: number;
-  distance?: number; // Distancia en metros
+  distance?: number;
   specialties?: Specialty[];
   eps?: Eps[];
   maps?: string;
   waze?: string;
-  averageRating?: number; // Added to store the average rating (1-5)
-  hasReviews?: boolean; // Added to track if the IPS has reviews
+  averageRating?: number;
+  hasReviews?: boolean;
 }
 
 interface ReviewResponse {
@@ -107,8 +108,8 @@ function calculateDistance(
 
 // Star Rating Component with Tooltip
 const StarRating = ({ rating }: { rating: number }) => {
-  const roundedRating = Math.round(rating); // Para las estrellas
-  const formattedRating = Number.isInteger(rating) ? rating : rating.toFixed(1); // Para el texto
+  const roundedRating = Math.round(rating);
+  const formattedRating = Number.isInteger(rating) ? rating : rating.toFixed(1);
 
   const fullStars = roundedRating;
   const emptyStars = 5 - fullStars;
@@ -138,7 +139,7 @@ const StarRating = ({ rating }: { rating: number }) => {
       <span className="ml-1 text-gray-600 dark:text-gray-400 text-xs">
         ({formattedRating})
       </span>
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 shadow-lg">
         {formattedRating} de 5
       </div>
     </div>
@@ -148,33 +149,33 @@ const StarRating = ({ rating }: { rating: number }) => {
 const RESULT_ITEM = memo(({ item }: { item: IpsResponse }) => (
   <Link
     href={`/ips-details/${encodeURIComponent(item.name)}`}
-    className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 border border-gray-200 dark:border-gray-700 h-36 flex flex-col"
+    className="block p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-700 h-40 flex flex-col"
   >
-    <div className="flex items-start space-x-2 flex-1">
-      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-md flex-shrink-0">
-        <Hospital className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+    <div className="flex items-start space-x-3 flex-1">
+      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg flex-shrink-0">
+        <Hospital className="w-6 h-6 text-blue-700 dark:text-blue-400" />
       </div>
       <div className="flex-1 min-w-0">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
           {item.name}
         </h2>
-        <div className="group flex items-center space-x-1 mt-0.5">
+        <div className="group flex items-center space-x-1 mt-1">
           <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
             {item.distance !== undefined
               ? `${Math.round(item.distance)} metros`
               : "N/A"}
           </p>
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 shadow-lg">
             Distancia desde tu ubicación actual
           </div>
         </div>
-        <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mt-0.5">
+        <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
           {item.address}
           {item.town && `, ${item.town}`}
           {item.department && `, ${item.department}`}
         </p>
-        <div className="mt-0.5">
+        <div className="mt-1">
           {item.hasReviews ? (
             <StarRating rating={item.averageRating || 0} />
           ) : (
@@ -201,6 +202,9 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   const [listView, setListView] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState<
+    "distance" | "rating-desc" | "name-asc" | "name-desc"
+  >("distance");
   const pageSize = 21;
   const [totalResults, setTotalResults] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -220,7 +224,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         },
         (err) => {
           console.warn("No se pudo obtener la ubicación del usuario:", err);
-          setUserCoordinates([-75.5849, 6.1816]); // Coordenadas por defecto
+          setUserCoordinates([-75.5849, 6.1816]);
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
@@ -309,7 +313,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           const hasReviews = ipsReviews.length > 0;
           return { ...item, averageRating, hasReviews };
         });
- 
 
         if (userCoordinates) {
           filteredResults = filteredResults.map((item: IpsResponse) => ({
@@ -321,11 +324,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
               item.location.coordinates[0]
             ),
           }));
-
-          filteredResults.sort(
-            (a: IpsResponse, b: IpsResponse) =>
-              (a.distance || 0) - (b.distance || 0)
-          );
         }
 
         setAllResults(filteredResults);
@@ -339,10 +337,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           const pageFromParams = parseInt(searchParams.get("page") ?? "1");
           setCurrentPage(pageFromParams);
         }
-
-        const start = (currentPage - 1) * pageSize;
-        const end = start + pageSize;
-        setPaginatedResults(filteredResults.slice(start, end));
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Ocurrió un error desconocido"
@@ -358,18 +352,33 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   }, [searchParams, userCoordinates, isNewSearch]);
 
   useEffect(() => {
-    const filtered = allResults.filter((item) =>
+    let filtered = allResults.filter((item) =>
       `${item.name} ${item.address} ${item.town || ""} ${item.department || ""}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase())
     );
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      if (sortOption === "distance") {
+        return (a.distance || 0) - (b.distance || 0);
+      } else if (sortOption === "rating-desc") {
+        return (b.averageRating || 0) - (a.averageRating || 0);
+      } else if (sortOption === "name-asc") {
+        return a.name.localeCompare(b.name);
+      } else if (sortOption === "name-desc") {
+        return b.name.localeCompare(a.name);
+      }
+      return 0;
+    });
+
     setTotalResults(filtered.length);
     setTotalPages(Math.ceil(filtered.length / pageSize));
 
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
     setPaginatedResults(filtered.slice(start, end));
-  }, [searchQuery, allResults, currentPage]);
+  }, [searchQuery, allResults, currentPage, sortOption]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
@@ -385,6 +394,13 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
       setIsNewSearch(true);
     }
   };
+
+  const sortOptions = [
+    { value: "distance", label: "Distancia (Más cerca)" },
+    { value: "rating-desc", label: "Calificación (Mayor)" },
+    { value: "name-asc", label: "Nombre (A-Z)" },
+    { value: "name-desc", label: "Nombre (Z-A)" },
+  ];
 
   const maxVisiblePages = 5;
   const pageRange = Math.floor(maxVisiblePages / 2);
@@ -428,18 +444,16 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   }
 
   return (
-    <div className="p-3 sm:p-5 max-w-7xl mx-auto bg-[#ECF6FF] dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen overflow-x-hidden">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen overflow-x-hidden">
       <Link
         href="/"
-        className="inline-flex items-center mb-4 sm:mb-6 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
+        className="inline-flex items-center mb-6 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
       >
-        <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
-        <span className="text-sm sm:text-base font-semibold">
-          Volver al Inicio
-        </span>
+        <Home className="w-5 h-5 mr-2" />
+        <span className="text-sm font-semibold">Volver al Inicio</span>
       </Link>
 
-      <div className="mb-5 sm:mb-8">
+      <div className="mb-8">
         <SearchFormClient
           specialties={specialties}
           eps={eps}
@@ -447,38 +461,59 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
-        <h1 className="text-xl sm:text-2xl font-bold">
-          Resultados de Búsqueda
-        </h1>
-        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 items-start sm:items-center w-full sm:w-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h1 className="text-2xl font-bold tracking-tight">Resultados de Búsqueda</h1>
+        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-start sm:items-center w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filtrar resultados..."
-              className="w-full pl-8 sm:pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 dark:text-white text-gray-800 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-gray-800 dark:text-white text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-sm transition-all duration-200"
             />
-            <Search className="w-4 h-4 sm:w-5 sm:h-5 absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-300" />
+            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" />
+          </div>
+          <div className="relative w-full sm:w-56">
+            <select
+              value={sortOption}
+              onChange={(e) =>
+                setSortOption(
+                  e.target.value as
+                    | "distance"
+                    | "rating-desc"
+                    | "name-asc"
+                    | "name-desc"
+                )
+              }
+              className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-white dark:bg-gray-800 dark:text-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm appearance-none transition-all duration-200"
+              aria-label="Ordenar resultados"
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none" />
           </div>
           <div className="flex space-x-2">
             <button
               onClick={() => setListView(true)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
+              className={`px-4 py-2 rounded-xl font-medium text-sm transition-all shadow-sm ${
                 listView
                   ? "bg-blue-600 text-white shadow-md"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
             >
               Lista
             </button>
             <button
               onClick={() => setListView(false)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
+              className={`px-4 py-2 rounded-xl font-medium text-sm transition-all shadow-sm ${
                 !listView
                   ? "bg-blue-600 text-white shadow-md"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
             >
               Mapa
@@ -490,43 +525,43 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
       {listView ? (
         !loading && !searchLoading && paginatedResults.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+            <p className="text-lg font-medium text-gray-600 dark:text-gray-300">
               No hay resultados para esta búsqueda
             </p>
           </div>
         ) : (
           <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {paginatedResults.map((item) => (
                 <RESULT_ITEM key={item._id} item={item} />
               ))}
             </div>
 
             {totalPages > 1 && (
-              <div className="mt-6 sm:mt-8 flex flex-col items-center space-y-3">
-                <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className="mt-8 flex flex-col items-center space-y-4">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                   Mostrando {(currentPage - 1) * pageSize + 1} –{" "}
                   {Math.min(currentPage * pageSize, totalResults)} de{" "}
                   {totalResults} resultados
                 </p>
-                <div className="flex items-center space-x-1 sm:space-x-2">
+                <div className="flex items-center space-x-2">
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`p-1 sm:p-2 rounded-full ${
+                    className={`p-2 rounded-full ${
                       currentPage === 1
-                        ? "text-gray-400 cursor-not-allowed"
+                        ? "text-gray-300 cursor-not-allowed"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
+                    } transition-all`}
                   >
-                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <ChevronLeft className="w-5 h-5" />
                   </button>
 
                   {startPage > 1 && (
                     <>
                       <button
                         onClick={() => handlePageChange(1)}
-                        className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
+                        className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-sm"
                       >
                         1
                       </button>
@@ -542,10 +577,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                     <button
                       key={page}
                       onClick={() => handlePageChange(page)}
-                      className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all text-sm ${
+                      className={`w-10 h-10 flex items-center justify-center rounded-full transition-all text-sm ${
                         currentPage === page
                           ? "bg-blue-600 text-white shadow-md"
-                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                       }`}
                     >
                       {page}
@@ -561,7 +596,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                       )}
                       <button
                         onClick={() => handlePageChange(totalPages)}
-                        className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm"
+                        className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-sm"
                       >
                         {totalPages}
                       </button>
@@ -571,13 +606,13 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`p-1 sm:p-2 rounded-full ${
+                    className={`p-2 rounded-full ${
                       currentPage === totalPages
-                        ? "text-gray-400 cursor-not-allowed"
+                        ? "text-gray-300 cursor-not-allowed"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
+                    } transition-all`}
                   >
-                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <ChevronRight className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -586,7 +621,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         )
       ) : !loading && !searchLoading && allResults.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+          <p className="text-lg font-medium text-gray-600 dark:text-gray-300">
             No hay resultados para esta búsqueda
           </p>
         </div>
@@ -607,7 +642,6 @@ function MapComponent({
   const router = useRouter();
 
   useEffect(() => {
-    // Determinar el estilo inicial según el modo del sistema
     const darkModeMediaQuery = window.matchMedia(
       "(prefers-color-scheme: dark)"
     );
@@ -717,7 +751,7 @@ function MapComponent({
   return (
     <div
       id="map"
-      className="w-full h-[300px] sm:h-[400px] lg:h-[600px] rounded-xl shadow-lg overflow-hidden max-w-full border border-gray-200 dark:border-gray-700"
+      className="w-full h-[400px] sm:h-[500px] lg:h-[600px] rounded-xl shadow-lg overflow-hidden max-w-full border border-gray-200 dark:border-gray-700"
     />
   );
 }
