@@ -185,6 +185,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 		{ value: "promotion", label: "Recomendados" },
 		{ value: "distance", label: "Distancia" },
 		{ value: "rating", label: "Calificación" },
+		{ value: "name", label: "Nombre" },
 	];
 
 	// Handlers for sort fields
