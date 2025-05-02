@@ -200,6 +200,13 @@ function DetailsView({
   const [newComments, setNewComments] = useState<string>("");
   const [averageRating, setAverageRating] = useState<number>(0);
 
+  // Verificar si el usuario ya tiene una reseña
+  const userHasReview = userSession
+    ? reviewsResult?.reviews.some(
+        (review) => review.userEmail === userSession.email
+      )
+    : false;
+
   useEffect(() => {
     if (reviewsResult && reviewsResult.reviews.length > 0) {
       const avg =
@@ -664,13 +671,33 @@ function DetailsView({
           <p className="text-red-500">{error}</p>
         ) : null}
 
-        <button
-          onClick={() => setShowAddReviewForm(!showAddReviewForm)}
-          className="mb-6 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
-        >
-          <Plus className="w-4 h-4" />
-          Agregar Reseña
-        </button>
+        {/* Mostrar el botón "Agregar Reseña" solo si el usuario no tiene una reseña y está autenticado */}
+        {userSession && !userHasReview && (
+          <button
+            onClick={() => setShowAddReviewForm(!showAddReviewForm)}
+            className="mb-6 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
+          >
+            <Plus className="w-4 h-4" />
+            Agregar Reseña
+          </button>
+        )}
+
+        {/* Mostrar mensaje si el usuario ya tiene una reseña */}
+        {userSession && userHasReview && (
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            Ya has dejado una reseña para esta IPS. Puedes editarla o eliminarla.
+          </p>
+        )}
+
+        {/* Mostrar mensaje si no está autenticado */}
+        {!userSession && (
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            <Link href="/login" className="text-blue-600 hover:underline">
+              Inicia sesión
+            </Link>{" "}
+            para dejar una reseña.
+          </p>
+        )}
 
         {showAddReviewForm && (
           <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-xl shadow-sm">
