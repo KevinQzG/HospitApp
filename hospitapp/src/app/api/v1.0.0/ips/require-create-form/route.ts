@@ -78,9 +78,11 @@ export async function POST(
       message: result.message,
       response: result.response,
     });
+    //@typescript-eslint/no-unused-vars
   } catch (error) {
     return NextResponse.json(
       {
+        error : error,
         success: false,
         message: "Internal server error",
         response: "Internal server error",
