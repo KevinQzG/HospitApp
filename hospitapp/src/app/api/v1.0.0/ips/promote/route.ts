@@ -1,4 +1,5 @@
 // src/app/api/ips/promote/route.ts
+/*
 import { NextRequest, NextResponse } from "next/server";
 import CONTAINER from "@/adapters/container";
 import { TYPES } from "@/adapters/types";
@@ -24,7 +25,7 @@ const VALIDATE_PROMOTION_BODY = (
   return { success: true };
 };
 
-/*
+
 export async function POST(
   req: NextRequest
 ): Promise<NextResponse<PromoteIPSResponse>> {
