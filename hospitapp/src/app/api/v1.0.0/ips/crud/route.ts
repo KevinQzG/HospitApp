@@ -4,7 +4,7 @@ import CONTAINER from "@/adapters/container";
 import IpsServiceAdapter from "@/adapters/services/ips.service.adapter";
 import { TYPES } from "@/adapters/types";
 
-// Definición de la interfaz Ips para tipar los datos de una IPS
+// define ips data structure
 export interface Ips {
   _id?: string; // Identificador único de la IPS (opcional)
   department: string; // Departamento donde se encuentra la IPS
@@ -20,15 +20,15 @@ export interface Ips {
   };
 }
 
-// Endpoint POST para crear una nueva IPS
+// endpoint to create a new ips
 export async function POST(request: NextRequest) {
   // Obtener el cuerpo de la solicitud en formato JSON
   const body = await request.json();
 
-  // Extraer los datos necesarios del cuerpo de la solicitud
+  // Get the data from the request body
   const { department, town, address, name, phone, email } = body.ips;
 
-  // Validar que todos los campos requeridos estén presentes
+  //validete that all required fields are present
   if (!name || !address || !phone || !department || !town || !email) {
     return NextResponse.json(
       { message: "Faltan campos obligatorios para crear la IPS." },
@@ -40,15 +40,15 @@ export async function POST(request: NextRequest) {
   const service = CONTAINER.get<IpsServiceAdapter>(TYPES.IpsServiceAdapter);
 
   try {
-    // Intentar crear una nueva IPS usando el servicio
+    // try to create the IPS using the service
     const newIps = await service.create(body.ips);
 
-    // Retornar la IPS creada con un estado 201 (Creado)
+    // retrun the created IPS with status 201 (Created)
     return NextResponse.json(newIps, { status: 201 });
   } catch (error) {
-    // Registrar el error en la consola con un mensaje más descriptivo
+    // Register the error in the console with a more descriptive message
     console.error("Error al crear la IPS:", error);
-    // Retornar un mensaje de error con estado 500 (Error del servidor)
+    // return server error message with status 500 (Internal Server Error)
     return NextResponse.json(
       { message: "No se pudo crear la IPS debido a un error en el servidor." },
       { status: 500 }
@@ -56,12 +56,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Endpoint DELETE para eliminar una IPS existente
+// Endpoint DELETE to delete an existing IPS
 export async function DELETE(request: NextRequest) {
-  // Obtener el ID de la IPS desde los parámetros de la URL
+  // get the ID from the request URL
   const id = request.nextUrl.searchParams.get("id");
 
-  // Validar que el ID esté presente en la solicitud
   if (!id) {
     return NextResponse.json(
       { message: "Se requiere el ID para eliminar la IPS." },
@@ -69,7 +68,6 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  // Obtener el servicio de IPS desde el contenedor de inyección de dependencias
   const service = CONTAINER.get<IpsServiceAdapter>(TYPES.IpsServiceAdapter);
 
   try {
@@ -102,6 +100,8 @@ export async function DELETE(request: NextRequest) {
 
 // Endpoint PUT para actualizar una IPS existente
 export async function PUT(request: NextRequest) {
+
+
   // Obtener el cuerpo de la solicitud en formato JSON
   const body = await request.json();
   // Extraer el ID y los datos a actualizar del cuerpo de la solicitud
