@@ -38,10 +38,10 @@ export class IpsMongoService implements IpsServiceAdapter {
 		return ID;
 	}
 
-	async update(id: ObjectId, ips: Ips): Promise<ObjectId | null> {
-		const OBJECT_ID = await this.ipsRepository.update(id, ips);
-		if (!OBJECT_ID) return null;
-		return OBJECT_ID;
+	async update(id: ObjectId, ips: Ips): Promise<boolean | null> {
+		const RESULT = await this.ipsRepository.update(id, ips);
+		if (!RESULT) return null;
+		return RESULT;
 	}
 
 	async delete(id: string): Promise<boolean> {
