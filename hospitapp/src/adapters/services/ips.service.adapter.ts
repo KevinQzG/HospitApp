@@ -139,4 +139,14 @@ export default interface IpsServiceAdapter {
 		ips: IpsResponse | null;
 		reviewsResult: ReviewResponse[];
 	}>
+
+
+	/**
+	 * Gets an IPS by its ID.
+	 *
+	 * @async
+	 * @param {string} id - The ID of the IPS.
+	 */
+	
+	
 }
