@@ -24,6 +24,7 @@ const VALIDATE_PROMOTION_BODY = (
   return { success: true };
 };
 
+/*
 export async function POST(
   req: NextRequest
 ): Promise<NextResponse<PromoteIPSResponse>> {
@@ -36,8 +37,8 @@ export async function POST(
     if (!success) {
       return NextResponse.json({ success: false, message: error! }, { status: 400 });
     }
-
-    const updateResult = await ipsService.updatePromotedStatus(body.id, body.promoted);
+    
+    //const updateResult = await ipsService.updatePromotedStatus(body.id, body.promoted);
 
     if (!updateResult) {
       return NextResponse.json({ success: false, message: "IPS not found or update failed" }, { status: 404 });
@@ -53,5 +54,8 @@ export async function POST(
       { success: false, message: "Internal server error" },
       { status: 500 }
     );
+    
   }
+    
 }
+*/
