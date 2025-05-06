@@ -16,7 +16,7 @@ let updatedDate: string;
 When("the user should select the first ips in the list", async function () {
 	const firstIps = await driver.wait(
 		until.elementLocated(
-			By.xpath("/html/body/main/div/div[3]/div[1]/a[1]")
+			By.xpath("/html/body/main/div/div[4]/div[1]/a[1]")
 		),
 		15000,
 		"First IPS not found"

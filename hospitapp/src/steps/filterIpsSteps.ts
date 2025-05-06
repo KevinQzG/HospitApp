@@ -32,7 +32,7 @@ When('the user clicks the "Buscar" button', async function () {
 	// Wait for filter page to load (assuming redirect to /ips or similar)
 	await driver.wait(
 		until.elementLocated(
-			By.xpath("/html/body/main/div/div[2]/h1")
+			By.xpath(`//h1[contains(., "Resultados de Búsqueda")]`)
 		),
 		80000
 	);
