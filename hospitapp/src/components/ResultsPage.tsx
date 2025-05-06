@@ -372,9 +372,8 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 
 	useEffect(() => {
 		const filtered = allResults.filter((item) =>
-			`${item.name} ${item.address} ${item.town || ""} ${
-				item.department || ""
-			}`
+			`${item.name} ${item.address} ${item.town || ""} ${item.department || ""
+				}`
 				.toLowerCase()
 				.includes(searchQuery.toLowerCase())
 		);
@@ -463,37 +462,71 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 			</div>
 
 			<div className="mb-8">
-				<Link
-					href="/promotion-form"
-					className="block col-span-1 sm:col-span-2 lg:col-span-3 bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:scale-[1.01]"
-				>
-					<div className="p-8 text-center">
-						<h2 className="text-2xl font-semibold text-white mb-3 tracking-tight">
-							¿Eres una IPS y quieres destacar?
-						</h2>
-						<p className="text-sm text-blue-100 dark:text-blue-200 mb-5 leading-relaxed">
-							Aparece en los primeros resultados y atrae más
-							pacientes con una promoción destacada.
-						</p>
-						<span className="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-medium rounded-full hover:bg-blue-50 transition-colors duration-200 shadow-md">
-							¡Promocionate aquí!
-							<svg
-								className="w-5 h-5 ml-2"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-								xmlns="http://www.w3.org/2000/svg"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M9 5l7 7-7 7"
-								/>
-							</svg>
-						</span>
-					</div>
-				</Link>
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					{/* CTA of Promoción */}
+					<Link
+						href="/promotion-form"
+						className="block bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden transform hover:scale-[1.01]"
+					>
+						<div className="p-4 text-center">
+							<h2 className="text-lg font-semibold text-white mb-2 tracking-tight">
+								¿Quieres destacar tu IPS?
+							</h2>
+							<p className="text-xs text-blue-100 dark:text-blue-200 mb-3 leading-relaxed">
+								Promociona tu IPS y atrae más pacientes.
+							</p>
+							<span className="inline-flex items-center px-4 py-2 bg-white text-blue-600 font-medium text-sm rounded-full hover:bg-blue-50 transition-colors duration-200 shadow-sm">
+								Promocionar IPS
+								<svg
+									className="w-4 h-4 ml-1"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth="2"
+										d="M9 5l7 7-7 7"
+									/>
+								</svg>
+							</span>
+						</div>
+					</Link>
+
+					{/* CTA for Solicitar Registro de IPS */}
+					<Link
+						href="/adition-form"
+						className="block bg-gradient-to-r from-green-600 to-green-800 dark:from-green-700 dark:to-green-900 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden transform hover:scale-[1.01]"
+					>
+						<div className="p-4 text-center">
+							<h2 className="text-lg font-semibold text-white mb-2 tracking-tight">
+								¿Tu IPS no está registrada?
+							</h2>
+							<p className="text-xs text-green-100 dark:text-green-200 mb-3 leading-relaxed">
+								Registra tu IPS para que te encuentren.
+							</p>
+							<span className="inline-flex items-center px-4 py-2 bg-white text-green-600 font-medium text-sm rounded-full hover:bg-green-50 transition-colors duration-200 shadow-sm">
+								Solicitar Registro
+								<svg
+									className="w-4 h-4 ml-1"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth="2"
+										d="M9 5l7 7-7 7"
+									/>
+								</svg>
+							</span>
+						</div>
+					</Link>
+				</div>
 			</div>
 
 			<div className="mb-4 sm:mb-6">
@@ -522,7 +555,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 												!sortFields.some(
 													(sf, i) =>
 														sf.field ===
-															opt.value &&
+														opt.value &&
 														i !== index
 												)
 										)
@@ -540,11 +573,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 										onClick={() =>
 											handleDirectionChange(index, 1)
 										}
-										className={`p-2 rounded-lg transition-all duration-200 ${
-											sortField.direction === 1
-												? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400"
-												: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-										}`}
+										className={`p-2 rounded-lg transition-all duration-200 ${sortField.direction === 1
+											? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400"
+											: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+											}`}
 										aria-label="Ordenar ascendente"
 									>
 										<ChevronUp className="w-4 h-4" />
@@ -553,11 +585,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 										onClick={() =>
 											handleDirectionChange(index, -1)
 										}
-										className={`p-2 rounded-lg transition-all duration-200 ${
-											sortField.direction === -1
-												? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400"
-												: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-										}`}
+										className={`p-2 rounded-lg transition-all duration-200 ${sortField.direction === -1
+											? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400"
+											: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+											}`}
 										aria-label="Ordenar descendente"
 									>
 										<ChevronDown className="w-4 h-4" />
@@ -627,21 +658,19 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 						<div className="flex space-x-2">
 							<button
 								onClick={() => setListView(true)}
-								className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
-									listView
-										? "bg-blue-600 text-white shadow-md"
-										: "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
-								}`}
+								className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${listView
+									? "bg-blue-600 text-white shadow-md"
+									: "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+									}`}
 							>
 								Lista
 							</button>
 							<button
 								onClick={() => setListView(false)}
-								className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
-									!listView
-										? "bg-blue-600 text-white shadow-md"
-										: "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
-								}`}
+								className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${!listView
+									? "bg-blue-600 text-white shadow-md"
+									: "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+									}`}
 							>
 								Mapa
 							</button>
@@ -682,11 +711,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 											handlePageChange(currentPage - 1)
 										}
 										disabled={currentPage === 1}
-										className={`p-1 sm:p-2 rounded-full ${
-											currentPage === 1
-												? "text-gray-400 cursor-not-allowed"
-												: "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-										}`}
+										className={`p-1 sm:p-2 rounded-full ${currentPage === 1
+											? "text-gray-400 cursor-not-allowed"
+											: "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+											}`}
 									>
 										<ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
 									</button>
@@ -715,11 +743,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 											onClick={() =>
 												handlePageChange(page)
 											}
-											className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all text-sm ${
-												currentPage === page
-													? "bg-blue-600 text-white shadow-md"
-													: "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-											}`}
+											className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all text-sm ${currentPage === page
+												? "bg-blue-600 text-white shadow-md"
+												: "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+												}`}
 										>
 											{page}
 										</button>
@@ -748,11 +775,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 											handlePageChange(currentPage + 1)
 										}
 										disabled={currentPage === totalPages}
-										className={`p-1 sm:p-2 rounded-full ${
-											currentPage === totalPages
-												? "text-gray-400 cursor-not-allowed"
-												: "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-										}`}
+										className={`p-1 sm:p-2 rounded-full ${currentPage === totalPages
+											? "text-gray-400 cursor-not-allowed"
+											: "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+											}`}
 									>
 										<ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
 									</button>
@@ -823,40 +849,36 @@ function MapComponent({
 				const popupContent = document.createElement("div");
 				popupContent.innerHTML = `
 		  <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-xs text-sm">
-			<h3 class="text-blue-600 font-semibold mb-1 cursor-pointer hover:underline">${
-				item.name
-			}</h3>
+			<h3 class="text-blue-600 font-semibold mb-1 cursor-pointer hover:underline">${item.name
+					}</h3>
 			<div class="flex items-center space-x-1 mb-1">
 			  <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5 14.5 7.62 14.5 9 13.38 11.5 12 11.5z"/></svg>
-			  <p class="text-blue-600 font-medium">${
-					item.distance !== undefined
+			  <p class="text-blue-600 font-medium">${item.distance !== undefined
 						? Math.round(item.distance) + " metros"
 						: "N/A"
-				}</p>
+					}</p>
 			</div>
-			<p class="text-gray-700 dark:text-gray-300">${item.address}, ${
-					item.town ?? ""
-				}, ${item.department ?? ""}</p>
+			<p class="text-gray-700 dark:text-gray-300">${item.address}, ${item.town ?? ""
+					}, ${item.department ?? ""}</p>
 			<div class="flex items-center space-x-1 mt-1">
-			  ${
-					item.totalReviews > 0
+			  ${item.totalReviews > 0
 						? `
 					${[...Array(roundedRating)]
-						.map(
-							() =>
-								`<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
-						)
-						.join("")}
+							.map(
+								() =>
+									`<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
+							)
+							.join("")}
 					${[...Array(5 - roundedRating)]
-						.map(
-							() =>
-								`<svg class="w-4 h-4 text-gray-300 dark:text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
-						)
-						.join("")}
+							.map(
+								() =>
+									`<svg class="w-4 h-4 text-gray-300 dark:text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
+							)
+							.join("")}
 					<span class="ml-1 text-gray-600 dark:text-gray-400">(${roundedRating})</span>
 				  `
 						: `<span class="text-gray-600 dark:text-gray-400 italic">Sin reseñas</span>`
-				}
+					}
 			</div>
 		  </div>
 		`;

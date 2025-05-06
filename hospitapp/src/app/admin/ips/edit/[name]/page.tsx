@@ -1,5 +1,3 @@
-"use server";
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -69,9 +67,11 @@ export default async function IpsEditPage({ params }: IpsEditPageProps) {
 
   const { name } = await params;
   const decodedName = decodeURIComponent(name);
+  console.log("Nombre decodificado:", decodedName); // Para depuración
 
   let ipsData: IpsResponse | null = null;
   let error: string | null = null;
+  let loading = true;
 
   try {
     const response = await fetch(`${ENV.NEXT_PUBLIC_API_URL}/v1.0.0/ips/get/pagination`, {
@@ -100,21 +100,38 @@ export default async function IpsEditPage({ params }: IpsEditPageProps) {
     }
   } catch {
     error = "Ocurrió un error inesperado.";
+  } finally {
+    loading = false;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900/80 backdrop-blur-md flex items-center justify-center px-4">
+        <div className="text-center w-full max-w-md bg-gray-800/80 rounded-2xl shadow-lg p-6 border border-gray-700/50">
+          <h1 className="text-xl font-semibold text-gray-100 mb-3 tracking-tight">
+            Cargando...
+          </h1>
+          <p className="text-gray-400 text-sm">
+            Por favor, espera mientras cargamos la información de la IPS.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   if (error || !ipsData) {
     return (
-      <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center px-4">
-        <div className="text-center w-full max-w-md bg-gray-800 rounded-3xl shadow-lg p-8">
+      <div className="min-h-screen bg-gray-900/80 backdrop-blur-md flex items-center justify-center px-4">
+        <div className="text-center w-full max-w-md bg-gray-800/80 rounded-2xl shadow-lg p-6 border border-gray-700/50">
           <h1 className="text-xl font-semibold text-gray-100 mb-3 tracking-tight">
             {error ? "Error al cargar la IPS" : "IPS no encontrada"}
           </h1>
-          <p className="text-gray-400 mb-6 text-sm">
+          <p className="text-gray-400 text-sm">
             {error || "No hay datos disponibles para esta IPS."}
           </p>
           <Link
             href="/admin/ips"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gray-700 text-gray-200 hover:bg-gray-600 text-sm font-medium transition-all duration-300"
+            className="inline-flex items-center gap-2 px-4 py-2 mt-4 rounded-full bg-gray-700/80 text-gray-200 hover:bg-gray-600 transition-all duration-300"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver a la lista
@@ -125,23 +142,25 @@ export default async function IpsEditPage({ params }: IpsEditPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-900/80 backdrop-blur-md text-gray-100 py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-6">
-        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gray-800/70 rounded-xl p-4 shadow-md border border-gray-700/50">
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <Link
               href={`/admin/ips/${encodeURIComponent(ipsData.name)}`}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-700 text-gray-200 hover:bg-gray-600 text-sm font-medium transition-all duration-300"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-700 text-gray-200 hover:bg-gray-600 transition-all duration-300"
             >
               <ArrowLeft className="w-4 h-4" />
               Volver
             </Link>
-            <h1 className="text-xl sm:text-2xl font-semibold text-gray-100 tracking-tight break-words max-w-[calc(100%-120px)] sm:max-w-[calc(100%-120px)]">
+            <h1 className="text-2xl font-semibold text-gray-100 tracking-tight break-words">
               Editar IPS: {ipsData.name}
             </h1>
           </div>
         </header>
-        <EditForm ipsData={ipsData} sessionToken={sessionToken} />
+        <div className="bg-gray-800/70 rounded-xl p-6 shadow-md border border-gray-700/50">
+          <EditForm ipsData={ipsData} sessionToken={sessionToken} />
+        </div>
       </div>
     </div>
   );
