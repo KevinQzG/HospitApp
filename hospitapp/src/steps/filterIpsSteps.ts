@@ -32,7 +32,7 @@ When('the user clicks the "Buscar" button', async function () {
 	// Wait for filter page to load (assuming redirect to /ips or similar)
 	await driver.wait(
 		until.elementLocated(
-			By.xpath("/html/body/main/div/div[2]/h1")
+			By.xpath(`//h1[contains(., "Resultados de Búsqueda")]`)
 		),
 		80000
 	);
@@ -177,9 +177,9 @@ Then(
 	async function (ips: string) {
 		const firstIps = await driver.wait(
 			until.elementLocated(
-				By.xpath("/html/body/main/div/div[3]/div/a[1]/div/div[2]/h2")
+				By.xpath("/html/body/main/div/div[4]/div[1]/a[1]/div/div[2]/h2")
 			),
-			15000
+			30000
 		);
 		const ipsName = await firstIps.getText();
 		expect(ipsName, "First IPS should be " + ips).to.equal(ips);

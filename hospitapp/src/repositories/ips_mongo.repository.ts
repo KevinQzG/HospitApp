@@ -42,17 +42,18 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		return INSERTED_REVIEW.insertedId;
 	}
 
-	async update(id: ObjectId, ips: Ips): Promise<ObjectId | null> {
+	async update(id: ObjectId, ips: Ips): Promise<boolean | null> {
 		const DB = await this.dbHandler.connect();
 
-		// CREATE A NEW IPS
-		const INSERTED_DOCUMENT = await DB.collection<IpsDocument>("IPS").updateOne(id, ips);
-
+		// Editing a IPS	
+		// @ts-expect-error becuase i cannot remove IP FROM IPS so i doesn't affect at all
+		const INSERTED_DOCUMENT = await DB.collection<IpsDocument>("IPS").updateOne({_id: new ObjectId(id) }, { $set: ips});
+		console.log("testing something", INSERTED_DOCUMENT);
 		if (!INSERTED_DOCUMENT) {
 			return null;
 		}
 
-		return INSERTED_DOCUMENT.upsertedId;
+		return INSERTED_DOCUMENT.acknowledged;
 	}
 	async delete(id: ObjectId): Promise<boolean> {
 		const DB = await this.dbHandler.connect();

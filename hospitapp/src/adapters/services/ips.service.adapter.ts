@@ -28,7 +28,7 @@ export default interface IpsServiceAdapter {
 	 * @param {Ips} ips - The updated IPS data.
 	 * @returns {Promise<Ips>} The updated IPS.
 	 */
-	update(id: ObjectId, ips: Ips): Promise<ObjectId | null>;
+	update(id: ObjectId, ips: Ips): Promise<boolean | null>;
 
 	/**
 	 * Deletes an IPS by ID.
@@ -139,4 +139,14 @@ export default interface IpsServiceAdapter {
 		ips: IpsResponse | null;
 		reviewsResult: ReviewResponse[];
 	}>
+
+
+	/**
+	 * Gets an IPS by its ID.
+	 *
+	 * @async
+	 * @param {string} id - The ID of the IPS.
+	 */
+	
+
 }
