@@ -160,8 +160,8 @@ export default function AdminIpsPage() {
     if (isAuthorized === true && allIps.length > 0) {
       const filteredByName = searchTerm
         ? allIps.filter((ips) =>
-            ips.name.toLowerCase().includes(searchTerm.toLowerCase())
-          )
+          ips.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
         : allIps;
 
       const filteredIps = appliedTown
@@ -213,8 +213,8 @@ export default function AdminIpsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
-        <p className="text-red-600 dark:text-red-500 text-lg font-medium">{error}</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <p className="text-red-500 dark:text-red-400 text-lg font-medium">{error}</p>
       </div>
     );
   }
@@ -249,57 +249,42 @@ export default function AdminIpsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-10">
           <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 text-center tracking-tight mb-6">
             Lista de IPS
           </h1>
-          <div className="flex justify-start mb-6">
+          <div className="flex justify-start mb-8">
             <Link
               href="/admin"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 text-sm font-medium border border-gray-600 transition-all duration-300 h-10"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm font-medium transition-all duration-300 h-10"
             >
               <ChevronLeft className="w-4 h-4" />
               Regresar al Dashboard
             </Link>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 items-end">
-            <div className="flex-1">
-              <label
-                htmlFor="search"
-                className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 h-10 flex items-center"
-              >
-                Buscar por nombre
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  id="search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Escribe el nombre de la IPS..."
-                  className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 pl-10 h-10"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
-              </div>
+          <div className="flex flex-col sm:flex-row gap-4 items-center bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-gray-200/50 dark:border-gray-700/50">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                id="search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Buscar por nombre de la IPS..."
+                className="w-full px-4 py-2.5 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-300 pl-10 h-11 shadow-sm"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
             </div>
 
             <div className="flex-1">
-              <label
-                htmlFor="town"
-                className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 h-10 flex items-center"
-              >
-                Filtrar por municipio
-              </label>
               <select
                 id="town"
                 value={selectedTown}
                 onChange={(e) => setSelectedTown(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 h-10"
-              >
-                <option value="">Todos los municipios</option>
+                className="w-full px-4 py-2.5 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-300 h-11 shadow-sm appearance-none"              >
+                <option value="">Filtrar por municipio</option>
                 {towns.map((town) => (
                   <option key={town} value={town}>
                     {town}
@@ -308,31 +293,28 @@ export default function AdminIpsPage() {
               </select>
             </div>
 
-            <div className="flex gap-2 items-end">
+            <div className="flex gap-2 items-center">
               <button
                 onClick={handleFilterByTown}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium border border-blue-600 transition-all duration-300 h-10 w-32"
+                className="px-4 py-2.5 rounded-xl bg-blue-500/90 text-white hover:bg-blue-600 text-sm font-medium transition-all duration-300 h-11 w-28 shadow-sm"
               >
                 Filtrar
               </button>
               <button
                 onClick={handleClearFilters}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm font-medium border border-red-600 transition-all duration-300 h-10 w-32 flex items-center justify-center"
+                className="px-4 py-2.5 rounded-xl bg-red-500/90 text-white hover:bg-red-600 text-sm font-medium transition-all duration-300 h-11 w-28 flex items-center justify-center shadow-sm"
               >
                 <X className="w-4 h-4 mr-1" />
-                Eliminar Filtros
+                Limpiar
               </button>
+              <Link
+                href="/admin/ips/create"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-green-500/90 text-white hover:bg-green-600 text-sm font-medium transition-all duration-300 h-11 w-28 shadow-sm"
+              >
+                <Plus className="w-4 h-4" />
+                Agregar
+              </Link>
             </div>
-          </div>
-
-          <div className="mt-4 flex justify-end">
-            <Link
-              href="/admin/ips/create"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-500 text-sm font-medium border border-green-600 transition-all duration-300 h-10 w-32"
-            >
-              <Plus className="w-4 h-4" />
-              Agregar IPS
-            </Link>
           </div>
         </div>
 
@@ -349,7 +331,7 @@ export default function AdminIpsPage() {
                 <div className="rounded-xl bg-white dark:bg-gray-800 shadow-md overflow-hidden">
                   <table className="w-full text-left table-fixed">
                     <thead>
-                      <tr className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                      <tr className="bg-gray-100/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-100">
                         <th className="w-1/3 p-4 font-medium">Nombre</th>
                         <th className="w-1/3 p-4 font-medium">Dirección</th>
                         <th className="w-1/3 p-4 font-medium text-center">Acciones</th>
@@ -359,12 +341,12 @@ export default function AdminIpsPage() {
                       {groupedIps[town].map((ips) => (
                         <tr
                           key={ips._id}
-                          className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
+                          className="border-t border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
                         >
                           <td className="w-1/3 p-4 align-middle">
                             <div className="flex items-center gap-3">
                               <div className="flex-shrink-0 w-5 h-5">
-                                <Hospital className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                <Hospital className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                               </div>
                               <span className="text-gray-900 dark:text-gray-100 font-medium truncate flex-1">
                                 {ips.name}
@@ -378,7 +360,7 @@ export default function AdminIpsPage() {
                             <div className="flex justify-center">
                               <Link
                                 href={`/admin/ips/${encodeURIComponent(ips.name)}`}
-                                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-all duration-200 shadow w-[120px]"
+                                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-500/90 hover:bg-blue-600 text-white text-sm font-medium transition-all duration-300 shadow-sm w-[120px]"
                               >
                                 <Eye className="w-4 h-4" />
                                 Ver Detalles
@@ -421,11 +403,10 @@ export default function AdminIpsPage() {
                   <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
-                      page === currentPage
-                        ? "bg-blue-600 text-white shadow"
+                    className={`w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${page === currentPage
+                        ? "bg-blue-500/90 text-white shadow-sm"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
+                      }`}
                   >
                     {page}
                   </button>
