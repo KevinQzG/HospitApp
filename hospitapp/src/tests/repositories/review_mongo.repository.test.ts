@@ -57,7 +57,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 			const SAMPLE_EPS = results.results[0];
 
 			const EXPECTED_DATA = {
-				_id: "680a8b132c7db505d8e049d1",
+				_id: "681995f6b2a2295426988761",
 				ips: "67b3e98bb1ae5d9e47ae78e8",
 				user: "68084f1d157be2f18f17996a",
 				rating: 5,
@@ -100,7 +100,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 			const SAMPLE_EPS = results.results[0];
 
 			const EXPECTED_DATA = {
-				_id: "680a8b132c7db505d8e049d1",
+				_id: "681995f6b2a2295426988761",
 				ips: "67b3e98bb1ae5d9e47ae78e8",
 				user: "68084f1d157be2f18f17996a",
 				rating: 5,
@@ -172,7 +172,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 
 	describe("findById", () => {
 		it("should retrieve a Review document by ID", async () => {
-			const SAMPLE_ID = new ObjectId("680a8b132c7db505d8e049d1");
+			const SAMPLE_ID = new ObjectId("681995f6b2a2295426988761");
 			const REVIEW = await repository.findById(SAMPLE_ID);
 
 			expect(REVIEW).toBeInstanceOf(Review);
@@ -180,7 +180,7 @@ describe("ReviewMongoRepository Integration Test", () => {
 		});
 
 		it("should return all the review structure", async () => {
-			const SAMPLE_ID = new ObjectId("680a8b132c7db505d8e049d1");
+			const SAMPLE_ID = new ObjectId("681995f6b2a2295426988761");
 			const REVIEW = await repository.findById(SAMPLE_ID);
 
 			expect(REVIEW).toBeInstanceOf(Review);

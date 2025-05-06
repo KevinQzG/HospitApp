@@ -16,7 +16,7 @@ import {
 import mapboxgl from "mapbox-gl";
 import SearchFormClient, {
 	SearchFormSubmitHandler,
-} from "./SearchFormClientPipe";
+} from "./SearchFormClient";
 import { SearchFormClientProps } from "@/services/cachers/data_caching.service";
 import { Suspense } from "react";
 
