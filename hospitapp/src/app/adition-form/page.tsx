@@ -117,7 +117,6 @@ export default function IPSRequestForm() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="flex flex-col items-center justify-center text-center"
           >
-            {/* Botón Volver a Resultados */}
             <motion.div
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
