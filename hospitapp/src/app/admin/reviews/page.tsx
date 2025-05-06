@@ -109,7 +109,10 @@ export default function AdminReviewsPage() {
           body: JSON.stringify({
             page,
             pageSize: pagination.pageSize,
-            sorts: [{ field: "rating", direction: -1 }],
+            sorts: [
+              { field: "rating", direction: -1 }, 
+              { field: "createdAt", direction: -1 }
+            ],
           }),
         }
       );
