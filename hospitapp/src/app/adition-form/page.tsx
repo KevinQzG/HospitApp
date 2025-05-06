@@ -1,8 +1,16 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { Mail, MessageSquare, X, Building2, Phone } from "lucide-react";
+import {
+  Mail,
+  MessageSquare,
+  X,
+  Building2,
+  Phone,
+  ArrowLeft,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 export default function IPSRequestForm() {
   const [ipsName, setIpsName] = useState("");
@@ -19,11 +27,13 @@ export default function IPSRequestForm() {
     if (!value) return "Este campo es obligatorio";
     if (field === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) return "Por favor, introduce un correo electrónico válido";
+      if (!emailRegex.test(value))
+        return "Por favor, introduce un correo electrónico válido";
     }
     if (field === "phone") {
       const phoneRegex = /^\+?\d{7,15}$/;
-      if (!phoneRegex.test(value)) return "Por favor, introduce un número de teléfono válido";
+      if (!phoneRegex.test(value))
+        return "Por favor, introduce un número de teléfono válido";
     }
     return "";
   };
@@ -78,7 +88,8 @@ export default function IPSRequestForm() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "No se pudo enviar el formulario");
+      if (!res.ok)
+        throw new Error(data.error || "No se pudo enviar el formulario");
 
       setSuccess(data.message);
       setIpsName("");
@@ -88,7 +99,9 @@ export default function IPSRequestForm() {
       setMessage("");
       setFormErrors({});
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Ocurrió un error desconocido");
+      setError(
+        err instanceof Error ? err.message : "Ocurrió un error desconocido"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -96,7 +109,7 @@ export default function IPSRequestForm() {
 
   return (
     <div className="bg-gradient-to-b from-[#F9FCFF] to-[#E6F0FF] dark:from-gray-900 dark:to-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen font-sans">
-      <section className="relative py-16 md:py-24 transition-colors duration-300">
+      <section className="relative pt-6 md:pt-10 pb-16 md:pb-24 transition-colors duration-300">
         <div className="relative container mx-auto px-6 sm:px-8 lg:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -104,6 +117,20 @@ export default function IPSRequestForm() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="flex flex-col items-center justify-center text-center"
           >
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="mb-10"
+            >
+              <Link
+                href="/results"
+                className="inline-flex items-center px-5 py-2.5 rounded-full bg-[#111827] dark:bg-gray-800 text-blue-500 hover:text-blue-400 transition-colors font-semibold shadow-sm"
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Volver a Resultados
+              </Link>
+            </motion.div>
+
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
               Solicita el Registro de tu IPS
               <br />
@@ -112,7 +139,8 @@ export default function IPSRequestForm() {
               </span>
             </h1>
             <p className="mt-6 text-gray-700 dark:text-gray-300 text-lg md:text-xl max-w-prose mx-auto leading-relaxed">
-              Ingresa los detalles de tu IPS para solicitar su registro. Nos comunicaremos contigo pronto para continuar con el proceso.
+              Ingresa los detalles de tu IPS para solicitar su registro. Nos
+              comunicaremos contigo pronto para continuar con el proceso.
             </p>
 
             <div className="w-full max-w-lg mt-10">
@@ -160,13 +188,19 @@ export default function IPSRequestForm() {
                   <textarea
                     id="message"
                     value={message}
-                    onChange={(e) => handleFieldChange("message", e.target.value)}
+                    onChange={(e) =>
+                      handleFieldChange("message", e.target.value)
+                    }
                     rows={5}
                     className={`mt-2 w-full p-3 rounded-xl bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all duration-200 resize-none ${
-                      formErrors.message ? "border-red-500" : "border-gray-300 dark:border-gray-700"
+                      formErrors.message
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
                     }`}
                     aria-invalid={!!formErrors.message}
-                    aria-describedby={formErrors.message ? "message-error" : undefined}
+                    aria-describedby={
+                      formErrors.message ? "message-error" : undefined
+                    }
                   />
                   {formErrors.message && (
                     <p id="message-error" className="mt-1 text-sm text-red-500">
@@ -269,7 +303,14 @@ interface InputFieldProps {
   onChange: (value: string) => void;
 }
 
-function InputField({ id, label, Icon, value, error, onChange }: InputFieldProps) {
+function InputField({
+  id,
+  label,
+  Icon,
+  value,
+  error,
+  onChange,
+}: InputFieldProps) {
   return (
     <div>
       <label
