@@ -200,7 +200,7 @@ function DetailsView({
   const [newComments, setNewComments] = useState<string>("");
   const [averageRating, setAverageRating] = useState<number>(0);
 
-  // Verificar si el usuario ya tiene una reseña
+  // Verify if the user has already left a review
   const userHasReview = userSession
     ? reviewsResult?.reviews.some(
         (review) => review.userEmail === userSession.email
@@ -292,11 +292,11 @@ function DetailsView({
   const handleDeleteReview = async (reviewId: string) => {
     if (!userSession) return;
 
-    // Guardar el estado anterior para revertir en caso de error
+    // Save the previous state to revert in case of error
     const previousReviews = reviewsResult?.reviews || [];
     const previousPagination = reviewsResult?.pagination;
 
-    // Actualizar el estado optimistamente
+    // Update the state optimistically
     setReviewsResult((prev) => {
       if (!prev) return prev;
       const updatedReviews = prev.reviews.filter(
@@ -360,10 +360,8 @@ function DetailsView({
       return;
     }
 
-    // Guardar el estado anterior para revertir en caso de error
     const previousReviews = reviewsResult?.reviews || [];
 
-    // Actualizar el estado optimistamente
     setReviewsResult((prev) => {
       if (!prev) return prev;
       const updatedReviews = prev.reviews.map((review) =>
@@ -449,7 +447,7 @@ function DetailsView({
 
       const newReview = await response.json();
 
-      // Crear un objeto provisional que cumpla con ReviewResponse
+      // Create a new review object with the response data
       const newReviewData: ReviewResponse = {
         _id: newReview.review || "temp-id",
         user: userSession.email,
@@ -461,7 +459,7 @@ function DetailsView({
         userEmail: userSession.email,
       };
 
-      // Actualizar el estado inmediatamente con la nueva reseña
+      // Update the reviews state with the new review
       setReviewsResult((prev) => ({
         reviews: [newReviewData, ...(prev?.reviews || [])],
         pagination: prev?.pagination
@@ -671,7 +669,6 @@ function DetailsView({
           <p className="text-red-500">{error}</p>
         ) : null}
 
-        {/* Mostrar el botón "Agregar Reseña" solo si el usuario no tiene una reseña y está autenticado */}
         {userSession && !userHasReview && (
           <button
             onClick={() => setShowAddReviewForm(!showAddReviewForm)}
@@ -682,14 +679,13 @@ function DetailsView({
           </button>
         )}
 
-        {/* Mostrar mensaje si el usuario ya tiene una reseña */}
         {userSession && userHasReview && (
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Ya has dejado una reseña para esta IPS. Puedes editarla o eliminarla.
+            Ya has dejado una reseña para esta IPS. Puedes editarla o
+            eliminarla.
           </p>
         )}
 
-        {/* Mostrar mensaje si no está autenticado */}
         {!userSession && (
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             <Link href="/login" className="text-blue-600 hover:underline">
