@@ -200,11 +200,20 @@ function DetailsView({
   const [newComments, setNewComments] = useState<string>("");
   const [averageRating, setAverageRating] = useState<number>(0);
 
+  // Verify if the user has already left a review
+  const userHasReview = userSession
+    ? reviewsResult?.reviews.some(
+        (review) => review.userEmail === userSession.email
+      )
+    : false;
+
   useEffect(() => {
     if (reviewsResult && reviewsResult.reviews.length > 0) {
       const avg =
-        reviewsResult.reviews.reduce((sum, review) => sum + (review.rating || 0), 0) /
-        reviewsResult.reviews.length;
+        reviewsResult.reviews.reduce(
+          (sum, review) => sum + (review.rating || 0),
+          0
+        ) / reviewsResult.reviews.length;
       setAverageRating(avg);
     } else {
       setAverageRating(0);
@@ -240,7 +249,9 @@ function DetailsView({
 
       if (!response.ok) {
         const errorData: ReviewsResponse = await response.json();
-        throw new Error(errorData.error || "No se pudieron obtener las reseñas");
+        throw new Error(
+          errorData.error || "No se pudieron obtener las reseñas"
+        );
       }
 
       const data: ReviewsResponse = await response.json();
@@ -261,7 +272,9 @@ function DetailsView({
         });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Ocurrió un error desconocido");
+      setError(
+        err instanceof Error ? err.message : "Ocurrió un error desconocido"
+      );
     } finally {
       setLoading(false);
     }
@@ -279,6 +292,31 @@ function DetailsView({
   const handleDeleteReview = async (reviewId: string) => {
     if (!userSession) return;
 
+    // Save the previous state to revert in case of error
+    const previousReviews = reviewsResult?.reviews || [];
+    const previousPagination = reviewsResult?.pagination;
+
+    // Update the state optimistically
+    setReviewsResult((prev) => {
+      if (!prev) return prev;
+      const updatedReviews = prev.reviews.filter(
+        (review) => review._id !== reviewId
+      );
+      return {
+        reviews: updatedReviews,
+        pagination: {
+          ...prev.pagination,
+          total: (prev.pagination?.total || 0) - 1,
+          totalPages: Math.ceil(
+            ((prev.pagination?.total || 0) - 1) /
+              (prev.pagination?.pageSize || 5)
+          ),
+          page: prev.pagination?.page || 1,
+          pageSize: prev.pagination?.pageSize || 5,
+        },
+      };
+    });
+
     try {
       const response = await fetch(`/api/v1.0.0/reviews/delete`, {
         method: "POST",
@@ -295,9 +333,16 @@ function DetailsView({
       }
 
       toast.success("¡Reseña eliminada correctamente!");
-      fetchReviewsPage(reviewsResult?.pagination?.page || 1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo eliminar la reseña");
+      // Revertir el estado si la eliminación falla
+      setReviewsResult({
+        reviews: previousReviews,
+        pagination: previousPagination,
+      });
+      setError(
+        err instanceof Error ? err.message : "No se pudo eliminar la reseña"
+      );
+      toast.error("Error al eliminar la reseña");
     }
   };
 
@@ -314,6 +359,26 @@ function DetailsView({
       setError("La calificación debe estar entre 1 y 5 estrellas");
       return;
     }
+
+    const previousReviews = reviewsResult?.reviews || [];
+
+    setReviewsResult((prev) => {
+      if (!prev) return prev;
+      const updatedReviews = prev.reviews.map((review) =>
+        review._id === reviewId
+          ? {
+              ...review,
+              rating: editRating,
+              comments: editComments,
+              lastUpdated: new Date().toISOString(),
+            }
+          : review
+      );
+      return {
+        reviews: updatedReviews,
+        pagination: prev.pagination,
+      };
+    });
 
     try {
       const response = await fetch(`/api/v1.0.0/reviews/edit`, {
@@ -334,9 +399,16 @@ function DetailsView({
 
       toast.success("¡Reseña actualizada correctamente!");
       setEditingReviewId(null);
-      await fetchReviewsPage(reviewsResult?.pagination?.page || 1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo actualizar la reseña");
+      // Revertir el estado si la edición falla
+      setReviewsResult({
+        reviews: previousReviews,
+        pagination: reviewsResult?.pagination,
+      });
+      setError(
+        err instanceof Error ? err.message : "No se pudo actualizar la reseña"
+      );
+      toast.error("Error al actualizar la reseña");
     }
   };
 
@@ -375,27 +447,28 @@ function DetailsView({
 
       const newReview = await response.json();
 
-      // Crear un objeto provisional que cumpla con ReviewResponse
+      // Create a new review object with the response data
       const newReviewData: ReviewResponse = {
-        _id: newReview.review || "temp-id", // Usamos el ID devuelto por el backend
-        user: userSession.email, // Usamos el email como identificador provisional
+        _id: newReview.review || "temp-id",
+        user: userSession.email,
         rating: newRating,
         comments: newComments,
         ips: ipsData._id,
         lastUpdated: new Date().toISOString(),
         createdAt: new Date().toISOString(),
-        userEmail: userSession.email, // Mostramos el email del usuario
+        userEmail: userSession.email,
       };
 
-      // Actualizar el estado inmediatamente con la nueva reseña
-      setReviewsResult(prev => ({
+      // Update the reviews state with the new review
+      setReviewsResult((prev) => ({
         reviews: [newReviewData, ...(prev?.reviews || [])],
         pagination: prev?.pagination
           ? {
               ...prev.pagination,
               total: (prev.pagination.total || 0) + 1,
               totalPages: Math.ceil(
-                ((prev.pagination.total || 0) + 1) / (prev.pagination.pageSize || 5)
+                ((prev.pagination.total || 0) + 1) /
+                  (prev.pagination.pageSize || 5)
               ),
             }
           : {
@@ -406,16 +479,15 @@ function DetailsView({
             },
       }));
 
-      // Mostrar la confirmación
-      toast.success("¡Reseña publicada correctamente!", {
-            });
-
-      // Limpiar el formulario
+      toast.success("¡Reseña publicada correctamente!");
       setNewRating(0);
       setNewComments("");
       setShowAddReviewForm(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo crear la reseña");
+      setError(
+        err instanceof Error ? err.message : "No se pudo crear la reseña"
+      );
+      toast.error("Error al crear la reseña");
     }
   };
 
@@ -428,28 +500,44 @@ function DetailsView({
         </h2>
         <ul className="space-y-5 text-gray-600 dark:text-gray-300 text-base">
           <li className="flex items-center">
-            <MapPin size={20} className="mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-            <span>{ipsData.department}, {ipsData.town}</span>
+            <MapPin
+              size={20}
+              className="mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0"
+            />
+            <span>
+              {ipsData.department}, {ipsData.town}
+            </span>
           </li>
           <li className="flex items-center">
-            <MapPin size={20} className="mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+            <MapPin
+              size={20}
+              className="mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0"
+            />
             <span>{ipsData.address}</span>
           </li>
           {ipsData.phone && (
             <li className="flex items-center">
-              <Phone size={20} className="mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+              <Phone
+                size={20}
+                className="mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0"
+              />
               <span>{ipsData.phone}</span>
             </li>
           )}
           {ipsData.email && (
             <li className="flex items-center">
-              <Mail size={20} className="mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+              <Mail
+                size={20}
+                className="mr-3 text-blue-600 dark:text-blue-400 flex-shrink-0"
+              />
               <span>{ipsData.email}</span>
             </li>
           )}
           {ipsData.level && (
             <li className="flex items-center">
-              <span className="font-medium text-gray-800 dark:text-gray-200 mr-2">Nivel:</span>
+              <span className="font-medium text-gray-800 dark:text-gray-200 mr-2">
+                Nivel:
+              </span>
               <span>{ipsData.level}</span>
             </li>
           )}
@@ -457,7 +545,9 @@ function DetailsView({
       </section>
 
       <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 hover:shadow-md transition-all duration-300">
-        <h2 className="text-3xl font-semibold text-gray-800 dark:text-white mb-6">Cómo llegar</h2>
+        <h2 className="text-3xl font-semibold text-gray-800 dark:text-white mb-6">
+          Cómo llegar
+        </h2>
         <nav aria-label="Opciones de navegación">
           <ul className="space-y-4">
             <li className="flex flex-col items-start">
@@ -565,24 +655,45 @@ function DetailsView({
               ))}
             </div>
             <span className="text-lg font-medium text-gray-800 dark:text-gray-200">
-              {averageRating.toFixed(1)} ({reviewsResult?.pagination?.total || 0} reseñas)
+              {averageRating.toFixed(1)} (
+              {reviewsResult?.pagination?.total || 0} reseñas)
             </span>
           </div>
         </div>
 
         {loading ? (
-          <p className="text-gray-600 dark:text-gray-300">Cargando reseñas...</p>
+          <p className="text-gray-600 dark:text-gray-300">
+            Cargando reseñas...
+          </p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : null}
 
-        <button
-          onClick={() => setShowAddReviewForm(!showAddReviewForm)}
-          className="mb-6 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
-        >
-          <Plus className="w-4 h-4" />
-          Agregar Reseña
-        </button>
+        {userSession && !userHasReview && (
+          <button
+            onClick={() => setShowAddReviewForm(!showAddReviewForm)}
+            className="mb-6 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
+          >
+            <Plus className="w-4 h-4" />
+            Agregar Reseña
+          </button>
+        )}
+
+        {userSession && userHasReview && (
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            Ya has dejado una reseña para esta IPS. Puedes editarla o
+            eliminarla.
+          </p>
+        )}
+
+        {!userSession && (
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            <Link href="/login" className="text-blue-600 hover:underline">
+              Inicia sesión
+            </Link>{" "}
+            para dejar una reseña.
+          </p>
+        )}
 
         {showAddReviewForm && (
           <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-xl shadow-sm">
@@ -604,7 +715,9 @@ function DetailsView({
                           : "text-gray-300 dark:text-gray-500 hover:text-yellow-300"
                       }`}
                       onClick={() => setNewRating(i + 1)}
-                      aria-label={`Calificar con ${i + 1} estrella${i + 1 === 1 ? "" : "s"}`}
+                      aria-label={`Calificar con ${i + 1} estrella${
+                        i + 1 === 1 ? "" : "s"
+                      }`}
                     />
                   ))}
                 </div>
@@ -666,7 +779,9 @@ function DetailsView({
                                 : "text-gray-300 dark:text-gray-500 hover:text-yellow-300"
                             }`}
                             onClick={() => setEditRating(i + 1)}
-                            aria-label={`Calificar con ${i + 1} estrella${i + 1 === 1 ? "" : "s"}`}
+                            aria-label={`Calificar con ${i + 1} estrella${
+                              i + 1 === 1 ? "" : "s"
+                            }`}
                           />
                         ))}
                       </div>
@@ -724,85 +839,105 @@ function DetailsView({
                           </span>
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
-                          <strong>Usuario:</strong> {review.userEmail || "Anónimo"}
+                          <strong>Usuario:</strong>{" "}
+                          {review.userEmail || "Anónimo"}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
                           <strong>Última actualización:</strong>{" "}
                           {review.lastUpdated
-                            ? new Date(review.lastUpdated).toLocaleDateString("es-CO")
+                            ? new Date(review.lastUpdated).toLocaleDateString(
+                                "es-CO"
+                              )
                             : "Fecha no disponible"}
                         </p>
-                        <p className="text-gray-800 dark:text-gray-200">{review.comments}</p>
+                        <p className="text-gray-800 dark:text-gray-200">
+                          {review.comments}
+                        </p>
                       </div>
-                      {userSession && userSession.email === review.userEmail && (
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => handleEditReviewStart(review)}
-                            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-300"
-                          >
-                            <Pencil className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteReview(review._id)}
-                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-all duration-300"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
-                        </div>
-                      )}
+                      {userSession &&
+                        userSession.email === review.userEmail && (
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleEditReviewStart(review)}
+                              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-300"
+                            >
+                              <Pencil className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteReview(review._id)}
+                              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-all duration-300"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          </div>
+                        )}
                     </div>
                   </>
                 )}
               </div>
             ))}
 
-            {reviewsResult?.pagination && (reviewsResult.pagination.totalPages || 0) > 1 && (
-              <div className="mt-8 flex justify-center items-center space-x-2">
-                <button
-                  onClick={() => handlePageChange((reviewsResult.pagination?.page || 1) - 1)}
-                  disabled={(reviewsResult.pagination?.page || 1) === 1 || loading}
-                  className={`p-2 rounded-full transition-all duration-300 ${
-                    (reviewsResult.pagination?.page || 1) === 1 || loading
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                  }`}
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                {[...Array(reviewsResult.pagination.totalPages || 0)].map((_, i) => (
+            {reviewsResult?.pagination &&
+              (reviewsResult.pagination.totalPages || 0) > 1 && (
+                <div className="mt-8 flex justify-center items-center space-x-2">
                   <button
-                    key={i}
-                    onClick={() => handlePageChange(i + 1)}
-                    className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 ${
-                      (reviewsResult.pagination?.page || 1) === i + 1
-                        ? "bg-blue-600 text-white shadow-md dark:bg-blue-500"
+                    onClick={() =>
+                      handlePageChange(
+                        (reviewsResult.pagination?.page || 1) - 1
+                      )
+                    }
+                    disabled={
+                      (reviewsResult.pagination?.page || 1) === 1 || loading
+                    }
+                    className={`p-2 rounded-full transition-all duration-300 ${
+                      (reviewsResult.pagination?.page || 1) === 1 || loading
+                        ? "text-gray-400 cursor-not-allowed"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                     }`}
                   >
-                    {i + 1}
+                    <ChevronLeft className="w-5 h-5" />
                   </button>
-                ))}
-                <button
-                  onClick={() => handlePageChange((reviewsResult.pagination?.page || 1) + 1)}
-                  disabled={
-                    (reviewsResult.pagination?.page || 1) ===
-                      (reviewsResult.pagination?.totalPages || 1) || loading
-                  }
-                  className={`p-2 rounded-full transition-all duration-300 ${
-                    (reviewsResult.pagination?.page || 1) ===
-                      (reviewsResult.pagination?.totalPages || 1) || loading
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                  }`}
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            )}
+                  {[...Array(reviewsResult.pagination.totalPages || 0)].map(
+                    (_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handlePageChange(i + 1)}
+                        className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 ${
+                          (reviewsResult.pagination?.page || 1) === i + 1
+                            ? "bg-blue-600 text-white shadow-md dark:bg-blue-500"
+                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                        }`}
+                      >
+                        {i + 1}
+                      </button>
+                    )
+                  )}
+                  <button
+                    onClick={() =>
+                      handlePageChange(
+                        (reviewsResult.pagination?.page || 1) + 1
+                      )
+                    }
+                    disabled={
+                      (reviewsResult.pagination?.page || 1) ===
+                        (reviewsResult.pagination?.totalPages || 1) || loading
+                    }
+                    className={`p-2 rounded-full transition-all duration-300 ${
+                      (reviewsResult.pagination?.page || 1) ===
+                        (reviewsResult.pagination?.totalPages || 1) || loading
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                    }`}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
           </>
         ) : (
           <p className="text-gray-600 dark:text-gray-300 italic">
-            No hay reseñas disponibles para esta IPS. ¡Sé el primero en dejar una!
+            No hay reseñas disponibles para esta IPS. ¡Sé el primero en dejar
+            una!
           </p>
         )}
       </section>
@@ -822,7 +957,9 @@ function MapView({
 
   useEffect(() => {
     const [hospitalLng, hospitalLat] = ipsData.location.coordinates;
-    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const darkModeMediaQuery = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    );
     const initialStyle = darkModeMediaQuery.matches
       ? "mapbox://styles/mapbox/dark-v10"
       : "mapbox://styles/mapbox/streets-v12";
@@ -855,8 +992,12 @@ function MapView({
     popupContent.className = "popup-content";
     popupContent.innerHTML = `
       <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl max-w-sm border border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400 cursor-pointer hover:underline mb-2">${ipsData.name}</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-300">${ipsData.address}, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
+        <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400 cursor-pointer hover:underline mb-2">${
+          ipsData.name
+        }</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">${
+          ipsData.address
+        }, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
       </div>
     `;
     popupContent.querySelector("h3")?.addEventListener("click", () => {

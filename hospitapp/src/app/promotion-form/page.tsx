@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, FormEvent} from "react";
-import { User, Mail, MessageSquare, X } from "lucide-react";
+import { useState, FormEvent } from "react";
+import { User, Mail, MessageSquare, X, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 export default function PromotionFormPage() {
   const [name, setName] = useState("");
@@ -40,11 +41,11 @@ export default function PromotionFormPage() {
     setSuccess(null);
     setError(null);
 
-    // Validate all fields
-    const errors: { [key: string]: string } = {};
-    errors.name = validateField("name", name);
-    errors.email = validateField("email", email);
-    errors.message = validateField("message", message);
+    const errors: { [key: string]: string } = {
+      name: validateField("name", name),
+      email: validateField("email", email),
+      message: validateField("message", message),
+    };
 
     setFormErrors(errors);
     if (Object.values(errors).some((error) => error)) {
@@ -81,8 +82,7 @@ export default function PromotionFormPage() {
 
   return (
     <div className="bg-gradient-to-b from-[#F9FCFF] to-[#E6F0FF] dark:from-gray-900 dark:to-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen font-sans">
-      {/* Hero Section */}
-      <section className="relative py-16 md:py-24 transition-colors duration-300">
+      <section className="relative pt-6 md:pt-10 pb-16 md:pb-24 transition-colors duration-300">
         <div className="relative container mx-auto px-6 sm:px-8 lg:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -90,6 +90,20 @@ export default function PromotionFormPage() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="flex flex-col items-center justify-center text-center"
           >
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="mb-10"
+            >
+              <Link
+                href="/results"
+                className="inline-flex items-center px-5 py-2.5 rounded-full bg-[#111827] dark:bg-gray-800 text-blue-500 hover:text-blue-400 transition-colors font-semibold shadow-sm"
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Volver a Resultados
+              </Link>
+            </motion.div>
+
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
               ¡Promociona tu IPS!
               <br />
@@ -103,7 +117,7 @@ export default function PromotionFormPage() {
               pronto.
             </p>
 
-            <div className="w-full max-w-lg mt-10">
+            <div className="w-full max-w-lg mt-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label
@@ -119,10 +133,14 @@ export default function PromotionFormPage() {
                     value={name}
                     onChange={(e) => handleFieldChange("name", e.target.value)}
                     className={`mt-2 w-full p-3 rounded-xl bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all duration-200 ${
-                      formErrors.name ? "border-red-500" : "border-gray-300 dark:border-gray-700"
+                      formErrors.name
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
                     }`}
                     aria-invalid={!!formErrors.name}
-                    aria-describedby={formErrors.name ? "name-error" : undefined}
+                    aria-describedby={
+                      formErrors.name ? "name-error" : undefined
+                    }
                   />
                   {formErrors.name && (
                     <p id="name-error" className="mt-1 text-sm text-red-500">
@@ -144,10 +162,14 @@ export default function PromotionFormPage() {
                     value={email}
                     onChange={(e) => handleFieldChange("email", e.target.value)}
                     className={`mt-2 w-full p-3 rounded-xl bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all duration-200 ${
-                      formErrors.email ? "border-red-500" : "border-gray-300 dark:border-gray-700"
+                      formErrors.email
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
                     }`}
                     aria-invalid={!!formErrors.email}
-                    aria-describedby={formErrors.email ? "email-error" : undefined}
+                    aria-describedby={
+                      formErrors.email ? "email-error" : undefined
+                    }
                   />
                   {formErrors.email && (
                     <p id="email-error" className="mt-1 text-sm text-red-500">
@@ -166,13 +188,19 @@ export default function PromotionFormPage() {
                   <textarea
                     id="message"
                     value={message}
-                    onChange={(e) => handleFieldChange("message", e.target.value)}
+                    onChange={(e) =>
+                      handleFieldChange("message", e.target.value)
+                    }
                     rows={5}
                     className={`mt-2 w-full p-3 rounded-xl bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all duration-200 resize-none ${
-                      formErrors.message ? "border-red-500" : "border-gray-300 dark:border-gray-700"
+                      formErrors.message
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
                     }`}
                     aria-invalid={!!formErrors.message}
-                    aria-describedby={formErrors.message ? "message-error" : undefined}
+                    aria-describedby={
+                      formErrors.message ? "message-error" : undefined
+                    }
                   />
                   {formErrors.message && (
                     <p id="message-error" className="mt-1 text-sm text-red-500">
