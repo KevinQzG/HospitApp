@@ -138,21 +138,19 @@ export default function IpsDetailClient({
           <div className="flex space-x-4">
             <button
               onClick={() => setViewMode("details")}
-              className={`px-4 py-2 rounded-lg font-medium text-base transition-all duration-300 ${
-                viewMode === "details"
+              className={`px-4 py-2 rounded-lg font-medium text-base transition-all duration-300 ${viewMode === "details"
                   ? "bg-blue-700 text-white shadow-md dark:bg-blue-600"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-              }`}
+                }`}
             >
               Detalles
             </button>
             <button
               onClick={() => setViewMode("map")}
-              className={`px-4 py-2 rounded-lg font-medium text-base transition-all duration-300 ${
-                viewMode === "map"
+              className={`px-4 py-2 rounded-lg font-medium text-base transition-all duration-300 ${viewMode === "map"
                   ? "bg-blue-700 text-white shadow-md dark:bg-blue-600"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-              }`}
+                }`}
             >
               Mapa
             </button>
@@ -203,8 +201,8 @@ function DetailsView({
   // Verify if the user has already left a review
   const userHasReview = userSession
     ? reviewsResult?.reviews.some(
-        (review) => review.userEmail === userSession.email
-      )
+      (review) => review.userEmail === userSession.email
+    )
     : false;
 
   useEffect(() => {
@@ -309,7 +307,7 @@ function DetailsView({
           total: (prev.pagination?.total || 0) - 1,
           totalPages: Math.ceil(
             ((prev.pagination?.total || 0) - 1) /
-              (prev.pagination?.pageSize || 5)
+            (prev.pagination?.pageSize || 5)
           ),
           page: prev.pagination?.page || 1,
           pageSize: prev.pagination?.pageSize || 5,
@@ -367,11 +365,11 @@ function DetailsView({
       const updatedReviews = prev.reviews.map((review) =>
         review._id === reviewId
           ? {
-              ...review,
-              rating: editRating,
-              comments: editComments,
-              lastUpdated: new Date().toISOString(),
-            }
+            ...review,
+            rating: editRating,
+            comments: editComments,
+            lastUpdated: new Date().toISOString(),
+          }
           : review
       );
       return {
@@ -464,19 +462,19 @@ function DetailsView({
         reviews: [newReviewData, ...(prev?.reviews || [])],
         pagination: prev?.pagination
           ? {
-              ...prev.pagination,
-              total: (prev.pagination.total || 0) + 1,
-              totalPages: Math.ceil(
-                ((prev.pagination.total || 0) + 1) /
-                  (prev.pagination.pageSize || 5)
-              ),
-            }
+            ...prev.pagination,
+            total: (prev.pagination.total || 0) + 1,
+            totalPages: Math.ceil(
+              ((prev.pagination.total || 0) + 1) /
+              (prev.pagination.pageSize || 5)
+            ),
+          }
           : {
-              total: 1,
-              totalPages: 1,
-              page: 1,
-              pageSize: 5,
-            },
+            total: 1,
+            totalPages: 1,
+            page: 1,
+            pageSize: 5,
+          },
       }));
 
       toast.success("¡Reseña publicada correctamente!");
@@ -646,11 +644,10 @@ function DetailsView({
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`w-6 h-6 ${
-                    i < Math.round(averageRating)
+                  className={`w-6 h-6 ${i < Math.round(averageRating)
                       ? "text-yellow-400 fill-current"
                       : "text-gray-300 dark:text-gray-500"
-                  }`}
+                    }`}
                 />
               ))}
             </div>
@@ -687,12 +684,33 @@ function DetailsView({
         )}
 
         {!userSession && (
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            <Link href="/login" className="text-blue-600 hover:underline">
-              Inicia sesión
-            </Link>{" "}
-            para dejar una reseña.
-          </p>
+          <div className="mb-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-gray-700 dark:text-gray-200 text-sm md:text-base font-medium">
+                ¿Quieres dejar una reseña?
+              </p>
+              <Link
+                href="/login"
+                className="inline-flex items-center px-4 py-2 text-white bg-blue-600 dark:bg-blue-500 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 font-medium text-sm"
+              >
+                Inicia sesión
+                <svg
+                  className="ml-2 w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </Link>
+            </div>
+          </div>
         )}
 
         {showAddReviewForm && (
@@ -709,15 +727,13 @@ function DetailsView({
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-8 h-8 cursor-pointer transition-all duration-200 ${
-                        i < newRating
+                      className={`w-8 h-8 cursor-pointer transition-all duration-200 ${i < newRating
                           ? "text-yellow-400 fill-current"
                           : "text-gray-300 dark:text-gray-500 hover:text-yellow-300"
-                      }`}
+                        }`}
                       onClick={() => setNewRating(i + 1)}
-                      aria-label={`Calificar con ${i + 1} estrella${
-                        i + 1 === 1 ? "" : "s"
-                      }`}
+                      aria-label={`Calificar con ${i + 1} estrella${i + 1 === 1 ? "" : "s"
+                        }`}
                     />
                   ))}
                 </div>
@@ -773,15 +789,13 @@ function DetailsView({
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-8 h-8 cursor-pointer transition-all duration-200 ${
-                              i < editRating
+                            className={`w-8 h-8 cursor-pointer transition-all duration-200 ${i < editRating
                                 ? "text-yellow-400 fill-current"
                                 : "text-gray-300 dark:text-gray-500 hover:text-yellow-300"
-                            }`}
+                              }`}
                             onClick={() => setEditRating(i + 1)}
-                            aria-label={`Calificar con ${i + 1} estrella${
-                              i + 1 === 1 ? "" : "s"
-                            }`}
+                            aria-label={`Calificar con ${i + 1} estrella${i + 1 === 1 ? "" : "s"
+                              }`}
                           />
                         ))}
                       </div>
@@ -826,11 +840,10 @@ function DetailsView({
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-5 h-5 ${
-                                  i < review.rating
+                                className={`w-5 h-5 ${i < review.rating
                                     ? "text-yellow-400 fill-current"
                                     : "text-gray-300 dark:text-gray-500"
-                                }`}
+                                  }`}
                               />
                             ))}
                           </div>
@@ -846,8 +859,8 @@ function DetailsView({
                           <strong>Última actualización:</strong>{" "}
                           {review.lastUpdated
                             ? new Date(review.lastUpdated).toLocaleDateString(
-                                "es-CO"
-                              )
+                              "es-CO"
+                            )
                             : "Fecha no disponible"}
                         </p>
                         <p className="text-gray-800 dark:text-gray-200">
@@ -889,11 +902,10 @@ function DetailsView({
                     disabled={
                       (reviewsResult.pagination?.page || 1) === 1 || loading
                     }
-                    className={`p-2 rounded-full transition-all duration-300 ${
-                      (reviewsResult.pagination?.page || 1) === 1 || loading
+                    className={`p-2 rounded-full transition-all duration-300 ${(reviewsResult.pagination?.page || 1) === 1 || loading
                         ? "text-gray-400 cursor-not-allowed"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                    }`}
+                      }`}
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
@@ -902,11 +914,10 @@ function DetailsView({
                       <button
                         key={i}
                         onClick={() => handlePageChange(i + 1)}
-                        className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 ${
-                          (reviewsResult.pagination?.page || 1) === i + 1
+                        className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 ${(reviewsResult.pagination?.page || 1) === i + 1
                             ? "bg-blue-600 text-white shadow-md dark:bg-blue-500"
                             : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                        }`}
+                          }`}
                       >
                         {i + 1}
                       </button>
@@ -920,14 +931,13 @@ function DetailsView({
                     }
                     disabled={
                       (reviewsResult.pagination?.page || 1) ===
-                        (reviewsResult.pagination?.totalPages || 1) || loading
+                      (reviewsResult.pagination?.totalPages || 1) || loading
                     }
-                    className={`p-2 rounded-full transition-all duration-300 ${
-                      (reviewsResult.pagination?.page || 1) ===
+                    className={`p-2 rounded-full transition-all duration-300 ${(reviewsResult.pagination?.page || 1) ===
                         (reviewsResult.pagination?.totalPages || 1) || loading
                         ? "text-gray-400 cursor-not-allowed"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                    }`}
+                      }`}
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
@@ -992,12 +1002,10 @@ function MapView({
     popupContent.className = "popup-content";
     popupContent.innerHTML = `
       <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl max-w-sm border border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400 cursor-pointer hover:underline mb-2">${
-          ipsData.name
-        }</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-300">${
-          ipsData.address
-        }, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
+        <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400 cursor-pointer hover:underline mb-2">${ipsData.name
+      }</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">${ipsData.address
+      }, ${ipsData.town ?? ""}, ${ipsData.department ?? ""}</p>
       </div>
     `;
     popupContent.querySelector("h3")?.addEventListener("click", () => {
