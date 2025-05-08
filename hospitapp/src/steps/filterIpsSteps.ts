@@ -141,7 +141,7 @@ Then("the user should be redirected to the IPS list page with {string} specialis
 		await driver.getCurrentUrl(),
 		"Should be on IPS list page"
 	).to.include("/result");
-    await driver.sleep(10000);
+    await driver.sleep(15000);
 
 	await driver.wait(
 		until.elementLocated(

@@ -39,9 +39,7 @@ When("the user should select the first ips in the list", async function () {
 
 When("the user clicks the add review button", async function () {
 	const addReviewButton = await driver.wait(
-		until.elementLocated(
-			By.xpath("/html/body/main/div/main/div[2]/section[4]/button")
-		),
+		until.elementLocated(By.xpath("//button[contains(text(), 'Agregar Reseña')]")),
 		15000,
 		"Add Review button not found"
 	);
@@ -69,10 +67,10 @@ When(
 		const commentInput = await driver.wait(
 			until.elementLocated(
 				By.xpath(
-					"/html/body/main/div/main/div[2]/section[4]/div[2]/div/div[2]/textarea"
+					"//textarea[contains(@id, 'newComments')]"
 				)
 			),
-			15000,
+			30000,
 			"Comment input not found"
 		);
 		await driver.wait(
@@ -119,7 +117,7 @@ When(
 		const submitButton = await driver.wait(
 			until.elementLocated(
 				By.xpath(
-					"/html/body/main/div/main/div[2]/section[4]/div[2]/div/div[3]/button[1]"
+					"//button[contains(text(), 'Guardar')]"
 				)
 			),
 			15000,
