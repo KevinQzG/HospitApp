@@ -51,10 +51,9 @@ export default function EpsCard({ name, displayName, icon: Icon, active = false 
         group p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg 
         flex flex-col items-center justify-center transition-all duration-300 cursor-pointer
         focus:outline-none focus:ring-2 focus:ring-blue-500
-        ${
-          active
-            ? "bg-blue-600 text-white shadow-xl"
-            : "bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200 hover:bg-blue-600 hover:text-white"
+        ${active
+          ? "bg-blue-600 text-white shadow-xl"
+          : "bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200 hover:bg-blue-600 hover:text-white"
         }
       `}
       role="button"
@@ -64,10 +63,9 @@ export default function EpsCard({ name, displayName, icon: Icon, active = false 
       <Icon
         className={`
           w-6 h-6 sm:w-8 sm:h-8 transition-colors duration-300 
-          ${
-            active
-              ? "text-white"
-              : "text-blue-600 dark:text-blue-400 group-hover:text-white"
+          ${active
+            ? "text-white"
+            : "text-blue-600 dark:text-blue-400 group-hover:text-white"
           }
         `}
       />
