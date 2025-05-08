@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Eye, EyeOff, X } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGoogle, faFacebook, faApple } from "@fortawesome/free-brands-svg-icons";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
@@ -56,7 +54,7 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
       });
       const COOKIE = await res.json();
-      
+
       if (DATA.success) {
         authenticate(COOKIE.email);
         router.push("/");
@@ -190,31 +188,6 @@ export default function LoginPage() {
               Iniciar sesión
             </button>
           </form>
-
-          {/* Social Auth */}
-          <div className="mt-8 text-center">
-            <p className="text-gray-500 dark:text-gray-400 mb-4">O ingresa con</p>
-            <div className="flex justify-center space-x-4">
-              <button
-                className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
-                aria-label="Ingresar con Google"
-              >
-                <FontAwesomeIcon icon={faGoogle} className="w-6 h-6 text-gray-700 dark:text-gray-200" />
-              </button>
-              <button
-                className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
-                aria-label="Ingresar con Facebook"
-              >
-                <FontAwesomeIcon icon={faFacebook} className="w-6 h-6 text-gray-700 dark:text-gray-200" />
-              </button>
-              <button
-                className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
-                aria-label="Ingresar con Apple"
-              >
-                <FontAwesomeIcon icon={faApple} className="w-6 h-6 text-gray-700 dark:text-gray-200" />
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </section>

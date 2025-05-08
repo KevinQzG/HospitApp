@@ -10,9 +10,12 @@ import {
   Plus,
   Search,
   X,
+  ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import { ENV } from "@/config/env";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type IpsResponse = {
   _id: string;
@@ -214,24 +217,30 @@ export default function AdminIpsPage() {
     searchTerm,
   ]);
 
-
   const handlePromote = async (name: string, level: number) => {
+    if (!level && level !== 0) {
+      toast.error("Por favor seleccione un nivel de promoción.");
+      return;
+    }
+
     try {
-      const res = await fetch('/api/v1.0.0/ips/promote', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/v1.0.0/ips/promote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, promoted: level }),
       });
-  
+
       if (!res.ok) {
-        throw new Error('Failed to promote');
+        throw new Error("Failed to promote");
       }
-      console.log('Promoted successfully');
+      toast.success("¡Promoción satisfactoria!");
+      router.refresh();
     } catch (error) {
-      console.error('Promotion failed:', error);
+      toast.error("Error al promocionar. Intente de nuevo.");
+      console.error("Promotion failed:", error);
     }
   };
-  
+
   const handleFilterByTown = () => {
     setAppliedTown(selectedTown);
     setCurrentPage(1);
@@ -254,7 +263,7 @@ export default function AdminIpsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
         <p className="text-red-500 dark:text-red-400 text-lg font-medium">
           {error}
         </p>
@@ -292,7 +301,8 @@ export default function AdminIpsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-16 px-4 sm:px-6 lg:px-8 font-sans">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="max-w-6xl mx-auto">
         <div className="mb-10">
           <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 text-center tracking-tight mb-6">
@@ -316,7 +326,7 @@ export default function AdminIpsPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar por nombre de la IPS..."
-                className="w-full px-4 py-2.5 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-300 pl-10 h-11 shadow-sm"
+                className="w-full px-4 py-2.5 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 pl-10 h-11 shadow-sm"
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
             </div>
@@ -326,7 +336,7 @@ export default function AdminIpsPage() {
                 id="town"
                 value={selectedTown}
                 onChange={(e) => setSelectedTown(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-300 h-11 shadow-sm appearance-none"
+                className="w-full px-4 py-2.5 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 h-11 shadow-sm appearance-none"
               >
                 <option value="">Filtrar por municipio</option>
                 {towns.map((town) => (
@@ -405,20 +415,20 @@ export default function AdminIpsPage() {
                             {ips.address}
                           </td>
                           <td className="w-1/3 p-4 align-middle">
-                            <div className="flex justify-center">
+                            <div className="flex justify-center items-center gap-3">
                               <Link
                                 href={`/admin/ips/${encodeURIComponent(
                                   ips.name
                                 )}`}
-                                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-500/90 hover:bg-blue-600 text-white text-sm font-medium transition-all duration-300 shadow-sm w-[120px]"
+                                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 w-[140px] h-10"
                               >
                                 <Eye className="w-4 h-4" />
                                 Ver Detalles
                               </Link>
-                              <div>
+                              <div className="relative">
                                 <select
                                   id={`promote-select-${ips._id}`}
-                                  className="rounded-xl bg-gray-900 border border-white/20 text-white text-sm px-2 py-1 shadow-sm"
+                                  className="appearance-none w-16 h-10 pl-3 pr-8 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 shadow-sm text-sm"
                                 >
                                   {[0, 1, 2, 3, 4, 5].map((num) => (
                                     <option key={num} value={num}>
@@ -426,19 +436,20 @@ export default function AdminIpsPage() {
                                     </option>
                                   ))}
                                 </select>
-                                </div>
-                                <button
-                                
-                                  onClick={() => {
-                                    const select = document.getElementById(`promote-select-${ips._id}`) as HTMLSelectElement;
-                                    const num = Number(select.value);
-                                    handlePromote(ips.name, num)
-                                    router.refresh()
-                                  }}
-                                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-500/90 hover:bg-blue-600 text-white text-sm font-medium transition-all duration-300 shadow-sm"
-                                >
-                                  Promote
-                                </button>
+                                <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" />
+                              </div>
+                              <button
+                                onClick={() => {
+                                  const select = document.getElementById(
+                                    `promote-select-${ips._id}`
+                                  ) as HTMLSelectElement;
+                                  const num = Number(select.value);
+                                  handlePromote(ips.name, num);
+                                }}
+                                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 w-[140px] h-10"
+                              >
+                                Promocionar
+                              </button>
                             </div>
                           </td>
                         </tr>
