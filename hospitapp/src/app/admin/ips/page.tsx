@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Hospital, ChevronLeft, ChevronRight, Plus, Search, X } from "lucide-react";
+import {
+  Eye,
+  Hospital,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Search,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { ENV } from "@/config/env";
 
@@ -41,7 +49,9 @@ type AuthResponse = {
 
 export default function AdminIpsPage() {
   const router = useRouter();
-  const [groupedIps, setGroupedIps] = useState<{ [key: string]: IpsResponse[] }>({});
+  const [groupedIps, setGroupedIps] = useState<{
+    [key: string]: IpsResponse[];
+  }>({});
   const [allIps, setAllIps] = useState<IpsResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(21);
@@ -63,7 +73,7 @@ export default function AdminIpsPage() {
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
             },
             credentials: "include",
             body: JSON.stringify({
@@ -74,7 +84,9 @@ export default function AdminIpsPage() {
         );
 
         if (!authResponse.ok) {
-          throw new Error(`Authentication failed: ${authResponse.status} ${authResponse.statusText}`);
+          throw new Error(
+            `Authentication failed: ${authResponse.status} ${authResponse.statusText}`
+          );
         }
 
         const contentType = authResponse.headers.get("content-type");
@@ -122,7 +134,9 @@ export default function AdminIpsPage() {
           );
 
           if (!response.ok) {
-            throw new Error(`Failed to fetch IPS: ${response.status} ${response.statusText}`);
+            throw new Error(
+              `Failed to fetch IPS: ${response.status} ${response.statusText}`
+            );
           }
 
           const contentType = response.headers.get("content-type");
@@ -160,12 +174,14 @@ export default function AdminIpsPage() {
     if (isAuthorized === true && allIps.length > 0) {
       const filteredByName = searchTerm
         ? allIps.filter((ips) =>
-          ips.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+            ips.name.toLowerCase().includes(searchTerm.toLowerCase())
+          )
         : allIps;
 
       const filteredIps = appliedTown
-        ? filteredByName.filter((ips) => (ips.town || "Sin municipio") === appliedTown)
+        ? filteredByName.filter(
+            (ips) => (ips.town || "Sin municipio") === appliedTown
+          )
         : filteredByName;
 
       const totalFilteredItems = filteredIps.length;
@@ -189,8 +205,33 @@ export default function AdminIpsPage() {
 
       setGroupedIps(grouped);
     }
-  }, [isAuthorized, allIps, currentPage, itemsPerPage, appliedTown, searchTerm]);
+  }, [
+    isAuthorized,
+    allIps,
+    currentPage,
+    itemsPerPage,
+    appliedTown,
+    searchTerm,
+  ]);
 
+
+  const handlePromote = async (name: string, level: number) => {
+    try {
+      const res = await fetch('/api/v1.0.0/ips/promote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, promoted: level }),
+      });
+  
+      if (!res.ok) {
+        throw new Error('Failed to promote');
+      }
+      console.log('Promoted successfully');
+    } catch (error) {
+      console.error('Promotion failed:', error);
+    }
+  };
+  
   const handleFilterByTown = () => {
     setAppliedTown(selectedTown);
     setCurrentPage(1);
@@ -214,7 +255,9 @@ export default function AdminIpsPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <p className="text-red-500 dark:text-red-400 text-lg font-medium">{error}</p>
+        <p className="text-red-500 dark:text-red-400 text-lg font-medium">
+          {error}
+        </p>
       </div>
     );
   }
@@ -283,7 +326,8 @@ export default function AdminIpsPage() {
                 id="town"
                 value={selectedTown}
                 onChange={(e) => setSelectedTown(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-300 h-11 shadow-sm appearance-none"              >
+                className="w-full px-4 py-2.5 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-300 h-11 shadow-sm appearance-none"
+              >
                 <option value="">Filtrar por municipio</option>
                 {towns.map((town) => (
                   <option key={town} value={town}>
@@ -319,7 +363,9 @@ export default function AdminIpsPage() {
         </div>
 
         {isLoading ? (
-          <p className="text-gray-600 dark:text-gray-300 text-center text-lg">Cargando...</p>
+          <p className="text-gray-600 dark:text-gray-300 text-center text-lg">
+            Cargando...
+          </p>
         ) : Object.keys(groupedIps).length > 0 ? (
           Object.keys(groupedIps)
             .sort()
@@ -334,7 +380,9 @@ export default function AdminIpsPage() {
                       <tr className="bg-gray-100/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-100">
                         <th className="w-1/3 p-4 font-medium">Nombre</th>
                         <th className="w-1/3 p-4 font-medium">Dirección</th>
-                        <th className="w-1/3 p-4 font-medium text-center">Acciones</th>
+                        <th className="w-1/3 p-4 font-medium text-center">
+                          Acciones
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -359,12 +407,38 @@ export default function AdminIpsPage() {
                           <td className="w-1/3 p-4 align-middle">
                             <div className="flex justify-center">
                               <Link
-                                href={`/admin/ips/${encodeURIComponent(ips.name)}`}
+                                href={`/admin/ips/${encodeURIComponent(
+                                  ips.name
+                                )}`}
                                 className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-500/90 hover:bg-blue-600 text-white text-sm font-medium transition-all duration-300 shadow-sm w-[120px]"
                               >
                                 <Eye className="w-4 h-4" />
                                 Ver Detalles
                               </Link>
+                              <div>
+                                <select
+                                  id={`promote-select-${ips._id}`}
+                                  className="rounded-xl bg-gray-900 border border-white/20 text-white text-sm px-2 py-1 shadow-sm"
+                                >
+                                  {[0, 1, 2, 3, 4, 5].map((num) => (
+                                    <option key={num} value={num}>
+                                      {num}
+                                    </option>
+                                  ))}
+                                </select>
+                                </div>
+                                <button
+                                
+                                  onClick={() => {
+                                    const select = document.getElementById(`promote-select-${ips._id}`) as HTMLSelectElement;
+                                    const num = Number(select.value);
+                                    handlePromote(ips.name, num)
+                                    router.refresh()
+                                  }}
+                                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-500/90 hover:bg-blue-600 text-white text-sm font-medium transition-all duration-300 shadow-sm"
+                                >
+                                  Promote
+                                </button>
                             </div>
                           </td>
                         </tr>
@@ -403,10 +477,11 @@ export default function AdminIpsPage() {
                   <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${page === currentPage
+                    className={`w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
+                      page === currentPage
                         ? "bg-blue-500/90 text-white shadow-sm"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                      }`}
+                    }`}
                   >
                     {page}
                   </button>

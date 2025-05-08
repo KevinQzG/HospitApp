@@ -233,5 +233,5 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 		}
 
 		return IPS_DOCUMENTS.map(IpsMapper.fromDocumentToDomain);
-	}
+	}	
 }
