@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Eye, EyeOff, X } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGoogle, faFacebook, faApple } from "@fortawesome/free-brands-svg-icons";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
