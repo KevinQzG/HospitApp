@@ -396,7 +396,7 @@ describe("IpsMongoRepository Integration Test", () => {
 				department: "ANTIOQUIA",
 				town: "MEDELLÍN",
 				address: "CALLE 54 # 49-69",
-				phone: 3207240,
+				phone: "3207240",
 				email: "CALIDAD@INSTITUTODELCORAZON.ORG.CO",
 				location: {
 					type: "Point",
