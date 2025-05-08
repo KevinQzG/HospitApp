@@ -145,8 +145,17 @@ export default interface IpsServiceAdapter {
 	 * Gets an IPS by its ID.
 	 *
 	 * @async
-	 * @param {string} id - The ID of the IPS.
+	 * @param {string} name - The name of the IPS.
+	 * @param {number} promoteLevel The level from 0 to 5
+	 *
 	 */
+
+	updatePromotedStatus(
+		name: string,
+		promoteLevel : Number
+	): Promise <{
+		result : Boolean
+	}>
 	
 
 }
