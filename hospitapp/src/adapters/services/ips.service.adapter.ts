@@ -152,9 +152,9 @@ export default interface IpsServiceAdapter {
 
 	updatePromotedStatus(
 		name: string,
-		promoteLevel : Number
+		promoteLevel : number
 	): Promise <{
-		result : Boolean
+		result : boolean
 	}>
 	
 

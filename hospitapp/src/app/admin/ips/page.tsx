@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ENV } from "@/config/env";
-import { number } from "framer-motion";
 
 type IpsResponse = {
   _id: string;
@@ -227,7 +226,6 @@ export default function AdminIpsPage() {
       if (!res.ok) {
         throw new Error('Failed to promote');
       }
-  
       console.log('Promoted successfully');
     } catch (error) {
       console.error('Promotion failed:', error);
@@ -434,7 +432,9 @@ export default function AdminIpsPage() {
                                   onClick={() => {
                                     const select = document.getElementById(`promote-select-${ips._id}`) as HTMLSelectElement;
                                     const num = Number(select.value);
-                                    handlePromote(ips.name, num)}}
+                                    handlePromote(ips.name, num)
+                                    router.refresh()
+                                  }}
                                   className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-500/90 hover:bg-blue-600 text-white text-sm font-medium transition-all duration-300 shadow-sm"
                                 >
                                   Promote

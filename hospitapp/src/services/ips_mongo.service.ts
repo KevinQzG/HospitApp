@@ -8,7 +8,6 @@ import type ReviewRepositoryAdapter from "@/adapters/repositories/review_reposit
 import { Ips } from "@/models/ips";
 import { ObjectId } from "mongodb";
 import { SortCriteria } from "@/repositories/review_mongo.repository.interfaces";
-import { promises } from "dns";
 
 /**
  * @class
@@ -200,7 +199,7 @@ export class IpsMongoService implements IpsServiceAdapter {
 	  
 		const updatePayload = { promoted: promoteLevel };
 	  
-		const result = await this.ipsRepository.update(ips.getId(), updatePayload as any); // Puedes tipar mejor si defines una interfaz parcial
+		const result = await this.ipsRepository.update(ips.getId(), updatePayload as any);  // eslint-disable-line @typescript-eslint/no-explicit-any
 	  
 		if (result) {
 		  console.log(`[updatePromotedStatus] Se actualizó correctamente el nivel de promoción a ${promoteLevel} para ${name}`);
