@@ -52,6 +52,7 @@ interface IpsResponse {
 	waze?: string;
 	rating?: number;
 	totalReviews: number;
+	promotion?: number;
 }
 
 interface SearchResponse {
@@ -120,48 +121,75 @@ const StarRating = ({ rating }: { rating: number }) => {
 
 const RESULT_ITEM = memo(({ item }: { item: IpsResponse }) => (
 	<Link
-		href={`/ips-details/${encodeURIComponent(item.name)}`}
-		className="block p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 border border-gray-200 dark:border-gray-700 h-36 flex flex-col"
+	  href={`/ips-details/${encodeURIComponent(item.name)}`}
+	  className={`block p-4 rounded-2xl transition-all duration-300 border h-40 flex flex-col ${
+		 item.promotion && item.promotion > 0
+			? "bg-gradient-to-br from-amber-50/80 to-yellow-50/80 dark:from-amber-900/10 dark:to-yellow-900/10 border-amber-200/50 dark:border-amber-700/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-[1.02] backdrop-blur-sm"
+			: "bg-white/80 dark:bg-gray-800/80 border-gray-100 dark:border-gray-700/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-[1.02] backdrop-blur-sm"
+	  }`}
 	>
-		<div className="flex items-start space-x-2 flex-1">
-			<div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-md flex-shrink-0">
-				<Hospital className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+	  <div className="flex items-start space-x-3 flex-1">
+		 <div className={`p-2.5 rounded-xl flex-shrink-0 ${
+			item.promotion && item.promotion > 0
+				? "bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-800/30 dark:to-yellow-800/30"
+				: "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30"
+		 }`}>
+			<Hospital className={`w-5 h-5 ${
+				item.promotion && item.promotion > 0
+					? "text-amber-600 dark:text-amber-400"
+					: "text-blue-600 dark:text-blue-400"
+			}`} />
+		 </div>
+		 <div className="flex-1 min-w-0">
+			<div className="flex items-center justify-between">
+			  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
+				 {item.name}
+			  </h2>
+			  {item.promotion && item.promotion > 0 && (
+				 <span className="text-xs font-medium text-amber-600 dark:text-amber-400 bg-gradient-to-r from-amber-100/80 to-yellow-100/80 dark:from-amber-800/30 dark:to-yellow-800/30 rounded-full px-3 py-1.5 shadow-sm backdrop-blur-sm">
+					Destacado
+				 </span>
+			  )}
 			</div>
-			<div className="flex-1 min-w-0">
-				<h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-					{item.name}
-				</h2>
-				<div className="group flex items-center space-x-1 mt-0.5">
-					<MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-					<p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-						{item.distance !== undefined
-							? `${Math.round(item.distance)} metros`
-							: "N/A"}
-					</p>
-					<div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
-						Distancia desde tu ubicación actual
-					</div>
-				</div>
-				<p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mt-0.5">
-					{item.address}
-					{item.town && `, ${item.town}`}
-					{item.department && `, ${item.department}`}
-				</p>
-				<div className="mt-0.5">
-					{item.totalReviews > 0 ? (
-						<StarRating rating={item.rating || 0} />
-					) : (
-						<p className="text-xs text-gray-500 dark:text-gray-400 italic">
-							Sin reseñas
-						</p>
-					)}
-				</div>
+			<div className="group flex items-center space-x-1.5 mt-1">
+			  <MapPin className={`w-4 h-4 ${
+				item.promotion && item.promotion > 0
+					? "text-amber-500 dark:text-amber-400"
+					: "text-blue-500 dark:text-blue-400"
+			  }`} />
+			  <p className={`text-sm font-medium ${
+				item.promotion && item.promotion > 0
+					? "text-amber-600 dark:text-amber-400"
+					: "text-blue-600 dark:text-blue-400"
+			  }`}>
+				 {item.distance !== undefined
+					? `${Math.round(item.distance)} metros`
+					: "N/A"}
+			  </p>
+			  <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800/90 text-white text-xs rounded-lg py-1.5 px-3 backdrop-blur-sm">
+				 Distancia desde tu ubicación actual
+			  </div>
 			</div>
-		</div>
+			<p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
+			  {item.address}
+			  {item.town && `, ${item.town}`}
+			  {item.department && `, ${item.department}`}
+			</p>
+			<div className="mt-1.5">
+			  {item.totalReviews && item.totalReviews > 0 ? (
+				 <StarRating rating={item.rating || 0} />
+			  ) : (
+				 <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+					Sin reseñas
+				 </p>
+			  )}
+			</div>
+		 </div>
+	  </div>
 	</Link>
-));
-
-RESULT_ITEM.displayName = "RESULT_ITEM";
+ ));
+ 
+ RESULT_ITEM.displayName = "RESULT_ITEM";
 
 function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 	const searchParams = useSearchParams();
