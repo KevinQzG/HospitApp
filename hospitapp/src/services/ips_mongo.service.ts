@@ -187,5 +187,27 @@ export class IpsMongoService implements IpsServiceAdapter {
 			ips: IPS.toResponse(),
 			reviewsResult: REVIEWS,
 		};
-	}
+	}	
+	async updatePromotedStatus(name: string, promoteLevel: number): Promise<{ result: boolean }> {
+		console.log(`[updatePromotedStatus] Buscando IPS con nombre: ${name}`);
+	  
+		const ips = await this.ipsRepository.findByName(name);
+		if (!ips || !ips.getId) {
+		  console.warn(`[updatePromotedStatus] No se encontró la IPS: ${name}`);
+		  return { result: false };
+		}
+	  
+		const updatePayload = { promoted: promoteLevel };
+	  
+		const result = await this.ipsRepository.update(ips.getId(), updatePayload as any);  // eslint-disable-line @typescript-eslint/no-explicit-any
+	  
+		if (result) {
+		  console.log(`[updatePromotedStatus] Se actualizó correctamente el nivel de promoción a ${promoteLevel} para ${name}`);
+		} else {
+		  console.error(`[updatePromotedStatus] Falló la actualización del nivel de promoción para ${name}`);
+		}
+	  
+		return { result: result ?? false };
+	  }
+		
 }
