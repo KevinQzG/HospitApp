@@ -139,7 +139,6 @@ describe("IpsMongoService Integration Test", () => {
 				["SALUDCOOP EPS-C"],
 				null,
 				[
-					{ field: "promotion", direction: -1 },
 					{ field: "distance", direction: 1 },
 					{ field: "rating", direction: -1 }
 				],
@@ -200,7 +199,6 @@ describe("IpsMongoService Integration Test", () => {
 				expect.anything(),
 				null,
 				[
-					{ field: "promotion", direction: -1 },
 					{ field: "distance", direction: 1 },
 					{ field: "rating", direction: -1 }
 				],

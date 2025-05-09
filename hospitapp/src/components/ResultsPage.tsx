@@ -184,7 +184,6 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
 	const [sortFields, setSortFields] = useState<SortField[]>([]);
 
 	const sortOptions = [
-		{ value: "promotion", label: "Recomendados" },
 		{ value: "distance", label: "Distancia" },
 		{ value: "rating", label: "Calificación" },
 		{ value: "name", label: "Nombre" },

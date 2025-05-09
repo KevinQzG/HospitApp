@@ -2,6 +2,7 @@
 
 HospitApp is a **web-based platform** designed to **optimize access to healthcare services** in Colombia. It provides **fast and accurate** information about hospitals and clinics, integrating advanced features to enhance the user experience and ensure an **efficient arrival** at the right medical facility.
 
+
 ---
 
 ## 📖 Table of Contents  
