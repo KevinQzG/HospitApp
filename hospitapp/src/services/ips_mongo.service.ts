@@ -70,7 +70,6 @@ export class IpsMongoService implements IpsServiceAdapter {
 				epsNames,
 				town,
 				sort ?? [
-					{ field: "promotion", direction: -1 },
 					{ field: "distance", direction: 1 },
 					{ field: "rating", direction: -1 },
 				],
@@ -105,7 +104,6 @@ export class IpsMongoService implements IpsServiceAdapter {
 			epsNames,
 			town,
 			sort ?? [
-				{ field: "promotion", direction: -1 },
 				{ field: "distance", direction: 1 },
 				{ field: "rating", direction: -1 },
 			],
