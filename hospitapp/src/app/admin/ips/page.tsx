@@ -225,7 +225,7 @@ export default function AdminIpsPage() {
   ]);
 
   const handlePromote = async (name: string, level: number) => {
-    if (!level && level !== 0) {
+    if (level == null || level < 0 || level > 5) {
       toast.error("Por favor seleccione un nivel de promoción.");
       return;
     }
@@ -234,7 +234,7 @@ export default function AdminIpsPage() {
       const res = await fetch("/api/v1.0.0/ips/promote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, promoted: level }),
+        body: JSON.stringify({ name, promoted: Number(level) }),
       });
 
       if (!res.ok) {

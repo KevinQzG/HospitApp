@@ -17,7 +17,7 @@ const VALIDATE_PROMOTION_BODY = (
   body: PromoteIPSRequest
 ): { success: boolean; error?: string } => {
   if (!body.name) return { success: false, error: "Missing IPS Name" };
-  if (!body.promoted) {
+  if (body.promoted == undefined) {
     return { success: false, error: "Invalid promotion level" };
   }
   return { success: true };
