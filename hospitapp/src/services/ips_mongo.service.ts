@@ -197,7 +197,7 @@ export class IpsMongoService implements IpsServiceAdapter {
 		  return { result: false };
 		}
 	  
-		const updatePayload = { promoted: promoteLevel };
+		const updatePayload = { promotion: promoteLevel };
 	  
 		const result = await this.ipsRepository.update(ips.getId(), updatePayload as any);  // eslint-disable-line @typescript-eslint/no-explicit-any
 	  
