@@ -79,6 +79,8 @@ export class IpsMongoRepository implements IpsRepositoryAdapter {
 
 		const SORT_OBJECT: { [key: string]: number } = {};
 
+		SORT_OBJECT["promotion"] = -1;
+
 		for (const SORT of sorts) {
 			SORT_OBJECT[SORT.field] = SORT.direction;
 		}
