@@ -177,7 +177,7 @@ Then(
 	async function (ips: string) {
 		const firstIps = await driver.wait(
 			until.elementLocated(
-				By.xpath("/html/body/main/div/div[4]/div[1]/a[1]/div/div[2]/h2")
+				By.xpath("/html/body/main/div/div[4]/div/a[1]/div/div[2]/div[1]/h2")
 			),
 			30000
 		);
