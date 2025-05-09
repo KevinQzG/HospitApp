@@ -67,8 +67,15 @@ export default function AdminIpsPage() {
   const [selectedTown, setSelectedTown] = useState("");
   const [appliedTown, setAppliedTown] = useState("");
   const [towns, setTowns] = useState<string[]>([]);
+  const [promotionLevels, setPromotionLevels] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
+    // Load promotion levels from localStorage on component mount
+    const storedLevels = localStorage.getItem("promotionLevels");
+    if (storedLevels) {
+      setPromotionLevels(JSON.parse(storedLevels));
+    }
+
     const checkAuth = async () => {
       try {
         const authResponse = await fetch(
@@ -233,6 +240,12 @@ export default function AdminIpsPage() {
       if (!res.ok) {
         throw new Error("Failed to promote");
       }
+
+      // Update promotion levels in state and localStorage
+      const newPromotionLevels = { ...promotionLevels, [name]: level };
+      setPromotionLevels(newPromotionLevels);
+      localStorage.setItem("promotionLevels", JSON.stringify(newPromotionLevels));
+
       toast.success("¡Promoción satisfactoria!");
       router.refresh();
     } catch (error) {
@@ -428,6 +441,14 @@ export default function AdminIpsPage() {
                               <div className="relative">
                                 <select
                                   id={`promote-select-${ips._id}`}
+                                  value={promotionLevels[ips.name] ?? 0}
+                                  onChange={(e) => {
+                                    const newLevel = Number(e.target.value);
+                                    setPromotionLevels((prev) => ({
+                                      ...prev,
+                                      [ips.name]: newLevel,
+                                    }));
+                                  }}
                                   className="appearance-none w-16 h-10 pl-3 pr-8 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 shadow-sm text-sm"
                                 >
                                   {[0, 1, 2, 3, 4, 5].map((num) => (

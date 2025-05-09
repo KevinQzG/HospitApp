@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
@@ -7,31 +6,25 @@ import { usePathname } from "next/navigation";
 import { Home, Info, LogIn, Globe, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-
 export default function Header() {
   const [isMobile, setIsMobile] = useState(false);
   const [languageIndex, setLanguageIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const authContext = useAuth();
   const isAuthenticated = authContext?.isAuthenticated ?? false;
   const pathname = usePathname();
   const LANGUAGES = ["ES", "EN", "FR", "IT", "PT", "DE"];
 
-  // Detect screen size
-  const [isInitialized, setIsInitialized] = useState(false); // Añadir esto
-
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
-
-    // Solo en cliente
     setIsInitialized(true);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
 
   const handleLogout = async () => {
     try {
@@ -44,16 +37,30 @@ export default function Header() {
     }
   };
 
-  // Google Translate + Language + Theme
   useEffect(() => {
-    const loadGoogleTranslate = () => {
-      if (!navigator.userAgent.includes("Chrome-Lighthouse") &&
-        !document.getElementById("google-translate-script")) {
+    const savedLanguage = localStorage.getItem("language") || "ES";
+    const savedIndex = LANGUAGES.indexOf(savedLanguage);
+    setLanguageIndex(savedIndex !== -1 ? savedIndex : 0);
+    changeLanguage(savedLanguage.toLowerCase());
+
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
+    if (
+      !navigator.userAgent.includes("Chrome-Lighthouse") &&
+      !document.getElementById("google-translate-script")
+    ) {
+      window.addEventListener("load", () => {
         const script = document.createElement("script");
         script.id = "google-translate-script";
-        script.src =
-          "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
         script.async = true;
+        script.defer = true;
         document.body.appendChild(script);
 
         window.googleTranslateElementInit = () => {
@@ -75,22 +82,7 @@ export default function Header() {
           `;
           document.head.appendChild(style);
         };
-      }
-    };
-
-    loadGoogleTranslate();
-
-    const savedLanguage = localStorage.getItem("language") || "ES";
-    const savedIndex = LANGUAGES.indexOf(savedLanguage);
-    setLanguageIndex(savedIndex !== -1 ? savedIndex : 0);
-    changeLanguage(savedLanguage.toLowerCase());
-
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
+      });
     }
   }, []);
 
@@ -111,39 +103,26 @@ export default function Header() {
 
   return (
     <>
-      {/* TOP NAVBAR */}
+      {/* TOP NAVBAR (Desktop) */}
       {!isMobile && isInitialized && (
         <header className="bg-[#ECF6FF] dark:bg-gray-900 py-4 px-6 relative z-50 transition-colors">
           <div className="container mx-auto flex justify-between items-center relative">
             <Link href="/" className="text-2xl font-bold z-50">
-              <span className="text-blue-500 notranslate" translate="no">
-                Hospit
-              </span>
-              <span
-                className="text-black dark:text-white notranslate"
-                translate="no"
-              >
-                APP
-              </span>
+              <span className="text-blue-500 notranslate" translate="no">Hospit</span>
+              <span className="text-black dark:text-white notranslate" translate="no">APP</span>
             </Link>
 
             <nav className="hidden md:flex md:items-center md:space-x-6">
               <Link
                 href="/"
-                className={`flex items-center gap-2 px-4 ${pathname === "/"
-                  ? "text-blue-500"
-                  : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-                  }`}
+                className={`flex items-center gap-2 px-4 ${pathname === "/" ? "text-blue-500" : "text-gray-700 dark:text-gray-300 hover:text-blue-500"}`}
               >
                 <Home size={18} /> Inicio
               </Link>
 
               <Link
                 href="/about"
-                className={`flex items-center gap-2 px-4 ${pathname === "/about"
-                  ? "text-blue-500"
-                  : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-                  }`}
+                className={`flex items-center gap-2 px-4 ${pathname === "/about" ? "text-blue-500" : "text-gray-700 dark:text-gray-300 hover:text-blue-500"}`}
               >
                 <Info size={18} /> Sobre Nosotros
               </Link>
@@ -151,10 +130,7 @@ export default function Header() {
               {!isAuthenticated ? (
                 <Link
                   href="/login"
-                  className={`flex items-center gap-2 px-4 ${pathname === "/login"
-                    ? "text-blue-500"
-                    : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-                    }`}
+                  className={`flex items-center gap-2 px-4 ${pathname === "/login" ? "text-blue-500" : "text-gray-700 dark:text-gray-300 hover:text-blue-500"}`}
                 >
                   <LogIn size={18} /> Iniciar Sesión
                 </Link>
@@ -175,9 +151,7 @@ export default function Header() {
                     className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-blue-500 px-4 border border-gray-300 dark:border-gray-500 rounded-lg py-1 transition"
                   >
                     <Globe size={18} />
-                    <span className="notranslate">
-                      {LANGUAGES[languageIndex]}
-                    </span>
+                    <span className="notranslate">{LANGUAGES[languageIndex]}</span>
                     <ChevronDown size={16} />
                   </button>
 
@@ -191,10 +165,7 @@ export default function Header() {
                             changeLanguage(lang.toLowerCase());
                             setIsDropdownOpen(false);
                           }}
-                          className={`block px-4 py-2 w-full text-center ${languageIndex === index
-                            ? "font-bold text-blue-500"
-                            : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                            }`}
+                          className={`block px-4 py-2 w-full text-center ${languageIndex === index ? "font-bold text-blue-500" : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"}`}
                         >
                           <span className="notranslate">{lang}</span>
                         </button>
@@ -213,10 +184,7 @@ export default function Header() {
         <nav className="fixed bottom-0 left-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-t-lg flex justify-around py-3 border-t border-gray-200/50 dark:border-gray-700/50 z-50">
           <Link
             href="/"
-            className={`flex flex-col items-center ${pathname === "/"
-              ? "text-blue-500"
-              : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-              }`}
+            className={`flex flex-col items-center ${pathname === "/" ? "text-blue-500" : "text-gray-700 dark:text-gray-300 hover:text-blue-500"}`}
           >
             <Home size={22} />
             <span className="text-xs">Inicio</span>
@@ -224,10 +192,7 @@ export default function Header() {
 
           <Link
             href="/about"
-            className={`flex flex-col items-center ${pathname === "/about"
-              ? "text-blue-500"
-              : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-              }`}
+            className={`flex flex-col items-center ${pathname === "/about" ? "text-blue-500" : "text-gray-700 dark:text-gray-300 hover:text-blue-500"}`}
           >
             <Info size={22} />
             <span className="text-xs">Nosotros</span>
@@ -236,10 +201,7 @@ export default function Header() {
           {!isAuthenticated ? (
             <Link
               href="/login"
-              className={`flex flex-col items-center ${pathname === "/login"
-                ? "text-blue-500"
-                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-                }`}
+              className={`flex flex-col items-center ${pathname === "/login" ? "text-blue-500" : "text-gray-700 dark:text-gray-300 hover:text-blue-500"}`}
             >
               <LogIn size={22} />
               <span className="text-xs">Ingresar</span>
@@ -247,7 +209,7 @@ export default function Header() {
           ) : (
             <button
               onClick={handleLogout}
-              className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-redoml-500"
+              className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-red-500"
             >
               <LogIn size={22} />
               <span className="text-xs">Salir</span>
@@ -260,9 +222,7 @@ export default function Header() {
             className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-blue-500"
           >
             <Globe size={22} />
-            <span className="text-xs font-bold notranslate">
-              {LANGUAGES[languageIndex]}
-            </span>
+            <span className="text-xs font-bold notranslate">{LANGUAGES[languageIndex]}</span>
           </motion.button>
         </nav>
       )}
@@ -294,10 +254,11 @@ export default function Header() {
                     key={index}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleLanguageChangeMobile(index)}
-                    className={`py-3 px-4 rounded-xl text-center ${languageIndex === index
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
-                      }`}
+                    className={`py-3 px-4 rounded-xl text-center ${
+                      languageIndex === index
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    }`}
                   >
                     <span className="notranslate">{lang}</span>
                   </motion.button>
@@ -308,6 +269,7 @@ export default function Header() {
         )}
       </AnimatePresence>
 
+      {/* Google Translate Container (invisible) */}
       <div id="google_translate_element" className="hidden"></div>
     </>
   );
