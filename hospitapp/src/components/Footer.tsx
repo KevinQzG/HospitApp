@@ -32,7 +32,8 @@ export default function Footer() {
             HospitAPP
           </h2>
           <p className="text-sm max-w-xs leading-relaxed">
-            La forma más rápida, segura e inteligente de encontrar atención médica en Colombia.
+            La forma más rápida, segura e inteligente de encontrar atención
+            médica en Colombia.
           </p>
           <div className="flex space-x-3 mt-3">
             {[
@@ -47,7 +48,10 @@ export default function Footer() {
                 aria-label={social.label}
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 dark:bg-white/10 dark:hover:bg-white/30 transition-all hover:scale-110"
               >
-                <FontAwesomeIcon icon={social.icon} className="text-white text-lg" />
+                <FontAwesomeIcon
+                  icon={social.icon}
+                  className="text-white text-lg"
+                />
               </a>
             ))}
           </div>
@@ -81,6 +85,14 @@ export default function Footer() {
                 className="hover:underline flex items-center justify-center sm:justify-start"
               >
                 <LogIn className="w-4 h-4 mr-2" /> Iniciar sesión
+              </a>
+            </li>
+            <li>
+              <a
+                href="/manual"
+                className="hover:underline flex items-center justify-center sm:justify-start"
+              >
+                <ClipboardList className="w-4 h-4 mr-2" /> Manual de uso
               </a>
             </li>
           </ul>
@@ -130,7 +142,9 @@ export default function Footer() {
       {/* Copyright */}
       <div className="bg-blue-700 dark:bg-gray-800 py-4 mt-10 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm opacity-90">
-          <p className="mb-2">© 2025 HospitAPP. Todos los derechos reservados.</p>
+          <p className="mb-2">
+            © 2025 HospitAPP. Todos los derechos reservados.
+          </p>
           <div className="flex flex-wrap justify-center gap-4">
             <a href="/privacy-policy" className="hover:underline">
               Política de Privacidad
