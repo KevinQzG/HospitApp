@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { House } from "lucide-react";
 
 export default function UserManualPage() {
@@ -78,6 +78,16 @@ export default function UserManualPage() {
     },
   ];
 
+  const [showBackButton, setShowBackButton] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackButton(window.scrollY > 80); // Cambia 80 por el alto de tu header si lo necesitas
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // Smooth scrolling for anchor links
   useEffect(() => {
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
@@ -103,15 +113,20 @@ export default function UserManualPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-blue-600/20 to-transparent" />
 
         {/* Back Button */}
-        <div className="absolute top-6 left-6 z-10">
-          <Link
-            href="/"
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800/50 backdrop-blur-sm text-white rounded-xl hover:bg-gray-700/50 transition-all duration-200 group"
-          >
-            <House className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-            <span className="text-sm font-medium">Inicio</span>
-          </Link>
-        </div>
+        {showBackButton && (
+          <div className="fixed top-6 left-6 z-50">
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 px-4 py-2.5 bg-gray-800/40 backdrop-blur-md text-white rounded-full hover:bg-gray-700/40 transition-all duration-300 group shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400/50"
+              aria-label="Volver a la página de inicio"
+            >
+              <House className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
+              <span className="text-sm font-medium tracking-wide opacity-90 group-hover:opacity-100">
+                Inicio
+              </span>
+            </Link>
+          </div>
+        )}
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
           <div className="text-center max-w-4xl mx-auto">
