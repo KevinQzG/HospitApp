@@ -30,7 +30,8 @@ export default function RegisterPage() {
     setErrorMessage(""); // Limpiar mensaje previo
 
     const email = (document.getElementById("email") as HTMLInputElement).value;
-    const password = (document.getElementById("password") as HTMLInputElement).value;
+    const password = (document.getElementById("password") as HTMLInputElement)
+      .value;
     const phone = (document.getElementById("phone") as HTMLInputElement).value;
     const eps = (document.getElementById("eps") as HTMLInputElement).value;
 
@@ -52,7 +53,14 @@ export default function RegisterPage() {
       if (data.success) {
         setTimeout(() => router.push("/confirmation"), 1500);
       } else {
-        setErrorMessage(data.error || "Error al registrar");
+        // Handle duplicate email error
+        if (data.error?.includes("already registered")) {
+          setErrorMessage(
+            "This email is already registered. Please use a different email."
+          );
+        } else {
+          setErrorMessage(data.error || "Registration error");
+        }
       }
     } catch (error) {
       console.error("Error al registrar:", error);
@@ -93,7 +101,10 @@ export default function RegisterPage() {
             <Link
               href="/login"
               className="text-blue-800 dark:text-blue-400 hover:underline font-medium"
-              style={{ textDecorationThickness: "2px", textUnderlineOffset: "3px" }}
+              style={{
+                textDecorationThickness: "2px",
+                textUnderlineOffset: "3px",
+              }}
             >
               Iniciar sesión
             </Link>
@@ -112,11 +123,17 @@ export default function RegisterPage() {
 
             {/* EMAIL */}
             <div className="relative">
-              <label htmlFor="email" className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
+              <label
+                htmlFor="email"
+                className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+              >
                 Correo electrónico
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <Mail
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
                 <input
                   id="email"
                   type="email"
@@ -129,7 +146,10 @@ export default function RegisterPage() {
 
             {/* TELÉFONO */}
             <div className="relative">
-              <label htmlFor="phone" className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
+              <label
+                htmlFor="phone"
+                className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+              >
                 Número de celular
               </label>
               <div className="flex items-center border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg px-3 shadow-sm transition-shadow relative">
@@ -187,11 +207,17 @@ export default function RegisterPage() {
 
             {/* EPS */}
             <div className="relative">
-              <label htmlFor="eps" className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
+              <label
+                htmlFor="eps"
+                className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+              >
                 EPS
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <User
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
                 <select
                   id="eps"
                   className="w-full pl-10 pr-4 py-4 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -204,10 +230,14 @@ export default function RegisterPage() {
                   <option value="cafesalud">CAFESALUD EPS</option>
                   <option value="crus_blanca">CRUZ BLANCA EPS</option>
                   <option value="sura">SURA EPS</option>
-                  <option value="fundacion_medico_preventiva">FUNDACIÓN MÉDICO PREVENTIVA EPS</option>
+                  <option value="fundacion_medico_preventiva">
+                    FUNDACIÓN MÉDICO PREVENTIVA EPS
+                  </option>
                   <option value="condor">CÓNDOR EPS</option>
                   <option value="asmetsalud">ASMETSALUD EPS</option>
-                  <option value="comfamiliarcamacol">COMFAMILIARCAMACOL EPS</option>
+                  <option value="comfamiliarcamacol">
+                    COMFAMILIARCAMACOL EPS
+                  </option>
                   <option value="ecoopsos">ECOOPSOS EPS</option>
                   <option value="comfenalco">COMFENALCO EPS</option>
                   <option value="nueva">NUEVA EPS</option>
@@ -223,11 +253,17 @@ export default function RegisterPage() {
 
             {/* CONTRASEÑA */}
             <div className="relative">
-              <label htmlFor="password" className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
+              <label
+                htmlFor="password"
+                className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+              >
                 Contraseña
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <Lock
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
                 <input
                   type={passwordVisible ? "text" : "password"}
                   id="password"
@@ -239,7 +275,11 @@ export default function RegisterPage() {
                   type="button"
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition p-2"
                   onClick={() => setPasswordVisible(!passwordVisible)}
-                  aria-label={passwordVisible ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-label={
+                    passwordVisible
+                      ? "Ocultar contraseña"
+                      : "Mostrar contraseña"
+                  }
                 >
                   {passwordVisible ? <EyeOff size={24} /> : <Eye size={24} />}
                 </button>

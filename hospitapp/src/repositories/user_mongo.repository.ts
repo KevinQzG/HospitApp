@@ -15,57 +15,66 @@ import { UserMapper } from "@/utils/mappers/user_mapper";
 
 @injectable()
 export class UserMongoRepository implements UserRepositoryAdapter {
-	/**
-	 * @constructor
-	 * @param {DBAdapter} dbHandler - The database handler.
-	 * @returns {void}
-	 * @description Creates an instance of the UserRepository class.
-	 * @throws {Error} If the database handler is null.
-	 * @throws {Error} If the database connection fails.
-	 */
-	constructor(@inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>) {}
+  /**
+   * @constructor
+   * @param {DBAdapter} dbHandler - The database handler.
+   * @returns {void}
+   * @description Creates an instance of the UserRepository class.
+   * @throws {Error} If the database handler is null.
+   * @throws {Error} If the database connection fails.
+   */
+  constructor(@inject(TYPES.DBAdapter) private dbHandler: DBAdapter<Db>) {}
 
-	async findUserByEmail(email: string): Promise<User | null> {
-		try {
-			const DB = await this.dbHandler.connect();
+  async findUserByEmail(email: string): Promise<User | null> {
+    try {
+      const DB = await this.dbHandler.connect();
 
-			const USER_DOC = await DB.collection<UserDocument>("USERS").findOne(
-				{
-					email: email,
-				}
-			);
-			return USER_DOC ? UserMapper.fromDocumentToDomain(USER_DOC) : null;
-		} catch (error) {
-			console.error("Error finding user by email:", error);
-			throw new Error("Database error");
-		}
-	}
+      const USER_DOC = await DB.collection<UserDocument>("USERS").findOne({
+        email: email,
+      });
+      return USER_DOC ? UserMapper.fromDocumentToDomain(USER_DOC) : null;
+    } catch (error) {
+      console.error("Error finding user by email:", error);
+      throw new Error("Database error");
+    }
+  }
 
-	async createUser(
-		eps: string,
-		email: string,
-		password: string,
-		role: string,
-		phone: string
-	): Promise<boolean> {
-		try {
-			const DB = await this.dbHandler.connect();
+  async createUser(
+    eps: string,
+    email: string,
+    password: string,
+    role: string,
+    phone: string
+  ): Promise<boolean> {
+    try {
+      const DB = await this.dbHandler.connect();
 
-			const USER_DOC: UserDocument = {
-				_id: new ObjectId(),
-				eps,
-				email,
-				password,
-				phone,
-				role: "USER",
-			};
+      // Check if email already exists
+      const existingUser = await DB.collection<UserDocument>("USERS").findOne({
+        email,
+      });
+      if (existingUser) {
+        throw new Error("Email already exists");
+      }
 
-			await DB.collection<UserDocument>("USERS").insertOne(USER_DOC);
+      const USER_DOC: UserDocument = {
+        _id: new ObjectId(),
+        eps,
+        email,
+        password,
+        phone,
+        role: "USER",
+      };
 
-			return true;
-		} catch (error) {
-			console.error("Error creating user:", error);
-			return false;
-		}
-	}
+      await DB.collection<UserDocument>("USERS").insertOne(USER_DOC);
+
+      return true;
+    } catch (error) {
+      console.error("Error creating user:", error);
+      if (error instanceof Error && error.message === "Email already exists") {
+        throw error;
+      }
+      return false;
+    }
+  }
 }

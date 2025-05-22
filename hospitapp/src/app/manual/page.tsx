@@ -37,6 +37,11 @@ export default function UserManualPage() {
         'Para cerrar sesión, haz clic en el botón "Cerrar Sesión" ubicado en la parte superior derecha de la navegación. Volverás al estado de usuario no autenticado.',
     },
     {
+      title: "Traducción de la Página",
+      content:
+        "Para cambiar el idioma de la página, haz clic en el icono del mundo ubicado en la parte derecha de la navegación. Se desplegará un menú donde podrás seleccionar entre los siguientes idiomas: Español (ES), Inglés (EN), Francés (FR), Italiano (IT), Portugués (PT) y Alemán (DE). La selección se guardará automáticamente para futuras visitas.",
+    },
+    {
       title: "Búsqueda de IPS",
       content:
         'En la página principal, haz clic en el botón "Buscar".<br>Serás dirigido a la sección de búsqueda avanzada.<br>Puedes aplicar filtros por EPS, especialidad médica y distancia (en kilómetros).<br>Presiona nuevamente el botón "Buscar" para ver los resultados.',
@@ -131,7 +136,7 @@ export default function UserManualPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-              Manual de Usuario
+              Manual de Uso
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Guía completa para utilizar HospitAPP, la plataforma que conecta a
