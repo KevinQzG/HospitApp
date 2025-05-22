@@ -143,33 +143,22 @@ Then("the user should be redirected to the IPS list page with {string} specialis
 	).to.include("/result");
     await driver.sleep(15000);
 
-	await driver.wait(
-		until.elementLocated(
-			By.xpath(`//span[contains(., "${specialism}")]`)
-		),
-		15000
-	);
-	const specialismElement = await driver.findElement(
-		By.xpath(`//span[contains(., "${specialism}")]`)
-	);
-	const specialismText = await specialismElement.getText();
-	expect(
-		specialismText,
-		"Selected specialism should be " + specialism
-	).to.contain(specialism);
+	let expectedValue = `["${specialism}"]`;
 
 	await driver.wait(
 		until.elementLocated(
-			By.xpath(`//span[contains(., "${eps}")]`)
+			By.xpath(`//input[@type='hidden' and @value='${expectedValue}']`)
 		),
 		15000
 	);
 
-	const epsElement = await driver.findElement(
-		By.xpath(`//span[contains(., "${eps}")]`)
+	expectedValue = `["${eps}"]`;
+	await driver.wait(
+		until.elementLocated(
+			By.xpath(`//input[@type='hidden' and @value='${expectedValue}']`)
+		),
+		15000
 	);
-	const epsText = await epsElement.getText();
-	expect(epsText, "Selected EPS should be " + eps).to.contain(eps);
 });
 
 Then(
