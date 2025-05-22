@@ -19,7 +19,6 @@ export function SearchableSelect({
 }: SearchableSelectProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedOptions, setSelectedOptions] =
     useState<string[]>(initialValues);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -45,7 +44,6 @@ export function SearchableSelect({
         !wrapperRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-        setIsSearching(false);
       }
     }
 
@@ -70,9 +68,8 @@ export function SearchableSelect({
     // No enfocamos el input inmediatamente para evitar que aparezca el teclado
   };
 
-  // Manejar doble clic o clic en el icono de búsqueda
+  // Manejar clic en el icono de búsqueda
   const handleSearchClick = () => {
-    setIsSearching(true);
     inputRef.current?.focus();
   };
 

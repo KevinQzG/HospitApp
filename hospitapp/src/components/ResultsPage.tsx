@@ -234,7 +234,7 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
   ];
 
   const applyFilters = (currentSortFields: SortField[]) => {
-    let filteredResults = [...allResults];
+    const filteredResults = [...allResults];
 
     // Separate promoted and non-promoted IPS
     const promotedResults = filteredResults.filter((item) =>
@@ -400,24 +400,26 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
         if (!response.ok) throw new Error("Failed to get filtered results");
 
         const data: SearchResponse = await response.json();
-        let FILTERED_RESULTS = data.data || [];
+        const filteredResults = data.data || [];
 
         // Apply all filters simultaneously
-        if (specialtiesParam.length > 0) {
-          FILTERED_RESULTS = FILTERED_RESULTS.filter((item) =>
-            item.specialties?.some((specialty) =>
-              specialtiesParam.includes(specialty.name)
-            )
-          );
-        }
+        const resultsWithSpecialties =
+          specialtiesParam.length > 0
+            ? filteredResults.filter((item) =>
+                item.specialties?.some((specialty) =>
+                  specialtiesParam.includes(specialty.name)
+                )
+              )
+            : filteredResults;
 
-        if (epsParam.length > 0) {
-          FILTERED_RESULTS = FILTERED_RESULTS.filter((item) =>
-            item.eps?.some((eps) => epsParam.includes(eps.name))
-          );
-        }
+        const resultsWithEps =
+          epsParam.length > 0
+            ? resultsWithSpecialties.filter((item) =>
+                item.eps?.some((eps) => epsParam.includes(eps.name))
+              )
+            : resultsWithSpecialties;
 
-        setAllResults(FILTERED_RESULTS);
+        setAllResults(resultsWithEps);
 
         // Set initial page only on new search
         if (isNewSearch) {
@@ -447,10 +449,10 @@ function ResultsDisplay({ specialties, eps }: SearchFormClientProps) {
           applyFilters(sorts);
         } else {
           // If no sorts, just update pagination while keeping promoted IPS at the beginning
-          const promotedResults = FILTERED_RESULTS.filter((item) =>
+          const promotedResults = resultsWithEps.filter((item) =>
             isPromoted(item.promotion)
           );
-          const nonPromotedResults = FILTERED_RESULTS.filter(
+          const nonPromotedResults = resultsWithEps.filter(
             (item) => !isPromoted(item.promotion)
           );
           const combinedResults = [...promotedResults, ...nonPromotedResults];
