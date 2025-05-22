@@ -55,6 +55,7 @@
     "@cucumber/cucumber": "^11.2.0",
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.22.0",
+    "@next/eslint-plugin-next": "^15.3.2",
     "@types/chai": "^5.2.1",
     "@types/chromedriver": "^81.0.5",
     "@types/country-telephone-data": "^0.6.3",

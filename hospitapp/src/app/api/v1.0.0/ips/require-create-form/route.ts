@@ -48,41 +48,45 @@ export async function POST(
 
   try {
     const BODY: CreateIPSRequest = await req.json();
+    console.log("Received create form request:", BODY);
+
     const { success, error } = VALIDATE_IPS_BODY(BODY);
 
     if (!success) {
+      console.log("Validation failed:", error);
       return NextResponse.json(
         { success: false, message: error, response: "" },
         { status: 400 }
       );
     }
 
-    const message = `
-      Nueva solicitud de creación de IPS:
-      - Nombre: ${BODY.ipsName}
-      - Dirección: ${BODY.address}
-      - Teléfono: ${BODY.phone}
-      - Email: ${BODY.email}
-      - Mensaje: ${BODY.message}
-    `;
-
-    const result = await EMAIL_SERVICE.send(
+    console.log("Sending create form email to:", BODY.email);
+    const RESULT = await EMAIL_SERVICE.send(
       "moderadores@tuservicio.com",
       "Moderador IPS",
-      message,
+      `
+        Nueva solicitud de creación de IPS:
+        - Nombre: ${BODY.ipsName}
+        - Dirección: ${BODY.address}
+        - Teléfono: ${BODY.phone}
+        - Email: ${BODY.email}
+        - Mensaje: ${BODY.message}
+      `,
       "Solicitud de creación de IPS"
     );
+    console.log("Email service response:", RESULT);
 
     return NextResponse.json({
-      success: result.status,
-      message: result.message,
-      response: result.response,
+      success: RESULT.status,
+      message: RESULT.message,
+      response: RESULT.response,
     });
     //@typescript-eslint/no-unused-vars
   } catch (error) {
+    console.error("Error in create form API:", error);
     return NextResponse.json(
       {
-        error : error,
+        error: error,
         success: false,
         message: "Internal server error",
         response: "Internal server error",
