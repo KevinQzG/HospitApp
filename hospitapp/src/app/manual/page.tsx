@@ -19,67 +19,56 @@ export default function UserManualPage() {
     {
       title: "Acceso a la Plataforma",
       content:
-        "Para utilizar HospitAPP, accede desde cualquier navegador a <a href='https://hospitapp.vercel.app' class='text-blue-600 dark:text-blue-400 hover:underline'>https://hospitapp.vercel.app</a>.",
+        "Para utilizar HospitAPP, accede desde cualquier navegador a <a href='https://hospitapp.vercel.app' class='text-blue-500 dark:text-blue-400 hover:underline'>https://hospitapp.vercel.app</a>.",
     },
     {
       title: "Registro de Usuario",
-      content:
-        "Puedes crear una cuenta utilizando:<br>Correo electrónico, contraseña, teléfono y EPS.<br>O mediante autenticación con Google, Facebook o Apple.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/8HSc6bIx5EI' title='Tutorial de Creación de Cuenta' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Creación de Cuenta", "8HSc6bIx5EI"),
     },
     {
       title: "Inicio de Sesión",
-      content:
-        "Para iniciar sesión:<br>Ingresa tu correo electrónico y contraseña.<br>O selecciona el inicio de sesión con Google, Facebook o Apple.<br>Al iniciar sesión correctamente, serás redirigido a la página principal y verás la opción \"Cerrar Sesión\" en la navegación.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/3V8oZFCTkdI' title='Tutorial de Inicio de Sesión' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Inicio de Sesión", "3V8oZFCTkdI"),
     },
     {
       title: "Cierre de Sesión",
-      content:
-        "Para cerrar sesión, haz clic en el botón \"Cerrar Sesión\" ubicado en la parte superior derecha de la navegación. Volverás al estado de usuario no autenticado.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/JQJGdeT5QzU' title='Tutorial de Cierre de Sesión' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Cierre de Sesión", "JQJGdeT5QzU"),
     },
     {
       title: "Traducción de la Página",
-      content:
-        "Para cambiar el idioma de la página, haz clic en el icono del mundo ubicado en la parte derecha de la navegación. Se desplegará un menú donde podrás seleccionar entre los siguientes idiomas: Español (ES), Inglés (EN), Francés (FR), Italiano (IT), Portugués (PT) y Alemán (DE). La selección se guardará automáticamente para futuras visitas.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/hQ5wciOiRbE' title='Tutorial de Cambio de Idioma' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Cambio de Idioma", "hQ5wciOiRbE"),
     },
     {
       title: "Búsqueda de IPS",
-      content:
-        "En la página principal, haz clic en el botón \"Buscar\".<br>Serás dirigido a la sección de búsqueda avanzada.<br>Puedes aplicar filtros por EPS, especialidad médica y distancia (en kilómetros).<br>Presiona nuevamente el botón \"Buscar\" para ver los resultados.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/TMaveb1ICVM' title='Tutorial de Búsqueda de IPS' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Búsqueda de IPS", "TMaveb1ICVM"),
     },
     {
       title: "Ordenar Resultados",
-      content:
-        "En la sección de resultados:<br>Puedes hacer clic en \"Agregar Filtro\".<br>Selecciona el criterio de orden, como distancia en orden ascendente o descendente.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/o-G6KP0nwz8' title='Tutorial de Filtros' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Filtros", "o-G6KP0nwz8"),
     },
     {
       title: "Detalle de una IPS",
-      content:
-        "Al hacer clic sobre una IPS:<br>Accederás a la página de detalle donde verás su información completa.<br>Incluye dirección, EPS que atiende, especialidades, ubicación en el mapa y reseñas.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/QPGzeh_LdPs' title='Tutorial de Detalles de IPS' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Detalles de IPS", "QPGzeh_LdPs"),
     },
     {
       title: "Navegación a una IPS",
-      content:
-        "Desde la página de detalle:<br>Haz clic en el icono de Google Maps o Waze.<br>Serás redirigido a la aplicación con las instrucciones de ruta hacia la IPS seleccionada.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/f9KvD733GRQ' title='Tutorial de Navegación' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Navegación", "f9KvD733GRQ"),
     },
     {
       title: "Reseñas de Usuarios",
-      content:
-        "Puedes ver reseñas de otras personas sobre cada IPS.<br>Si estás autenticado, puedes escribir, editar o eliminar tus propias reseñas.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/XOxGGh63HL0' title='Tutorial de Reseñas' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Reseñas", "XOxGGh63HL0"),
     },
     {
       title: "Promocionar una IPS",
-      content:
-        "En la sección de búsqueda, selecciona \"Promocionar IPS\".<br>Completa el formulario con los datos requeridos.<br>Envía el formulario para que el equipo de HospitAPP reciba tu solicitud.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/dCpAryGylcQ' title='Tutorial de Promoción de IPS' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Promoción de IPS", "dCpAryGylcQ"),
     },
     {
       title: "Solicitar Registro de IPS",
-      content:
-        "Selecciona la opción \"Solicitar registro\".<br>Llena el formulario con la información de la IPS que deseas agregar.<br>Envía el formulario para registrar tu solicitud.<br><br><div class='mt-6 max-w-3xl mx-auto p-4 bg-gray-800/30 rounded-xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'><div class='aspect-w-16 aspect-h-9 rounded-lg overflow-hidden'><iframe src='https://www.youtube.com/embed/3W9UlXBArwE' title='Tutorial de Registro de IPS' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowFullScreen className='w-full h-full transition-transform duration-300 group-hover:scale-[1.02]'></iframe></div></div>",
+      content: getVideoContent("Tutorial de Registro de IPS", "3W9UlXBArwE"),
     },
     {
       title: "Soporte",
       content:
-        "Para asistencia técnica o inquietudes sobre el funcionamiento de la plataforma, puedes escribir a <a href='mailto:soporte@hospitapp.app' class='text-blue-600 dark:text-blue-400 hover:underline'>soporte@hospitapp.app</a>.",
+        "Para asistencia técnica o inquietudes sobre el funcionamiento de la plataforma, puedes escribir a <a href='mailto:soporte@hospitapp.app' class='text-blue-500 dark:text-blue-400 hover:underline'>soporte@hospitapp.app</a>.",
     },
   ];
 
@@ -93,7 +82,6 @@ export default function UserManualPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Smooth scrolling for anchor links
   useEffect(() => {
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener("click", (e: Event) => {
@@ -102,9 +90,7 @@ export default function UserManualPage() {
         if (href) {
           const target = document.querySelector(href);
           if (target) {
-            target.scrollIntoView({
-              behavior: "smooth",
-            });
+            target.scrollIntoView({ behavior: "smooth" });
           }
         }
       });
@@ -113,16 +99,14 @@ export default function UserManualPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-600/20 to-transparent" />
 
-        {/* Back Button */}
         {showBackButton && (
-          <div className="fixed top-6 left-6 z-50">
+          <div className="fixed top-6 left-4 md:left-6 z-50">
             <Link
               href="/"
-              className="flex items-center gap-2.5 px-4 py-2.5 bg-gray-800/40 backdrop-blur-md text-white rounded-full hover:bg-gray-700/40 transition-all duration-300 group shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400/50"
+              className="flex items-center gap-2.5 px-4 py-2.5 bg-gray-800/40 backdrop-blur-md text-white rounded-full hover:bg-gray-700/40 transition-all duration-300 group shadow-lg hover:shadow-xl"
               aria-label="Volver a la página de inicio"
             >
               <House className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
@@ -148,23 +132,11 @@ export default function UserManualPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Sticky Table of Contents */}
           <aside className="lg:w-1/4 lg:sticky lg:top-8 lg:self-start">
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-700/50">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
-                <svg
-                  className="h-5 w-5 text-blue-400 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                  />
+                <svg className="h-5 w-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                 </svg>
                 Índice
               </h2>
@@ -178,7 +150,7 @@ export default function UserManualPage() {
                     <span className="text-blue-400 font-medium mr-3 text-sm">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className="text-gray-300 group-hover:text-white transition-colors duration-200 text-sm">
+                    <span className="text-gray-300 group-hover:text-white text-sm">
                       {section.title}
                     </span>
                   </Link>
@@ -187,7 +159,6 @@ export default function UserManualPage() {
             </div>
           </aside>
 
-          {/* Manual Sections */}
           <main className="lg:w-3/4 space-y-12">
             {MANUAL_SECTIONS.map((section, index) => (
               <section
@@ -215,26 +186,31 @@ export default function UserManualPage() {
         </div>
       </div>
 
-      {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed bottom-8 right-8 bg-blue-600/90 backdrop-blur-sm text-white p-3 rounded-full shadow-lg hover:bg-blue-500 transition-all duration-200 hover:scale-110"
+        className="fixed bottom-6 right-4 md:bottom-8 md:right-6 lg:bottom-12 lg:right-10 bg-blue-600/90 backdrop-blur-sm text-white p-3 rounded-full shadow-lg hover:bg-blue-500 transition-all duration-200 hover:scale-110 z-50"
         aria-label="Volver al inicio"
       >
-        <svg
-          className="h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 10l7-7m0 0l7 7m-7-7v18"
-          />
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
       </button>
     </div>
   );
+}
+
+function getVideoContent(title: string, videoId: string): string {
+  return `
+    <div class='mt-6 mx-auto w-full max-w-screen-md p-4 bg-gray-800/30 rounded-2xl shadow-lg border border-gray-600/50 group hover:shadow-xl transition-shadow duration-300'>
+      <div class='aspect-w-16 aspect-h-9 rounded-xl overflow-hidden'>
+        <iframe 
+          src='https://www.youtube.com/embed/${videoId}' 
+          title='${title}' 
+          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' 
+          allowfullscreen 
+          class='w-full h-full transition-opacity duration-500 ease-in-out opacity-90 group-hover:opacity-100'>
+        </iframe>
+      </div>
+    </div>
+  `;
 }
