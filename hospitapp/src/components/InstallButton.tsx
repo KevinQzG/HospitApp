@@ -20,15 +20,6 @@ export default function InstallButton() {
   useEffect(() => {
     if (pathname !== "/") return;
 
-    // Verificar si la app ya está instalada
-    const isStandalone = window.matchMedia(
-      "(display-mode: standalone)"
-    ).matches;
-    if (isStandalone) {
-      setIsVisible(false);
-      return;
-    }
-
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
       setInstallPrompt(event as BeforeInstallPromptEvent);
@@ -41,20 +32,6 @@ export default function InstallButton() {
 
       return () => clearTimeout(timeout);
     };
-
-    // Verificar si es un dispositivo móvil
-    const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(
-      navigator.userAgent
-    );
-    if (isMobileDevice && !isStandalone) {
-      setIsVisible(true);
-      // Ocultar automáticamente después de 8 segundos en móviles también
-      const timeout = setTimeout(() => {
-        setIsVisible(false);
-      }, 8000);
-
-      return () => clearTimeout(timeout);
-    }
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
@@ -90,7 +67,7 @@ export default function InstallButton() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 animate-fade-in-up">
-      <div className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl p-4 flex items-center space-x-4 w-[calc(100vw-3rem)] sm:w-96">
+      <div className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl p-4 flex items-center space-x-4 w-96">
         <div className="flex-shrink-0 text-blue-600 text-4xl">📲</div>
         <div className="flex-1">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -105,7 +82,7 @@ export default function InstallButton() {
           onClick={handleInstall}
           disabled={isInstalling}
           aria-label="Instalar aplicación"
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
             ${
               isInstalling
                 ? "cursor-wait bg-blue-400 text-white"
