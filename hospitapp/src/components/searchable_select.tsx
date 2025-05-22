@@ -19,10 +19,11 @@ export function SearchableSelect({
 }: SearchableSelectProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(initialValues);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedOptions, setSelectedOptions] =
+    useState<string[]>(initialValues);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [clickCount, setClickCount] = useState(0);
 
   // Sincronizar selectedOptions con initialValues cuando cambie
   useEffect(() => {
@@ -30,8 +31,10 @@ export function SearchableSelect({
   }, [initialValues]);
 
   // Filtrar opciones basadas en el término de búsqueda
-  const filteredOptions = options.filter((option) =>
-    option.name && option.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredOptions = options.filter(
+    (option) =>
+      option.name &&
+      option.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Cerrar el menú al hacer clic fuera
@@ -42,7 +45,7 @@ export function SearchableSelect({
         !wrapperRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-        setClickCount(0);
+        setIsSearching(false);
       }
     }
 
@@ -63,52 +66,52 @@ export function SearchableSelect({
 
   // Manejar clics en el input
   const handleInputClick = () => {
-    setClickCount((prev) => prev + 1);
+    setIsOpen(true);
+    // No enfocamos el input inmediatamente para evitar que aparezca el teclado
+  };
 
-    if (clickCount === 0) {
-      setIsOpen(true);
-    } else if (clickCount === 1) {
-      inputRef.current?.removeAttribute("readOnly");
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
-    }
+  // Manejar doble clic o clic en el icono de búsqueda
+  const handleSearchClick = () => {
+    setIsSearching(true);
+    inputRef.current?.focus();
   };
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div className="flex flex-wrap gap-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm focus-within:border-blue-500 transition-colors">
-        {selectedOptions.map((name) => {
-          const option = options.find((opt) => opt.name === name);
-          return (
-            <span
-              key={name}
-              className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm flex items-center"
-            >
-              {option?.displayName || option?.name || name}
-              <button
-                type="button"
-                onClick={() => toggleOption(name)}
-                className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus:outline-none"
-                aria-label={`Remover ${name}`}
-              >
-                ×
-              </button>
-            </span>
-          );
-        })}
-
+      <div className="relative cursor-pointer" onClick={handleInputClick}>
         <input
+          ref={inputRef}
           type="text"
-          placeholder={placeholder}
-          className="flex-1 min-w-[150px] p-2 border-none focus:ring-0 outline-none placeholder-gray-400 dark:placeholder-gray-500 bg-transparent text-gray-700 dark:text-gray-300"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          onClick={handleInputClick}
-          readOnly
-          ref={inputRef}
-          aria-haspopup="listbox"
+          placeholder={
+            selectedOptions.length
+              ? `${selectedOptions.length} seleccionados`
+              : placeholder
+          }
+          className="w-full px-4 py-2.5 rounded-xl bg-gray-100/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
         />
+        <div
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSearchClick();
+          }}
+        >
+          <svg
+            className="w-5 h-5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
       </div>
 
       {isOpen && (
