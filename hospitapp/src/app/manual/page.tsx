@@ -135,8 +135,18 @@ export default function UserManualPage() {
           <aside className="lg:w-1/4 lg:sticky lg:top-8 lg:self-start">
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-700/50">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
-                <svg className="h-5 w-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                <svg
+                  className="h-5 w-5 text-blue-400 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                  />
                 </svg>
                 Índice
               </h2>
@@ -188,11 +198,21 @@ export default function UserManualPage() {
 
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed bottom-6 right-4 md:bottom-8 md:right-6 lg:bottom-12 lg:right-10 bg-blue-600/90 backdrop-blur-sm text-white p-3 rounded-full shadow-lg hover:bg-blue-500 transition-all duration-200 hover:scale-110 z-50"
+        className="fixed bottom-24 right-4 md:bottom-8 md:right-6 lg:bottom-12 lg:right-10 bg-blue-600/90 backdrop-blur-sm text-white p-3 rounded-full shadow-lg hover:bg-blue-500 transition-all duration-200 hover:scale-110 z-50"
         aria-label="Volver al inicio"
       >
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        <svg
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 10l7-7m0 0l7 7m-7-7v18"
+          />
         </svg>
       </button>
     </div>
