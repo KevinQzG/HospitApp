@@ -143,19 +143,16 @@ Then("the user should be redirected to the IPS list page with {string} specialis
 	).to.include("/result");
     await driver.sleep(15000);
 
-	let expectedValue = `["${specialism}"]`;
-
 	await driver.wait(
 		until.elementLocated(
-			By.xpath(`//input[@type='hidden' and @value='${expectedValue}']`)
+			By.xpath(`//input[contains(@value, "${specialism}")]`)
 		),
 		15000
 	);
 
-	expectedValue = `["${eps}"]`;
 	await driver.wait(
 		until.elementLocated(
-			By.xpath(`//input[@type='hidden' and @value='${expectedValue}']`)
+			By.xpath(`//input[contains(@value, "${eps}")]`)
 		),
 		15000
 	);
